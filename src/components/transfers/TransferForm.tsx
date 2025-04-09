@@ -18,14 +18,14 @@ import { toast } from 'sonner';
 
 const transferSchema = z.object({
   date: z.string().min(1, { message: 'La fecha es requerida' }),
-  time: z.string().min(1, { message: 'La hora es requerida' }),
+  time: z.string().optional(), // Changed from required to optional
   origin: z.string().min(1, { message: 'El origen es requerido' }),
   destination: z.string().min(1, { message: 'El destino es requerido' }),
   price: z.string().min(1, { message: 'El precio es requerido' }).refine(
     (val) => !isNaN(Number(val)) && Number(val) > 0, 
     { message: 'El precio debe ser un número positivo' }
   ),
-  collaborator: z.string().min(1, { message: 'El colaborador es requerido' }),
+  collaborator: z.string().optional(), // Changed from required to optional
   commission: z.string().min(1, { message: 'La comisión es requerida' }).refine(
     (val) => !isNaN(Number(val)) && Number(val) >= 0, 
     { message: 'La comisión debe ser un número positivo o cero' }
@@ -100,7 +100,7 @@ export function TransferForm({ onSubmit, defaultValues, isEditing = false }: Tra
                 name="time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Hora</FormLabel>
+                    <FormLabel>Hora (opcional)</FormLabel>
                     <FormControl>
                       <Input type="time" {...field} />
                     </FormControl>
@@ -175,7 +175,7 @@ export function TransferForm({ onSubmit, defaultValues, isEditing = false }: Tra
               name="collaborator"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Colaborador</FormLabel>
+                  <FormLabel>Colaborador (opcional)</FormLabel>
                   <FormControl>
                     <Input placeholder="Nombre del colaborador" {...field} />
                   </FormControl>
