@@ -11,17 +11,42 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Shield, UserCircle, XCircle, CheckCircle } from 'lucide-react';
+import { Shield, UserCircle, XCircle, CheckCircle, Edit, Save } from 'lucide-react';
 import { Database } from '@/integrations/supabase/types';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
+
+const userFormSchema = z.object({
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  email: z.string().email("Ingresa un email válido").optional(),
+});
+
+type UserFormValues = z.infer<typeof userFormSchema>;
 
 export default function UsersPage() {
   const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [userToUpdateRole, setUserToUpdateRole] = useState<string | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<Profile | null>(null);
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
+  
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      email: '',
+    },
+  });
 
   // Redirect if not an admin
   useEffect(() => {
@@ -86,6 +111,44 @@ export default function UsersPage() {
     }
   };
 
+  const openEditDialog = (profile: Profile) => {
+    setEditingUser(profile);
+    form.reset({
+      first_name: profile.first_name || '',
+      last_name: profile.last_name || '',
+      email: profile.email || '',
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const onSubmit = async (values: UserFormValues) => {
+    if (!editingUser) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: values.first_name || null,
+          last_name: values.last_name || null,
+          email: values.email || null,
+        })
+        .eq('id', editingUser.id);
+
+      if (error) throw error;
+      
+      // Update local state
+      setUsers(users.map(u => 
+        u.id === editingUser.id ? { ...u, ...values } : u
+      ));
+      
+      toast.success('Usuario actualizado con éxito');
+      setIsEditDialogOpen(false);
+    } catch (error: any) {
+      console.error('Error updating user:', error);
+      toast.error('Error al actualizar el usuario');
+    }
+  };
+
   if (!isAdmin) {
     return null;
   }
@@ -99,7 +162,7 @@ export default function UsersPage() {
           <CardHeader>
             <CardTitle>Usuarios</CardTitle>
             <CardDescription>
-              Gestiona los roles de los usuarios de la aplicación
+              Gestiona los usuarios de la aplicación
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -151,42 +214,53 @@ export default function UsersPage() {
                           {format(new Date(profile.created_at), 'PPP', { locale: es })}
                         </TableCell>
                         <TableCell className="text-right">
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => setUserToUpdateRole(profile.id)}
-                                disabled={profile.id === user?.id}
-                              >
-                                {profile.role === 'admin' ? 'Quitar admin' : 'Hacer admin'}
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  {profile.role === 'admin' 
-                                    ? '¿Quitar permisos de administrador?' 
-                                    : '¿Convertir en administrador?'
-                                  }
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  {profile.role === 'admin'
-                                    ? 'Este usuario perderá todos los permisos de administración.'
-                                    : 'Este usuario tendrá acceso completo a todas las funciones de administración.'
-                                  }
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => toggleUserRole(profile.id, profile.role)}
+                          <div className="flex justify-end gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => openEditDialog(profile)}
+                            >
+                              <Edit className="h-4 w-4 mr-1" />
+                              Editar
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setUserToUpdateRole(profile.id)}
+                                  disabled={profile.id === user?.id}
                                 >
-                                  Confirmar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                                  {profile.role === 'admin' ? 'Quitar admin' : 'Hacer admin'}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    {profile.role === 'admin' 
+                                      ? '¿Quitar permisos de administrador?' 
+                                      : '¿Convertir en administrador?'
+                                    }
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {profile.role === 'admin'
+                                      ? 'Este usuario perderá todos los permisos de administración.'
+                                      : 'Este usuario tendrá acceso completo a todas las funciones de administración.'
+                                    }
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => toggleUserRole(profile.id, profile.role)}
+                                  >
+                                    Confirmar
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -197,6 +271,74 @@ export default function UsersPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Usuario</DialogTitle>
+            <DialogDescription>
+              Actualiza la información del usuario
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="first_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nombre" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="last_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Apellido</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Apellido" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="correo@ejemplo.com" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit">
+                  <Save className="h-4 w-4 mr-2" />
+                  Guardar Cambios
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }
