@@ -5,17 +5,26 @@ import { TransferForm } from '@/components/transfers/TransferForm';
 import { generateId } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { Transfer } from '@/types';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = (values: any) => {
-    // En un caso real, aquí enviaríamos los datos a Firebase
-    console.log('Nuevo transfer:', {
+    // Crear el nuevo transfer
+    const newTransfer: Transfer = {
       id: generateId(),
       ...values,
       expenses: []
-    });
+    };
+    
+    // Obtener transfers existentes del localStorage
+    const existingTransfers = localStorage.getItem('transfers');
+    const transfers = existingTransfers ? JSON.parse(existingTransfers) : [];
+    
+    // Agregar el nuevo transfer y guardar en localStorage
+    transfers.push(newTransfer);
+    localStorage.setItem('transfers', JSON.stringify(transfers));
     
     // Mostrar notificación y redireccionar
     toast.success('Transfer creado exitosamente');
