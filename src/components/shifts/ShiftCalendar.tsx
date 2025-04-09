@@ -50,8 +50,8 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
   };
 
   // Función para renderizar el contenido del día en el calendario
-  const renderDay = (day: Date) => {
-    const shift = findShiftByDate(day);
+  const renderDay = (date: Date) => {
+    const shift = findShiftByDate(date);
     if (!shift) return null;
 
     const driverName = getDriverNameById(shift.driverId);
@@ -148,7 +148,7 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
           onSelect={setDate}
           className="rounded-md border"
           components={{
-            DayContent: ({ day }) => renderDay(day),
+            DayContent: ({ date }) => renderDay(date),
           }}
           footer={
             <div className="mt-4 text-sm text-muted-foreground">

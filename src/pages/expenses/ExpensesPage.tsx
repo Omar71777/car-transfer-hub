@@ -53,7 +53,7 @@ const ExpensesPage = () => {
       transferId: values.transferId || '',
       date: values.date,
       concept: values.concept,
-      amount: values.amount
+      amount: parseFloat(values.amount)
     };
 
     setExpenses([...expenses, newExpense]);
@@ -65,6 +65,12 @@ const ExpensesPage = () => {
   };
 
   const handleEditExpense = (expense: Expense) => {
+    // Convert the expense amount to string for the form
+    const expenseWithStringAmount = {
+      ...expense,
+      amount: expense.amount.toString()
+    };
+    
     setCurrentExpense(expense);
     setIsDialogOpen(true);
   };
@@ -74,7 +80,7 @@ const ExpensesPage = () => {
 
     setExpenses(expenses.map(expense => 
       expense.id === currentExpense.id 
-        ? { ...expense, ...values, amount: values.amount } 
+        ? { ...expense, ...values, amount: parseFloat(values.amount) } 
         : expense
     ));
     
@@ -115,7 +121,10 @@ const ExpensesPage = () => {
               </DialogHeader>
               <ExpenseForm 
                 onSubmit={currentExpense ? handleUpdateExpense : handleAddExpense} 
-                defaultValues={currentExpense || undefined}
+                defaultValues={currentExpense ? {
+                  ...currentExpense,
+                  amount: currentExpense.amount.toString()
+                } : undefined}
                 isEditing={!!currentExpense}
               />
             </DialogContent>
