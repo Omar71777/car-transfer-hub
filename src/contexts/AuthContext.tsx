@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Database } from '@/integrations/supabase/types';
 
 type AuthContextType = {
   session: Session | null;
@@ -67,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      setIsAdmin(data.role === 'admin');
+      setIsAdmin(data?.role === 'admin');
     } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);

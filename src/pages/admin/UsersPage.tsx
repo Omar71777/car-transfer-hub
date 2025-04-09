@@ -12,15 +12,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Shield, UserCircle, XCircle, CheckCircle } from 'lucide-react';
+import { Database } from '@/integrations/supabase/types';
 
-interface Profile {
-  id: string;
-  email: string;
-  role: 'admin' | 'user';
-  first_name: string | null;
-  last_name: string | null;
-  created_at: string;
-}
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export default function UsersPage() {
   const [users, setUsers] = useState<Profile[]>([]);
@@ -49,7 +43,7 @@ export default function UsersPage() {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setUsers(data as Profile[]);
+        setUsers(data || []);
       } catch (error: any) {
         console.error('Error fetching users:', error);
         toast.error('Error al cargar los usuarios');
@@ -130,17 +124,17 @@ export default function UsersPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell>{user.email}</TableCell>
+                    users.map((profile) => (
+                      <TableRow key={profile.id}>
+                        <TableCell>{profile.email}</TableCell>
                         <TableCell>
-                          {user.first_name && user.last_name
-                            ? `${user.first_name} ${user.last_name}`
+                          {profile.first_name && profile.last_name
+                            ? `${profile.first_name} ${profile.last_name}`
                             : 'No completado'}
                         </TableCell>
                         <TableCell>
                           <span className="flex items-center gap-1">
-                            {user.role === 'admin' ? (
+                            {profile.role === 'admin' ? (
                               <>
                                 <Shield className="h-4 w-4 text-primary" />
                                 Administrador
@@ -154,7 +148,7 @@ export default function UsersPage() {
                           </span>
                         </TableCell>
                         <TableCell>
-                          {format(new Date(user.created_at), 'PPP', { locale: es })}
+                          {format(new Date(profile.created_at), 'PPP', { locale: es })}
                         </TableCell>
                         <TableCell className="text-right">
                           <AlertDialog>
@@ -162,22 +156,22 @@ export default function UsersPage() {
                               <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => setUserToUpdateRole(user.id)}
-                                disabled={user.id === user.id}
+                                onClick={() => setUserToUpdateRole(profile.id)}
+                                disabled={profile.id === user?.id}
                               >
-                                {user.role === 'admin' ? 'Quitar admin' : 'Hacer admin'}
+                                {profile.role === 'admin' ? 'Quitar admin' : 'Hacer admin'}
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>
-                                  {user.role === 'admin' 
+                                  {profile.role === 'admin' 
                                     ? '¿Quitar permisos de administrador?' 
                                     : '¿Convertir en administrador?'
                                   }
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  {user.role === 'admin'
+                                  {profile.role === 'admin'
                                     ? 'Este usuario perderá todos los permisos de administración.'
                                     : 'Este usuario tendrá acceso completo a todas las funciones de administración.'
                                   }
@@ -186,7 +180,7 @@ export default function UsersPage() {
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => toggleUserRole(user.id, user.role)}
+                                  onClick={() => toggleUserRole(profile.id, profile.role)}
                                 >
                                   Confirmar
                                 </AlertDialogAction>
