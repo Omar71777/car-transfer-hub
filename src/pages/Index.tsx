@@ -5,13 +5,35 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, Calendar, CreditCard, BarChart2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
+  const { user, isAdmin } = useAuth();
+
   return (
     <MainLayout>
       <div className="py-6">
         <h1 className="text-3xl font-bold mb-2 text-ibiza-900">Bienvenido a Ibiza Transfer Hub</h1>
         <p className="text-muted-foreground mb-8">Gestiona tus transfers, gastos, ganancias y turnos desde un solo lugar.</p>
+        
+        {isAdmin && (
+          <Card className="glass-card mb-8 bg-amber-50 border-amber-200">
+            <CardContent className="pt-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-1">Acceso Administrador</h3>
+                  <p className="text-sm text-muted-foreground">Tienes acceso a funciones administrativas exclusivas.</p>
+                </div>
+                <Button asChild className="w-full sm:w-auto">
+                  <Link to="/admin/users">
+                    Gestionar Usuarios
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {/* Tarjeta de acceso rápido a Nuevos Transfers */}
