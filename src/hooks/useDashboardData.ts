@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Transfer, Expense } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { capitalizeFirstLetter } from '@/lib/utils';
 
 interface DashboardStats {
   totalTransfers: number;
@@ -28,43 +29,57 @@ export function useDashboardData() {
         // Load transfers from Supabase
         const { data: transfers, error: transfersError } = await supabase
           .from('transfers')
-          .select('id, price, commission')
+          .select('id, price, commission, origin, destination, collaborator')
           .order('date', { ascending: false });
           
         if (transfersError) throw transfersError;
         
+        // Capitalize text fields
+        const capitalizedTransfers = transfers.map(transfer => ({
+          ...transfer,
+          origin: capitalizeFirstLetter(transfer.origin),
+          destination: capitalizeFirstLetter(transfer.destination),
+          collaborator: capitalizeFirstLetter(transfer.collaborator),
+        }));
+        
         // Load expenses from Supabase
         const { data: expenses, error: expensesError } = await supabase
           .from('expenses')
-          .select('amount')
+          .select('amount, description')
           .order('date', { ascending: false });
           
         if (expensesError) throw expensesError;
         
+        // Capitalize expense descriptions
+        const capitalizedExpenses = expenses.map(expense => ({
+          ...expense,
+          description: capitalizeFirstLetter(expense.description),
+        }));
+        
         // Calculate total commissions (assume all are percentage-based since we don't have commission_type)
-        const totalCommissions = transfers.reduce((sum, transfer) => {
+        const totalCommissions = capitalizedTransfers.reduce((sum, transfer) => {
           // Default to percentage-based commission calculation
           const commissionAmount = (Number(transfer.price) * Number(transfer.commission)) / 100 || 0;
           return sum + commissionAmount;
         }, 0);
         
         // Add regular expenses and commissions
-        const expensesTotal = expenses.reduce((sum, expense) => 
+        const expensesTotal = capitalizedExpenses.reduce((sum, expense) => 
           sum + (Number(expense.amount) || 0), 0);
         const totalExpenses = expensesTotal + totalCommissions;
         
         // Calculate stats
         setStats({
-          totalTransfers: transfers.length,
-          totalIncome: transfers.reduce((sum, transfer) => 
+          totalTransfers: capitalizedTransfers.length,
+          totalIncome: capitalizedTransfers.reduce((sum, transfer) => 
             sum + (Number(transfer.price) || 0), 0),
           totalExpenses: totalExpenses,
-          netIncome: transfers.reduce((sum, transfer) => 
+          netIncome: capitalizedTransfers.reduce((sum, transfer) => 
             sum + (Number(transfer.price) || 0), 0) - totalExpenses
         });
       } catch (error: any) {
         console.error('Error loading dashboard data:', error);
-        toast.error(`Error al cargar los datos del dashboard: ${error.message}`);
+        toast.error(`${capitalizeFirstLetter('error al cargar los datos del dashboard')}: ${error.message}`);
       } finally {
         setLoading(false);
       }
