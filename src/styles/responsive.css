@@ -1,0 +1,11 @@
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .timetable-cell {
+    @apply p-0.5;
+  }
+  
+  .timetable-scroll {
+    max-height: calc(100vh - 280px);
+  }
+}

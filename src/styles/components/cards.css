@@ -1,0 +1,53 @@
+
+/* Enhanced component styles */
+.glass-card {
+  @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg transition-all hover:shadow-xl;
+}
+
+.dark .glass-card {
+  @apply bg-black/40 backdrop-blur-sm border border-white/10 shadow-lg transition-all hover:shadow-xl;
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  animation: shine 6s infinite linear;
+}
+
+.stat-card {
+  @apply glass-card shine-effect p-5 rounded-xl flex flex-col justify-between;
+  min-height: 140px;
+}
+
+/* Driver card styles */
+.driver-card {
+  @apply relative overflow-hidden rounded-lg border p-4 transition-all hover:shadow-md;
+}
+
+.driver-card-header {
+  @apply flex justify-between items-center mb-2;
+}
+
+.driver-card-body {
+  @apply space-y-1;
+}
+
+.driver-actions {
+  @apply flex gap-2;
+}

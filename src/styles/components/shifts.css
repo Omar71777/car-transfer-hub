@@ -1,0 +1,20 @@
+
+/* Enhanced shift calendar styling */
+.shift-full-day {
+  @apply bg-primary/20 text-primary border border-primary/30;
+}
+
+.shift-half-day {
+  @apply bg-secondary/20 text-secondary border border-secondary/30;
+}
+
+/* Animation for shift assignment */
+@keyframes pulse-border {
+  0% { border-color: rgba(var(--primary), 0.3); }
+  50% { border-color: rgba(var(--primary), 0.7); }
+  100% { border-color: rgba(var(--primary), 0.3); }
+}
+
+.pulse-border {
+  animation: pulse-border 2s infinite ease-in-out;
+}
