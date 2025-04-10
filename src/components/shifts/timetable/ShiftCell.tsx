@@ -58,7 +58,9 @@ export function ShiftCell({
             onMouseOver={() => onMouseOver(day, hour)}
           >
             <div className="w-full h-6 flex items-center justify-center">
-              {driverInfo && (hour === 12 || hour === 22 || hour === 10 || hour === driverInfo.type === 'half' ? hour : hour % 2 === 0) && (
+              {driverInfo && (hour === 12 || hour === 22 || hour === 10 || hour === 0 || 
+                (driverInfo.type === 'half' ? hour % 6 === 0 : hour % 8 === 0)
+              ) && (
                 <span className="text-xs truncate max-w-[60px]">
                   {driverInfo.name}
                 </span>
