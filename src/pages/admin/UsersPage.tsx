@@ -10,6 +10,7 @@ import { RefreshCw, UserPlus } from 'lucide-react';
 import { UserFormDialog } from '@/components/admin/UserFormDialog';
 import { PasswordResetDialog } from '@/components/admin/PasswordResetDialog';
 import { AddUserDialog } from '@/components/admin/AddUserDialog';
+import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
 import { UsersList } from '@/components/admin/UsersList';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
 
@@ -24,11 +25,16 @@ export default function UsersPage() {
     setIsPasswordDialogOpen, 
     addUserDialogOpen, 
     setAddUserDialogOpen, 
+    deleteConfirmOpen,
+    setDeleteConfirmOpen,
+    userToDelete,
     fetchUsers, 
     toggleUserRole, 
     updateUser, 
     resetPassword, 
     createUser, 
+    deleteUser,
+    confirmDeleteUser,
     openEditDialog, 
     openPasswordDialog 
   } = useAdminUsers();
@@ -82,6 +88,7 @@ export default function UsersPage() {
               onEditUser={openEditDialog} 
               onResetPassword={openPasswordDialog} 
               onToggleRole={toggleUserRole}
+              onDeleteUser={confirmDeleteUser}
               loading={loading}
             />
           </CardContent>
@@ -106,6 +113,13 @@ export default function UsersPage() {
         open={addUserDialogOpen} 
         onOpenChange={setAddUserDialogOpen} 
         onSubmit={createUser} 
+      />
+
+      <DeleteUserDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        user={userToDelete}
+        onConfirm={deleteUser}
       />
     </MainLayout>
   );

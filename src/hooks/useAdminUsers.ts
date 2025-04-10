@@ -20,6 +20,8 @@ export function useAdminUsers() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<Profile | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -115,6 +117,12 @@ export function useAdminUsers() {
 
       const cleanEmail = values.email.trim().toLowerCase();
       
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(cleanEmail)) {
+        toast.error('El formato del email no es válido');
+        return;
+      }
+      
       const { data, error } = await supabase.auth.admin.createUser({
         email: cleanEmail,
         password: values.password,
@@ -125,34 +133,67 @@ export function useAdminUsers() {
         }
       });
 
-      if (error) throw error;
-      
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            email: cleanEmail,
-            first_name: values.first_name,
-            last_name: values.last_name,
-            role: 'user',
-          });
-        
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-          toast.error(`Error al crear el perfil: ${profileError.message}`);
+      if (error) {
+        if (error.message.includes("security purposes") || error.status === 429) {
+          toast.error('Has intentado crear demasiados usuarios en poco tiempo. Por favor, espera unos minutos antes de intentarlo de nuevo.');
           return;
         }
-        
-        toast.success('Usuario creado con éxito');
-        setAddUserDialogOpen(false);
-        await fetchUsers();
+        throw error;
+      }
+      
+      if (data.user) {
+        try {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              email: cleanEmail,
+              first_name: values.first_name,
+              last_name: values.last_name,
+              role: 'user',
+            });
+          
+          if (profileError) {
+            console.error('Error creating profile:', profileError);
+            toast.error(`Error al crear el perfil: ${profileError.message}`);
+            return;
+          }
+          
+          toast.success('Usuario creado con éxito');
+          setAddUserDialogOpen(false);
+          await fetchUsers();
+        } catch (profileError: any) {
+          console.error('Error creating profile:', profileError);
+          toast.error(`Error al crear el perfil: ${profileError.message}`);
+        }
       }
     } catch (error: any) {
       console.error('Error creating user:', error);
       toast.error(`Error al crear el usuario: ${error.message}`);
     }
   }, [fetchUsers]);
+
+  const deleteUser = useCallback(async (userId: string) => {
+    try {
+      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+      
+      if (authError) throw authError;
+      
+      setUsers(users => users.filter(u => u.id !== userId));
+      
+      toast.success('Usuario eliminado con éxito');
+      setDeleteConfirmOpen(false);
+      setUserToDelete(null);
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      toast.error(`Error al eliminar el usuario: ${error.message}`);
+    }
+  }, []);
+
+  const confirmDeleteUser = useCallback((user: Profile) => {
+    setUserToDelete(user);
+    setDeleteConfirmOpen(true);
+  }, []);
 
   const openEditDialog = useCallback((user: Profile) => {
     setEditingUser(user);
@@ -174,11 +215,16 @@ export function useAdminUsers() {
     setIsPasswordDialogOpen,
     addUserDialogOpen,
     setAddUserDialogOpen,
+    deleteConfirmOpen,
+    setDeleteConfirmOpen,
+    userToDelete,
     fetchUsers,
     toggleUserRole,
     updateUser,
     resetPassword,
     createUser,
+    deleteUser,
+    confirmDeleteUser,
     openEditDialog,
     openPasswordDialog,
   };

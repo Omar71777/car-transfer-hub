@@ -12,7 +12,7 @@ import { UserPlus } from 'lucide-react';
 const userFormSchema = z.object({
   first_name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   last_name: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
-  email: z.string().email("Ingresa un email válido"),
+  email: z.string().email("Ingresa un email válido").transform(email => email.trim().toLowerCase()),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
@@ -42,7 +42,11 @@ export function AddUserDialog({ open, onOpenChange, onSubmit }: AddUserDialogPro
   }, [open, form]);
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    await onSubmit(values);
+    try {
+      await onSubmit(values);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   });
 
   return (
@@ -94,7 +98,11 @@ export function AddUserDialog({ open, onOpenChange, onSubmit }: AddUserDialogPro
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="correo@ejemplo.com" {...field} />
+                    <Input 
+                      type="email" 
+                      placeholder="correo@ejemplo.com" 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,9 +127,12 @@ export function AddUserDialog({ open, onOpenChange, onSubmit }: AddUserDialogPro
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button 
+                type="submit" 
+                disabled={form.formState.isSubmitting}
+              >
                 <UserPlus className="h-4 w-4 mr-2" />
-                Crear Usuario
+                {form.formState.isSubmitting ? 'Creando...' : 'Crear Usuario'}
               </Button>
             </DialogFooter>
           </form>

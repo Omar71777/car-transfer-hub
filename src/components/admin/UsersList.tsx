@@ -2,7 +2,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Shield, UserCircle, Edit, Key } from 'lucide-react';
+import { Shield, UserCircle, Edit, Key, Trash } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { 
@@ -26,6 +26,7 @@ interface UsersListProps {
   onEditUser: (user: Profile) => void;
   onResetPassword: (user: Profile) => void;
   onToggleRole: (userId: string, currentRole: 'admin' | 'user') => void;
+  onDeleteUser: (user: Profile) => void;
   loading: boolean;
 }
 
@@ -35,6 +36,7 @@ export function UsersList({
   onEditUser, 
   onResetPassword, 
   onToggleRole,
+  onDeleteUser,
   loading
 }: UsersListProps) {
   return (
@@ -143,6 +145,17 @@ export function UsersList({
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                  
+                  {profile.id !== currentUserId && (
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => onDeleteUser(profile)}
+                    >
+                      <Trash className="h-4 w-4 mr-1" />
+                      Eliminar
+                    </Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
