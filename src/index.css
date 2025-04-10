@@ -80,6 +80,15 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
     
+    --sidebar-background: 222.2 47.4% 11.2%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 199 89% 48%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 212.7 26.8% 83.9%;
+    
     /* Shift colors dark mode */
     --shift-24h: 250 60% 60%;
     --shift-24h-light: 250 50% 25%;
@@ -90,18 +99,31 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-theme duration-200;
   }
 
   body {
     @apply bg-background text-foreground;
+    @apply animate-theme-transition;
+  }
+  
+  body:not(.dark) {
     background-image: linear-gradient(to bottom right, rgba(240, 249, 255, 0.8), rgba(224, 242, 254, 0.8));
+    background-attachment: fixed;
+  }
+  
+  body.dark {
+    background-image: linear-gradient(to bottom right, rgba(13, 17, 23, 0.8), rgba(22, 27, 34, 0.8));
     background-attachment: fixed;
   }
 }
 
 .glass-card {
   @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg transition-all hover:shadow-xl;
+}
+
+.dark .glass-card {
+  @apply bg-black/40 backdrop-blur-sm border border-white/10 shadow-lg transition-all hover:shadow-xl;
 }
 
 .shine-effect {
