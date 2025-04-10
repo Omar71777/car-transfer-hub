@@ -99,13 +99,28 @@ export const useTransferFormNavigation = (
         try {
           console.log('Form data before processing:', data);
           
-          // Set default values for conditional fields
-          if (data.serviceType === 'dispo' && (!data.destination || data.destination.trim() === '')) {
-            data.destination = 'N/A'; // Default value for dispo
-          }
-          
-          if (data.serviceType === 'transfer' && (!data.hours || data.hours.trim() === '')) {
-            data.hours = null; // Not applicable for transfers
+          // Ensure required fields for specific service types
+          if (data.serviceType === 'dispo') {
+            // For dispositions, we need hours and origin
+            if (!data.hours || data.hours.trim() === '') {
+              toast.error('Las horas son requeridas para disposiciones');
+              return;
+            }
+            
+            // Set default destination for dispo if empty
+            if (!data.destination || data.destination.trim() === '') {
+              data.destination = 'N/A';
+            }
+          } else if (data.serviceType === 'transfer') {
+            // For transfers, we need origin and destination
+            if (!data.origin || data.origin.trim() === '') {
+              toast.error('El origen es requerido para transfers');
+              return;
+            }
+            if (!data.destination || data.destination.trim() === '') {
+              toast.error('El destino es requerido para transfers');
+              return;
+            }
           }
           
           // Process the form data
@@ -124,13 +139,13 @@ export const useTransferFormNavigation = (
           
           console.log('Submitting form with processed data:', processedValues);
           onSubmit(processedValues);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error during form submission:', error);
-          toast.error('Error al procesar el formulario');
+          toast.error(`Error al procesar el formulario: ${error.message || 'Error desconocido'}`);
         }
       };
       
-      // Execute the submit handler
+      // Execute the submit handler with the form data
       handleSubmit(submitHandler)();
       return;
     }
@@ -148,7 +163,7 @@ export const useTransferFormNavigation = (
       console.log('Validation errors:', errors);
       toast.error('Por favor complete todos los campos requeridos antes de continuar');
     }
-  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, getValues, setCurrentStep, errors, getNextStepIndex, user, setValue, serviceType]);
+  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, errors, getNextStepIndex, user, setValue, serviceType, getValues]);
 
   // Handle previous step
   const handlePrevious = useCallback(() => {

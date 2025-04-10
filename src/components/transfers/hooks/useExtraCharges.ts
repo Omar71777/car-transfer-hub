@@ -12,21 +12,21 @@ export function useExtraCharges(initialCharges: Partial<ExtraCharge>[] = []) {
   
   const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(processedInitialCharges);
 
-  const handleAddExtraCharge = useCallback((charges = extraCharges) => {
+  const handleAddExtraCharge = useCallback(() => {
     console.log('Adding new extra charge');
-    const newCharges = [...charges, { id: uuidv4(), name: '', price: '' }];
+    const newCharges = [...extraCharges, { id: uuidv4(), name: '', price: '' }];
     setExtraCharges(newCharges);
     return newCharges;
   }, [extraCharges]);
 
-  const handleRemoveExtraCharge = useCallback((index: number, charges = extraCharges) => {
+  const handleRemoveExtraCharge = useCallback((index: number) => {
     console.log('Removing extra charge at index:', index);
-    if (index < 0 || index >= charges.length) {
+    if (index < 0 || index >= extraCharges.length) {
       console.error('Invalid index for removing extra charge:', index);
-      return charges;
+      return extraCharges;
     }
     
-    const newExtraCharges = [...charges];
+    const newExtraCharges = [...extraCharges];
     newExtraCharges.splice(index, 1);
     setExtraCharges(newExtraCharges);
     return newExtraCharges;
@@ -35,22 +35,21 @@ export function useExtraCharges(initialCharges: Partial<ExtraCharge>[] = []) {
   const handleExtraChargeChange = useCallback((
     index: number, 
     field: keyof ExtraCharge, 
-    value: any, 
-    charges = extraCharges
+    value: any
   ) => {
     console.log(`Updating extra charge at index ${index}, field: ${field}, value: ${value}`);
-    if (index < 0 || index >= charges.length) {
+    if (index < 0 || index >= extraCharges.length) {
       console.error('Invalid index for updating extra charge:', index);
-      return charges;
+      return extraCharges;
     }
     
-    const newExtraCharges = [...charges];
+    const newExtraCharges = [...extraCharges];
     (newExtraCharges[index] as any)[field] = value;
     setExtraCharges(newExtraCharges);
     return newExtraCharges;
   }, [extraCharges]);
 
-  // New method to process extra charges for submission
+  // Process extra charges for submission
   const processExtraChargesForSubmission = useCallback(() => {
     return extraCharges
       .filter(charge => charge.name && charge.price && charge.name.trim() !== '')

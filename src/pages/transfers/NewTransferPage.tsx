@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
@@ -80,8 +81,20 @@ const NewTransferPage = () => {
       );
       
       // Set defaults for conditional fields
-      if (values.serviceType === 'dispo' && (!values.destination || values.destination.trim() === '')) {
-        values.destination = 'N/A';
+      if (values.serviceType === 'dispo') {
+        if (!values.destination || values.destination.trim() === '') {
+          values.destination = 'N/A';
+        }
+        
+        // Make sure hours is a number
+        if (values.hours && typeof values.hours === 'string') {
+          values.hours = values.hours.trim();
+        }
+      } else if (values.serviceType === 'transfer') {
+        // For transfers, hours is optional
+        if (!values.hours || values.hours.trim() === '') {
+          values.hours = null;
+        }
       }
       
       console.log('Creating transfer with processed values:', values);

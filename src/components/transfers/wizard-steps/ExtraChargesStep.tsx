@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { PackagePlus } from 'lucide-react';
@@ -35,13 +36,13 @@ export function ExtraChargesStep({ clients, collaborators, formState }: ExtraCha
   };
 
   const handleRemoveCharge = (index: number) => {
-    const newExtraCharges = handleRemoveExtraCharge(index, extraCharges);
+    const newExtraCharges = handleRemoveExtraCharge(index);
     setValue('extraCharges', newExtraCharges);
     console.log('Removed charge at index', index, 'Updated charges:', newExtraCharges);
   };
 
   const handleUpdateCharge = (index: number, field: string, value: string) => {
-    const newExtraCharges = handleExtraChargeChange(index, field as any, value, extraCharges);
+    const newExtraCharges = handleExtraChargeChange(index, field as any, value);
     setValue('extraCharges', newExtraCharges);
     console.log(`Updated ${field} to ${value} for charge at index ${index}`);
   };
