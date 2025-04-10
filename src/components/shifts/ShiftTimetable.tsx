@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table } from '@/components/ui/table';
 import { Shift, Driver } from '@/types';
@@ -56,7 +56,8 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     getDriverDetails
   } = useShiftTimetable(shifts, drivers, onAddShift, onDeleteShift);
 
-  const handleExportShifts = () => {
+  // Memoized export handler to avoid unnecessary re-renders
+  const handleExportShifts = useCallback(() => {
     const exportData = prepareShiftsForExport(shifts, drivers, startDate, endDate);
     
     if (exportData.length === 0) {
@@ -68,7 +69,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     const filename = `turnos_${startDateFormatted}_${endDateFormatted}.csv`;
     
     downloadCSV(exportData, filename);
-  };
+  }, [shifts, drivers, startDate, endDate]);
 
   return (
     <Card className="glass-card">
@@ -148,7 +149,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
           onResetFilters={resetFilters}
         />
         
-        <div className="border rounded-md mt-4 overflow-auto max-h-[calc(100vh-320px)]">
+        <div className="border rounded-md mt-4 overflow-auto timetable-scroll max-h-[calc(100vh-320px)]">
           <Table>
             <TimetableHeader hours={hours} weekDays={weekDays} />
             <TimetableBody 

@@ -50,11 +50,22 @@ export function getShiftForTimeSlot(
 // Function to determine style for shift based on its type
 export function getShiftStyle(type: 'half' | 'full' | 'free') {
   if (type === 'free') {
-    return 'bg-green-600 bg-opacity-90'; // Green for free days
+    return 'bg-green-600 bg-opacity-90 ring-green-400/50'; // Green for free days
   } else if (type === 'full') {
-    return 'bg-purple-600 bg-opacity-90'; // Purple for 24h shifts
+    return 'bg-purple-600 bg-opacity-90 ring-purple-400/50'; // Purple for 24h shifts
   } else {
-    return 'bg-blue-600 bg-opacity-90'; // Blue for 12h shifts
+    return 'bg-blue-600 bg-opacity-90 ring-blue-400/50'; // Blue for 12h shifts
+  }
+}
+
+// Get CSS variables for a specific shift type
+export function getShiftColorVar(type: 'half' | 'full' | 'free') {
+  if (type === 'free') {
+    return 'bg-[hsl(var(--shift-free))]'; // Using CSS variables for better theme support
+  } else if (type === 'full') {
+    return 'bg-[hsl(var(--shift-24h))]';
+  } else {
+    return 'bg-[hsl(var(--shift-12h))]';
   }
 }
 
@@ -67,4 +78,18 @@ export function getShiftHours(startHour: number, type: 'half' | 'full' | 'free')
   }
   
   return `${startHour}:00 - ${endHour}:00`;
+}
+
+// Get localized shift type for display
+export function getShiftTypeLabel(type: 'half' | 'full' | 'free'): string {
+  switch (type) {
+    case 'half':
+      return 'Turno 12h';
+    case 'full':
+      return 'Turno 24h';
+    case 'free':
+      return 'Día libre';
+    default:
+      return 'Turno';
+  }
 }

@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
-import { getShiftStyle } from './ShiftUtils';
+import { getShiftColorVar, getShiftStyle, getShiftTypeLabel } from './ShiftUtils';
 
 interface ShiftCellProps {
   day: Date;
@@ -21,7 +21,7 @@ interface ShiftCellProps {
   isInSelectionRange: boolean;
 }
 
-export function ShiftCell({ 
+function ShiftCellComponent({ 
   day, 
   hour, 
   driverInfo, 
@@ -37,7 +37,7 @@ export function ShiftCell({
       const shiftStyleClass = driverInfo.type ? getShiftStyle(driverInfo.type) : '';
       return `${shiftStyleClass} text-white ring-offset-background ring-offset-1 hover:opacity-100 hover:ring-2 hover:ring-primary/50 hover:ring-inset transition-all`;
     } else if (isInSelectionRange) {
-      return 'bg-primary/20 hover:bg-primary/30 transition-colors';
+      return 'bg-primary/20 hover:bg-primary/30 transition-colors animate-pulse';
     } else {
       return 'hover:bg-muted/50 transition-colors';
     }
@@ -65,12 +65,13 @@ export function ShiftCell({
       <Tooltip delayDuration={300}>
         <TooltipTrigger asChild>
           <TableCell 
-            className={`p-0.5 sm:p-1 cursor-pointer relative ${getCellClasses()} ${
+            className={`p-0.5 sm:p-1 cursor-pointer relative timetable-cell ${getCellClasses()} ${
               isDragging ? 'cursor-grabbing' : ''
             }`}
             onClick={() => onClick(day, hour)}
             onMouseDown={() => onMouseDown(day, hour)}
             onMouseOver={() => onMouseOver(day, hour)}
+            aria-label={`Celda para ${formattedDate} a las ${formattedTime}`}
           >
             <div className="w-full h-7 flex items-center justify-center">
               {driverInfo && shouldShowDriverName() && (
@@ -85,9 +86,11 @@ export function ShiftCell({
           <div className="text-xs space-y-1">
             <div className="font-medium">{formattedDate} - {formattedTime}</div>
             {driverInfo && (
-              <div className="font-semibold">
-                {driverInfo.name} - {driverInfo.type === 'half' ? 'Turno 12h' : 
-                                    driverInfo.type === 'free' ? 'Día libre' : 'Turno 24h'}
+              <div className="space-y-1">
+                <div className="font-semibold flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${getShiftColorVar(driverInfo.type || 'half')}`}></span>
+                  {driverInfo.name} - {driverInfo.type ? getShiftTypeLabel(driverInfo.type) : 'Turno'}
+                </div>
               </div>
             )}
             {!driverInfo && (
@@ -99,3 +102,6 @@ export function ShiftCell({
     </TooltipProvider>
   );
 }
+
+// Memoize the component to avoid unnecessary re-renders
+export const ShiftCell = memo(ShiftCellComponent);

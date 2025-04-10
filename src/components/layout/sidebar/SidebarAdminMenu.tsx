@@ -10,9 +10,23 @@ import {
   SidebarMenuItem, 
   SidebarMenuButton
 } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
 export const SidebarAdminMenu: React.FC = () => {
   const location = useLocation();
+
+  // Helper to determine if a path is active
+  const isActive = (path: string) => location.pathname.includes(path);
+
+  // Get class names for menu buttons based on active state
+  const getMenuButtonClass = (path: string) => {
+    return cn(
+      "transition-colors duration-200",
+      isActive(path) 
+        ? "text-sidebar-primary font-medium bg-[hsl(var(--sidebar-selected))]" 
+        : "hover:bg-[hsl(var(--sidebar-hover))]"
+    );
+  };
 
   return (
     <SidebarGroup>
@@ -21,7 +35,7 @@ export const SidebarAdminMenu: React.FC = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              className={location.pathname.includes('/admin/users') ? 'text-primary' : undefined}
+              className={getMenuButtonClass('/admin/users')}
               asChild
             >
               <Link to="/admin/users">

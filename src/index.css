@@ -35,20 +35,30 @@
 
     --radius: 0.75rem;
 
+    /* Sidebar states */
     --sidebar-background: 210 100% 50%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 0 0% 100%;
     --sidebar-primary-foreground: 199 89% 48%;
     --sidebar-accent: 210 100% 95%;
     --sidebar-accent-foreground: 199 89% 48%;
+    --sidebar-hover: 210 100% 40%;
+    --sidebar-selected: 210 100% 35%;
     --sidebar-border: 210 100% 90%;
     --sidebar-ring: 199 89% 48%;
     
-    /* Shift colors */
+    /* Shift colors with better contrast */
     --shift-24h: 250 70% 50%;
     --shift-24h-light: 250 70% 95%;
     --shift-12h: 200 100% 45%;
     --shift-12h-light: 200 100% 95%;
+    --shift-free: 142 70% 45%;
+    --shift-free-light: 142 70% 95%;
+    
+    /* Visual state colors for menus and items */
+    --item-unselected: 215 10% 65%;
+    --item-selected: 210 100% 50%; 
+    --item-hover: 210 90% 60%;
   }
 
   .dark {
@@ -80,20 +90,30 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
     
+    /* Sidebar states - dark mode */
     --sidebar-background: 222.2 47.4% 11.2%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 210 40% 98%;
     --sidebar-primary-foreground: 199 89% 48%;
     --sidebar-accent: 217.2 32.6% 17.5%;
     --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-hover: 210 40% 20%;
+    --sidebar-selected: 210 40% 15%;
     --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 212.7 26.8% 83.9%;
     
-    /* Shift colors dark mode */
+    /* Shift colors - dark mode with better contrast */
     --shift-24h: 250 60% 60%;
     --shift-24h-light: 250 50% 25%;
     --shift-12h: 200 70% 55%;
     --shift-12h-light: 200 60% 25%;
+    --shift-free: 142 70% 50%;
+    --shift-free-light: 142 60% 25%;
+    
+    /* Visual state colors for dark mode */
+    --item-unselected: 215 10% 55%;
+    --item-selected: 199 89% 48%;
+    --item-hover: 213 94% 68%;
   }
 }
 
@@ -118,6 +138,7 @@
   }
 }
 
+/* Enhanced component styles */
 .glass-card {
   @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg transition-all hover:shadow-xl;
 }
@@ -174,7 +195,7 @@
   100% { background-position: 0% 50%; }
 }
 
-/* Shift calendar styling */
+/* Enhanced shift calendar styling */
 .shift-full-day {
   @apply bg-primary/20 text-primary border border-primary/30;
 }
@@ -183,7 +204,7 @@
   @apply bg-secondary/20 text-secondary border border-secondary/30;
 }
 
-/* Driver management styling */
+/* Enhanced driver management styling */
 .driver-card {
   @apply relative overflow-hidden rounded-lg border p-4 transition-all hover:shadow-md;
 }
@@ -209,4 +230,28 @@
 
 .pulse-border {
   animation: pulse-border 2s infinite ease-in-out;
+}
+
+/* Sidebar menu state styles */
+.sidebar-menu-item {
+  @apply transition-colors duration-200;
+}
+
+.sidebar-menu-item:hover {
+  @apply bg-sidebar-hover text-sidebar-foreground;
+}
+
+.sidebar-menu-item.selected {
+  @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .timetable-cell {
+    @apply p-0.5;
+  }
+  
+  .timetable-scroll {
+    max-height: calc(100vh - 280px);
+  }
 }

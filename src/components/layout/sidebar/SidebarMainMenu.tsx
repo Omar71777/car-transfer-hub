@@ -10,15 +10,32 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton
 } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
 export const SidebarMainMenu: React.FC = () => {
   const location = useLocation();
+
+  // Helper to determine if a path is active
+  const isActive = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true;
+    return path !== '/' && location.pathname.includes(path);
+  };
+
+  // Get class names for menu buttons based on active state
+  const getMenuButtonClass = (path: string) => {
+    return cn(
+      "transition-colors duration-200",
+      isActive(path) 
+        ? "text-sidebar-primary font-medium bg-[hsl(var(--sidebar-selected))]" 
+        : "hover:bg-[hsl(var(--sidebar-hover))]"
+    );
+  };
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton
-          className={location.pathname === '/' ? 'text-primary' : undefined}
+          className={getMenuButtonClass('/')}
           asChild
         >
           <Link to="/">
@@ -30,7 +47,7 @@ export const SidebarMainMenu: React.FC = () => {
 
       <SidebarMenuItem>
         <SidebarMenuButton
-          className={location.pathname.includes('/transfers') ? 'text-primary' : undefined}
+          className={getMenuButtonClass('/transfers')}
           asChild
         >
           <Link to="/transfers">
@@ -42,7 +59,7 @@ export const SidebarMainMenu: React.FC = () => {
 
       <SidebarMenuItem>
         <SidebarMenuButton
-          className={location.pathname.includes('/expenses') ? 'text-primary' : undefined}
+          className={getMenuButtonClass('/expenses')}
           asChild
         >
           <Link to="/expenses">
@@ -54,7 +71,7 @@ export const SidebarMainMenu: React.FC = () => {
 
       <SidebarMenuItem>
         <SidebarMenuButton
-          className={location.pathname.includes('/profits') ? 'text-primary' : undefined}
+          className={getMenuButtonClass('/profits')}
           asChild
         >
           <Link to="/profits">
@@ -66,7 +83,7 @@ export const SidebarMainMenu: React.FC = () => {
 
       <SidebarMenuItem>
         <SidebarMenuButton
-          className={location.pathname.includes('/shifts') ? 'text-primary' : undefined}
+          className={getMenuButtonClass('/shifts')}
           asChild
         >
           <Link to="/shifts">
@@ -78,7 +95,7 @@ export const SidebarMainMenu: React.FC = () => {
 
       <SidebarMenuItem>
         <SidebarMenuButton
-          className={location.pathname.includes('/collaborators') ? 'text-primary' : undefined}
+          className={getMenuButtonClass('/collaborators')}
           asChild
         >
           <Link to="/collaborators">
@@ -88,14 +105,24 @@ export const SidebarMainMenu: React.FC = () => {
         </SidebarMenuButton>
       </SidebarMenuItem>
 
-      {/* Reports Menu - Moved from Admin menu */}
+      {/* Reports Menu - With improved visual state styling */}
       <SidebarMenuItem>
-        <SidebarMenuButton>
+        <SidebarMenuButton 
+          className={cn(
+            "transition-colors duration-200",
+            isActive('/admin/reports') 
+              ? "text-sidebar-primary font-medium bg-[hsl(var(--sidebar-selected))]" 
+              : "hover:bg-[hsl(var(--sidebar-hover))]"
+          )}
+        >
           <span>Reportes</span>
         </SidebarMenuButton>
         <SidebarMenuSub>
           <SidebarMenuSubItem>
-            <SidebarMenuSubButton asChild>
+            <SidebarMenuSubButton 
+              className={getMenuButtonClass('/admin/reports/transfers')}
+              asChild
+            >
               <Link to="/admin/reports/transfers">
                 <FileSpreadsheet size={20} />
                 <span>Transfers</span>
@@ -103,7 +130,10 @@ export const SidebarMainMenu: React.FC = () => {
             </SidebarMenuSubButton>
           </SidebarMenuSubItem>
           <SidebarMenuSubItem>
-            <SidebarMenuSubButton asChild>
+            <SidebarMenuSubButton 
+              className={getMenuButtonClass('/admin/reports/analytics')}
+              asChild
+            >
               <Link to="/admin/reports/analytics">
                 <BarChart3 size={20} />
                 <span>Análisis</span>
