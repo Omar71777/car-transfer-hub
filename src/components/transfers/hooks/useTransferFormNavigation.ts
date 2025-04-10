@@ -1,29 +1,20 @@
 
-import { useState, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { TransferFormValues } from '../schema/transferSchema';
+import { useCallback } from 'react';
+import { useTransferFormWithFormContext } from '../context/TransferFormContext';
 import { toast } from 'sonner';
 
 export const useTransferFormNavigation = (
-  activeSteps: Array<{ id: string; title: string; component: React.ComponentType<any> }>,
   onSubmit: (values: any) => void
 ) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [showCollaboratorStep, setShowCollaboratorStep] = useState(true);
-  
-  // Safely get form methods - may be null during initial render
-  const methods = useFormContext<TransferFormValues>();
-  
-  // Add logging to track step progression
-  useEffect(() => {
-    if (activeSteps[currentStep]) {
-      console.log('Current step:', currentStep, activeSteps[currentStep]?.id);
-      // Only try to log form values if methods is available
-      if (methods) {
-        console.log('Form values:', methods.getValues());
-      }
-    }
-  }, [currentStep, activeSteps, methods]);
+  const { 
+    currentStep, 
+    setCurrentStep, 
+    activeSteps,
+    trigger,
+    getValues,
+    handleSubmit,
+    formState: { errors }
+  } = useTransferFormWithFormContext();
   
   // Get fields that should be validated for each step
   const getFieldsForStep = (stepId: string): string[] => {
@@ -34,7 +25,8 @@ export const useTransferFormNavigation = (
         return ['date']; // time is optional
       case 'location':
         // For location, we need different validations based on service type
-        if (methods?.getValues('serviceType') === 'transfer') {
+        const serviceType = getValues('serviceType');
+        if (serviceType === 'transfer') {
           return ['serviceType', 'origin', 'destination'];
         }
         return ['serviceType', 'origin', 'hours'];
@@ -50,26 +42,13 @@ export const useTransferFormNavigation = (
   };
 
   // Handle next step
-  const handleNext = async () => {
-    if (!methods) {
-      console.error('Form methods not available');
-      toast.error('Error al procesar el formulario. Inténtelo de nuevo.');
-      return;
-    }
-    
+  const handleNext = useCallback(async () => {
     console.log('Attempting to move to next step from:', activeSteps[currentStep]?.id);
     
-    // If on pricing step and user selects "No collaborator", skip the commissions
-    if (activeSteps[currentStep]?.id === 'pricing') {
-      const hasCollaborator = methods.getValues('collaborator') !== '' && 
-                          methods.getValues('collaborator') !== 'none';
-      setShowCollaboratorStep(hasCollaborator);
-    }
-
     // If this is the last step, submit the form
     if (currentStep === activeSteps.length - 1) {
       console.log('Final step reached - submitting form');
-      methods.handleSubmit((data) => {
+      handleSubmit((data) => {
         // Process the form data
         const processedValues = {
           ...data,
@@ -94,28 +73,24 @@ export const useTransferFormNavigation = (
     console.log('Validating fields for current step:', stepFields);
     
     // If there are no fields to validate for this step, or validation passes, proceed
-    if (stepFields.length === 0 || await methods.trigger(stepFields as any)) {
+    if (stepFields.length === 0 || await trigger(stepFields as any)) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
     } else {
-      console.log('Validation errors:', methods.formState.errors);
+      console.log('Validation errors:', errors);
       toast.error('Por favor complete todos los campos requeridos antes de continuar');
     }
-  };
+  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, getValues, setCurrentStep, errors]);
 
   // Handle previous step
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
       window.scrollTo(0, 0);
     }
-  };
+  }, [currentStep, setCurrentStep]);
 
   return {
-    currentStep,
-    setCurrentStep,
-    showCollaboratorStep,
-    setShowCollaboratorStep,
     handleNext,
     handlePrevious
   };

@@ -12,7 +12,7 @@ interface TransferFormNavigationProps {
 export function TransferFormNavigation({ onPrevious, onNext }: TransferFormNavigationProps) {
   const { currentStep, activeSteps } = useTransferForm();
   const isLastStep = currentStep === activeSteps.length - 1;
-
+  
   return (
     <div className="flex justify-between mt-8">
       <Button

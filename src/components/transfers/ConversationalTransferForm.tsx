@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
@@ -84,44 +84,33 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     : steps.filter(step => step.id !== 'collaborator');
 
   return (
-    <FormProvider {...methods}>
-      <TransferFormProvider 
-        methods={methods}
-        currentStep={currentStep}
-        setCurrentStep={setCurrentStep}
-        activeSteps={activeSteps}
-        showCollaboratorStep={showCollaboratorStep}
-        setShowCollaboratorStep={setShowCollaboratorStep}
-      >
-        <Card className="glass-card w-full max-w-2xl mx-auto">
-          <CardContent className="p-4 md:p-6">
-            <StepProgressBar />
+    <TransferFormProvider 
+      methods={methods}
+      currentStep={currentStep}
+      setCurrentStep={setCurrentStep}
+      activeSteps={activeSteps}
+      showCollaboratorStep={showCollaboratorStep}
+      setShowCollaboratorStep={setShowCollaboratorStep}
+    >
+      <Card className="glass-card w-full max-w-2xl mx-auto">
+        <CardContent className="p-4 md:p-6">
+          <StepProgressBar />
 
-            <StepRenderer 
-              clients={clients} 
-              collaborators={collaborators} 
-            />
+          <StepRenderer 
+            clients={clients} 
+            collaborators={collaborators} 
+          />
 
-            <FormNavigationContainer 
-              activeSteps={activeSteps}
-              onSubmit={onSubmit}
-            />
-          </CardContent>
-        </Card>
-      </TransferFormProvider>
-    </FormProvider>
+          <FormNavigationContainer onSubmit={onSubmit} />
+        </CardContent>
+      </Card>
+    </TransferFormProvider>
   );
 }
 
 // Separate component to ensure form context is fully initialized
-const FormNavigationContainer = ({ 
-  activeSteps, 
-  onSubmit 
-}: { 
-  activeSteps: any[],
-  onSubmit: (values: any) => void
-}) => {
-  const { handleNext, handlePrevious } = useTransferFormNavigation(activeSteps, onSubmit);
+const FormNavigationContainer = ({ onSubmit }: { onSubmit: (values: any) => void }) => {
+  const { handleNext, handlePrevious } = useTransferFormNavigation(onSubmit);
   
   return (
     <TransferFormNavigation 

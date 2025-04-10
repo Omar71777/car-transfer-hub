@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, ReactNode, useRef, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { FormProvider, UseFormReturn, useFormContext } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
 
@@ -44,9 +44,11 @@ export const TransferFormProvider: React.FC<TransferFormProviderProps> = ({
   };
 
   return (
-    <TransferFormContext.Provider value={contextValue}>
-      {children}
-    </TransferFormContext.Provider>
+    <FormProvider {...methods}>
+      <TransferFormContext.Provider value={contextValue}>
+        {children}
+      </TransferFormContext.Provider>
+    </FormProvider>
   );
 };
 
@@ -57,4 +59,15 @@ export const useTransferForm = () => {
     throw new Error('useTransferForm must be used within a TransferFormProvider');
   }
   return context;
+};
+
+// Helper hook to get both form context and transfer form context together
+export const useTransferFormWithFormContext = () => {
+  const formContext = useFormContext<TransferFormValues>();
+  const transferFormContext = useTransferForm();
+  
+  return { 
+    ...formContext,
+    ...transferFormContext
+  };
 };
