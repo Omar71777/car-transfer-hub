@@ -13,16 +13,21 @@ import { LocationFields } from './form-fields/LocationFields';
 import { PricingFields } from './form-fields/PricingFields';
 import { CollaboratorField } from './form-fields/CollaboratorField';
 import { PaymentStatusField } from './form-fields/PaymentStatusField';
-
 interface TransferFormProps {
   onSubmit: (values: any) => void;
   initialValues?: Transfer;
   isEditing?: boolean;
 }
+export function TransferForm({
+  onSubmit,
+  initialValues,
+  isEditing = false
+}: TransferFormProps) {
+  const {
+    collaborators,
+    loading: loadingCollaborators
+  } = useCollaborators();
 
-export function TransferForm({ onSubmit, initialValues, isEditing = false }: TransferFormProps) {
-  const { collaborators, loading: loadingCollaborators } = useCollaborators();
-  
   // Convert numeric values to string for the form
   const getDefaultValues = () => {
     if (initialValues) {
@@ -30,10 +35,9 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
         ...initialValues,
         price: initialValues.price.toString(),
         commission: initialValues.commission.toString(),
-        paymentStatus: initialValues.paymentStatus as 'paid' | 'pending',
+        paymentStatus: initialValues.paymentStatus as 'paid' | 'pending'
       };
     }
-    
     return {
       date: new Date().toISOString().split('T')[0],
       time: '',
@@ -42,39 +46,34 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
       price: '',
       collaborator: '',
       commission: '',
-      paymentStatus: 'pending' as const,
+      paymentStatus: 'pending' as const
     };
   };
-
   const form = useForm<TransferFormValues>({
     resolver: zodResolver(transferSchema),
-    defaultValues: getDefaultValues(),
+    defaultValues: getDefaultValues()
   });
-
   function handleSubmit(values: TransferFormValues) {
     // Convertir los valores string a número donde corresponda
     const processedValues = {
       ...values,
       price: Number(values.price),
-      commission: Number(values.commission),
+      commission: Number(values.commission)
     };
-    
     onSubmit(processedValues);
     if (!isEditing) {
       form.reset();
     }
     toast.success(isEditing ? 'Transfer actualizado con éxito' : 'Transfer creado con éxito');
   }
-
-  return (
-    <Card className="glass-card w-full max-w-2xl mx-auto">
+  return <Card className="glass-card w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>{isEditing ? 'Editar Transfer' : 'Nuevo Transfer'}</CardTitle>
         <CardDescription>
           Completa todos los campos para {isEditing ? 'actualizar el' : 'registrar un nuevo'} transfer.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="my-0 mx-0 px-0 py-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <DateTimeFields form={form} />
@@ -89,6 +88,5 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
           </form>
         </Form>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 }
