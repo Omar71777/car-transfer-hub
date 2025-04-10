@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -13,11 +14,13 @@ import { LocationFields } from './form-fields/LocationFields';
 import { PricingFields } from './form-fields/PricingFields';
 import { CollaboratorField } from './form-fields/CollaboratorField';
 import { PaymentStatusField } from './form-fields/PaymentStatusField';
+
 interface TransferFormProps {
   onSubmit: (values: any) => void;
   initialValues?: Transfer;
   isEditing?: boolean;
 }
+
 export function TransferForm({
   onSubmit,
   initialValues,
@@ -25,8 +28,14 @@ export function TransferForm({
 }: TransferFormProps) {
   const {
     collaborators,
-    loading: loadingCollaborators
+    loading: loadingCollaborators,
+    fetchCollaborators
   } = useCollaborators();
+
+  // Ensure collaborators are fetched when the component mounts
+  React.useEffect(() => {
+    fetchCollaborators();
+  }, [fetchCollaborators]);
 
   // Convert numeric values to string for the form
   const getDefaultValues = () => {
@@ -34,7 +43,7 @@ export function TransferForm({
       return {
         ...initialValues,
         price: initialValues.price.toString(),
-        commission: initialValues.commission.toString(),
+        commission: initialValues.commission?.toString() || '',
         paymentStatus: initialValues.paymentStatus as 'paid' | 'pending'
       };
     }
@@ -49,25 +58,30 @@ export function TransferForm({
       paymentStatus: 'pending' as const
     };
   };
+
   const form = useForm<TransferFormValues>({
     resolver: zodResolver(transferSchema),
     defaultValues: getDefaultValues()
   });
+
   function handleSubmit(values: TransferFormValues) {
-    // Convertir los valores string a número donde corresponda
+    // Convert string values to numbers where appropriate, handle empty commission
     const processedValues = {
       ...values,
       price: Number(values.price),
-      commission: Number(values.commission)
+      commission: values.commission ? Number(values.commission) : 0
     };
+    
     onSubmit(processedValues);
+    
     if (!isEditing) {
       form.reset();
     }
+    
     toast.success(isEditing ? 'Transfer actualizado con éxito' : 'Transfer creado con éxito');
   }
+
   return <Card className="glass-card w-full max-w-2xl mx-auto">
-      
       <CardContent className="my-0 mx-0 px-0 py-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">

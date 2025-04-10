@@ -11,8 +11,8 @@ export const transferSchema = z.object({
     { message: 'El precio debe ser un número positivo' }
   ),
   collaborator: z.string().optional(),
-  commission: z.string().min(1, { message: 'La comisión es requerida' }).refine(
-    (val) => !isNaN(Number(val)) && Number(val) >= 0, 
+  commission: z.string().optional().refine(
+    (val) => val === undefined || val === '' || (!isNaN(Number(val)) && Number(val) >= 0), 
     { message: 'La comisión debe ser un número positivo o cero' }
   ),
   paymentStatus: z.enum(['paid', 'pending'], {
