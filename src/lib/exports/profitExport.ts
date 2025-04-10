@@ -57,7 +57,7 @@ export function prepareProfitDataForExport(
     profitsByDate[date].expenses += expense.amount;
   });
   
-  // Calculate profit for each date
+  // Calculate profit for each date: income - (expenses + commissions)
   Object.values(profitsByDate).forEach(dayData => {
     dayData.profit = dayData.income - (dayData.expenses + dayData.commissions);
   });
@@ -71,7 +71,7 @@ export function prepareProfitDataForExport(
   const summaryData = [{
     type: 'Summary',
     totalIncome: stats.totalIncome.toFixed(2),
-    totalExpenses: (stats.totalExpenses - stats.totalCommissions).toFixed(2),
+    totalExpenses: stats.totalExpenses.toFixed(2),
     totalCommissions: stats.totalCommissions.toFixed(2),
     netProfit: stats.netProfit.toFixed(2),
     profitMargin: `${stats.profitMargin.toFixed(2)}%`

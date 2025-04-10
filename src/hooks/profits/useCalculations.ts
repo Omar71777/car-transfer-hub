@@ -1,4 +1,3 @@
-
 import { Transfer, Expense } from '@/types';
 import { ProfitStats } from './types';
 
@@ -18,9 +17,9 @@ export const calculateStats = (transfers: Transfer[], expenses: Expense[]): Prof
   const expensesTotal = expenses.reduce((sum: number, expense: Expense) => 
     sum + (expense.amount || 0), 0);
   
-  const totalExpenses = expensesTotal + totalCommissions;
+  const totalExpenses = expensesTotal;
   
-  const netProfit = totalIncome - totalExpenses;
+  const netProfit = totalIncome - (totalExpenses + totalCommissions);
   const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
   
   return {
@@ -36,7 +35,7 @@ export const calculateStats = (transfers: Transfer[], expenses: Expense[]): Prof
 export const generateChartData = (stats: ProfitStats): any[] => {
   return [
     { name: 'Ingresos', value: stats.totalIncome, fill: '#3b82f6' },
-    { name: 'Gastos', value: stats.totalExpenses - stats.totalCommissions, fill: '#ef4444' },
+    { name: 'Gastos', value: stats.totalExpenses, fill: '#ef4444' },
     { name: 'Comisiones', value: stats.totalCommissions, fill: '#f59e0b' },
     { name: 'Beneficio Neto', value: stats.netProfit, fill: '#10b981' }
   ];

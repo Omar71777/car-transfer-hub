@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
@@ -35,19 +34,29 @@ const TransfersReportPage = () => {
   };
 
   const handlePrint = () => {
-    const stats = {
-      totalIncome: transfers.reduce((sum, t) => sum + t.price, 0),
-      totalExpenses: transfers.reduce((sum, t) => {
-        const expensesTotal = t.expenses?.reduce((s, e) => s + e.amount, 0) || 0;
-        return sum + expensesTotal;
-      }, 0),
-      totalCommissions: transfers.reduce((sum, t) => sum + (t.price * t.commission / 100), 0),
-      netProfit: 0,
-      profitMargin: 0
-    };
+    const totalIncome = transfers.reduce((sum, t) => sum + t.price, 0);
     
-    stats.netProfit = stats.totalIncome - (stats.totalExpenses + stats.totalCommissions);
-    stats.profitMargin = stats.totalIncome > 0 ? (stats.netProfit / stats.totalIncome) * 100 : 0;
+    const totalExpenses = transfers.reduce((sum, t) => {
+      const expensesTotal = t.expenses?.reduce((s, e) => s + e.amount, 0) || 0;
+      return sum + expensesTotal;
+    }, 0);
+    
+    const totalCommissions = transfers.reduce(
+      (sum, t) => sum + (t.price * t.commission / 100), 
+      0
+    );
+    
+    const netProfit = totalIncome - (totalExpenses + totalCommissions);
+    
+    const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
+    
+    const stats = {
+      totalIncome,
+      totalExpenses,
+      totalCommissions,
+      netProfit,
+      profitMargin
+    };
     
     printProfitReport('Informe de Transfers', transfers, transfers.flatMap(t => t.expenses || []), stats);
   };

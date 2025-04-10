@@ -59,7 +59,7 @@ export function printProfitReport(
           </tr>
           <tr class="summary">
             <td class="amount">${stats.totalIncome.toFixed(2)}€</td>
-            <td class="amount">${(stats.totalExpenses - stats.totalCommissions).toFixed(2)}€</td>
+            <td class="amount">${stats.totalExpenses.toFixed(2)}€</td>
             <td class="amount">${stats.totalCommissions.toFixed(2)}€</td>
             <td class="amount">${stats.netProfit.toFixed(2)}€</td>
             <td class="amount">${stats.profitMargin.toFixed(2)}%</td>
