@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +13,11 @@ interface ConfirmationStepProps {
 export function ConfirmationStep({ clients, collaborators, formState }: ConfirmationStepProps) {
   const { getValues } = useFormContext();
   const values = getValues();
+  
+  // Debug log to see form values at confirmation step
+  useEffect(() => {
+    console.log('Confirmation step rendered with form values:', values);
+  }, [values]);
   
   const client = clients?.find(c => c.id === values.clientId);
   const extraCharges = values.extraCharges || [];

@@ -22,7 +22,7 @@ export function ExtraChargesForm({
 }: ExtraChargesFormProps) {
   return (
     <div className="space-y-4">
-      {extraCharges.length > 0 ? (
+      {extraCharges && extraCharges.length > 0 ? (
         extraCharges.map((charge: any, index: number) => (
           <Card key={charge.id || index} className="overflow-hidden">
             <CardContent className="p-4">

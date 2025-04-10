@@ -1,35 +1,54 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ExtraCharge } from '@/types';
 
 export function useExtraCharges(initialCharges: Partial<ExtraCharge>[] = []) {
-  const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(initialCharges);
+  // Ensure initial charges have IDs
+  const processedInitialCharges = initialCharges.map(charge => ({
+    ...charge,
+    id: charge.id || uuidv4()
+  }));
+  
+  const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(processedInitialCharges);
 
-  const handleAddExtraCharge = (charges = extraCharges) => {
+  const handleAddExtraCharge = useCallback((charges = extraCharges) => {
+    console.log('Adding new extra charge');
     const newCharges = [...charges, { id: uuidv4(), name: '', price: '' }];
     setExtraCharges(newCharges);
     return newCharges;
-  };
+  }, [extraCharges]);
 
-  const handleRemoveExtraCharge = (index: number, charges = extraCharges) => {
+  const handleRemoveExtraCharge = useCallback((index: number, charges = extraCharges) => {
+    console.log('Removing extra charge at index:', index);
+    if (index < 0 || index >= charges.length) {
+      console.error('Invalid index for removing extra charge:', index);
+      return charges;
+    }
+    
     const newExtraCharges = [...charges];
     newExtraCharges.splice(index, 1);
     setExtraCharges(newExtraCharges);
     return newExtraCharges;
-  };
+  }, [extraCharges]);
 
-  const handleExtraChargeChange = (
+  const handleExtraChargeChange = useCallback((
     index: number, 
     field: keyof ExtraCharge, 
     value: any, 
     charges = extraCharges
   ) => {
+    console.log(`Updating extra charge at index ${index}, field: ${field}, value: ${value}`);
+    if (index < 0 || index >= charges.length) {
+      console.error('Invalid index for updating extra charge:', index);
+      return charges;
+    }
+    
     const newExtraCharges = [...charges];
     (newExtraCharges[index] as any)[field] = value;
     setExtraCharges(newExtraCharges);
     return newExtraCharges;
-  };
+  }, [extraCharges]);
 
   return {
     extraCharges,

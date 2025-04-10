@@ -1,19 +1,31 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTransfers } from '@/hooks/useTransfers';
 import { useClients } from '@/hooks/useClients';
 import { ConversationalTransferForm } from '@/components/transfers/ConversationalTransferForm';
+import { useAuth } from '@/contexts/auth';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
   const { createTransfer } = useTransfers();
   const { clients, createClient } = useClients();
+  const { user } = useAuth();
+  
+  useEffect(() => {
+    console.log('NewTransferPage mounted, user authentication state:', !!user);
+  }, [user]);
 
   const handleSubmit = async (values: any) => {
     console.log('New transfer form submitted with values:', values);
+    
+    if (!user) {
+      console.error('No authenticated user found during submission');
+      toast.error('Debe iniciar sesión para crear un transfer');
+      return;
+    }
     
     try {
       // Check if we need to create a new client
@@ -69,12 +81,12 @@ const NewTransferPage = () => {
         toast.success('Transfer creado exitosamente');
         navigate('/transfers');
       } else {
-        console.error('Failed to create transfer');
+        console.error('Failed to create transfer - no ID returned');
         toast.error('Error al crear el transfer');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in form submission:', error);
-      toast.error('Error al procesar el formulario');
+      toast.error(`Error al procesar el formulario: ${error.message || 'Error desconocido'}`);
     }
   };
 

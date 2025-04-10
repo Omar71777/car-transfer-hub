@@ -48,6 +48,8 @@ export const useTransferFormNavigation = (
       case 'collaborator':
         // Collaborator is required if it's a collaborator service
         return collaboratorValue !== 'none' ? ['collaborator'] : [];
+      case 'confirmation':
+        return []; // No specific fields to validate in confirmation step
       default:
         return [];
     }
@@ -72,21 +74,29 @@ export const useTransferFormNavigation = (
       
       // Create a submit handler that processes the form data
       const submitHandler = (data: any) => {
-        // Process the form data
-        const processedValues = {
-          ...data,
-          price: Number(data.price),
-          commission: data.commission ? Number(data.commission) : 0,
-          discountValue: data.discountValue ? Number(data.discountValue) : 0,
-          extraCharges: (data.extraCharges || []).filter(charge => 
-            charge.name && charge.price && charge.name.trim() !== ''
-          ).map(charge => ({
-            name: charge.name,
-            price: Number(charge.price)
-          }))
-        };
-        console.log('Submitting form with data:', processedValues);
-        onSubmit(processedValues);
+        try {
+          console.log('Form data before processing:', data);
+          
+          // Process the form data
+          const processedValues = {
+            ...data,
+            price: Number(data.price),
+            commission: data.commission ? Number(data.commission) : 0,
+            discountValue: data.discountValue ? Number(data.discountValue) : 0,
+            extraCharges: (data.extraCharges || []).filter((charge: any) => 
+              charge && charge.name && charge.price && charge.name.trim() !== ''
+            ).map((charge: any) => ({
+              name: charge.name,
+              price: Number(charge.price)
+            }))
+          };
+          
+          console.log('Submitting form with processed data:', processedValues);
+          onSubmit(processedValues);
+        } catch (error) {
+          console.error('Error during form submission:', error);
+          toast.error('Error al procesar el formulario');
+        }
       };
       
       // Execute the submit handler
