@@ -1,6 +1,8 @@
 
 import { Transfer, Expense } from '@/types';
 import { ProfitStats } from './types';
+import { format, parseISO, getMonth, getYear } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // Calculate commission for a transfer
 export const calculateCommission = (transfer: Transfer): number => {
@@ -40,14 +42,69 @@ export const generateChartData = (stats: ProfitStats): any[] => {
   ];
 };
 
-// Generate example monthly data
-export const generateMonthlyData = (): any[] => {
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-  return months.map(month => ({
-    name: month,
-    ingresos: Math.floor(Math.random() * 5000) + 3000,
-    gastos: Math.floor(Math.random() * 1500) + 800,
-    comisiones: Math.floor(Math.random() * 500) + 200,
-    beneficio: Math.floor(Math.random() * 3000) + 2000,
-  }));
+// Generate monthly data from transfers and expenses
+export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]): any[] => {
+  // Create a map to store data by month-year
+  const monthlyDataMap: Record<string, {
+    name: string;
+    ingresos: number;
+    gastos: number;
+    comisiones: number;
+    beneficio: number;
+    date: Date;
+  }> = {};
+
+  // Process transfers
+  transfers.forEach(transfer => {
+    const transferDate = parseISO(transfer.date);
+    const month = getMonth(transferDate);
+    const year = getYear(transferDate);
+    const monthYearKey = `${month}-${year}`;
+    
+    // Format the month name in Spanish
+    const monthName = format(transferDate, 'MMM', { locale: es });
+    
+    if (!monthlyDataMap[monthYearKey]) {
+      monthlyDataMap[monthYearKey] = {
+        name: monthName,
+        ingresos: 0,
+        gastos: 0,
+        comisiones: 0,
+        beneficio: 0,
+        date: transferDate
+      };
+    }
+    
+    // Add transfer price to income
+    monthlyDataMap[monthYearKey].ingresos += transfer.price;
+    
+    // Calculate and add commission
+    const commission = calculateCommission(transfer);
+    monthlyDataMap[monthYearKey].comisiones += commission;
+  });
+  
+  // Process expenses
+  expenses.forEach(expense => {
+    const expenseDate = parseISO(expense.date);
+    const month = getMonth(expenseDate);
+    const year = getYear(expenseDate);
+    const monthYearKey = `${month}-${year}`;
+    
+    // Skip if there's no matching month (no transfers in this month)
+    if (!monthlyDataMap[monthYearKey]) return;
+    
+    // Add expense amount
+    monthlyDataMap[monthYearKey].gastos += expense.amount;
+  });
+  
+  // Calculate profits and convert to array
+  const monthlyData = Object.values(monthlyDataMap).map(data => {
+    data.beneficio = data.ingresos - data.gastos - data.comisiones;
+    return data;
+  });
+  
+  // Sort by date
+  monthlyData.sort((a, b) => a.date.getTime() - b.date.getTime());
+  
+  return monthlyData;
 };

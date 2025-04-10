@@ -61,7 +61,7 @@ export function useProfitsData(): ProfitsData {
       setChartData(generateChartData(newStats));
 
       // Generate monthly data
-      setMonthlyData(generateMonthlyData());
+      setMonthlyData(generateMonthlyData(filteredTransfers, filteredExpenses));
     }
   }, [filteredTransfers, filteredExpenses]);
 
