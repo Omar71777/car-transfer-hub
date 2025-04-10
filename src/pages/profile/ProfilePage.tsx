@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ProfileForm } from '@/components/profile/ProfileForm';
@@ -21,6 +21,11 @@ const ProfilePage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Log para debugging
+    console.log('Perfil cargado:', profile);
+  }, [profile]);
 
   if (isLoading) {
     return (

@@ -76,6 +76,8 @@ export function useAuthOperations() {
     if (!user) return;
     
     try {
+      console.log('Actualizando perfil con datos:', data);
+      
       const { error } = await supabase
         .from('profiles')
         .update(data)
@@ -83,10 +85,12 @@ export function useAuthOperations() {
 
       if (error) throw error;
       
+      // Actualizar el estado local con los nuevos datos
       setProfile(prev => prev ? { ...prev, ...data } : null);
       
       toast.success('Perfil actualizado con éxito');
     } catch (error: any) {
+      console.error('Error al actualizar el perfil:', error);
       toast.error(`Error al actualizar el perfil: ${error.message}`);
       throw error;
     }

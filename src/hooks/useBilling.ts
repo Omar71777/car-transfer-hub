@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Bill, BillPreview, CreateBillDto, TaxApplicationType } from '@/types/billing';
@@ -44,7 +43,6 @@ export function useBilling() {
 
   const getBill = useCallback(async (id: string) => {
     try {
-      // Obtenemos la factura con sus datos de cliente
       const { data: bill, error } = await supabase
         .from('bills')
         .select(`
@@ -63,7 +61,6 @@ export function useBilling() {
 
       if (error) throw error;
       
-      // Obtenemos los items de la factura
       const { data: items, error: itemsError } = await supabase
         .from('bill_items')
         .select('*')
@@ -88,7 +85,6 @@ export function useBilling() {
         const client = await getClient(clientId);
         if (!client) throw new Error('Cliente no encontrado');
 
-        // Obtener los transfers seleccionados
         let items = [];
         let subTotal = 0;
 
@@ -110,11 +106,9 @@ export function useBilling() {
         let total = 0;
 
         if (taxApplication === 'included') {
-          // El impuesto ya está incluido en el precio
           taxAmount = (subTotal * taxRate) / (100 + taxRate);
           total = subTotal;
         } else {
-          // El impuesto se añade al precio
           taxAmount = (subTotal * taxRate) / 100;
           total = subTotal + taxAmount;
         }
@@ -139,7 +133,6 @@ export function useBilling() {
 
   const generateBillNumber = useCallback(async () => {
     try {
-      // Obtener la cantidad de facturas para generar un número secuencial
       const { count, error } = await supabase
         .from('bills')
         .select('*', { count: 'exact', head: true });
@@ -149,7 +142,6 @@ export function useBilling() {
       const year = new Date().getFullYear();
       const number = (count || 0) + 1;
       
-      // Formato: FACTURA-2025-0001
       return `FACTURA-${year}-${number.toString().padStart(4, '0')}`;
     } catch (error) {
       console.error('Error generating bill number:', error);
@@ -159,7 +151,6 @@ export function useBilling() {
 
   const createBill = useCallback(async (billData: CreateBillDto) => {
     try {
-      // Calcular la vista previa para obtener los totales
       const preview = await calculateBillPreview(
         billData.clientId,
         billData.transferIds,
@@ -169,10 +160,8 @@ export function useBilling() {
       
       if (!preview) throw new Error('No se pudo calcular la vista previa de la factura');
       
-      // Generar número de factura
       const billNumber = await generateBillNumber();
       
-      // Crear la factura
       const { data: bill, error: billError } = await supabase
         .from('bills')
         .insert([{
@@ -194,7 +183,6 @@ export function useBilling() {
 
       if (billError) throw billError;
       
-      // Crear los items de la factura
       const billItems = [];
       
       for (const item of preview.items) {
@@ -207,7 +195,6 @@ export function useBilling() {
           total_price: item.unitPrice,
         });
         
-        // Marcar el transfer como facturado
         await updateTransfer(item.transfer.id, { billed: true });
       }
       
@@ -228,6 +215,13 @@ export function useBilling() {
 
   const updateBillStatus = useCallback(async (id: string, status: Bill['status']) => {
     try {
+      const statusMessage = {
+        draft: 'borrador',
+        sent: 'enviada',
+        paid: 'pagada',
+        cancelled: 'cancelada'
+      };
+      
       const { error } = await supabase
         .from('bills')
         .update({ 
@@ -238,7 +232,7 @@ export function useBilling() {
 
       if (error) throw error;
       
-      toast.success(`Estado de la factura actualizado a "${status}"`);
+      toast.success(`Estado de la factura actualizado a "${statusMessage[status]}"`);
       return true;
     } catch (error: any) {
       toast.error(`Error al actualizar estado de factura: ${error.message}`);
@@ -249,7 +243,6 @@ export function useBilling() {
 
   const deleteBill = useCallback(async (id: string) => {
     try {
-      // Obtener los transfers asociados a esta factura para desmarcarlos como facturados
       const { data: billItems, error: itemsQueryError } = await supabase
         .from('bill_items')
         .select('transfer_id')
@@ -257,7 +250,6 @@ export function useBilling() {
 
       if (itemsQueryError) throw itemsQueryError;
       
-      // Eliminar los items de la factura
       const { error: itemsDeleteError } = await supabase
         .from('bill_items')
         .delete()
@@ -265,12 +257,10 @@ export function useBilling() {
 
       if (itemsDeleteError) throw itemsDeleteError;
       
-      // Desmarcar los transfers como facturados
       for (const item of billItems || []) {
         await updateTransfer(item.transfer_id, { billed: false });
       }
       
-      // Eliminar la factura
       const { error: billDeleteError } = await supabase
         .from('bills')
         .delete()
@@ -287,13 +277,11 @@ export function useBilling() {
     }
   }, [updateTransfer]);
 
-  // Función para exportar la factura a CSV
   const exportBillCsv = useCallback(async (id: string) => {
     try {
       const bill = await getBill(id);
       if (!bill) throw new Error('Factura no encontrada');
       
-      // Implementar lógica de exportación CSV
       const { exportBillCsv } = await import('@/lib/exports/billExport');
       exportBillCsv(bill);
       
@@ -305,13 +293,11 @@ export function useBilling() {
     }
   }, [getBill]);
 
-  // Función para imprimir la factura
   const printBill = useCallback(async (id: string) => {
     try {
       const bill = await getBill(id);
       if (!bill) throw new Error('Factura no encontrada');
       
-      // Implementar lógica de impresión
       const { printBill } = await import('@/lib/exports/billExport');
       printBill(bill);
       

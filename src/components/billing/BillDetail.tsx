@@ -5,7 +5,13 @@ import { Bill } from '@/types/billing';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Printer, Download, Send } from 'lucide-react';
+import { Printer, Download, Send, RotateCcw } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 interface BillDetailProps {
   bill: Bill;
@@ -34,6 +40,22 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
     }
   };
 
+  // Determinar los estados anteriores válidos para esta factura
+  const getPreviousStates = () => {
+    switch (bill.status) {
+      case 'paid':
+        return ['sent', 'draft'];
+      case 'sent':
+        return ['draft'];
+      case 'cancelled':
+        return ['draft', 'sent'];
+      default:
+        return [];
+    }
+  };
+
+  const previousStates = getPreviousStates();
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
@@ -55,16 +77,36 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
             <Download className="h-4 w-4 mr-2" />
             Descargar
           </Button>
+          
           {bill.status === 'draft' && (
             <Button size="sm" onClick={() => onStatusChange('sent')}>
               <Send className="h-4 w-4 mr-2" />
               Marcar como enviada
             </Button>
           )}
+          
           {bill.status === 'sent' && (
             <Button size="sm" onClick={() => onStatusChange('paid')}>
               Marcar como pagada
             </Button>
+          )}
+          
+          {previousStates.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Revertir estado
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {previousStates.map(state => (
+                  <DropdownMenuItem key={state} onClick={() => onStatusChange(state as Bill['status'])}>
+                    {state === 'draft' ? 'Revertir a borrador' : state === 'sent' ? 'Revertir a enviada' : 'Revertir'}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
