@@ -5,7 +5,7 @@
  */
 
 // CSV exports
-export { convertToCSV, downloadCSV } from './csvExport';
+export { convertToCSV, downloadCSV, downloadCSVFromData, arrayToCSV } from './csvExport';
 
 // Profit exports
 export { prepareProfitDataForExport } from './profitExport';

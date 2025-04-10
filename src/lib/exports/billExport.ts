@@ -22,6 +22,7 @@ export const exportBillCsv = (bill: Bill) => {
   rows.push(['', '', 'Total', bill.total.toString()]);
   
   const fileName = `factura-${bill.number}.csv`;
+  // Fixed: downloadCSV expects headers and rows as arrays, and the filename as string
   downloadCSV(headers, rows, fileName);
 };
 
