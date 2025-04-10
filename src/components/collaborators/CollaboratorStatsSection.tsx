@@ -2,12 +2,63 @@
 import React from 'react';
 import { CollaboratorCard } from './CollaboratorCard';
 import { CollaboratorStat } from './types';
+import { Transfer } from '@/types';
+import { Loader2 } from 'lucide-react';
 
 interface CollaboratorStatsSectionProps {
-  collaboratorStats: CollaboratorStat[];
+  transfers: Transfer[];
+  loading?: boolean;
 }
 
-export function CollaboratorStatsSection({ collaboratorStats }: CollaboratorStatsSectionProps) {
+export function CollaboratorStatsSection({ transfers, loading = false }: CollaboratorStatsSectionProps) {
+  // Calculate collaborator stats from transfers
+  const calculateCollaboratorStats = (): CollaboratorStat[] => {
+    const collaboratorStats: Record<string, CollaboratorStat> = {};
+    
+    transfers.forEach(transfer => {
+      if (!transfer.collaborator) return;
+      
+      const commissionAmount = (transfer.price * transfer.commission) / 100;
+      
+      if (!collaboratorStats[transfer.collaborator]) {
+        collaboratorStats[transfer.collaborator] = {
+          name: transfer.collaborator,
+          transferCount: 0,
+          commissionTotal: 0,
+          averageCommission: 0,
+          transfers: []
+        };
+      }
+      
+      collaboratorStats[transfer.collaborator].transferCount += 1;
+      collaboratorStats[transfer.collaborator].commissionTotal += commissionAmount;
+      collaboratorStats[transfer.collaborator].transfers = 
+        collaboratorStats[transfer.collaborator].transfers 
+          ? [...collaboratorStats[transfer.collaborator].transfers, transfer] 
+          : [transfer];
+    });
+    
+    // Calculate average commission
+    Object.values(collaboratorStats).forEach(stat => {
+      stat.averageCommission = stat.transferCount > 0 
+        ? stat.commissionTotal / stat.transferCount 
+        : 0;
+    });
+    
+    return Object.values(collaboratorStats);
+  };
+
+  const collaboratorStats = calculateCollaboratorStats();
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-10 w-10 text-primary animate-spin mr-2" />
+        <p className="text-lg">Cargando estadísticas de colaboradores...</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Rendimiento por Colaborador</h2>

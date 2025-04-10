@@ -4,13 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Transfer } from '@/types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
-import { Coins, UsersRound, AlertCircle } from 'lucide-react';
+import { Coins, UsersRound, AlertCircle, Loader2 } from 'lucide-react';
 
 interface CollaboratorsOverviewProps {
   transfers: Transfer[];
+  loading?: boolean;
 }
 
-export function CollaboratorsOverview({ transfers }: CollaboratorsOverviewProps) {
+export function CollaboratorsOverview({ transfers, loading = false }: CollaboratorsOverviewProps) {
   // Calculate commissions and stats
   const calculateCommissionStats = () => {
     const collaborators: Record<string, { name: string, transferCount: number, commissionTotal: number }> = {};
@@ -50,6 +51,17 @@ export function CollaboratorsOverview({ transfers }: CollaboratorsOverviewProps)
 
   // Check if there's no data
   const noDataAvailable = collaboratorStats.length === 0;
+
+  if (loading) {
+    return (
+      <Card className="glass-card">
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="h-12 w-12 mb-4 text-primary animate-spin" />
+          <p className="text-lg font-medium">Cargando datos de colaboradores...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="glass-card">
