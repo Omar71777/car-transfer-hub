@@ -16,6 +16,7 @@ export function useTransfers() {
     
     try {
       setLoading(true);
+      // Remove the clients relationship which was causing the error
       const { data, error } = await supabase
         .from('transfers')
         .select(`
@@ -35,11 +36,6 @@ export function useTransfers() {
             date,
             concept,
             amount
-          ),
-          clients (
-            id,
-            name,
-            email
           )
         `)
         .order('date', { ascending: false });
@@ -47,6 +43,21 @@ export function useTransfers() {
       if (error) {
         throw error;
       }
+
+      // Get all clients to manually join with transfers
+      const { data: clientsData, error: clientsError } = await supabase
+        .from('clients')
+        .select('id, name, email');
+
+      if (clientsError) {
+        console.error('Error fetching clients:', clientsError);
+      }
+
+      // Create a map of clients for easy lookup
+      const clientsMap = (clientsData || []).reduce((acc, client) => {
+        acc[client.id] = client;
+        return acc;
+      }, {});
 
       const transformedData = data.map((transfer: any) => ({
         id: transfer.id,
@@ -60,11 +71,12 @@ export function useTransfers() {
         commissionType: transfer.commission_type || 'percentage',
         paymentStatus: transfer.payment_status || 'pending',
         clientId: transfer.client_id || '',
-        client: transfer.clients ? {
-          id: transfer.clients.id,
-          name: transfer.clients.name,
-          email: transfer.clients.email
-        } : null,
+        // Manually attach client data if it exists
+        client: transfer.client_id && clientsMap[transfer.client_id] ? {
+          id: clientsMap[transfer.client_id].id,
+          name: clientsMap[transfer.client_id].name,
+          email: clientsMap[transfer.client_id].email
+        } : undefined,
         expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
           transferId: transfer.id,

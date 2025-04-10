@@ -250,6 +250,7 @@ export type Database = {
       transfers: {
         Row: {
           billed: boolean | null
+          client_id: string | null
           collaborator: string | null
           commission: number
           created_at: string
@@ -265,6 +266,7 @@ export type Database = {
         }
         Insert: {
           billed?: boolean | null
+          client_id?: string | null
           collaborator?: string | null
           commission: number
           created_at?: string
@@ -280,6 +282,7 @@ export type Database = {
         }
         Update: {
           billed?: boolean | null
+          client_id?: string | null
           collaborator?: string | null
           commission?: number
           created_at?: string
@@ -293,7 +296,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transfers_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
