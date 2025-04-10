@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -148,8 +149,10 @@ const CollaboratorsPage = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Fecha</TableHead>
+                      <TableHead>Hora</TableHead>
                       <TableHead>Colaborador</TableHead>
-                      <TableHead>Origen - Destino</TableHead>
+                      <TableHead>Origen</TableHead>
+                      <TableHead>Destino</TableHead>
                       <TableHead className="text-right">Precio</TableHead>
                       <TableHead className="text-right">Comisión %</TableHead>
                       <TableHead className="text-right">Total Comisión</TableHead>
@@ -161,8 +164,10 @@ const CollaboratorsPage = () => {
                       return (
                         <TableRow key={transfer.id}>
                           <TableCell>{transfer.date}</TableCell>
+                          <TableCell>{transfer.time || '-'}</TableCell>
                           <TableCell>{transfer.collaborator}</TableCell>
-                          <TableCell>{transfer.origin} - {transfer.destination}</TableCell>
+                          <TableCell>{transfer.origin}</TableCell>
+                          <TableCell>{transfer.destination}</TableCell>
                           <TableCell className="text-right">{formatCurrency(transfer.price)}</TableCell>
                           <TableCell className="text-right">{transfer.commission}%</TableCell>
                           <TableCell className="text-right font-medium text-amber-500">{formatCurrency(commissionAmount)}</TableCell>
@@ -171,7 +176,7 @@ const CollaboratorsPage = () => {
                     })}
                     {transfers.filter(t => !!t.collaborator).length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                           No hay transfers asignados a colaboradores
                         </TableCell>
                       </TableRow>
