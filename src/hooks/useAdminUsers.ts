@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -109,35 +108,29 @@ export function useAdminUsers() {
 
   const createUser = useCallback(async (values: UserFormValues & PasswordFormValues) => {
     try {
-      // First, ensure all required fields are provided
       if (!values.email || !values.password || !values.first_name || !values.last_name) {
         toast.error('Todos los campos son requeridos');
         return;
       }
 
-      // Clean the email to prevent formatting issues
       const cleanEmail = values.email.trim().toLowerCase();
       
-      // Create the user with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.admin.createUser({
         email: cleanEmail,
         password: values.password,
-        options: {
-          data: {
-            first_name: values.first_name,
-            last_name: values.last_name,
-          },
-          emailRedirectTo: window.location.origin + '/auth?signup=true',
+        email_confirm: true,
+        user_metadata: {
+          first_name: values.first_name,
+          last_name: values.last_name,
         }
       });
 
       if (error) throw error;
       
       if (data.user) {
-        // Update the profiles table
         const { error: profileError } = await supabase
           .from('profiles')
-          .upsert({
+          .insert({
             id: data.user.id,
             email: cleanEmail,
             first_name: values.first_name,
@@ -151,7 +144,7 @@ export function useAdminUsers() {
           return;
         }
         
-        toast.success('Usuario creado con éxito. Se ha enviado un email de verificación.');
+        toast.success('Usuario creado con éxito');
         setAddUserDialogOpen(false);
         await fetchUsers();
       }
