@@ -1,8 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { Database } from '@/integrations/supabase/types';
-
-type Profile = Database['public']['Tables']['profiles']['Row'];
+import { Profile } from './types';
 
 export function useUserDialogs() {
   const [editingUser, setEditingUser] = useState<Profile | null>(null);

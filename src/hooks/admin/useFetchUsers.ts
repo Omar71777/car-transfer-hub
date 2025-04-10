@@ -2,9 +2,7 @@
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
-
-type Profile = Database['public']['Tables']['profiles']['Row'];
+import { Profile } from './types';
 
 export function useFetchUsers() {
   const [users, setUsers] = useState<Profile[]>([]);

@@ -2,29 +2,7 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
-
-type Profile = Database['public']['Tables']['profiles']['Row'];
-type UserFormValues = {
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-};
-type PasswordFormValues = {
-  password: string;
-};
-
-interface UseUserOperationsProps {
-  users: Profile[];
-  setUsers: React.Dispatch<React.SetStateAction<Profile[]>>;
-  editingUser: Profile | null;
-  setIsEditDialogOpen: (open: boolean) => void;
-  setIsPasswordDialogOpen: (open: boolean) => void;
-  setAddUserDialogOpen: (open: boolean) => void;
-  setDeleteConfirmOpen: (open: boolean) => void;
-  setUserToDelete: (user: Profile | null) => void;
-  fetchUsers: () => Promise<void>;
-}
+import { Profile, UserFormValues, PasswordFormValues, UseUserOperationsProps } from './types';
 
 export function useUserOperations({
   users,

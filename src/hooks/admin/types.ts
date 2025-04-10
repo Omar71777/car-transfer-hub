@@ -12,3 +12,15 @@ export type UserFormValues = {
 export type PasswordFormValues = {
   password: string;
 };
+
+export interface UseUserOperationsProps {
+  users: Profile[];
+  setUsers: React.Dispatch<React.SetStateAction<Profile[]>>;
+  editingUser: Profile | null;
+  setIsEditDialogOpen: (open: boolean) => void;
+  setIsPasswordDialogOpen: (open: boolean) => void;
+  setAddUserDialogOpen: (open: boolean) => void;
+  setDeleteConfirmOpen: (open: boolean) => void;
+  setUserToDelete: (user: Profile | null) => void;
+  fetchUsers: () => Promise<void>;
+}
