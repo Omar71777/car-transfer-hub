@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ProfitCalculator } from '@/components/profits/ProfitCalculator';
 import { Transfer, Expense } from '@/types';
 
-// Datos de ejemplo (simulando lo que vendría de Firebase)
+// Datos de ejemplo para fallback
 const dummyTransfers: Transfer[] = [
   {
     id: '1',
@@ -27,39 +27,6 @@ const dummyTransfers: Transfer[] = [
     collaborator: 'María López',
     commission: 15,
     expenses: []
-  },
-  {
-    id: '3',
-    date: '2025-04-08',
-    time: '11:15',
-    origin: 'Puerto de Ibiza',
-    destination: 'Cala Comte',
-    price: 120,
-    collaborator: 'Juan Pérez',
-    commission: 10,
-    expenses: []
-  },
-  {
-    id: '4',
-    date: '2025-04-07',
-    time: '16:00',
-    origin: 'Ibiza Town',
-    destination: 'San Antonio',
-    price: 75,
-    collaborator: 'Ana Martínez',
-    commission: 12,
-    expenses: []
-  },
-  {
-    id: '5',
-    date: '2025-04-06',
-    time: '20:30',
-    origin: 'Aeropuerto de Ibiza',
-    destination: 'Santa Eulalia',
-    price: 95,
-    collaborator: 'Carlos Sánchez',
-    commission: 10,
-    expenses: []
   }
 ];
 
@@ -77,33 +44,30 @@ const dummyExpenses: Expense[] = [
     date: '2025-04-09',
     concept: 'Peaje',
     amount: 12.30
-  },
-  {
-    id: '3',
-    transferId: '3',
-    date: '2025-04-08',
-    concept: 'Lavado de vehículo',
-    amount: 25.00
-  },
-  {
-    id: '4',
-    transferId: '4',
-    date: '2025-04-07',
-    concept: 'Mantenimiento',
-    amount: 120.00
-  },
-  {
-    id: '5',
-    transferId: '5',
-    date: '2025-04-06',
-    concept: 'Combustible',
-    amount: 50.75
   }
 ];
 
 const ProfitsPage = () => {
-  const [transfers] = useState<Transfer[]>(dummyTransfers);
-  const [expenses] = useState<Expense[]>(dummyExpenses);
+  const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  useEffect(() => {
+    // Cargar transfers desde localStorage
+    const storedTransfers = localStorage.getItem('transfers');
+    if (storedTransfers) {
+      setTransfers(JSON.parse(storedTransfers));
+    } else {
+      setTransfers(dummyTransfers);
+    }
+
+    // Cargar expenses desde localStorage
+    const storedExpenses = localStorage.getItem('expenses');
+    if (storedExpenses) {
+      setExpenses(JSON.parse(storedExpenses));
+    } else {
+      setExpenses(dummyExpenses);
+    }
+  }, []);
 
   return (
     <MainLayout>

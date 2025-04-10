@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ShiftCalendar } from '@/components/shifts/ShiftCalendar';
 import { Shift, Driver } from '@/types';
@@ -22,9 +22,37 @@ const dummyShifts: Shift[] = [
 ];
 
 const ShiftsPage = () => {
-  const [shifts, setShifts] = useState<Shift[]>(dummyShifts);
-  const [drivers] = useState<Driver[]>(dummyDrivers);
+  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const { toast } = useToast();
+
+  // Cargar datos desde localStorage al montar el componente
+  useEffect(() => {
+    // Cargar turnos
+    const storedShifts = localStorage.getItem('shifts');
+    if (storedShifts) {
+      setShifts(JSON.parse(storedShifts));
+    } else {
+      setShifts(dummyShifts);
+      localStorage.setItem('shifts', JSON.stringify(dummyShifts));
+    }
+
+    // Cargar conductores
+    const storedDrivers = localStorage.getItem('drivers');
+    if (storedDrivers) {
+      setDrivers(JSON.parse(storedDrivers));
+    } else {
+      setDrivers(dummyDrivers);
+      localStorage.setItem('drivers', JSON.stringify(dummyDrivers));
+    }
+  }, []);
+
+  // Guardar turnos en localStorage cada vez que cambian
+  useEffect(() => {
+    if (shifts.length > 0) {
+      localStorage.setItem('shifts', JSON.stringify(shifts));
+    }
+  }, [shifts]);
 
   const handleAddShift = (shift: Omit<Shift, 'id'>) => {
     // Comprobar si ya existe un turno para esa fecha
@@ -32,11 +60,12 @@ const ShiftsPage = () => {
     
     if (existingShift) {
       // Actualizar el turno existente
-      setShifts(shifts.map(s => 
+      const updatedShifts = shifts.map(s => 
         s.date === shift.date 
           ? { ...s, driverId: shift.driverId, isFullDay: shift.isFullDay } 
           : s
-      ));
+      );
+      setShifts(updatedShifts);
       toast({
         title: "Turno actualizado",
         description: "El turno ha sido actualizado exitosamente.",
