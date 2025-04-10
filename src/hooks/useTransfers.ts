@@ -15,6 +15,7 @@ export function useTransfers() {
     
     try {
       setLoading(true);
+      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('transfers')
         .select(`
@@ -71,6 +72,7 @@ export function useTransfers() {
     if (!user) return null;
     
     try {
+      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('transfers')
         .insert({
@@ -104,6 +106,7 @@ export function useTransfers() {
       // Remove 'expenses' field if it exists as we don't want to update it
       const { expenses, ...transferUpdateData } = transferData;
       
+      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('transfers')
         .update({
@@ -129,6 +132,7 @@ export function useTransfers() {
     
     try {
       // First delete associated expenses
+      // Use 'from' instead of directly accessing the table name
       const { error: expensesError } = await supabase
         .from('expenses')
         .delete()
@@ -139,6 +143,7 @@ export function useTransfers() {
       }
 
       // Then delete the transfer
+      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('transfers')
         .delete()

@@ -15,6 +15,7 @@ export function useExpenses() {
     
     try {
       setLoading(true);
+      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('expenses')
         .select('*')
@@ -46,6 +47,7 @@ export function useExpenses() {
     if (!user) return null;
     
     try {
+      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('expenses')
         .insert({
@@ -73,6 +75,7 @@ export function useExpenses() {
     if (!user) return false;
     
     try {
+      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('expenses')
         .update({
@@ -100,6 +103,7 @@ export function useExpenses() {
     if (!user) return false;
     
     try {
+      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('expenses')
         .delete()

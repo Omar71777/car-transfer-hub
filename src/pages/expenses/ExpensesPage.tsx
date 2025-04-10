@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Expense } from '@/types';
 import { useExpenses } from '@/hooks/useExpenses';
+import { toast } from 'sonner'; // Add missing import
 import {
   Dialog,
   DialogContent,
