@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Calendar, CreditCard, Home, PlusCircle, DollarSign, BarChart2, UserCheck, Users, LogOut } from 'lucide-react';
@@ -34,7 +33,6 @@ export const AppSidebar = () => {
     { icon: UserCheck, label: 'Turnos', path: '/shifts' },
   ];
 
-  // Admin menu items
   const adminItems = [
     { icon: Users, label: 'Usuarios', path: '/admin/users' },
   ];
