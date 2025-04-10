@@ -3,21 +3,26 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BadgeEuro, BarChart3, Building2, Calendar, FileSpreadsheet, Files, Home, LogOut, Settings, TruckIcon, Users } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Sidebar, SidebarGroup, SidebarMenu, SidebarMenuItem, SidebarSub } from '@/components/ui/sidebar';
+import { 
+  Sidebar, 
+  SidebarGroup, 
+  SidebarGroupLabel, 
+  SidebarGroupContent,
+  SidebarMenu, 
+  SidebarMenuItem, 
+  SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton
+} from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSidebar } from '@/components/ui/sidebar/sidebar-provider';
 
-export interface AppSidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const AppSidebar: React.FC<AppSidebarProps> = ({
-  isOpen,
-  onClose,
-}) => {
+export const AppSidebar = () => {
   const location = useLocation();
   const { profile, isAdmin, signOut } = useAuth();
+  const { openMobile, setOpenMobile } = useSidebar();
 
   // Get the initials of the user's name
   const getInitials = () => {
@@ -41,7 +46,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   };
 
   return (
-    <Sidebar open={isOpen} onClose={onClose} className="top-0">
+    <Sidebar>
       <div className="pb-4">
         <div className="px-4 py-6 flex items-center">
           <Avatar className="h-9 w-9 mr-2">
@@ -60,105 +65,130 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       </div>
 
       <SidebarMenu>
-        <SidebarMenuItem
-          icon={<Home size={20} />}
-          className={location.pathname === '/' ? 'text-primary' : undefined}
-          href="/"
-          as={Link}
-        >
-          Inicio
-        </SidebarMenuItem>
-
-        <SidebarMenuItem
-          icon={<TruckIcon size={20} />}
-          className={location.pathname.includes('/transfers') ? 'text-primary' : undefined}
-          href="/transfers"
-          as={Link}
-        >
-          Transfers
-        </SidebarMenuItem>
-
-        <SidebarMenuItem
-          icon={<Files size={20} />}
-          className={location.pathname.includes('/expenses') ? 'text-primary' : undefined}
-          href="/expenses"
-          as={Link}
-        >
-          Gastos
-        </SidebarMenuItem>
-
-        <SidebarMenuItem
-          icon={<BadgeEuro size={20} />}
-          className={location.pathname.includes('/profits') ? 'text-primary' : undefined}
-          href="/profits"
-          as={Link}
-        >
-          Ganancias
-        </SidebarMenuItem>
-
-        <SidebarMenuItem
-          icon={<Calendar size={20} />}
-          className={location.pathname.includes('/shifts') ? 'text-primary' : undefined}
-          href="/shifts"
-          as={Link}
-        >
-          Turnos
-        </SidebarMenuItem>
-
-        <SidebarMenuItem
-          icon={<Building2 size={20} />}
-          className={location.pathname.includes('/collaborators') ? 'text-primary' : undefined}
-          href="/collaborators"
-          as={Link}
-        >
-          Colaboradores
-        </SidebarMenuItem>
-
-        <SidebarGroup title="MI CUENTA" collapsible>
-          <SidebarMenuItem
-            icon={<Settings size={20} />}
-            className={location.pathname.includes('/profile') ? 'text-primary' : undefined}
-            href="/profile"
-            as={Link}
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            icon={<Home size={20} />}
+            className={location.pathname === '/' ? 'text-primary' : undefined}
+            asChild
           >
-            Mi Perfil
-          </SidebarMenuItem>
-          
-          <SidebarMenuItem
-            icon={<LogOut size={20} />}
-            onClick={signOut}
+            <Link to="/">Inicio</Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            icon={<TruckIcon size={20} />}
+            className={location.pathname.includes('/transfers') ? 'text-primary' : undefined}
+            asChild
           >
-            Cerrar Sesión
-          </SidebarMenuItem>
+            <Link to="/transfers">Transfers</Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            icon={<Files size={20} />}
+            className={location.pathname.includes('/expenses') ? 'text-primary' : undefined}
+            asChild
+          >
+            <Link to="/expenses">Gastos</Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            icon={<BadgeEuro size={20} />}
+            className={location.pathname.includes('/profits') ? 'text-primary' : undefined}
+            asChild
+          >
+            <Link to="/profits">Ganancias</Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            icon={<Calendar size={20} />}
+            className={location.pathname.includes('/shifts') ? 'text-primary' : undefined}
+            asChild
+          >
+            <Link to="/shifts">Turnos</Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            icon={<Building2 size={20} />}
+            className={location.pathname.includes('/collaborators') ? 'text-primary' : undefined}
+            asChild
+          >
+            <Link to="/collaborators">Colaboradores</Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>MI CUENTA</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  icon={<Settings size={20} />}
+                  className={location.pathname.includes('/profile') ? 'text-primary' : undefined}
+                  asChild
+                >
+                  <Link to="/profile">Mi Perfil</Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  icon={<LogOut size={20} />}
+                  onClick={signOut}
+                >
+                  Cerrar Sesión
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
 
         {isAdmin && (
-          <SidebarGroup title="ADMINISTRACIÓN" collapsible>
-            <SidebarMenuItem
-              icon={<Users size={20} />}
-              className={location.pathname.includes('/admin/users') ? 'text-primary' : undefined}
-              href="/admin/users"
-              as={Link}
-            >
-              Usuarios
-            </SidebarMenuItem>
-            
-            <SidebarSub title="Reportes">
-              <SidebarMenuItem
-                icon={<FileSpreadsheet size={20} />}
-                href="/admin/reports/transfers"
-                as={Link}
-              >
-                Transfers
-              </SidebarMenuItem>
-              <SidebarMenuItem
-                icon={<BarChart3 size={20} />}
-                href="/admin/reports/analytics"
-                as={Link}
-              >
-                Análisis
-              </SidebarMenuItem>
-            </SidebarSub>
+          <SidebarGroup>
+            <SidebarGroupLabel>ADMINISTRACIÓN</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    icon={<Users size={20} />}
+                    className={location.pathname.includes('/admin/users') ? 'text-primary' : undefined}
+                    asChild
+                  >
+                    <Link to="/admin/users">Usuarios</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton>Reportes</SidebarMenuButton>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <Link to="/admin/reports/transfers">
+                          <FileSpreadsheet size={20} />
+                          <span>Transfers</span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <Link to="/admin/reports/analytics">
+                          <BarChart3 size={20} />
+                          <span>Análisis</span>
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
           </SidebarGroup>
         )}
       </SidebarMenu>
