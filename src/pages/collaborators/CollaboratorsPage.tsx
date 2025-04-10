@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -118,6 +119,9 @@ const CollaboratorsPage = () => {
       const monthDisplay = new Date(`${year}-${month}-01`).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
       const capitalizedMonthDisplay = monthDisplay.charAt(0).toUpperCase() + monthDisplay.slice(1);
       
+      // Capitalize first letter of collaborator name
+      const capitalizedCollaborator = transfer.collaborator.charAt(0).toUpperCase() + transfer.collaborator.slice(1);
+      
       const commissionAmount = (transfer.price * transfer.commission) / 100;
       
       if (!monthlyData[monthYear]) {
@@ -127,7 +131,7 @@ const CollaboratorsPage = () => {
       if (!monthlyData[monthYear][transfer.collaborator]) {
         monthlyData[monthYear][transfer.collaborator] = {
           month: capitalizedMonthDisplay,
-          collaborator: transfer.collaborator,
+          collaborator: capitalizedCollaborator,
           transferCount: 0,
           commissionTotal: 0
         };
@@ -179,7 +183,7 @@ const CollaboratorsPage = () => {
                 {collaboratorStats.map((collab) => (
                   <CollaboratorCard
                     key={collab.name}
-                    name={collab.name}
+                    name={collab.name.charAt(0).toUpperCase() + collab.name.slice(1)}
                     transferCount={collab.transferCount}
                     commissionTotal={collab.commissionTotal}
                     averageCommission={collab.averageCommission}

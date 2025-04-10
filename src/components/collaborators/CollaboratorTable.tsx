@@ -19,6 +19,11 @@ interface CollaboratorTableProps {
 }
 
 export function CollaboratorTable({ collaborators, onEdit, onDelete }: CollaboratorTableProps) {
+  // Helper function to capitalize the first letter of a name
+  const capitalizeName = (name: string): string => {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -32,7 +37,7 @@ export function CollaboratorTable({ collaborators, onEdit, onDelete }: Collabora
       <TableBody>
         {collaborators.map((collaborator) => (
           <TableRow key={collaborator.id}>
-            <TableCell className="font-medium">{collaborator.name}</TableCell>
+            <TableCell className="font-medium">{capitalizeName(collaborator.name)}</TableCell>
             <TableCell>
               {collaborator.phone && (
                 <div className="flex items-center gap-1 text-muted-foreground">
