@@ -84,19 +84,42 @@ export function useDashboardData() {
           })
           .map((shift: Shift) => {
             const driver = drivers.find((d: Driver) => d.id === shift.driverId);
+            
+            // Calculate startTime and endTime based on isFullDay and startHour
+            let startTime = '00:00';
+            let endTime = '23:59';
+            
+            if (!shift.isFullDay && shift.startHour !== undefined) {
+              // For 12-hour shifts
+              startTime = `${shift.startHour.toString().padStart(2, '0')}:00`;
+              const endHour = (shift.startHour + 12) % 24;
+              endTime = `${endHour.toString().padStart(2, '0')}:00`;
+            }
+            
             return {
               ...shift,
-              driverName: driver ? driver.name : 'Conductor no asignado'
+              driverName: driver ? driver.name : 'Conductor no asignado',
+              startTime: shift.startTime || startTime,
+              endTime: shift.endTime || endTime
             };
           })
           .sort((a: Shift, b: Shift) => 
             new Date(a.date).getTime() - new Date(b.date).getTime());
         
         setStats({
-          totalTransfers,
-          totalIncome,
-          totalExpenses,
-          netIncome,
+          totalTransfers: transfers.length,
+          totalIncome: transfers.reduce((sum: number, transfer: Transfer) => 
+            sum + (Number(transfer.price) || 0), 0),
+          totalExpenses: expenses.reduce((sum: number, expense: Expense) => 
+            sum + (Number(expense.amount) || 0), 0) + 
+            transfers.reduce((sum: number, transfer: Transfer) => 
+            sum + ((Number(transfer.price) * Number(transfer.commission)) / 100 || 0), 0),
+          netIncome: transfers.reduce((sum: number, transfer: Transfer) => 
+            sum + (Number(transfer.price) || 0), 0) - 
+            (expenses.reduce((sum: number, expense: Expense) => 
+            sum + (Number(expense.amount) || 0), 0) + 
+            transfers.reduce((sum: number, transfer: Transfer) => 
+            sum + ((Number(transfer.price) * Number(transfer.commission)) / 100 || 0), 0)),
           upcomingShifts: upcoming.length
         });
         

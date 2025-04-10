@@ -32,6 +32,8 @@ export interface Shift {
   isFullDay: boolean; // true para 24h, false para 12h
   isFreeDay?: boolean; // true para día libre
   startHour?: number; // hora de inicio del turno
+  startTime?: string; // hora de inicio en formato de texto
+  endTime?: string; // hora de fin en formato de texto
 }
 
 export interface UserProfile {
