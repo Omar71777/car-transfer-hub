@@ -16,6 +16,7 @@ export function getShiftForTimeSlot(
   for (const shift of shifts) {
     const shiftDate = parseISO(shift.date);
     
+    // Handle free days and full days (both 24 hours)
     if (shift.isFullDay) {
       // For 24h shifts that start at the given date
       const shiftStart = new Date(shiftDate);
@@ -62,4 +63,15 @@ export function getShiftForTimeSlot(
   }
   
   return null;
+}
+
+// Function to determine style for shift based on its type
+export function getShiftStyle(shift: Shift) {
+  if (shift.isFreeDay) {
+    return 'free-day'; // CSS class for free days
+  } else if (shift.isFullDay) {
+    return 'full-day'; // CSS class for 24h shifts
+  } else {
+    return 'half-day'; // CSS class for 12h shifts
+  }
 }

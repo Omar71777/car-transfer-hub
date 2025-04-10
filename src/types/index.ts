@@ -30,6 +30,7 @@ export interface Shift {
   date: string;
   driverId: string;
   isFullDay: boolean; // true para 24h, false para 12h
+  isFreeDay?: boolean; // true para día libre
 }
 
 export interface UserProfile {

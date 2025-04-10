@@ -4,6 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { ShiftCreationForm } from './ShiftCreationForm';
 import { ShiftDeleteForm } from './ShiftDeleteForm';
+import { ShiftTypeSelectionForm } from './ShiftTypeSelectionForm';
 import { Driver } from '@/types';
 
 interface ShiftPopoverProps {
@@ -18,6 +19,9 @@ interface ShiftPopoverProps {
   drivers: Driver[];
   onAddShift: () => void;
   onDeleteShift: (id: string) => void;
+  showTypeSelection: boolean;
+  setShowTypeSelection: (show: boolean) => void;
+  onShiftTypeSelect: (type: string) => void;
 }
 
 export function ShiftPopover({
@@ -32,6 +36,9 @@ export function ShiftPopover({
   drivers,
   onAddShift,
   onDeleteShift,
+  showTypeSelection,
+  setShowTypeSelection,
+  onShiftTypeSelect,
 }: ShiftPopoverProps) {
   if (!selectedCell) return null;
 
@@ -47,6 +54,13 @@ export function ShiftPopover({
             hour={selectedCell.hour} 
             onDelete={onDeleteShift} 
             shiftId={existingShift.shiftId}
+          />
+        ) : showTypeSelection ? (
+          <ShiftTypeSelectionForm
+            day={selectedCell.day}
+            hour={selectedCell.hour}
+            onTypeSelect={onShiftTypeSelect}
+            setShowTypeSelection={setShowTypeSelection}
           />
         ) : (
           <ShiftCreationForm

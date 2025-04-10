@@ -38,10 +38,13 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     filterDriver,
     startDate,
     endDate,
+    showTypeSelection,
+    setShowTypeSelection,
     handleCellClick,
     handleMouseDown,
     handleMouseOver,
     handleOpenChange,
+    handleShiftTypeSelect,
     handleAddShift,
     handleDeleteShift,
     handleDriverFilterChange,
@@ -137,6 +140,9 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
           drivers={drivers}
           onAddShift={handleAddShift}
           onDeleteShift={handleDeleteShift}
+          showTypeSelection={showTypeSelection}
+          setShowTypeSelection={setShowTypeSelection}
+          onShiftTypeSelect={handleShiftTypeSelect}
         />
       </CardContent>
     </Card>

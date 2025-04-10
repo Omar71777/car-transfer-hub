@@ -16,6 +16,9 @@ export function useShiftTimetable(
   // Generate hours for columns (0-23)
   const hours = Array.from({ length: 24 }, (_, i) => i);
   
+  // State for shift type selection
+  const [showTypeSelection, setShowTypeSelection] = useState<boolean>(false);
+  
   // Compose all the hooks
   const { driverColors, getDriverDetails } = useShiftColors(drivers);
   
@@ -46,6 +49,7 @@ export function useShiftTimetable(
 
   const {
     handleCellClick: cellClickHandler,
+    handleShiftTypeSelect: shiftTypeSelectHandler,
     handleAddShift: addShiftHandler,
     handleDeleteShift: deleteShiftHandler
   } = useShiftActions(shifts, onAddShift, onDeleteShift, getDriverDetails);
@@ -59,7 +63,16 @@ export function useShiftTimetable(
       setSelectedCell, 
       setSelectedDriver, 
       setShiftType, 
-      filteredShifts
+      filteredShifts,
+      setShowTypeSelection
+    );
+  };
+
+  const handleShiftTypeSelect = (type: string) => {
+    shiftTypeSelectHandler(
+      type,
+      setShiftType,
+      setShowTypeSelection
     );
   };
 
@@ -95,10 +108,13 @@ export function useShiftTimetable(
     filterDriver,
     startDate,
     endDate,
+    showTypeSelection,
+    setShowTypeSelection,
     handleCellClick,
     handleMouseDown,
     handleMouseOver,
     handleOpenChange,
+    handleShiftTypeSelect,
     handleAddShift,
     handleDeleteShift,
     handleDriverFilterChange,

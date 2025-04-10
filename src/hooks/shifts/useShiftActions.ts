@@ -20,7 +20,8 @@ export function useShiftActions(
     setSelectedCell: (cell: {day: Date, hour: number} | null) => void,
     setSelectedDriver: (driverId: string) => void,
     setShiftType: (type: string) => void,
-    filteredShifts: Shift[]
+    filteredShifts: Shift[],
+    setShowTypeSelection: (show: boolean) => void
   ) => {
     // If we just finished dragging, don't process the click
     if (isDragging) return;
@@ -35,8 +36,20 @@ export function useShiftActions(
       // If no shift, prepare for adding a new one
       setSelectedDriver('');
       setShiftType('half');
+      // Show type selection first
+      setShowTypeSelection(true);
     }
   }, [getDriverDetails]);
+
+  // Handle shift type selection
+  const handleShiftTypeSelect = useCallback((
+    type: string,
+    setShiftType: (type: string) => void,
+    setShowTypeSelection: (show: boolean) => void
+  ) => {
+    setShiftType(type);
+    setShowTypeSelection(false);
+  }, []);
 
   // Handle shift creation
   const handleAddShift = useCallback((
@@ -48,10 +61,14 @@ export function useShiftActions(
     setDragEnd: (cell: {day: Date, hour: number} | null) => void
   ) => {
     if (selectedCell && selectedDriver) {
+      const shiftTypeLabel = shiftType === 'half' ? '12h' : 
+                            shiftType === 'full' ? '24h' : 'día libre';
+      
       onAddShift({
         date: selectedCell.day.toISOString().split('T')[0],
         driverId: selectedDriver,
-        isFullDay: shiftType === 'full',
+        isFullDay: shiftType === 'full' || shiftType === 'free',
+        isFreeDay: shiftType === 'free'
       });
       
       setSelectedCell(null);
@@ -60,7 +77,7 @@ export function useShiftActions(
       
       toast({
         title: "Turno creado",
-        description: `Turno de ${shiftType === 'full' ? '24h' : '12h'} asignado correctamente.`,
+        description: `Turno de ${shiftTypeLabel} asignado correctamente.`,
       });
     }
   }, [onAddShift, toast]);
@@ -80,6 +97,7 @@ export function useShiftActions(
 
   return {
     handleCellClick,
+    handleShiftTypeSelect,
     handleAddShift,
     handleDeleteShift,
   };
