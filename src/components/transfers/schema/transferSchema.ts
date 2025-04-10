@@ -24,12 +24,11 @@ export const transferSchema = z.object({
     z.object({
       id: z.string().optional(),
       name: z.string().min(1, { message: 'El nombre del cargo es requerido' }).optional(),
-      price: z.string().refine(
-        (val) => val === undefined || val === '' || (!isNaN(Number(val)) && Number(val) >= 0), 
-        { message: 'El precio debe ser un número positivo o cero' }
-      ).optional()
+      price: z.union([z.string(), z.number()]).optional().transform(val => 
+        typeof val === 'string' ? val : val?.toString()
+      )
     })
-  ).optional(),
+  ).optional().default([]),
   collaborator: z.string().optional().default(''),
   commissionType: z.enum(['percentage', 'fixed']).default('percentage'),
   commission: z.string().optional().refine(

@@ -13,53 +13,68 @@ const NewTransferPage = () => {
   const { clients, createClient } = useClients();
 
   const handleSubmit = async (values: any) => {
-    // Check if we need to create a new client
-    if (values.clientId === 'new' && values.clientName) {
-      // Create new client with just the name
-      // Generate a temporary email if needed
-      const clientEmail = values.clientEmail || `${values.clientName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
-      
-      const clientId = await createClient({
-        name: values.clientName,
-        email: clientEmail,
-      });
-      
-      if (clientId) {
-        // Update the clientId with the newly created client ID
-        values.clientId = clientId;
-        toast.success('Cliente creado exitosamente');
-      } else {
-        toast.error('No se pudo crear el cliente');
-        return;
+    console.log('New transfer form submitted with values:', values);
+    
+    try {
+      // Check if we need to create a new client
+      if (values.clientId === 'new' && values.clientName) {
+        // Create new client with just the name
+        // Generate a temporary email if needed
+        const clientEmail = values.clientEmail || `${values.clientName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
+        
+        console.log('Creating new client:', { name: values.clientName, email: clientEmail });
+        const clientId = await createClient({
+          name: values.clientName,
+          email: clientEmail,
+        });
+        
+        if (clientId) {
+          // Update the clientId with the newly created client ID
+          values.clientId = clientId;
+          console.log('Client created successfully with ID:', clientId);
+          toast.success('Cliente creado exitosamente');
+        } else {
+          console.error('Failed to create client');
+          toast.error('No se pudo crear el cliente');
+          return;
+        }
       }
-    }
-    
-    // Process commission value
-    if (values.commission === '' || values.commission === undefined) {
-      values.commission = 0;
-    }
+      
+      // Process commission value
+      if (values.commission === '' || values.commission === undefined) {
+        values.commission = 0;
+      }
 
-    // Process discount value
-    if (!values.discountType || values.discountValue === '' || values.discountValue === undefined) {
-      values.discountType = null;
-      values.discountValue = 0;
-    }
-    
-    // Make sure extra charges is an array
-    if (!Array.isArray(values.extraCharges)) {
-      values.extraCharges = [];
-    }
-    
-    // Filter out invalid extra charges
-    values.extraCharges = values.extraCharges.filter((charge: any) => 
-      charge && charge.name && charge.price && charge.name.trim() !== ''
-    );
-    
-    const transferId = await createTransfer(values);
-    
-    if (transferId) {
-      toast.success('Transfer creado exitosamente');
-      navigate('/transfers');
+      // Process discount value
+      if (!values.discountType || values.discountValue === '' || values.discountValue === undefined) {
+        values.discountType = null;
+        values.discountValue = 0;
+      }
+      
+      // Make sure extra charges is an array
+      if (!Array.isArray(values.extraCharges)) {
+        values.extraCharges = [];
+      }
+      
+      // Filter out invalid extra charges
+      values.extraCharges = values.extraCharges.filter((charge: any) => 
+        charge && charge.name && charge.price && charge.name.trim() !== ''
+      );
+      
+      console.log('Creating transfer with processed values:', values);
+      const transferId = await createTransfer(values);
+      
+      if (transferId) {
+        console.log('Transfer created successfully with ID:', transferId);
+        toast.success('Transfer creado exitosamente');
+        navigate('/transfers');
+      } else {
+        console.error('Failed to create transfer');
+        toast.error('Error al crear el transfer');
+      }
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      toast.error('Error al procesar el formulario');
     }
   };
 

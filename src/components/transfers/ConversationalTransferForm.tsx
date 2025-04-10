@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -70,8 +70,8 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     { id: 'client', title: 'Cliente', component: ClientStep },
     { id: 'datetime', title: 'Fecha y Hora', component: DateTimeStep },
     { id: 'location', title: 'Ubicación', component: LocationStep },
-    { id: 'extraCharges', title: 'Cargos Extra', component: ExtraChargesStep },
     { id: 'pricing', title: 'Precio', component: PricingStep },
+    { id: 'extraCharges', title: 'Cargos Extra', component: ExtraChargesStep },
     { id: 'collaborator', title: 'Colaborador', component: CollaboratorStep },
     { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep },
   ];
@@ -86,9 +86,17 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
   
   const CurrentStepComponent = activeSteps[currentStep].component;
 
+  // Add logging to track step progression
+  useEffect(() => {
+    console.log('Current step:', currentStep, activeSteps[currentStep].id);
+    console.log('Form values:', methods.getValues());
+  }, [currentStep, activeSteps, methods]);
+
   // Handle next step
   const handleNext = async () => {
-    // If on collaborator step and user selects "No collaborator", skip the commissions
+    console.log('Attempting to move to next step from:', activeSteps[currentStep].id);
+    
+    // If on pricing step and user selects "No collaborator", skip the commissions
     if (activeSteps[currentStep].id === 'pricing') {
       const hasCollaborator = methods.getValues('collaborator') !== '' && 
                               methods.getValues('collaborator') !== 'none';
@@ -97,6 +105,7 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
 
     // If this is the last step, submit the form
     if (currentStep === activeSteps.length - 1) {
+      console.log('Final step reached - submitting form');
       methods.handleSubmit((data) => {
         // Process the form data
         const processedValues = {
@@ -111,6 +120,7 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
             price: Number(charge.price)
           }))
         };
+        console.log('Submitting form with data:', processedValues);
         onSubmit(processedValues);
       })();
       return;
@@ -118,11 +128,15 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
 
     // Validate current step fields before proceeding
     const stepFields = getFieldsForStep(activeSteps[currentStep].id);
+    console.log('Validating fields for current step:', stepFields);
     const isStepValid = await methods.trigger(stepFields as any);
+    console.log('Step validation result:', isStepValid);
 
     if (isStepValid) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
+    } else {
+      console.log('Validation errors:', methods.formState.errors);
     }
   };
 

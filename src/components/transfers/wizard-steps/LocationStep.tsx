@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -14,8 +14,22 @@ interface LocationStepProps {
 }
 
 export function LocationStep({ clients, collaborators, formState }: LocationStepProps) {
-  const { control, watch } = useFormContext();
+  const { control, watch, setValue, trigger } = useFormContext();
   const serviceType = watch('serviceType');
+  
+  // Re-trigger validation when service type changes
+  useEffect(() => {
+    console.log('Service type changed to:', serviceType);
+    // Clear fields that are not relevant for the current service type
+    if (serviceType === 'transfer') {
+      setValue('hours', '');
+    } else if (serviceType === 'dispo') {
+      setValue('destination', '');
+    }
+    
+    // Trigger validation for the fields
+    trigger(['origin', 'destination', 'hours']);
+  }, [serviceType, setValue, trigger]);
 
   return (
     <div className="space-y-6">
@@ -35,7 +49,10 @@ export function LocationStep({ clients, collaborators, formState }: LocationStep
             <FormLabel>Tipo de servicio *</FormLabel>
             <FormControl>
               <RadioGroup
-                onValueChange={field.onChange}
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  console.log('Service type selected:', value);
+                }}
                 defaultValue={field.value}
                 className="flex flex-col space-y-1"
                 value={field.value}
@@ -116,7 +133,18 @@ export function LocationStep({ clients, collaborators, formState }: LocationStep
               <FormItem>
                 <FormLabel>Horas contratadas *</FormLabel>
                 <FormControl>
-                  <Input type="number" min="1" step="1" placeholder="4" {...field} className="w-full" />
+                  <Input 
+                    type="number" 
+                    min="1" 
+                    step="1" 
+                    placeholder="4" 
+                    {...field} 
+                    className="w-full" 
+                    onChange={(e) => {
+                      field.onChange(e);
+                      console.log('Hours changed to:', e.target.value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

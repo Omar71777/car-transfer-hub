@@ -19,22 +19,26 @@ export function ExtraChargesStep({ clients, collaborators, formState }: ExtraCha
   const extraCharges = watch('extraCharges') || [];
 
   const handleAddCharge = () => {
-    setValue('extraCharges', [
+    const updatedCharges = [
       ...extraCharges,
       { id: uuidv4(), name: '', price: '' }
-    ]);
+    ];
+    setValue('extraCharges', updatedCharges);
+    console.log('Added new charge. Updated charges:', updatedCharges);
   };
 
   const handleRemoveCharge = (index: number) => {
     const newExtraCharges = [...extraCharges];
     newExtraCharges.splice(index, 1);
     setValue('extraCharges', newExtraCharges);
+    console.log('Removed charge at index', index, 'Updated charges:', newExtraCharges);
   };
 
   const handleUpdateCharge = (index: number, field: string, value: string) => {
     const newExtraCharges = [...extraCharges];
     newExtraCharges[index][field] = value;
     setValue('extraCharges', newExtraCharges);
+    console.log(`Updated ${field} to ${value} for charge at index ${index}`);
   };
 
   return (
@@ -59,7 +63,7 @@ export function ExtraChargesStep({ clients, collaborators, formState }: ExtraCha
                       <FormControl>
                         <Input 
                           placeholder="Ej: Silla de bebé" 
-                          value={charge.name}
+                          value={charge.name || ''}
                           onChange={(e) => handleUpdateCharge(index, 'name', e.target.value)}
                           className="w-full"
                         />
@@ -75,7 +79,7 @@ export function ExtraChargesStep({ clients, collaborators, formState }: ExtraCha
                           min="0" 
                           step="0.01" 
                           placeholder="10.00" 
-                          value={charge.price}
+                          value={charge.price || ''}
                           onChange={(e) => handleUpdateCharge(index, 'price', e.target.value)}
                           className="w-full"
                         />

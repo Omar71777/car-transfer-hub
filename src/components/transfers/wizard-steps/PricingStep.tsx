@@ -15,7 +15,7 @@ interface PricingStepProps {
 }
 
 export function PricingStep({ clients, collaborators, formState }: PricingStepProps) {
-  const { control, watch } = useFormContext();
+  const { control, watch, setValue } = useFormContext();
   const discountType = watch('discountType');
   const extraCharges = watch('extraCharges') || [];
   const serviceType = watch('serviceType');
@@ -79,8 +79,11 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
             render={({ field }) => (
               <FormItem>
                 <Select 
-                  onValueChange={field.onChange} 
-                  value={field.value || ''} 
+                  onValueChange={(value) => {
+                    field.onChange(value || null);
+                    console.log('Selected discount type:', value);
+                  }} 
+                  value={field.value || ''}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -165,7 +168,10 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
               <FormLabel>¿Es un servicio de colaborador?</FormLabel>
               <FormControl>
                 <RadioGroup
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    field.onChange(value === 'yes' ? '' : 'none');
+                    console.log('Collaborator selection:', value, 'Field value will be:', value === 'yes' ? '' : 'none');
+                  }}
                   value={field.value !== '' && field.value !== 'none' ? 'yes' : 'no'}
                   className="flex flex-col space-y-1"
                 >
