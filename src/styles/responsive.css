@@ -25,5 +25,34 @@
   .mobile-table td {
     @apply py-1 px-1;
   }
+  
+  /* Improved button sizing for mobile */
+  button.mobile-btn {
+    @apply h-9 px-3 py-1.5 text-sm;
+  }
+  
+  /* Card content padding for mobile */
+  .card-mobile-padding {
+    @apply px-2 py-3;
+  }
+  
+  /* Input sizing for mobile */
+  .mobile-input {
+    @apply h-9 px-2 py-1.5 text-sm;
+  }
 }
 
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+  button, 
+  .button, 
+  a[role="button"],
+  .clickable {
+    @apply min-h-9 min-w-9;
+  }
+  
+  /* Better spacing for stacked elements */
+  .mobile-stack > * + * {
+    @apply mt-3;
+  }
+}

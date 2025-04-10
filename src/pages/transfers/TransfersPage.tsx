@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TransfersTable } from '@/components/transfers/TransfersTable';
@@ -11,6 +12,8 @@ import { toast } from 'sonner';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 const TransfersPage = () => {
   const {
     transfers,
@@ -26,13 +29,17 @@ const TransfersPage = () => {
   const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
+  const isMobile = useIsMobile();
+  
   useEffect(() => {
     fetchTransfers();
   }, [fetchTransfers]);
+  
   const handleEditTransfer = (transfer: Transfer) => {
     setEditingTransfer(transfer);
     setIsEditDialogOpen(true);
   };
+  
   const handleEditSubmit = async (values: any) => {
     if (!editingTransfer) return;
     const success = await updateTransfer(editingTransfer.id, values);
@@ -42,6 +49,7 @@ const TransfersPage = () => {
       fetchTransfers();
     }
   };
+  
   const handleDeleteTransfer = async (id: string) => {
     const success = await deleteTransfer(id);
     if (success) {
@@ -49,10 +57,12 @@ const TransfersPage = () => {
       fetchTransfers();
     }
   };
+  
   const handleAddExpense = (transferId: string) => {
     setSelectedTransferId(transferId);
     setIsExpenseDialogOpen(true);
   };
+  
   const handleExpenseSubmit = async (values: any) => {
     const expenseId = await createExpense({
       transferId: selectedTransferId || '',
@@ -66,27 +76,38 @@ const TransfersPage = () => {
       fetchTransfers();
     }
   };
-  return <MainLayout>
-      <div className="py-[40px] px-[3px]">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-1 text-ibiza-900 text-left">Transfers</h1>
-            <p className="text-muted-foreground text-left">Gestiona todos tus servicios de transfer</p>
+  
+  return (
+    <MainLayout>
+      <div className="py-4 md:py-6">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 md:mb-6 px-2 md:px-0">
+          <div className="mb-4 md:mb-0">
+            <h1 className="text-2xl md:text-3xl font-bold mb-1 text-ibiza-900 text-left">Transfers</h1>
+            <p className="text-muted-foreground text-left text-sm md:text-base">Gestiona todos tus servicios de transfer</p>
           </div>
-          <Button asChild>
-            <Link to="/transfers/new" className="mx-0 my-0 py-[42px]">
+          <Button asChild className="self-stretch md:self-auto">
+            <Link to="/transfers/new">
               <PlusCircle className="mr-2 h-4 w-4" />
               Nuevo Transfer
             </Link>
           </Button>
         </div>
 
-        {loading ? <div className="flex justify-center items-center h-64">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">Cargando transfers...</p>
-          </div> : <TransfersTable transfers={transfers} onEdit={handleEditTransfer} onDelete={handleDeleteTransfer} onAddExpense={handleAddExpense} />}
+          </div>
+        ) : (
+          <TransfersTable 
+            transfers={transfers} 
+            onEdit={handleEditTransfer} 
+            onDelete={handleDeleteTransfer} 
+            onAddExpense={handleAddExpense} 
+          />
+        )}
 
         <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
-          <DialogContent>
+          <DialogContent className={isMobile ? "max-w-[95vw] p-4 rounded-lg" : ""}>
             <DialogHeader>
               <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
             </DialogHeader>
@@ -95,14 +116,22 @@ const TransfersPage = () => {
         </Dialog>
 
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className={isMobile ? "max-w-[95vw] p-4 rounded-lg" : "sm:max-w-[600px]"}>
             <DialogHeader>
               <DialogTitle>Editar Transfer</DialogTitle>
             </DialogHeader>
-            {editingTransfer && <TransferForm onSubmit={handleEditSubmit} initialValues={editingTransfer} isEditing={true} />}
+            {editingTransfer && (
+              <TransferForm 
+                onSubmit={handleEditSubmit} 
+                initialValues={editingTransfer} 
+                isEditing={true} 
+              />
+            )}
           </DialogContent>
         </Dialog>
       </div>
-    </MainLayout>;
+    </MainLayout>
+  );
 };
+
 export default TransfersPage;

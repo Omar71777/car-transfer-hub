@@ -21,10 +21,10 @@ const NewTransferPage = () => {
 
   return (
     <MainLayout>
-      <div className="py-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-1 text-ibiza-900">Nuevo Transfer</h1>
-          <p className="text-muted-foreground">Completa el formulario para registrar un nuevo servicio</p>
+      <div className="py-4 md:py-6 px-2 md:px-0">
+        <div className="mb-4 md:mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold mb-1 text-ibiza-900 text-left">Nuevo Transfer</h1>
+          <p className="text-muted-foreground text-left text-sm md:text-base">Completa el formulario para registrar un nuevo servicio</p>
         </div>
         
         <TransferForm onSubmit={handleSubmit} />

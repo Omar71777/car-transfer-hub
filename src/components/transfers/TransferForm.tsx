@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Transfer } from '@/types';
 import { useCollaborators } from '@/hooks/useCollaborators';
@@ -81,10 +81,11 @@ export function TransferForm({
     toast.success(isEditing ? 'Transfer actualizado con éxito' : 'Transfer creado con éxito');
   }
 
-  return <Card className="glass-card w-full max-w-2xl mx-auto">
-      <CardContent className="my-0 mx-0 px-0 py-0">
+  return (
+    <Card className="glass-card w-full max-full mx-auto">
+      <CardContent className="pt-4 px-3 md:px-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 md:space-y-6">
             <DateTimeFields form={form} />
             <LocationFields form={form} />
             <PricingFields form={form} />
@@ -97,5 +98,6 @@ export function TransferForm({
           </form>
         </Form>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 }

@@ -38,7 +38,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <AppSidebar />
           <main className="flex-1 p-0 md:p-4 lg:p-6 overflow-auto max-w-full">
             <MobileSidebarToggle />
-            <div className="container mx-auto max-w-7xl pt-8 px-0 sm:px-2 md:pt-0 md:px-4">
+            <div className="container mx-auto max-w-7xl pt-8 px-2 md:pt-0 md:px-4">
               {children}
             </div>
           </main>
