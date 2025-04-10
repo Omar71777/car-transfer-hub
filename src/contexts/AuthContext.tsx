@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,6 +22,7 @@ type AuthContextType = {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateUserProfile: (data: Partial<UserProfile>) => Promise<void>;
+  deleteAccount: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,13 +55,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Set up auth listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // Check admin status when session changes
         if (session?.user) {
           setTimeout(() => fetchUserProfile(session.user.id), 0);
         } else {
@@ -71,7 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -137,13 +134,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
       
-      // Update local state
       setProfile(prev => prev ? { ...prev, ...data } : null);
       
       toast.success('Perfil actualizado con éxito');
     } catch (error: any) {
       toast.error(`Error al actualizar el perfil: ${error.message}`);
       throw error;
+    }
+  };
+
+  const deleteAccount = async (): Promise<boolean> => {
+    if (!user || !session) return false;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-account', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      
+      if (error) throw error;
+      
+      await supabase.auth.signOut();
+      
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setIsAdmin(false);
+      
+      toast.success('Cuenta eliminada con éxito');
+      return true;
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      toast.error(`Error al eliminar la cuenta: ${error.message}`);
+      return false;
     }
   };
 
@@ -157,6 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     updateUserProfile,
+    deleteAccount,
   };
 
   return (

@@ -14,6 +14,7 @@ import ExpensesPage from "./pages/expenses/ExpensesPage";
 import ProfitsPage from "./pages/profits/ProfitsPage";
 import ShiftsPage from "./pages/shifts/ShiftsPage";
 import CollaboratorsPage from "./pages/collaborators/CollaboratorsPage";
+import ProfilePage from "./pages/profile/ProfilePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const AppRoutes = () => (
     <Route path="/profits" element={<ProtectedRoute><ProfitsPage /></ProtectedRoute>} />
     <Route path="/shifts" element={<ProtectedRoute><ShiftsPage /></ProtectedRoute>} />
     <Route path="/collaborators" element={<ProtectedRoute><CollaboratorsPage /></ProtectedRoute>} />
+    <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
     
     {/* Admin routes */}
     <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />

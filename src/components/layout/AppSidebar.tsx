@@ -1,137 +1,167 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, CreditCard, Home, PlusCircle, DollarSign, BarChart2, UserCheck, Users, LogOut } from 'lucide-react';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarTrigger,
-  SidebarHeader,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarFooter
-} from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
+import { BadgeEuro, BarChart3, Building2, Calendar, FileSpreadsheet, Files, Home, LogOut, Settings, TruckIcon, Users } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Sidebar, SidebarGroup, SidebarMenu, SidebarMenuItem, SidebarSub } from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
 
-export const AppSidebar = () => {
+export interface AppSidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const AppSidebar: React.FC<AppSidebarProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const location = useLocation();
-  const { isAdmin, signOut, user, profile } = useAuth();
-  const isMobile = useIsMobile();
-  
-  const menuItems = [
-    { icon: Home, label: 'Inicio', path: '/' },
-    { icon: PlusCircle, label: 'Nuevo Transfer', path: '/transfers/new' },
-    { icon: Calendar, label: 'Transfers', path: '/transfers' },
-    { icon: CreditCard, label: 'Gastos', path: '/expenses' },
-    { icon: BarChart2, label: 'Ganancias', path: '/profits' },
-    { icon: UserCheck, label: 'Turnos', path: '/shifts' },
-  ];
+  const { profile, isAdmin, signOut } = useAuth();
 
-  const adminItems = [
-    { icon: Users, label: 'Usuarios', path: '/admin/users' },
-  ];
+  // Get the initials of the user's name
+  const getInitials = () => {
+    if (!profile) return 'U';
+    
+    const firstInitial = profile.first_name?.charAt(0) || '';
+    const lastInitial = profile.last_name?.charAt(0) || '';
+    
+    return firstInitial + lastInitial || profile.email?.charAt(0).toUpperCase() || 'U';
+  };
 
-  const getDisplayName = () => {
-    if (profile?.first_name && profile?.last_name) {
+  // Full name display
+  const fullName = () => {
+    if (!profile) return 'Usuario';
+    
+    if (profile.first_name && profile.last_name) {
       return `${profile.first_name} ${profile.last_name}`;
     }
-    return profile?.email || user?.email || 'Usuario';
+    
+    return profile.email || 'Usuario';
   };
 
   return (
-    <Sidebar>
-      <SidebarHeader className="px-6 py-4">
-        <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-white/90 flex items-center justify-center">
-              <span className="text-primary text-lg font-bold">ITH</span>
-            </div>
-            <span className="text-xl font-bold text-white">Ibiza Transfer Hub</span>
-          </Link>
-          <SidebarTrigger className="ml-auto lg:hidden" />
+    <Sidebar open={isOpen} onClose={onClose} className="top-0">
+      <div className="pb-4">
+        <div className="px-4 py-6 flex items-center">
+          <Avatar className="h-9 w-9 mr-2">
+            <AvatarFallback>{getInitials()}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col justify-center overflow-hidden">
+            <p className="text-sm font-medium truncate">
+              {fullName()}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {profile?.email || 'usuario@ejemplo.com'}
+            </p>
+          </div>
         </div>
-      </SidebarHeader>
-      <SidebarContent className="px-2">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-accent-foreground/80">Navegación</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.path}>
-                  <SidebarMenuButton asChild className={cn(
-                    "transition-all",
-                    location.pathname === item.path 
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground" 
-                      : "hover:bg-sidebar-background/80 hover:text-white")
-                  }>
-                    <Link to={item.path} className="flex items-center gap-3">
-                      <item.icon size={18} />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
+        <Separator />
+      </div>
+
+      <SidebarMenu>
+        <SidebarMenuItem
+          icon={<Home size={20} />}
+          className={location.pathname === '/' ? 'text-primary' : undefined}
+          href="/"
+          as={Link}
+        >
+          Inicio
+        </SidebarMenuItem>
+
+        <SidebarMenuItem
+          icon={<TruckIcon size={20} />}
+          className={location.pathname.includes('/transfers') ? 'text-primary' : undefined}
+          href="/transfers"
+          as={Link}
+        >
+          Transfers
+        </SidebarMenuItem>
+
+        <SidebarMenuItem
+          icon={<Files size={20} />}
+          className={location.pathname.includes('/expenses') ? 'text-primary' : undefined}
+          href="/expenses"
+          as={Link}
+        >
+          Gastos
+        </SidebarMenuItem>
+
+        <SidebarMenuItem
+          icon={<BadgeEuro size={20} />}
+          className={location.pathname.includes('/profits') ? 'text-primary' : undefined}
+          href="/profits"
+          as={Link}
+        >
+          Ganancias
+        </SidebarMenuItem>
+
+        <SidebarMenuItem
+          icon={<Calendar size={20} />}
+          className={location.pathname.includes('/shifts') ? 'text-primary' : undefined}
+          href="/shifts"
+          as={Link}
+        >
+          Turnos
+        </SidebarMenuItem>
+
+        <SidebarMenuItem
+          icon={<Building2 size={20} />}
+          className={location.pathname.includes('/collaborators') ? 'text-primary' : undefined}
+          href="/collaborators"
+          as={Link}
+        >
+          Colaboradores
+        </SidebarMenuItem>
+
+        <SidebarGroup title="MI CUENTA" collapsible>
+          <SidebarMenuItem
+            icon={<Settings size={20} />}
+            className={location.pathname.includes('/profile') ? 'text-primary' : undefined}
+            href="/profile"
+            as={Link}
+          >
+            Mi Perfil
+          </SidebarMenuItem>
+          
+          <SidebarMenuItem
+            icon={<LogOut size={20} />}
+            onClick={signOut}
+          >
+            Cerrar Sesión
+          </SidebarMenuItem>
         </SidebarGroup>
 
         {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel className="text-sidebar-accent-foreground/80">Administración</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {adminItems.map((item) => (
-                  <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton asChild className={cn(
-                      "transition-all",
-                      location.pathname === item.path 
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground" 
-                        : "hover:bg-sidebar-background/80 hover:text-white")
-                    }>
-                      <Link to={item.path} className="flex items-center gap-3">
-                        <item.icon size={18} />
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
+          <SidebarGroup title="ADMINISTRACIÓN" collapsible>
+            <SidebarMenuItem
+              icon={<Users size={20} />}
+              className={location.pathname.includes('/admin/users') ? 'text-primary' : undefined}
+              href="/admin/users"
+              as={Link}
+            >
+              Usuarios
+            </SidebarMenuItem>
+            
+            <SidebarSub title="Reportes">
+              <SidebarMenuItem
+                icon={<FileSpreadsheet size={20} />}
+                href="/admin/reports/transfers"
+                as={Link}
+              >
+                Transfers
+              </SidebarMenuItem>
+              <SidebarMenuItem
+                icon={<BarChart3 size={20} />}
+                href="/admin/reports/analytics"
+                as={Link}
+              >
+                Análisis
+              </SidebarMenuItem>
+            </SidebarSub>
           </SidebarGroup>
         )}
-      </SidebarContent>
-      <SidebarFooter>
-        <div className="px-4 py-4 space-y-4">
-          {user ? (
-            <div className="space-y-2">
-              <div className="text-xs text-white/60 px-2">
-                <div className="font-medium text-white">{getDisplayName()}</div>
-                <div className="text-xs text-white/60 mt-1">{profile?.role === 'admin' ? 'Administrador' : 'Usuario'}</div>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80"
-                onClick={() => signOut()}
-              >
-                <LogOut size={16} className="mr-2" />
-                Cerrar Sesión
-              </Button>
-            </div>
-          ) : (
-            <Button asChild variant="outline" size="sm" className="w-full bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80">
-              <Link to="/auth">Iniciar Sesión</Link>
-            </Button>
-          )}
-          <p className="text-xs text-white/60 px-2">Ibiza Transfer Hub © 2025</p>
-        </div>
-      </SidebarFooter>
+      </SidebarMenu>
     </Sidebar>
   );
 };
