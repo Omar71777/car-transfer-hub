@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BadgeEuro, BarChart3, Building2, Calendar, FileSpreadsheet, Files, Home, TruckIcon } from 'lucide-react';
+import { BadgeEuro, BarChart3, Building2, FileSpreadsheet, Files, Home, TruckIcon } from 'lucide-react';
 import { 
   SidebarMenu, 
   SidebarMenuItem, 

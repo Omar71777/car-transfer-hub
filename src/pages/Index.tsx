@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Users } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useAuth } from '@/contexts/auth';
 import { useDashboardData } from '@/hooks/useDashboardData';
@@ -19,7 +19,7 @@ const Index = () => {
     <MainLayout>
       <div className="py-6">
         <h1 className="text-3xl font-bold mb-2 text-primary">Bienvenido a Ibiza Transfer Hub</h1>
-        <p className="text-muted-foreground mb-8">Gestiona tus transfers, gastos, ganancias y turnos desde un solo lugar.</p>
+        <p className="text-muted-foreground mb-8">Gestiona tus transfers, gastos y ganancias desde un solo lugar.</p>
         
         {isAdmin && (
           <Card className="glass-card mb-8 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50">
@@ -49,29 +49,10 @@ const Index = () => {
         {/* Quick Access Cards */}
         <QuickAccessCards />
         
-        {/* Shifts Section */}
+        {/* Information Section */}
         <div className="mb-12 mt-12">
           <ShiftSection />
         </div>
-
-        <Card className="glass-card bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div>
-                <h3 className="text-lg font-semibold mb-1">Gestión de Conductores</h3>
-                <p className="text-sm text-muted-foreground">
-                  Administra los perfiles de tus conductores para asignarles turnos y servicios
-                </p>
-              </div>
-              <Button asChild>
-                <Link to="/shifts">
-                  Gestionar Conductores
-                  <Users className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </MainLayout>
   );
