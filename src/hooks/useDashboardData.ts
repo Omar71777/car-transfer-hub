@@ -100,6 +100,7 @@ export function useDashboardData() {
           upcomingShifts: upcoming.length
         });
         
+        // Take up to 3 shifts but ensure we get the most immediate ones
         setUpcomingShifts(upcoming.slice(0, 3));
       } catch (error: any) {
         console.error('Error loading dashboard data:', error);

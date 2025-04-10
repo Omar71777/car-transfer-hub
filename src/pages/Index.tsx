@@ -22,7 +22,7 @@ const Index = () => {
         <p className="text-muted-foreground mb-8">Gestiona tus transfers, gastos, ganancias y turnos desde un solo lugar.</p>
         
         {isAdmin && (
-          <Card className="glass-card mb-8 bg-amber-50 border-amber-200">
+          <Card className="glass-card mb-8 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50">
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
@@ -51,12 +51,12 @@ const Index = () => {
         
         {/* Shifts Section */}
         <div className="mb-12 mt-12">
-          <ShiftSection upcomingShifts={upcomingShifts} />
+          <ShiftSection upcomingShifts={upcomingShifts} loading={loading} />
         </div>
 
-        <Card className="glass-card bg-gradient-to-r from-blue-50 to-indigo-50">
+        <Card className="glass-card bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
           <CardContent className="p-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
                 <h3 className="text-lg font-semibold mb-1">Gestión de Conductores</h3>
                 <p className="text-sm text-muted-foreground">
