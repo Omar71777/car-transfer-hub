@@ -62,21 +62,21 @@ function App() {
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
 
-            <Route path="/" element={<MainLayout><ProtectedRoute /></MainLayout>}>
-              <Route index element={<Index />} />
-              <Route path="transfers" element={<TransfersPage />} />
-              <Route path="transfers/new" element={<NewTransferPage />} />
-              <Route path="transfers/pending" element={<PendingTransfersReportPage />} />
-              <Route path="expenses" element={<ExpensesPage />} />
-              <Route path="profits" element={<ProfitsPage />} />
-              <Route path="collaborators" element={<CollaboratorsPage />} />
-              <Route path="profile" element={<ProfilePage />} />
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="transfers" element={<ProtectedRoute><TransfersPage /></ProtectedRoute>} />
+              <Route path="transfers/new" element={<ProtectedRoute><NewTransferPage /></ProtectedRoute>} />
+              <Route path="transfers/pending" element={<ProtectedRoute><PendingTransfersReportPage /></ProtectedRoute>} />
+              <Route path="expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
+              <Route path="profits" element={<ProtectedRoute><ProfitsPage /></ProtectedRoute>} />
+              <Route path="collaborators" element={<ProtectedRoute><CollaboratorsPage /></ProtectedRoute>} />
+              <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               
               {/* Admin Routes */}
-              <Route path="admin" element={<AdminRoute />}>
-                <Route path="users" element={<UsersPage />} />
-                <Route path="reports/transfers" element={<TransfersReportPage />} />
-                <Route path="reports/analytics" element={<AnalyticsReportPage />} />
+              <Route path="admin">
+                <Route path="users" element={<AdminRoute><UsersPage /></AdminRoute>} />
+                <Route path="reports/transfers" element={<AdminRoute><TransfersReportPage /></AdminRoute>} />
+                <Route path="reports/analytics" element={<AdminRoute><AnalyticsReportPage /></AdminRoute>} />
               </Route>
             </Route>
 

@@ -6,10 +6,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-interface MainLayoutProps {
-  children: React.ReactNode;
-}
+import { Outlet } from 'react-router-dom';
 
 // Sidebar toggle for mobile
 const MobileSidebarToggle = () => {
@@ -28,7 +25,7 @@ const MobileSidebarToggle = () => {
   );
 };
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+export const MainLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const isMobile = useIsMobile();
   
   return (
@@ -39,7 +36,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto max-w-full">
             <MobileSidebarToggle />
             <div className="container mx-auto max-w-7xl pt-8 md:pt-0">
-              {children}
+              {children || <Outlet />}
             </div>
           </main>
         </div>
