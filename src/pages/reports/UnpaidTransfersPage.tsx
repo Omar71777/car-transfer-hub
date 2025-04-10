@@ -1,109 +1,31 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { useTransfers } from '@/hooks/useTransfers';
-import { Transfer } from '@/types';
 import { UnpaidTransfersTable } from '@/components/reports/UnpaidTransfersTable';
 import { UnpaidCollaboratorSummary } from '@/components/reports/UnpaidCollaboratorSummary';
 import { useCollaborators } from '@/hooks/useCollaborators';
-import { Printer, FileDown } from 'lucide-react';
 import { printUnpaidReport } from '@/lib/exports/printUnpaidReport';
 import { downloadCSV, prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from '@/lib/exports';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useAuth } from '@/contexts/auth';
+import { UnpaidPageHeader } from '@/components/reports/unpaid/UnpaidPageHeader';
+import { CollaboratorFilter } from '@/components/reports/unpaid/CollaboratorFilter';
+import { useUnpaidTransfersData } from '@/hooks/useUnpaidTransfersData';
 
 const UnpaidTransfersPage = () => {
   const { transfers, loading } = useTransfers();
   const { collaborators } = useCollaborators();
   const { profile } = useAuth();
   const [selectedCollaborator, setSelectedCollaborator] = useState<string>('all');
-  const [unpaidTransfers, setUnpaidTransfers] = useState<Transfer[]>([]);
   const [activeTab, setActiveTab] = useState<string>('table');
   
-  // Filter transfers for unpaid ones
-  useEffect(() => {
-    const filtered = transfers.filter(t => t.paymentStatus === 'pending');
-    
-    if (selectedCollaborator === 'all') {
-      setUnpaidTransfers(filtered);
-    } else {
-      setUnpaidTransfers(filtered.filter(t => t.collaborator === selectedCollaborator));
-    }
-  }, [transfers, selectedCollaborator]);
-  
-  // Get unique collaborators from unpaid transfers
-  const getUnpaidCollaborators = () => {
-    const collaboratorNames = Array.from(
-      new Set(transfers.filter(t => t.paymentStatus === 'pending').map(t => t.collaborator))
-    ).filter(Boolean) as string[];
-    
-    return collaboratorNames;
-  };
-  
-  // Calculate total unpaid amount for a collaborator - now calculating price minus commission
-  const calculateUnpaidTotal = (collaboratorName: string) => {
-    return transfers
-      .filter(t => t.paymentStatus === 'pending' && t.collaborator === collaboratorName)
-      .reduce((sum, t) => {
-        const commissionAmount = (t.price * t.commission / 100);
-        return sum + (t.price - commissionAmount);
-      }, 0);
-  };
-  
-  // Group unpaid transfers by month for each collaborator
-  const getMonthlyUnpaidData = () => {
-    const collaboratorNames = getUnpaidCollaborators();
-    const monthlyData: any[] = [];
-    
-    collaboratorNames.forEach(name => {
-      if (!name) return;
-      
-      const collaboratorTransfers = transfers.filter(
-        t => t.paymentStatus === 'pending' && t.collaborator === name
-      );
-      
-      // Group by month - now using Spanish locale
-      const monthGroups: Record<string, Transfer[]> = {};
-      
-      collaboratorTransfers.forEach(transfer => {
-        try {
-          const date = new Date(transfer.date);
-          const monthYear = format(date, 'MMMM yyyy', { locale: es });
-          
-          if (!monthGroups[monthYear]) {
-            monthGroups[monthYear] = [];
-          }
-          
-          monthGroups[monthYear].push(transfer);
-        } catch (error) {
-          console.error('Error parsing date:', transfer.date);
-        }
-      });
-      
-      // Calculate total for each month - now calculating price minus commission
-      Object.entries(monthGroups).forEach(([month, monthTransfers]) => {
-        const total = monthTransfers.reduce((sum, t) => {
-          const commissionAmount = (t.price * t.commission / 100);
-          return sum + (t.price - commissionAmount);
-        }, 0);
-        
-        monthlyData.push({
-          collaborator: name,
-          month,
-          transferCount: monthTransfers.length,
-          total,
-          transfers: monthTransfers
-        });
-      });
-    });
-    
-    return monthlyData;
-  };
+  // Use our custom hook to handle unpaid transfers data
+  const { 
+    unpaidTransfers, 
+    getMonthlyUnpaidData 
+  } = useUnpaidTransfersData(transfers, selectedCollaborator);
   
   const handlePrint = () => {
     const monthlyUnpaidData = getMonthlyUnpaidData();
@@ -131,45 +53,13 @@ const UnpaidTransfersPage = () => {
   return (
     <MainLayout>
       <div className="py-6">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-1 text-primary">Pagos Pendientes</h1>
-            <p className="text-muted-foreground">Gestión de pagos pendientes a colaboradores</p>
-          </div>
-          
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExportCSV}>
-              <FileDown className="h-4 w-4 mr-2" />
-              Exportar CSV
-            </Button>
-            <Button variant="outline" onClick={handlePrint}>
-              <Printer className="h-4 w-4 mr-2" />
-              Imprimir
-            </Button>
-          </div>
-        </div>
+        <UnpaidPageHeader onExportCSV={handleExportCSV} onPrint={handlePrint} />
         
-        <Card className="mb-6">
-          <CardContent className="py-4 mt-4">
-            <div className="flex items-center">
-              <div className="w-64">
-                <Select value={selectedCollaborator} onValueChange={setSelectedCollaborator}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filtrar por colaborador" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos los colaboradores</SelectItem>
-                    {collaborators.map((collab) => (
-                      <SelectItem key={collab.id} value={collab.name}>
-                        {collab.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <CollaboratorFilter 
+          collaborators={collaborators}
+          selectedCollaborator={selectedCollaborator}
+          onCollaboratorChange={setSelectedCollaborator}
+        />
         
         <Tabs defaultValue="table" onValueChange={setActiveTab}>
           <TabsList>
