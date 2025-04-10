@@ -62,7 +62,7 @@ const ExpensesPage = () => {
     }
   };
   return <MainLayout>
-      <div className="py-6">
+      <div className="py-6 px-[11px]">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold mb-1 text-ibiza-900 text-left">Gastos</h1>
