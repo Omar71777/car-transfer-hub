@@ -1,94 +1,53 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Providers } from './contexts/providers';
+import Index from './pages/Index';
+import TransfersPage from './pages/transfers/TransfersPage';
+import NewTransferPage from './pages/transfers/NewTransferPage';
+import ExpensesPage from './pages/expenses/ExpensesPage';
+import ShiftsPage from './pages/shifts/ShiftsPage';
+import UsersPage from './pages/admin/UsersPage';
+import ProfilePage from './pages/profile/ProfilePage';
+import ProfitsPage from './pages/reports/ProfitsPage';
+import CollaboratorsPage from './pages/collaborators/CollaboratorsPage';
+import UnpaidTransfersPage from './pages/reports/UnpaidTransfersPage';
+import AnalyticsReportPage from './pages/reports/AnalyticsReportPage';
+import TransfersReportPage from './pages/reports/TransfersReportPage';
+import ClientsPage from './pages/clients/ClientsPage';
+import BillingPage from './pages/billing/BillingPage';
+import AuthPage from './pages/auth/AuthPage';
+import NotFound from './pages/NotFound';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/auth";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import Index from "./pages/Index";
-import AuthPage from "./pages/auth/AuthPage";
-import UsersPage from "./pages/admin/UsersPage";
-import TransfersPage from "./pages/transfers/TransfersPage";
-import NewTransferPage from "./pages/transfers/NewTransferPage";
-import ExpensesPage from "./pages/expenses/ExpensesPage";
-import ProfitsPage from "./pages/profits/ProfitsPage";
-import ShiftsPage from "./pages/shifts/ShiftsPage";
-import CollaboratorsPage from "./pages/collaborators/CollaboratorsPage";
-import ProfilePage from "./pages/profile/ProfilePage";
-import NotFound from "./pages/NotFound";
-import AnalyticsReportPage from "./pages/admin/reports/AnalyticsReportPage";
-import UnpaidTransfersPage from "./pages/reports/UnpaidTransfersPage";
-
-const queryClient = new QueryClient();
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
-  }
-  
-  if (!user) {
-    return <Navigate to="/auth" />;
-  }
-  
-  return <>{children}</>;
-};
-
-const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAdmin, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
-  }
-  
-  if (!isAdmin) {
-    return <Navigate to="/" />;
-  }
-  
-  return <>{children}</>;
-};
-
-const AppRoutes = () => (
-  <Routes>
-    <Route path="/auth" element={<AuthPage />} />
-    
-    <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-    <Route path="/transfers" element={<ProtectedRoute><TransfersPage /></ProtectedRoute>} />
-    <Route path="/transfers/new" element={<ProtectedRoute><NewTransferPage /></ProtectedRoute>} />
-    <Route path="/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
-    <Route path="/profits" element={<ProtectedRoute><ProfitsPage /></ProtectedRoute>} />
-    <Route path="/shifts" element={<ProtectedRoute><ShiftsPage /></ProtectedRoute>} />
-    <Route path="/collaborators" element={<ProtectedRoute><CollaboratorsPage /></ProtectedRoute>} />
-    <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-    
-    <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
-    
-    <Route path="/admin/reports/analytics" element={<ProtectedRoute><AnalyticsReportPage /></ProtectedRoute>} />
-    <Route path="/reports/unpaid" element={<ProtectedRoute><UnpaidTransfersPage /></ProtectedRoute>} />
-    
-    {/* Redirect old reports route to the main transfers page */}
-    <Route path="/admin/reports/transfers" element={<Navigate to="/transfers" />} />
-    
-    <Route path="*" element={<NotFound />} />
-  </Routes>
-);
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
+function App() {
+  return (
+    <React.StrictMode>
+      <Providers>
         <BrowserRouter>
-          <AuthProvider>
-            <AppRoutes />
-          </AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/transfers" element={<TransfersPage />} />
+            <Route path="/transfers/new" element={<NewTransferPage />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
+            <Route path="/shifts" element={<ShiftsPage />} />
+            <Route path="/admin/users" element={<UsersPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profits" element={<ProfitsPage />} />
+            <Route path="/collaborators" element={<CollaboratorsPage />} />
+            <Route path="/reports/unpaid" element={<UnpaidTransfersPage />} />
+            <Route path="/admin/reports/analytics" element={<AnalyticsReportPage />} />
+            <Route path="/admin/reports/transfers" element={<TransfersReportPage />} />
+            
+            {/* New billing routes */}
+            <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/billing" element={<BillingPage />} />
+            
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+      </Providers>
+    </React.StrictMode>
+  );
+}
 
 export default App;

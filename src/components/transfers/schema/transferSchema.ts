@@ -19,6 +19,7 @@ export const transferSchema = z.object({
   paymentStatus: z.enum(['paid', 'pending'], {
     required_error: 'El estado de pago es requerido',
   }),
+  clientId: z.string().optional().default(''),
 });
 
 export type TransferFormValues = z.infer<typeof transferSchema>;

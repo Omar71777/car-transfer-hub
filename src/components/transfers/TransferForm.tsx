@@ -8,11 +8,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Transfer } from '@/types';
 import { useCollaborators } from '@/hooks/useCollaborators';
+import { useClients } from '@/hooks/useClients';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
 import { DateTimeFields } from './form-fields/DateTimeFields';
 import { LocationFields } from './form-fields/LocationFields';
 import { PricingFields } from './form-fields/PricingFields';
 import { CollaboratorField } from './form-fields/CollaboratorField';
+import { ClientField } from './form-fields/ClientField';
 import { PaymentStatusField } from './form-fields/PaymentStatusField';
 
 interface TransferFormProps {
@@ -31,11 +33,18 @@ export function TransferForm({
     loading: loadingCollaborators,
     fetchCollaborators
   } = useCollaborators();
+  
+  const {
+    clients,
+    loading: loadingClients,
+    fetchClients
+  } = useClients();
 
-  // Ensure collaborators are fetched when the component mounts
+  // Ensure collaborators and clients are fetched when the component mounts
   React.useEffect(() => {
     fetchCollaborators();
-  }, [fetchCollaborators]);
+    fetchClients();
+  }, [fetchCollaborators, fetchClients]);
 
   // Convert numeric values to string for the form
   const getDefaultValues = () => {
@@ -45,7 +54,8 @@ export function TransferForm({
         price: initialValues.price.toString(),
         commissionType: initialValues.commissionType || 'percentage',
         commission: initialValues.commission?.toString() || '',
-        paymentStatus: initialValues.paymentStatus as 'paid' | 'pending'
+        paymentStatus: initialValues.paymentStatus as 'paid' | 'pending',
+        clientId: initialValues.clientId || ''
       };
     }
     return {
@@ -57,7 +67,8 @@ export function TransferForm({
       collaborator: '',
       commissionType: 'percentage' as const,
       commission: '',
-      paymentStatus: 'pending' as const
+      paymentStatus: 'pending' as const,
+      clientId: ''
     };
   };
 
@@ -93,7 +104,10 @@ export function TransferForm({
             <DateTimeFields form={form} />
             <LocationFields form={form} />
             <PricingFields form={form} />
-            <CollaboratorField form={form} collaborators={collaborators} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CollaboratorField form={form} collaborators={collaborators} />
+              <ClientField form={form} clients={clients} />
+            </div>
             <PaymentStatusField form={form} />
 
             <Button type="submit" className="w-full mobile-btn">

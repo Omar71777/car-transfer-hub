@@ -11,6 +11,8 @@ export interface Transfer {
   commissionType: 'percentage' | 'fixed';
   expenses: Expense[];
   paymentStatus: 'paid' | 'pending';
+  clientId?: string;
+  billed?: boolean;
 }
 
 export interface Expense {
