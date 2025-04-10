@@ -159,7 +159,7 @@ export function printUnpaidReport(
     
     printWindow.document.write(`
         <div class="grand-total">
-          Total a pagar a ${collaborator}: ${collaboratorGrandTotal.toFixed(2)}€
+          Total a cobrar de ${collaborator}: ${collaboratorGrandTotal.toFixed(2)}€
         </div>
       </div>
     `);
