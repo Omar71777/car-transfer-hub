@@ -12,4 +12,23 @@
   .sidebar-menu-item.selected {
     @apply bg-sidebar-selected text-sidebar-foreground font-medium;
   }
+  
+  /* Add new styling improvements for sidebar */
+  .sidebar-header {
+    @apply border-b border-sidebar-border/40 pb-2;
+  }
+  
+  .sidebar-menu-label {
+    @apply text-sidebar-foreground/70 text-xs font-semibold tracking-wider uppercase;
+  }
+  
+  .sidebar-menu-button {
+    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground/90 
+           hover:bg-sidebar-hover hover:text-sidebar-foreground transition-all duration-200
+           focus:outline-none focus:ring-1 focus:ring-sidebar-ring;
+  }
+  
+  .sidebar-menu-button.active {
+    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+  }
 }

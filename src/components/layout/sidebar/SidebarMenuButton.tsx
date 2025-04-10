@@ -18,10 +18,10 @@ export function SidebarMenuButton({ label, icon: Icon, url, end }: SidebarMenuBu
       end={end}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground',
+          'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
           isActive
-            ? 'bg-accent text-accent-foreground font-medium'
-            : 'text-muted-foreground'
+            ? 'bg-sidebar-selected text-sidebar-foreground font-medium shadow-sm'
+            : 'text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground'
         )
       }
     >

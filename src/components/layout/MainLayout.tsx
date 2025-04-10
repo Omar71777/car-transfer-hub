@@ -19,7 +19,7 @@ const MobileSidebarToggle = () => {
     <Button 
       variant="ghost" 
       size="icon" 
-      className="md:hidden fixed top-2 left-2 z-50 bg-background/80 backdrop-blur-sm"
+      className="md:hidden fixed top-2 left-2 z-50 bg-background/80 backdrop-blur-sm shadow-sm"
       onClick={() => setOpenMobile(!openMobile)}
       aria-label="Toggle menu"
     >

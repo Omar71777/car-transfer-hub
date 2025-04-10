@@ -19,7 +19,7 @@ export const AppSidebar = () => {
     <Sidebar>
       <div className="pb-4">
         <SidebarUserProfile profile={profile} />
-        <Separator />
+        <Separator className="bg-sidebar-border/40 my-2" />
       </div>
 
       <SidebarMainMenu />
@@ -27,7 +27,7 @@ export const AppSidebar = () => {
       
       {isAdmin && <SidebarAdminMenu />}
       
-      <SidebarFooter className="mt-auto">
+      <SidebarFooter className="mt-auto border-t border-sidebar-border/40 pt-2">
         <div className="flex items-center justify-between px-4 py-2">
           <span className="text-xs text-sidebar-foreground/70">Tema</span>
           <ThemeToggle className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
