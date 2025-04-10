@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/auth';
@@ -58,36 +57,34 @@ const AdminRoute = ({ children }: { children?: React.ReactNode }) => {
 function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider defaultTheme="system" storageKey="ibiza-transfer-theme">
-        <SupabaseAuthProvider>
-          <TooltipProvider>
-            <Routes>
-              <Route path="/auth" element={<AuthPage />} />
+      <SupabaseAuthProvider>
+        <TooltipProvider>
+          <Routes>
+            <Route path="/auth" element={<AuthPage />} />
 
-              <Route path="/" element={<ProtectedRoute />}>
-                <Route index element={<Index />} />
-                <Route path="transfers" element={<TransfersPage />} />
-                <Route path="transfers/new" element={<NewTransferPage />} />
-                <Route path="transfers/pending" element={<PendingTransfersReportPage />} />
-                <Route path="expenses" element={<ExpensesPage />} />
-                <Route path="profits" element={<ProfitsPage />} />
-                <Route path="collaborators" element={<CollaboratorsPage />} />
-                <Route path="profile" element={<ProfilePage />} />
-                
-                {/* Admin Routes */}
-                <Route path="admin" element={<AdminRoute />}>
-                  <Route path="users" element={<UsersPage />} />
-                  <Route path="reports/transfers" element={<TransfersReportPage />} />
-                  <Route path="reports/analytics" element={<AnalyticsReportPage />} />
-                </Route>
+            <Route path="/" element={<ProtectedRoute />}>
+              <Route index element={<Index />} />
+              <Route path="transfers" element={<TransfersPage />} />
+              <Route path="transfers/new" element={<NewTransferPage />} />
+              <Route path="transfers/pending" element={<PendingTransfersReportPage />} />
+              <Route path="expenses" element={<ExpensesPage />} />
+              <Route path="profits" element={<ProfitsPage />} />
+              <Route path="collaborators" element={<CollaboratorsPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              
+              {/* Admin Routes */}
+              <Route path="admin" element={<AdminRoute />}>
+                <Route path="users" element={<UsersPage />} />
+                <Route path="reports/transfers" element={<TransfersReportPage />} />
+                <Route path="reports/analytics" element={<AnalyticsReportPage />} />
               </Route>
+            </Route>
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-          </TooltipProvider>
-        </SupabaseAuthProvider>
-      </ThemeProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+        </TooltipProvider>
+      </SupabaseAuthProvider>
     </BrowserRouter>
   );
 }

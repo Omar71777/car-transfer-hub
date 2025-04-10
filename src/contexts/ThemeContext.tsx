@@ -24,7 +24,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Check for stored preference
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'dark' || storedTheme === 'light') {
-      return storedTheme;
+      return storedTheme as Theme;
     }
     
     // Check for system preference
