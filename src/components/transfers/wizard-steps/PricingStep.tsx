@@ -80,10 +80,10 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
               <FormItem>
                 <Select 
                   onValueChange={(value) => {
-                    field.onChange(value || null);
+                    field.onChange(value === "" ? null : value);
                     console.log('Selected discount type:', value);
                   }} 
-                  value={field.value || ''}
+                  value={field.value || "no-discount"}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -91,7 +91,7 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="">Sin descuento</SelectItem>
+                    <SelectItem value="no-discount">Sin descuento</SelectItem>
                     <SelectItem value="percentage">Porcentaje (%)</SelectItem>
                     <SelectItem value="fixed">Monto fijo (€)</SelectItem>
                   </SelectContent>
@@ -101,7 +101,7 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
             )}
           />
           
-          {discountType && (
+          {discountType && discountType !== "no-discount" && (
             <FormField
               control={control}
               name="discountValue"

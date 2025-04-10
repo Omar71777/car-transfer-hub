@@ -74,7 +74,7 @@ export const useTransferFormNavigation = (
     
     // If there are no fields to validate for this step, or validation passes, proceed
     if (stepFields.length === 0 || await trigger(stepFields as any)) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     } else {
       console.log('Validation errors:', errors);
@@ -85,7 +85,7 @@ export const useTransferFormNavigation = (
   // Handle previous step
   const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(currentStep - 1);
       window.scrollTo(0, 0);
     }
   }, [currentStep, setCurrentStep]);

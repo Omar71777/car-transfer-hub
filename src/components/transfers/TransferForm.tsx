@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -48,7 +47,6 @@ export function TransferForm({
     fetchClients
   } = useClients();
 
-  // State for the service type and extra charges
   const [serviceType, setServiceType] = useState<'transfer' | 'dispo'>(initialValues?.serviceType || 'transfer');
   const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(
     initialValues?.extraCharges 
@@ -60,13 +58,11 @@ export function TransferForm({
       : []
   );
 
-  // Ensure collaborators and clients are fetched when the component mounts
   React.useEffect(() => {
     fetchCollaborators();
     fetchClients();
   }, [fetchCollaborators, fetchClients]);
 
-  // Convert numeric values to string for the form
   const getDefaultValues = () => {
     if (initialValues) {
       return {
@@ -112,12 +108,10 @@ export function TransferForm({
     defaultValues: getDefaultValues()
   });
 
-  // Update form when service type changes
   useEffect(() => {
     setServiceType(form.watch('serviceType'));
   }, [form.watch]);
 
-  // Handle extra charges
   const handleAddExtraCharge = () => {
     setExtraCharges([...extraCharges, { id: uuidv4(), name: '', price: '' }]);
   };
@@ -135,14 +129,12 @@ export function TransferForm({
   };
 
   function handleSubmit(values: TransferFormValues) {
-    // Convert string values to numbers where appropriate
     const processedValues = {
       ...values,
       serviceType: serviceType,
       price: Number(values.price),
       discountValue: values.discountValue ? Number(values.discountValue) : 0,
       commission: values.commission ? Number(values.commission) : 0,
-      // Process extra charges
       extraCharges: extraCharges
         .filter(charge => charge.name && charge.price)
         .map(charge => ({
@@ -150,7 +142,6 @@ export function TransferForm({
           name: charge.name,
           price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
         })),
-      // Store the commission type along with the value
       commissionType: values.commissionType as 'percentage' | 'fixed'
     };
     
@@ -319,8 +310,10 @@ export function TransferForm({
                     render={({ field }) => (
                       <FormItem>
                         <Select 
-                          onValueChange={field.onChange} 
-                          value={field.value || ''} 
+                          onValueChange={(value) => {
+                            field.onChange(value === "no-discount" ? null : value);
+                          }} 
+                          value={field.value || "no-discount"} 
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -328,7 +321,7 @@ export function TransferForm({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Sin descuento</SelectItem>
+                            <SelectItem value="no-discount">Sin descuento</SelectItem>
                             <SelectItem value="percentage">Porcentaje (%)</SelectItem>
                             <SelectItem value="fixed">Monto fijo (€)</SelectItem>
                           </SelectContent>
