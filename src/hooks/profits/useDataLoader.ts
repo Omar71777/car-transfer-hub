@@ -52,7 +52,7 @@ export const useDataLoader = (): {
 
       // Extract unique collaborators
       const collaborators = [...new Set(loadedTransfers.map((t: Transfer) => t.collaborator))];
-      setUniqueCollaborators(collaborators as string[]);
+      setUniqueCollaborators(collaborators);
 
       // Load expenses from localStorage
       const storedExpenses = localStorage.getItem('expenses');
@@ -77,7 +77,7 @@ export const useDataLoader = (): {
 
       // Extract unique expense types
       const expenseTypes = [...new Set(loadedExpenses.map((e: Expense) => e.concept))];
-      setUniqueExpenseTypes(expenseTypes as string[]);
+      setUniqueExpenseTypes(expenseTypes);
       
       setLoading(false);
     };

@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { Transfer, Expense } from '@/types';
 import { Filters, ProfitStats, ProfitsData } from './types';
 import { calculateCommission, calculateStats, generateChartData, generateMonthlyData } from './useCalculations';
 import { applyFilters } from './useFilters';
@@ -15,8 +14,8 @@ export function useProfitsData(): ProfitsData {
     uniqueExpenseTypes 
   } = useDataLoader();
   
-  const [filteredTransfers, setFilteredTransfers] = useState<Transfer[]>([]);
-  const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
+  const [filteredTransfers, setFilteredTransfers] = useState([]);
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [stats, setStats] = useState<ProfitStats>({
     totalIncome: 0,
     totalExpenses: 0,
@@ -24,8 +23,8 @@ export function useProfitsData(): ProfitsData {
     netProfit: 0,
     profitMargin: 0,
   });
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
   const [filters, setFilters] = useState<Filters>({});
 
   // Initialize filtered data when transfers and expenses are loaded
