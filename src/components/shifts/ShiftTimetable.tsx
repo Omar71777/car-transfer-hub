@@ -1,6 +1,6 @@
 
 import React, { useMemo } from 'react';
-import { format, addHours, startOfWeek, addDays, isSameDay, isWithinInterval, parseISO } from 'date-fns';
+import { format, addHours, startOfWeek, addDays, isSameDay, parseISO, isWithinInterval, addMinutes, setHours } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -22,8 +22,9 @@ export function ShiftTimetable({ shifts, drivers }: ShiftTimetableProps) {
   // Create a color map for drivers
   const driverColors = useMemo(() => {
     const colors = [
-      'bg-pink-500', 'bg-blue-500', 'bg-green-500', 'bg-purple-500', 
-      'bg-yellow-500', 'bg-indigo-500', 'bg-rose-500', 'bg-cyan-500'
+      'bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-purple-500', 
+      'bg-amber-500', 'bg-indigo-500', 'bg-rose-500', 'bg-cyan-500',
+      'bg-violet-500', 'bg-emerald-500', 'bg-orange-500', 'bg-sky-500'
     ];
     
     return drivers.reduce((acc, driver, index) => {
@@ -41,40 +42,56 @@ export function ShiftTimetable({ shifts, drivers }: ShiftTimetableProps) {
     };
   };
 
-  // Function to determine if a cell should be colored
-  const getCellContent = (day: Date, hour: number) => {
-    const currentHourDate = addHours(new Date(day), hour);
+  // Function to calculate shift coverage for a specific hour on a specific day
+  const getShiftForTimeSlot = (day: Date, hour: number) => {
+    const cellDateTime = new Date(day);
+    cellDateTime.setHours(hour, 0, 0, 0);
     
-    // Check shifts that might include this time
+    // Check which shift covers this time slot
     for (const shift of shifts) {
       const shiftDate = parseISO(shift.date);
       
       if (shift.isFullDay) {
-        // For 24h shifts, check if the day matches
-        if (isSameDay(shiftDate, day)) {
-          const driver = getDriverDetails(shift.driverId);
-          return { 
-            color: driver.color, 
-            opacity: 'opacity-70',
-            name: driver.name 
-          };
-        }
-      } else {
-        // For 12h shifts, we'll assume they start at 8AM and end at 8PM
+        // For 24h shifts that start at the given date
         const shiftStart = new Date(shiftDate);
-        shiftStart.setHours(8, 0, 0, 0);
+        shiftStart.setHours(0, 0, 0, 0);
         
         const shiftEnd = new Date(shiftDate);
-        shiftEnd.setHours(20, 0, 0, 0);
+        shiftEnd.setHours(23, 59, 59, 999);
         
-        // Check if the current hour is within the shift time
-        if (isSameDay(shiftDate, day) && hour >= 8 && hour < 20) {
-          const driver = getDriverDetails(shift.driverId);
-          return { 
-            color: driver.color, 
-            opacity: 'opacity-70',
-            name: driver.name 
-          };
+        if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
+          return getDriverDetails(shift.driverId);
+        }
+      } else {
+        // For 12h shifts (assuming 10:00 to 22:00)
+        const shiftStart = new Date(shiftDate);
+        shiftStart.setHours(10, 0, 0, 0);
+        
+        const shiftEnd = new Date(shiftDate);
+        shiftEnd.setHours(22, 0, 0, 0);
+        
+        // Check if this 12h shift contains this hour
+        if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
+          return getDriverDetails(shift.driverId);
+        }
+        
+        // For night shifts (22:00 to 10:00 next day)
+        const prevDay = addDays(day, -1);
+        const prevDayShift = shifts.find(s => {
+          const sDate = parseISO(s.date);
+          return !s.isFullDay && isSameDay(sDate, prevDay);
+        });
+        
+        if (prevDayShift) {
+          const nightShiftStart = new Date(prevDay);
+          nightShiftStart.setHours(22, 0, 0, 0);
+          
+          const nightShiftEnd = new Date(day);
+          nightShiftEnd.setHours(10, 0, 0, 0);
+          
+          if (isWithinInterval(cellDateTime, { start: nightShiftStart, end: nightShiftEnd })) {
+            return getDriverDetails(prevDayShift.driverId);
+          }
         }
       }
     }
@@ -109,18 +126,18 @@ export function ShiftTimetable({ shifts, drivers }: ShiftTimetableProps) {
                   </TableCell>
                   
                   {hours.map(hour => {
-                    const cellContent = getCellContent(day, hour);
+                    const driverInfo = getShiftForTimeSlot(day, hour);
                     
                     return (
                       <TableCell 
                         key={hour} 
-                        className={`p-1 ${cellContent ? `${cellContent.color} ${cellContent.opacity} text-white` : ''}`}
-                        title={cellContent ? `Turno de ${cellContent.name}` : ''}
+                        className={`p-1 ${driverInfo ? `${driverInfo.color} text-white opacity-80` : ''}`}
+                        title={driverInfo ? `Turno de ${driverInfo.name}` : ''}
                       >
                         <div className="w-full h-6 flex items-center justify-center">
-                          {cellContent && hour === 12 && (
+                          {driverInfo && (hour === 12 || hour === 22 || hour === 10) && (
                             <span className="text-xs truncate max-w-[60px]">
-                              {cellContent.name}
+                              {driverInfo.name}
                             </span>
                           )}
                         </div>
