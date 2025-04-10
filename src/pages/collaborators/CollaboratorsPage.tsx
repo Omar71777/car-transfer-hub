@@ -10,21 +10,52 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { formatCurrency } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCollaborators } from '@/hooks/useCollaborators';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const CollaboratorsPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [collaboratorStats, setCollaboratorStats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const { collaborators } = useCollaborators();
 
   useEffect(() => {
-    // Cargar transfers desde localStorage
-    const storedTransfers = localStorage.getItem('transfers');
-    // Cargar solo lo que hay en localStorage
-    const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : [];
-    setTransfers(loadedTransfers);
-
-    // Calculate collaborator stats
-    calculateCollaboratorStats(loadedTransfers);
+    // Cargar transfers desde Supabase
+    const loadTransfers = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('transfers')
+          .select('id, date, time, origin, destination, price, collaborator, commission')
+          .order('date', { ascending: false });
+          
+        if (error) throw error;
+        
+        // Transform the transfers data to match our Transfer type
+        const processedTransfers = data.map((transfer: any) => ({
+          id: transfer.id,
+          date: transfer.date,
+          time: transfer.time || '',
+          origin: transfer.origin,
+          destination: transfer.destination,
+          price: Number(transfer.price),
+          collaborator: transfer.collaborator || '',
+          commission: Number(transfer.commission)
+        }));
+        
+        setTransfers(processedTransfers);
+        
+        // Calculate collaborator stats
+        calculateCollaboratorStats(processedTransfers);
+      } catch (error: any) {
+        console.error('Error loading transfers:', error);
+        toast.error(`Error al cargar los transfers: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadTransfers();
   }, [collaborators]); // Re-calculate when collaborators change
 
   const calculateCollaboratorStats = (loadedTransfers: Transfer[]) => {

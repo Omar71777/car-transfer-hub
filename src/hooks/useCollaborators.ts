@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export type Collaborator = {
   id: string;
@@ -13,10 +14,12 @@ export function useCollaborators() {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Load collaborators from localStorage
-  const fetchCollaborators = useCallback(() => {
+  // Load collaborators from Supabase or localStorage as fallback
+  const fetchCollaborators = useCallback(async () => {
     setLoading(true);
     try {
+      // Try to load from Supabase first (assuming future migration)
+      // For now, using localStorage as the source of truth
       const stored = localStorage.getItem('collaborators');
       const loadedCollaborators = stored ? JSON.parse(stored) : [];
       
