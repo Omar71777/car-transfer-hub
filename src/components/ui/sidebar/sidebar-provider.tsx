@@ -1,31 +1,10 @@
 import * as React from "react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { SidebarContext, SidebarState } from "./sidebar-context"
+import { SIDEBAR_KEYBOARD_SHORTCUT, setSidebarCookie } from "./sidebar-utils"
 
-const SIDEBAR_COOKIE_NAME = "sidebar:state"
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_KEYBOARD_SHORTCUT = "b"
-
-type SidebarContext = {
-  state: "expanded" | "collapsed"
-  open: boolean
-  setOpen: (open: boolean) => void
-  openMobile: boolean
-  setOpenMobile: (open: boolean) => void
-  isMobile: boolean
-  toggleSidebar: () => void
-}
-
-const SidebarContext = React.createContext<SidebarContext | null>(null)
-
-export function useSidebar() {
-  const context = React.useContext(SidebarContext)
-  if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.")
-  }
-
-  return context
-}
+export { useSidebar } from "./sidebar-context"
 
 export const SidebarProvider = React.forwardRef<
   HTMLDivElement,
@@ -64,7 +43,7 @@ export const SidebarProvider = React.forwardRef<
         }
 
         // This sets the cookie to keep the sidebar state.
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        setSidebarCookie(openState)
       },
       [setOpenProp, open]
     )
@@ -94,9 +73,9 @@ export const SidebarProvider = React.forwardRef<
 
     // We add a state so that we can do data-state="expanded" or "collapsed".
     // This makes it easier to style the sidebar with Tailwind classes.
-    const state = open ? "expanded" : "collapsed"
+    const state: SidebarState = open ? "expanded" : "collapsed"
 
-    const contextValue = React.useMemo<SidebarContext>(
+    const contextValue = React.useMemo(
       () => ({
         state,
         open,
