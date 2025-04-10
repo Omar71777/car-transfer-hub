@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Providers } from './contexts/providers';
@@ -8,11 +9,11 @@ import ExpensesPage from './pages/expenses/ExpensesPage';
 import ShiftsPage from './pages/shifts/ShiftsPage';
 import UsersPage from './pages/admin/UsersPage';
 import ProfilePage from './pages/profile/ProfilePage';
-import ProfitsPage from './pages/reports/ProfitsPage';
+import ProfitsPage from './pages/profits/ProfitsPage';
 import CollaboratorsPage from './pages/collaborators/CollaboratorsPage';
 import UnpaidTransfersPage from './pages/reports/UnpaidTransfersPage';
-import AnalyticsReportPage from './pages/reports/AnalyticsReportPage';
-import TransfersReportPage from './pages/reports/TransfersReportPage';
+import AnalyticsReportPage from './pages/admin/reports/AnalyticsReportPage';
+import TransfersReportPage from './pages/admin/reports/TransfersReportPage';
 import ClientsPage from './pages/clients/ClientsPage';
 import BillingPage from './pages/billing/BillingPage';
 import AuthPage from './pages/auth/AuthPage';
