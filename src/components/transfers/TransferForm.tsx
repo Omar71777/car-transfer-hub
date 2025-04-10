@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -31,6 +30,7 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
         ...initialValues,
         price: initialValues.price.toString(),
         commission: initialValues.commission.toString(),
+        paymentStatus: initialValues.paymentStatus as 'paid' | 'pending',
       };
     }
     
@@ -42,7 +42,7 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
       price: '',
       collaborator: '',
       commission: '',
-      paymentStatus: 'pending',
+      paymentStatus: 'pending' as const,
     };
   };
 

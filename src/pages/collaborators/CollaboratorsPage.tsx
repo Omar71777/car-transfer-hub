@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { CollaboratorsOverview } from '@/components/collaborators/CollaboratorsOverview';
@@ -24,7 +25,7 @@ const CollaboratorsPage = () => {
       try {
         const { data, error } = await supabase
           .from('transfers')
-          .select('id, date, time, origin, destination, price, collaborator, commission')
+          .select('id, date, time, origin, destination, price, collaborator, commission, payment_status')
           .order('date', { ascending: false });
           
         if (error) throw error;
@@ -38,6 +39,7 @@ const CollaboratorsPage = () => {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
+          paymentStatus: transfer.payment_status || 'pending',
           expenses: []
         }));
         

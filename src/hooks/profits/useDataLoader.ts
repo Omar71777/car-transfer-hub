@@ -37,7 +37,8 @@ export const useDataLoader = (): {
             destination,
             price,
             collaborator,
-            commission
+            commission,
+            payment_status
           `)
           .order('date', { ascending: false });
 
@@ -65,6 +66,7 @@ export const useDataLoader = (): {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
+          paymentStatus: transfer.payment_status || 'pending', 
           expenses: []
         }));
 
