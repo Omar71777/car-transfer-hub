@@ -1,20 +1,28 @@
 
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
-      {...props}
-    />
-  </div>
-))
+>(({ className, ...props }, ref) => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <div className="relative w-full overflow-auto">
+      <table
+        ref={ref}
+        className={cn(
+          "w-full caption-bottom", 
+          isMobile ? "text-xs mobile-table" : "text-sm",
+          className
+        )}
+        {...props}
+      />
+    </div>
+  );
+})
 Table.displayName = "Table"
 
 const TableHeader = React.forwardRef<
@@ -70,28 +78,43 @@ TableRow.displayName = "TableRow"
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <th
-    ref={ref}
-    className={cn(
-      "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 md:px-4 lg:h-12",
-      className
-    )}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <th
+      ref={ref}
+      className={cn(
+        isMobile 
+          ? "h-8 px-1 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 text-xs"
+          : "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 md:px-4 lg:h-12",
+        className
+      )}
+      {...props}
+    />
+  );
+})
 TableHead.displayName = "TableHead"
 
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <td
-    ref={ref}
-    className={cn("p-2 align-middle [&:has([role=checkbox])]:pr-0 md:p-4", className)}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <td
+      ref={ref}
+      className={cn(
+        isMobile 
+          ? "p-1 align-middle [&:has([role=checkbox])]:pr-0 text-xs"
+          : "p-2 align-middle [&:has([role=checkbox])]:pr-0 md:p-4",
+        className
+      )}
+      {...props}
+    />
+  );
+})
 TableCell.displayName = "TableCell"
 
 const TableCaption = React.forwardRef<

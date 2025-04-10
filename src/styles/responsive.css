@@ -8,4 +8,22 @@
   .timetable-scroll {
     max-height: calc(100vh - 280px);
   }
+  
+  /* Full width for mobile screens */
+  #root {
+    max-width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Smaller font and spacing for mobile tables */
+  .mobile-table {
+    @apply text-xs;
+  }
+  
+  .mobile-table th, 
+  .mobile-table td {
+    @apply py-1 px-1;
+  }
 }
+
