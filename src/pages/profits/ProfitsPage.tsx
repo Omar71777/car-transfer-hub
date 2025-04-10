@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ProfitCalculator } from '@/components/profits/ProfitCalculator';
@@ -7,24 +6,21 @@ import { ChartsSection } from '@/components/profits/ChartsSection';
 import { ExportOptions } from '@/components/profits/ExportOptions';
 import { ProfitFilters } from '@/components/profits/ProfitFilters';
 import { useProfitsData } from '@/hooks/useProfitsData';
-
 const ProfitsPage = () => {
-  const { 
-    transfers, 
-    expenses, 
-    stats, 
-    chartData, 
-    monthlyData, 
+  const {
+    transfers,
+    expenses,
+    stats,
+    chartData,
+    monthlyData,
     loading,
     updateFilters,
     resetFilters,
     uniqueCollaborators,
     uniqueExpenseTypes
   } = useProfitsData();
-
-  return (
-    <MainLayout>
-      <div className="py-6">
+  return <MainLayout>
+      <div className="py-6 px-[8px]">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold mb-1 text-primary">Ganancias</h1>
@@ -32,21 +28,12 @@ const ProfitsPage = () => {
           </div>
           
           {/* Export Options */}
-          <ExportOptions 
-            transfers={transfers} 
-            expenses={expenses} 
-            stats={stats} 
-          />
+          <ExportOptions transfers={transfers} expenses={expenses} stats={stats} />
         </div>
 
         {/* Filters */}
         <div className="mb-6">
-          <ProfitFilters
-            collaborators={uniqueCollaborators}
-            expenseTypes={uniqueExpenseTypes}
-            onFilterChange={updateFilters}
-            onResetFilters={resetFilters}
-          />
+          <ProfitFilters collaborators={uniqueCollaborators} expenseTypes={uniqueExpenseTypes} onFilterChange={updateFilters} onResetFilters={resetFilters} />
         </div>
 
         {/* Summary Stats */}
@@ -64,8 +51,6 @@ const ProfitsPage = () => {
           <ProfitCalculator transfers={transfers} expenses={expenses} />
         </div>
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 };
-
 export default ProfitsPage;
