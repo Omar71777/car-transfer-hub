@@ -19,31 +19,8 @@ const CollaboratorsPage = () => {
   useEffect(() => {
     // Cargar transfers desde localStorage
     const storedTransfers = localStorage.getItem('transfers');
-    const dummyTransfers: Transfer[] = [
-      {
-        id: '1',
-        date: '2025-04-09',
-        time: '09:30',
-        origin: 'Aeropuerto de Ibiza',
-        destination: 'Hotel Ushuaïa',
-        price: 85,
-        collaborator: 'Carlos Sánchez',
-        commission: 10,
-        expenses: []
-      },
-      {
-        id: '2',
-        date: '2025-04-09',
-        time: '14:45',
-        origin: 'Hotel Pacha',
-        destination: 'Playa d\'en Bossa',
-        price: 65,
-        collaborator: 'María López',
-        commission: 15,
-        expenses: []
-      }
-    ];
-    const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : dummyTransfers;
+    // No más datos dummy, solo cargar lo que hay en localStorage
+    const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : [];
     setTransfers(loadedTransfers);
 
     // Calculate collaborator stats
