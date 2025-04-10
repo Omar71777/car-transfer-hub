@@ -32,7 +32,7 @@ export function LocationStep({ clients, collaborators, formState }: LocationStep
             <FormItem>
               <FormLabel>Lugar de recogida *</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: Aeropuerto de Ibiza" {...field} />
+                <Input placeholder="Ej: Aeropuerto de Ibiza" {...field} className="w-full" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -46,7 +46,7 @@ export function LocationStep({ clients, collaborators, formState }: LocationStep
             <FormItem>
               <FormLabel>Lugar de destino *</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: Hotel Ushuaïa" {...field} />
+                <Input placeholder="Ej: Hotel Ushuaïa" {...field} className="w-full" />
               </FormControl>
               <FormMessage />
             </FormItem>

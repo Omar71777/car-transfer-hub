@@ -51,7 +51,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit }: AddUserDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="dialog-content">
         <DialogHeader>
           <DialogTitle>Añadir Nuevo Usuario</DialogTitle>
           <DialogDescription>
@@ -61,7 +61,7 @@ export function AddUserDialog({ open, onOpenChange, onSubmit }: AddUserDialogPro
         
         <Form {...form}>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="first_name"

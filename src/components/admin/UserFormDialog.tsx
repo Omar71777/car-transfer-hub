@@ -53,7 +53,7 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: UserFormD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="dialog-content">
         <DialogHeader>
           <DialogTitle>Editar Usuario</DialogTitle>
           <DialogDescription>

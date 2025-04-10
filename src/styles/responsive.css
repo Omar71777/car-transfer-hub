@@ -114,4 +114,16 @@
   .mobile-scroll table {
     min-width: max-content;
   }
+  
+  /* Dialog fits better on mobile screens */
+  .dialog-content {
+    max-width: min(800px, 92vw);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  /* Dialog content padding for mobile */
+  .dialog-content {
+    padding: 1rem !important;
+  }
 }

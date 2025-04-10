@@ -46,7 +46,7 @@ export function DeleteAccountDialog({
         if (!value) setConfirmText('');
       }
     }}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-[min(450px,90vw)]">
         <AlertDialogHeader>
           <AlertDialogTitle>¿Estás seguro de eliminar tu cuenta?</AlertDialogTitle>
           <AlertDialogDescription>

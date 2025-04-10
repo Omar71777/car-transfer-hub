@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AppSidebar } from './AppSidebar';
-import { SidebarProvider, useSidebar, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider, useSidebar } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Menu } from 'lucide-react';

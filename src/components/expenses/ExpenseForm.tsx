@@ -60,16 +60,8 @@ export function ExpenseForm({ onSubmit, transferId, defaultValues, isEditing = f
   }
 
   return (
-    <Card className="glass-card w-full max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle>{isEditing ? 'Editar Gasto' : 'Nuevo Gasto'}</CardTitle>
-        <CardDescription>
-          {transferId 
-            ? 'Agrega un gasto asociado a este transfer.' 
-            : 'Registra un nuevo gasto general.'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Card className="glass-card w-full max-w-lg mx-auto border-0 shadow-none">
+      <CardContent className="p-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
@@ -79,7 +71,7 @@ export function ExpenseForm({ onSubmit, transferId, defaultValues, isEditing = f
                 <FormItem>
                   <FormLabel>Fecha</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type="date" className="w-full" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,7 +85,7 @@ export function ExpenseForm({ onSubmit, transferId, defaultValues, isEditing = f
                 <FormItem>
                   <FormLabel>Concepto</FormLabel>
                   <FormControl>
-                    <Input placeholder="Combustible, peaje, etc." {...field} />
+                    <Input placeholder="Combustible, peaje, etc." className="w-full" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,7 +99,7 @@ export function ExpenseForm({ onSubmit, transferId, defaultValues, isEditing = f
                 <FormItem>
                   <FormLabel>Monto (€)</FormLabel>
                   <FormControl>
-                    <Input type="number" min="0" step="0.01" placeholder="25.50" {...field} />
+                    <Input type="number" min="0" step="0.01" placeholder="25.50" className="w-full" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

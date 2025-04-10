@@ -43,7 +43,7 @@ export function DeleteUserDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-[min(450px,90vw)]">
         <AlertDialogHeader>
           <AlertDialogTitle>¿Eliminar perfil de usuario?</AlertDialogTitle>
           <AlertDialogDescription>

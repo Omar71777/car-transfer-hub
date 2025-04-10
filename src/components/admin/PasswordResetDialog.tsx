@@ -43,7 +43,7 @@ export function PasswordResetDialog({ open, onOpenChange, user, onSubmit }: Pass
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="dialog-content">
         <DialogHeader>
           <DialogTitle>Cambiar Contraseña</DialogTitle>
           <DialogDescription>

@@ -26,7 +26,7 @@ export function DeleteConfirmationDialog({
 }: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="dialog-content">
         <DialogHeader>
           <DialogTitle>Confirmar Eliminación</DialogTitle>
           <DialogDescription>

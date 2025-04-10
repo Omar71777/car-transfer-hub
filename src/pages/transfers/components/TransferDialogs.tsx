@@ -32,7 +32,7 @@ export function TransferDialogs({
   return (
     <>
       <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
-        <DialogContent>
+        <DialogContent className="dialog-content">
           <DialogHeader>
             <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
           </DialogHeader>
@@ -41,7 +41,7 @@ export function TransferDialogs({
       </Dialog>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="dialog-content max-w-[min(800px,90vw)]">
           <DialogHeader>
             <DialogTitle>Editar Transfer</DialogTitle>
           </DialogHeader>

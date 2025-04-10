@@ -50,13 +50,13 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
         </p>
       </div>
 
-      <div className="space-y-4">
-        <Card className="p-4 space-y-3">
+      <div className="space-y-4 max-w-full">
+        <Card className="p-4 space-y-3 overflow-hidden">
           <div className="flex items-start gap-3">
             <User className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-            <div>
+            <div className="overflow-hidden">
               <h3 className="font-medium">Cliente</h3>
-              <p>{getClientName()}</p>
+              <p className="truncate">{getClientName()}</p>
             </div>
           </div>
           
@@ -73,10 +73,10 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
           
           <div className="flex items-start gap-3">
             <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-            <div>
+            <div className="max-w-full">
               <h3 className="font-medium">Ruta</h3>
-              <p>Desde: {values.origin}</p>
-              <p>Hasta: {values.destination}</p>
+              <p className="break-words">Desde: {values.origin}</p>
+              <p className="break-words">Hasta: {values.destination}</p>
             </div>
           </div>
           

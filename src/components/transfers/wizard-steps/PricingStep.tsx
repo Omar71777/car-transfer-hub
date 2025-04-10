@@ -40,6 +40,7 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
                   step="0.01" 
                   placeholder="120.00" 
                   {...field} 
+                  className="w-full"
                 />
               </FormControl>
               <FormMessage />
