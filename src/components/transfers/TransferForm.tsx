@@ -67,12 +67,7 @@ export function TransferForm({
     toast.success(isEditing ? 'Transfer actualizado con éxito' : 'Transfer creado con éxito');
   }
   return <Card className="glass-card w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>{isEditing ? 'Editar Transfer' : 'Nuevo Transfer'}</CardTitle>
-        <CardDescription>
-          Completa todos los campos para {isEditing ? 'actualizar el' : 'registrar un nuevo'} transfer.
-        </CardDescription>
-      </CardHeader>
+      
       <CardContent className="my-0 mx-0 px-0 py-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
