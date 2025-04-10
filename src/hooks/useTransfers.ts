@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,12 +27,19 @@ export function useTransfers() {
           price,
           collaborator,
           commission,
+          commission_type,
           payment_status,
+          client_id,
           expenses (
             id,
             date,
             concept,
             amount
+          ),
+          clients (
+            id,
+            name,
+            email
           )
         `)
         .order('date', { ascending: false });
@@ -49,8 +57,14 @@ export function useTransfers() {
         price: Number(transfer.price),
         collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
         commission: Number(transfer.commission),
-        commissionType: 'percentage' as const,
+        commissionType: transfer.commission_type || 'percentage',
         paymentStatus: transfer.payment_status || 'pending',
+        clientId: transfer.client_id || '',
+        client: transfer.clients ? {
+          id: transfer.clients.id,
+          name: transfer.clients.name,
+          email: transfer.clients.email
+        } : null,
         expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
           transferId: transfer.id,
@@ -87,7 +101,9 @@ export function useTransfers() {
           price: transferData.price,
           collaborator: transferData.collaborator.toLowerCase(),
           commission: transferData.commission,
-          payment_status: transferData.paymentStatus
+          commission_type: transferData.commissionType,
+          payment_status: transferData.paymentStatus,
+          client_id: transferData.clientId
         })
         .select('id')
         .single();

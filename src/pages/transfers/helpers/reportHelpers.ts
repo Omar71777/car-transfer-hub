@@ -1,3 +1,4 @@
+
 import { Transfer } from '@/types';
 import { Expense } from '@/types';
 import { downloadCSVFromData, printProfitReport } from '@/lib/exports';
@@ -9,6 +10,7 @@ export function generateExportData(transfers: Transfer[]) {
     Origen: transfer.origin,
     Destino: transfer.destination,
     Precio: transfer.price,
+    Cliente: transfer.client?.name || 'N/A',
     Colaborador: transfer.collaborator || 'N/A',
     Comisión: transfer.commission + '%',
     'Importe Comisión': (transfer.price * transfer.commission / 100).toFixed(2) + '€'

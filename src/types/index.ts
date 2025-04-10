@@ -11,7 +11,12 @@ export interface Transfer {
   commissionType: 'percentage' | 'fixed';
   expenses: Expense[];
   paymentStatus: 'paid' | 'pending';
-  clientId?: string;
+  clientId: string;
+  client?: {
+    id: string;
+    name: string;
+    email: string;
+  };
   billed?: boolean;
 }
 

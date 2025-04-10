@@ -5,12 +5,32 @@ import { TransferForm } from '@/components/transfers/TransferForm';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTransfers } from '@/hooks/useTransfers';
+import { useClients } from '@/hooks/useClients';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
   const { createTransfer } = useTransfers();
+  const { clients, createClient } = useClients();
 
   const handleSubmit = async (values: any) => {
+    // Check if we need to create a new client
+    if (values.clientId === 'new' && values.clientName && values.clientEmail) {
+      // Create new client
+      const clientId = await createClient({
+        name: values.clientName,
+        email: values.clientEmail,
+      });
+      
+      if (clientId) {
+        // Update the clientId with the newly created client ID
+        values.clientId = clientId;
+        toast.success('Cliente creado exitosamente');
+      } else {
+        toast.error('No se pudo crear el cliente');
+        return;
+      }
+    }
+    
     const transferId = await createTransfer(values);
     
     if (transferId) {
