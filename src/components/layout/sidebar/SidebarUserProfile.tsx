@@ -23,7 +23,7 @@ export const SidebarUserProfile: React.FC<SidebarUserProfileProps> = ({
     }
     return profile.email || 'Usuario';
   };
-  return <div className="px-4 py-6 flex items-center">
+  return <div className="px-4 py-6 flex items-center bg-ibiza-800">
       <Avatar className="h-9 w-9 mr-2">
         <AvatarFallback>{getInitials()}</AvatarFallback>
       </Avatar>
