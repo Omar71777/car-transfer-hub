@@ -26,22 +26,22 @@ export function ProfitFilters({
   onResetFilters 
 }: ProfitFiltersProps) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [collaborator, setCollaborator] = useState<string>('');
-  const [expenseType, setExpenseType] = useState<string>('');
+  const [collaborator, setCollaborator] = useState<string>('all-collaborators');
+  const [expenseType, setExpenseType] = useState<string>('all-expenses');
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   const handleApplyFilters = () => {
     onFilterChange({
       dateRange: dateRange || {},
-      collaborator: collaborator || undefined,
-      expenseType: expenseType || undefined
+      collaborator: collaborator === 'all-collaborators' ? undefined : collaborator,
+      expenseType: expenseType === 'all-expenses' ? undefined : expenseType
     });
   };
 
   const handleResetFilters = () => {
     setDateRange(undefined);
-    setCollaborator('');
-    setExpenseType('');
+    setCollaborator('all-collaborators');
+    setExpenseType('all-expenses');
     onResetFilters();
   };
 
@@ -99,7 +99,7 @@ export function ProfitFilters({
               <SelectValue placeholder="Colaborador" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos los colaboradores</SelectItem>
+              <SelectItem value="all-collaborators">Todos los colaboradores</SelectItem>
               {collaborators.map((collab) => (
                 <SelectItem key={collab} value={collab}>
                   {collab}
@@ -116,7 +116,7 @@ export function ProfitFilters({
               <SelectValue placeholder="Tipo de gasto" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos los gastos</SelectItem>
+              <SelectItem value="all-expenses">Todos los gastos</SelectItem>
               {expenseTypes.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
