@@ -70,8 +70,8 @@ const TransfersPage = () => {
       <div className="py-[40px] px-[3px]">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold mb-1 text-ibiza-900">Transfers</h1>
-            <p className="text-muted-foreground">Gestiona todos tus servicios de transfer</p>
+            <h1 className="text-3xl font-bold mb-1 text-ibiza-900 text-left">Transfers</h1>
+            <p className="text-muted-foreground text-left">Gestiona todos tus servicios de transfer</p>
           </div>
           <Button asChild>
             <Link to="/transfers/new">
