@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 
 const userFormSchema = z.object({
-  first_name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").optional(),
-  last_name: z.string().min(2, "El apellido debe tener al menos 2 caracteres").optional(),
-  email: z.string().email("Ingresa un email válido").optional(),
+  first_name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  last_name: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+  email: z.string().email("Ingresa un email válido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
@@ -34,6 +34,12 @@ export function AddUserDialog({ open, onOpenChange, onSubmit }: AddUserDialogPro
       password: '',
     },
   });
+
+  React.useEffect(() => {
+    if (open) {
+      form.reset();
+    }
+  }, [open, form]);
 
   const handleSubmit = form.handleSubmit(async (values) => {
     await onSubmit(values);

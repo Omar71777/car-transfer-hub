@@ -109,8 +109,18 @@ export function useAdminUsers() {
 
   const createUser = useCallback(async (values: UserFormValues & PasswordFormValues) => {
     try {
+      // First, ensure all required fields are provided
+      if (!values.email || !values.password || !values.first_name || !values.last_name) {
+        toast.error('Todos los campos son requeridos');
+        return;
+      }
+
+      // Clean the email to prevent formatting issues
+      const cleanEmail = values.email.trim().toLowerCase();
+      
+      // Create the user with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
-        email: values.email!,
+        email: cleanEmail,
         password: values.password,
         options: {
           data: {
@@ -124,11 +134,12 @@ export function useAdminUsers() {
       if (error) throw error;
       
       if (data.user) {
+        // Update the profiles table
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
             id: data.user.id,
-            email: values.email,
+            email: cleanEmail,
             first_name: values.first_name,
             last_name: values.last_name,
             role: 'user',
