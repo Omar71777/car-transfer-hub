@@ -42,7 +42,7 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
           <div className="flex items-center mt-1 space-x-2">
             {getBillStatusBadge(bill.status)}
             <span className="text-sm text-muted-foreground">
-              Creada el {format(new Date(bill.createdAt), 'dd/MM/yyyy')}
+              Creada el {format(new Date(bill.created_at), 'dd/MM/yyyy')}
             </span>
           </div>
         </div>
@@ -84,7 +84,7 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
               </div>
               <div className="grid grid-cols-2">
                 <span className="text-muted-foreground">Fecha de vencimiento:</span>
-                <span>{bill.dueDate}</span>
+                <span>{bill.due_date}</span>
               </div>
               <div className="grid grid-cols-2">
                 <span className="text-muted-foreground">Estado:</span>
@@ -103,10 +103,10 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
                 <div>{bill.client.email}</div>
                 {bill.client.phone && <div>{bill.client.phone}</div>}
                 {bill.client.address && <div>{bill.client.address}</div>}
-                {bill.client.taxId && (
+                {bill.client.tax_id && (
                   <div className="grid grid-cols-2">
                     <span className="text-muted-foreground">NIF/CIF:</span>
-                    <span>{bill.client.taxId}</span>
+                    <span>{bill.client.tax_id}</span>
                   </div>
                 )}
               </div>
@@ -148,10 +148,10 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
                       {item.quantity}
                     </td>
                     <td className="px-3 py-2 text-sm text-right">
-                      {formatCurrency(item.unitPrice)}
+                      {formatCurrency(item.unit_price)}
                     </td>
                     <td className="px-3 py-2 text-sm text-right">
-                      {formatCurrency(item.totalPrice)}
+                      {formatCurrency(item.total_price)}
                     </td>
                   </tr>
                 ))}
@@ -163,16 +163,16 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
                     Subtotal:
                   </td>
                   <td className="px-3 py-2 text-sm text-right">
-                    {formatCurrency(bill.subTotal)}
+                    {formatCurrency(bill.sub_total)}
                   </td>
                 </tr>
                 <tr>
                   <td colSpan={2} className="px-3 py-2"></td>
                   <td className="px-3 py-2 text-sm text-right font-medium">
-                    IVA ({bill.taxRate}%) {bill.taxApplication === 'included' ? '(incluido)' : ''}:
+                    IVA ({bill.tax_rate}%) {bill.tax_application === 'included' ? '(incluido)' : ''}:
                   </td>
                   <td className="px-3 py-2 text-sm text-right">
-                    {formatCurrency(bill.taxAmount)}
+                    {formatCurrency(bill.tax_amount)}
                   </td>
                 </tr>
                 <tr>

@@ -22,7 +22,7 @@ const clientSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }).min(1, { message: 'El email es requerido' }),
   phone: z.string().optional(),
   address: z.string().optional(),
-  taxId: z.string().optional(),
+  tax_id: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -40,7 +40,7 @@ export function ClientForm({ initialValues, onSubmit, isEditing = false }: Clien
       email: initialValues?.email || '',
       phone: initialValues?.phone || '',
       address: initialValues?.address || '',
-      taxId: initialValues?.taxId || '',
+      tax_id: initialValues?.tax_id || '',
       notes: initialValues?.notes || '',
     },
   });
@@ -104,7 +104,7 @@ export function ClientForm({ initialValues, onSubmit, isEditing = false }: Clien
               />
               <FormField
                 control={form.control}
-                name="taxId"
+                name="tax_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>NIF/CIF (opcional)</FormLabel>

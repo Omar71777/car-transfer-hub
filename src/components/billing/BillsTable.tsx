@@ -81,7 +81,7 @@ export function BillsTable({ bills, onAdd, onView, onPrint, onDelete }: BillsTab
                 <TableCell className="font-medium">{bill.number}</TableCell>
                 <TableCell>{bill.client?.name || '-'}</TableCell>
                 <TableCell>{bill.date}</TableCell>
-                <TableCell>{bill.dueDate}</TableCell>
+                <TableCell>{bill.due_date}</TableCell>
                 <TableCell>{formatCurrency(bill.total)}</TableCell>
                 <TableCell>{getBillStatusBadge(bill.status)}</TableCell>
                 <TableCell className="text-right space-x-1">

@@ -58,7 +58,7 @@ export function ClientsTable({ clients, onAdd, onEdit, onDelete }: ClientsTableP
                 <TableCell className="font-medium">{client.name}</TableCell>
                 <TableCell>{client.email}</TableCell>
                 <TableCell>{client.phone || '-'}</TableCell>
-                <TableCell>{client.taxId || '-'}</TableCell>
+                <TableCell>{client.tax_id || '-'}</TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button size="sm" variant="outline" onClick={() => onEdit(client)}>
                     <Edit className="h-4 w-4" />
