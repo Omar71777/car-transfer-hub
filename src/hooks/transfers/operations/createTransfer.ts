@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 export async function createTransfer(user: any, transferData: any) {
   console.log('Creating transfer with user:', user ? user.id : 'No user');
-  console.log('Transfer data received:', transferData);
+  console.log('Transfer data received:', JSON.stringify(transferData, null, 2));
   
   if (!user) {
     console.error('No authenticated user found');
@@ -14,14 +14,25 @@ export async function createTransfer(user: any, transferData: any) {
   
   try {
     // Validate required fields
-    if (!transferData.date || !transferData.origin || !transferData.price || !transferData.clientId) {
-      console.error('Missing required fields:', { 
-        date: transferData.date,
-        origin: transferData.origin, 
-        price: transferData.price, 
-        clientId: transferData.clientId 
-      });
-      toast.error('Faltan campos requeridos para crear el transfer');
+    const requiredFields = ['date', 'origin', 'price', 'clientId'];
+    const missingFields = requiredFields.filter(field => !transferData[field]);
+    
+    if (missingFields.length > 0) {
+      console.error('Missing required fields:', missingFields);
+      toast.error(`Faltan campos requeridos: ${missingFields.join(', ')}`);
+      return null;
+    }
+    
+    // Handle service type specific fields
+    if (transferData.serviceType === 'transfer' && !transferData.destination) {
+      console.error('Missing destination for transfer service type');
+      toast.error('El destino es obligatorio para transfers');
+      return null;
+    }
+    
+    if (transferData.serviceType === 'dispo' && !transferData.hours) {
+      console.error('Missing hours for dispo service type');
+      toast.error('Las horas son obligatorias para disposiciones');
       return null;
     }
     
@@ -31,24 +42,33 @@ export async function createTransfer(user: any, transferData: any) {
     
     console.log('Preparing transfer data for database insertion');
     
+    // Prepare data for insertion
+    const insertData = {
+      date: transferData.date,
+      time: transferData.time || '',
+      service_type: transferData.serviceType,
+      origin: transferData.origin.toLowerCase(),
+      destination: transferData.serviceType === 'transfer' 
+        ? transferData.destination?.toLowerCase() 
+        : 'N/A', // Default value for dispo service
+      hours: transferData.hours || null,
+      price: transferData.price,
+      discount_type: transferData.discountType,
+      discount_value: transferData.discountValue || 0,
+      collaborator: collaboratorValue,
+      commission: transferData.commission || 0,
+      commission_type: transferData.commissionType,
+      payment_status: transferData.paymentStatus,
+      client_id: transferData.clientId,
+      user_id: user.id // Explicitly set user_id for RLS
+    };
+
+    console.log('Final transfer data for insertion:', insertData);
+    
     // Create the transfer first
     const { data, error } = await supabase
       .from('transfers')
-      .insert({
-        date: transferData.date,
-        time: transferData.time,
-        service_type: transferData.serviceType,
-        origin: transferData.origin.toLowerCase(),
-        destination: transferData.destination?.toLowerCase(),
-        price: transferData.price,
-        discount_type: transferData.discountType,
-        discount_value: transferData.discountValue || 0,
-        collaborator: collaboratorValue,
-        commission: transferData.commission,
-        commission_type: transferData.commissionType,
-        payment_status: transferData.paymentStatus,
-        client_id: transferData.clientId
-      })
+      .insert(insertData)
       .select('id')
       .single();
 

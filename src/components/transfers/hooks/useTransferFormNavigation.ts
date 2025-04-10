@@ -2,6 +2,7 @@
 import { useCallback, useEffect } from 'react';
 import { useTransferFormWithFormContext } from '../context/TransferFormContext';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/auth';
 
 export const useTransferFormNavigation = (
   onSubmit: (values: any) => void
@@ -13,19 +14,34 @@ export const useTransferFormNavigation = (
     trigger,
     getValues,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     setShowCollaboratorStep,
-    watch
+    watch,
+    setValue
   } = useTransferFormWithFormContext();
+  
+  // Get user authentication context
+  const { user } = useAuth();
   
   // Watch collaborator value to determine if we should show collaborator step
   const collaboratorValue = watch('collaborator');
+  const serviceType = watch('serviceType');
   
   // Update showCollaboratorStep based on the collaborator value
   useEffect(() => {
     // If collaborator is 'none', we should skip the collaborator step
     setShowCollaboratorStep(collaboratorValue !== 'none');
   }, [collaboratorValue, setShowCollaboratorStep]);
+  
+  // Fill in default values for destination when service type is 'dispo'
+  useEffect(() => {
+    if (serviceType === 'dispo') {
+      const destination = getValues('destination');
+      if (!destination || destination.trim() === '') {
+        setValue('destination', 'N/A', { shouldValidate: false });
+      }
+    }
+  }, [serviceType, getValues, setValue]);
   
   // Get fields that should be validated for each step
   const getFieldsForStep = (stepId: string): string[] => {
@@ -36,7 +52,6 @@ export const useTransferFormNavigation = (
         return ['date']; // time is optional
       case 'location':
         // For location, we need different validations based on service type
-        const serviceType = getValues('serviceType');
         if (serviceType === 'transfer') {
           return ['serviceType', 'origin', 'destination'];
         }
@@ -72,10 +87,26 @@ export const useTransferFormNavigation = (
     if (currentStep === activeSteps.length - 1) {
       console.log('Final step reached - submitting form');
       
+      // Validate the authentication state
+      if (!user) {
+        console.error('User not authenticated during form submission');
+        toast.error('Debe iniciar sesión para crear un transfer');
+        return;
+      }
+      
       // Create a submit handler that processes the form data
       const submitHandler = (data: any) => {
         try {
           console.log('Form data before processing:', data);
+          
+          // Set default values for conditional fields
+          if (data.serviceType === 'dispo' && (!data.destination || data.destination.trim() === '')) {
+            data.destination = 'N/A'; // Default value for dispo
+          }
+          
+          if (data.serviceType === 'transfer' && (!data.hours || data.hours.trim() === '')) {
+            data.hours = null; // Not applicable for transfers
+          }
           
           // Process the form data
           const processedValues = {
@@ -117,7 +148,7 @@ export const useTransferFormNavigation = (
       console.log('Validation errors:', errors);
       toast.error('Por favor complete todos los campos requeridos antes de continuar');
     }
-  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, getValues, setCurrentStep, errors, getNextStepIndex]);
+  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, getValues, setCurrentStep, errors, getNextStepIndex, user, setValue, serviceType]);
 
   // Handle previous step
   const handlePrevious = useCallback(() => {

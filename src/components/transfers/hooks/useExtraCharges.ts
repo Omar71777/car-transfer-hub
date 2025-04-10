@@ -50,11 +50,22 @@ export function useExtraCharges(initialCharges: Partial<ExtraCharge>[] = []) {
     return newExtraCharges;
   }, [extraCharges]);
 
+  // New method to process extra charges for submission
+  const processExtraChargesForSubmission = useCallback(() => {
+    return extraCharges
+      .filter(charge => charge.name && charge.price && charge.name.trim() !== '')
+      .map(charge => ({
+        name: charge.name,
+        price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
+      }));
+  }, [extraCharges]);
+
   return {
     extraCharges,
     setExtraCharges,
     handleAddExtraCharge,
     handleRemoveExtraCharge,
-    handleExtraChargeChange
+    handleExtraChargeChange,
+    processExtraChargesForSubmission
   };
 }

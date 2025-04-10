@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +15,13 @@ const NewTransferPage = () => {
   
   useEffect(() => {
     console.log('NewTransferPage mounted, user authentication state:', !!user);
+    
+    if (!user) {
+      console.warn('No authenticated user detected');
+      toast.warning('Debe iniciar sesión para crear un transfer');
+      // Note: You might want to add navigation to login page here
+      // but keeping this as is for now to avoid breaking current flow
+    }
   }, [user]);
 
   const handleSubmit = async (values: any) => {
@@ -72,6 +78,11 @@ const NewTransferPage = () => {
       values.extraCharges = values.extraCharges.filter((charge: any) => 
         charge && charge.name && charge.price && charge.name.trim() !== ''
       );
+      
+      // Set defaults for conditional fields
+      if (values.serviceType === 'dispo' && (!values.destination || values.destination.trim() === '')) {
+        values.destination = 'N/A';
+      }
       
       console.log('Creating transfer with processed values:', values);
       const transferId = await createTransfer(values);

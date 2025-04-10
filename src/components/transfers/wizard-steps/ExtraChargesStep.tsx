@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { PackagePlus } from 'lucide-react';
@@ -18,8 +17,16 @@ export function ExtraChargesStep({ clients, collaborators, formState }: ExtraCha
   const { 
     handleAddExtraCharge,
     handleRemoveExtraCharge,
-    handleExtraChargeChange
+    handleExtraChargeChange,
+    processExtraChargesForSubmission
   } = useExtraCharges(extraCharges);
+
+  React.useEffect(() => {
+    if (extraCharges && extraCharges.length > 0) {
+      const processed = processExtraChargesForSubmission();
+      console.log('Processed extra charges for form:', processed);
+    }
+  }, [extraCharges, processExtraChargesForSubmission]);
 
   const handleAddCharge = () => {
     const updatedCharges = handleAddExtraCharge();
