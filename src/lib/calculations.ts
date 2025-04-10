@@ -52,7 +52,7 @@ export const adaptExtraCharges = (charges: any[]): ExtraCharge[] => {
 export const calculateExtraChargesTotal = (extraCharges: ExtraCharge[] | any[] = []): number => {
   if (!extraCharges || !Array.isArray(extraCharges)) return 0;
   
-  return extraCharges.reduce((sum, charge) => {
+  return extraCharges.reduce<number>((sum: number, charge: any): number => {
     // Handle both ExtraCharge format and database format
     const price = charge.price !== undefined ? charge.price : 0;
     const chargePrice = typeof price === 'string' ? Number(price) : (price || 0);
