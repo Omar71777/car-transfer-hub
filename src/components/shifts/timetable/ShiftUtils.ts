@@ -39,7 +39,7 @@ export function getShiftForTimeSlot(
       return { 
         ...getDriverDetails(shift.driverId), 
         shiftId: shift.id,
-        type: shift.isFreeDay ? 'free' : (shift.isFullDay ? 'full' : 'half')
+        type: shift.isFreeDay ? 'free' as const : (shift.isFullDay ? 'full' as const : 'half' as const)
       };
     }
   }

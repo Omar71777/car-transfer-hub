@@ -85,7 +85,7 @@ export function ShiftCell({
             {driverInfo && (
               <div className="font-semibold">
                 {driverInfo.name} - {driverInfo.type === 'half' ? 'Turno 12h' : 
-                                     driverInfo.type === 'free' ? 'Día libre' : 'Turno 24h'}
+                                    driverInfo.type === 'free' ? 'Día libre' : 'Turno 24h'}
               </div>
             )}
             {!driverInfo && 'Haz clic para asignar un turno'}
