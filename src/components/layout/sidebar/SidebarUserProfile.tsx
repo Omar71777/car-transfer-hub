@@ -31,7 +31,7 @@ export const SidebarUserProfile: React.FC<SidebarUserProfileProps> = ({
         <p className="text-sm font-medium truncate">
           {fullName()}
         </p>
-        <p className="text-xs truncate text-slate-900">
+        <p className="text-xs truncate text-slate-400">
           {profile?.email || 'usuario@ejemplo.com'}
         </p>
       </div>
