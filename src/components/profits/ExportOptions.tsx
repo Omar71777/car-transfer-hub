@@ -6,6 +6,7 @@ import { Download, Printer, FileDown, FileText } from 'lucide-react';
 import { downloadCSV, printProfitReport, prepareProfitDataForExport } from '@/lib/exports';
 import { Transfer, Expense } from '@/types';
 import { format } from 'date-fns';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ExportOptionsProps {
   transfers: Transfer[];
@@ -20,6 +21,8 @@ interface ExportOptionsProps {
 }
 
 export function ExportOptions({ transfers, expenses, stats }: ExportOptionsProps) {
+  const { profile } = useAuth();
+
   const handleExportCSV = () => {
     const { dailyData, summaryData } = prepareProfitDataForExport(transfers, expenses, stats);
     
@@ -41,7 +44,11 @@ export function ExportOptions({ transfers, expenses, stats }: ExportOptionsProps
       `Informe de Ganancias - ${format(new Date(), 'dd/MM/yyyy')}`,
       transfers,
       expenses,
-      stats
+      stats,
+      {
+        name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
+        email: profile?.email || ''
+      }
     );
   };
   

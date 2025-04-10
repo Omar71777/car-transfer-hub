@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
@@ -17,10 +16,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { downloadCSV, printProfitReport } from '@/lib/exports';
 import { Button } from '@/components/ui/button';
 import { FileDown, Printer } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const TransfersReportPage = () => {
   const { transfers, loading } = useTransfers();
   const { expenses } = useExpenses();
+  const { profile } = useAuth();
 
   const handleExportCSV = () => {
     const data = transfers.map(transfer => ({
@@ -63,8 +64,17 @@ const TransfersReportPage = () => {
       profitMargin
     };
     
-    // Pass ALL expenses, not just those from transfers
-    printProfitReport('Informe de Transfers', transfers, expenses, stats);
+    // Pass user information and ALL expenses
+    printProfitReport(
+      'Informe de Transfers', 
+      transfers, 
+      expenses, 
+      stats, 
+      {
+        name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
+        email: profile?.email || ''
+      }
+    );
   };
 
   return (

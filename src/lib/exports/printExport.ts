@@ -4,6 +4,7 @@
  */
 import { Transfer, Expense } from '@/types';
 import { prepareProfitDataForExport } from './profitExport';
+import { format } from 'date-fns';
 
 // Print function
 export function printProfitReport(
@@ -16,9 +17,16 @@ export function printProfitReport(
     totalCommissions: number;
     netProfit: number;
     profitMargin: number;
+  },
+  userData?: { 
+    name: string;
+    email: string;
   }
 ): void {
   const { summaryData } = prepareProfitDataForExport(transfers, expenses, stats);
+  
+  // Get current month and year
+  const currentMonth = format(new Date(), 'MMMM yyyy');
   
   // Create a new window for printing
   const printWindow = window.open('', '_blank');
@@ -35,6 +43,9 @@ export function printProfitReport(
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; }
           h1 { color: #333; text-align: center; }
+          h2 { color: #555; }
+          .user-info { margin-bottom: 15px; color: #666; }
+          .month-info { margin-bottom: 20px; font-weight: bold; color: #555; font-size: 1.1em; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; }
           th { background-color: #f2f2f2; padding: 10px; text-align: left; border: 1px solid #ddd; }
           td { padding: 10px; border: 1px solid #ddd; }
@@ -48,6 +59,10 @@ export function printProfitReport(
       </head>
       <body>
         <h1>${title}</h1>
+        
+        ${userData ? `<div class="user-info">Usuario: ${userData.name || userData.email}</div>` : ''}
+        <div class="month-info">Periodo: ${currentMonth}</div>
+        
         <h2>Resumen</h2>
         <table>
           <tr>
