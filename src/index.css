@@ -43,6 +43,12 @@
     --sidebar-accent-foreground: 199 89% 48%;
     --sidebar-border: 210 100% 90%;
     --sidebar-ring: 199 89% 48%;
+    
+    /* Shift colors */
+    --shift-24h: 250 70% 50%;
+    --shift-24h-light: 250 70% 95%;
+    --shift-12h: 200 100% 45%;
+    --shift-12h-light: 200 100% 95%;
   }
 
   .dark {
@@ -73,6 +79,12 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    
+    /* Shift colors dark mode */
+    --shift-24h: 250 60% 60%;
+    --shift-24h-light: 250 50% 25%;
+    --shift-12h: 200 70% 55%;
+    --shift-12h-light: 200 60% 25%;
   }
 }
 
@@ -138,4 +150,41 @@
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Shift calendar styling */
+.shift-full-day {
+  @apply bg-primary/20 text-primary border border-primary/30;
+}
+
+.shift-half-day {
+  @apply bg-secondary/20 text-secondary border border-secondary/30;
+}
+
+/* Driver management styling */
+.driver-card {
+  @apply relative overflow-hidden rounded-lg border p-4 transition-all hover:shadow-md;
+}
+
+.driver-card-header {
+  @apply flex justify-between items-center mb-2;
+}
+
+.driver-card-body {
+  @apply space-y-1;
+}
+
+.driver-actions {
+  @apply flex gap-2;
+}
+
+/* Animation for shift assignment */
+@keyframes pulse-border {
+  0% { border-color: rgba(var(--primary), 0.3); }
+  50% { border-color: rgba(var(--primary), 0.7); }
+  100% { border-color: rgba(var(--primary), 0.3); }
+}
+
+.pulse-border {
+  animation: pulse-border 2s infinite ease-in-out;
 }

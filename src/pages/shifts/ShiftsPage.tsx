@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ShiftCalendar } from '@/components/shifts/ShiftCalendar';
+import { DriverManagement } from '@/components/shifts/DriverManagement';
 import { Shift, Driver } from '@/types';
 import { generateId } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
@@ -13,6 +14,7 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserPlus, CalendarClock, Clock } from 'lucide-react';
 
 // Datos de ejemplo (simulando lo que vendría de Firebase)
@@ -39,6 +41,7 @@ const ShiftsPage = () => {
     fullDay: 0,
     halfDay: 0
   });
+  const [activeTab, setActiveTab] = useState('shifts');
 
   // Cargar datos desde localStorage al montar el componente
   useEffect(() => {
@@ -90,6 +93,13 @@ const ShiftsPage = () => {
     }
   }, [shifts]);
 
+  // Guardar conductores en localStorage cada vez que cambian
+  useEffect(() => {
+    if (drivers.length > 0) {
+      localStorage.setItem('drivers', JSON.stringify(drivers));
+    }
+  }, [drivers]);
+
   const handleAddShift = (shift: Omit<Shift, 'id'>) => {
     // Comprobar si ya existe un turno para esa fecha
     const existingShift = shifts.find(s => s.date === shift.date);
@@ -125,6 +135,49 @@ const ShiftsPage = () => {
     toast({
       title: "Turno eliminado",
       description: "El turno ha sido eliminado exitosamente.",
+    });
+  };
+
+  const handleAddDriver = (driver: Omit<Driver, 'id'>) => {
+    const newDriver = {
+      id: generateId(),
+      ...driver
+    };
+    setDrivers([...drivers, newDriver]);
+    toast({
+      title: "Conductor añadido",
+      description: "El conductor ha sido añadido exitosamente.",
+    });
+  };
+
+  const handleUpdateDriver = (updatedDriver: Driver) => {
+    const updatedDrivers = drivers.map(driver => 
+      driver.id === updatedDriver.id ? updatedDriver : driver
+    );
+    setDrivers(updatedDrivers);
+    toast({
+      title: "Conductor actualizado",
+      description: "Los datos del conductor han sido actualizados exitosamente.",
+    });
+  };
+
+  const handleDeleteDriver = (id: string) => {
+    // Check if driver has assigned shifts
+    const hasShifts = shifts.some(shift => shift.driverId === id);
+    
+    if (hasShifts) {
+      toast({
+        title: "No se puede eliminar",
+        description: "Este conductor tiene turnos asignados. Reasigna o elimina sus turnos primero.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setDrivers(drivers.filter(driver => driver.id !== id));
+    toast({
+      title: "Conductor eliminado",
+      description: "El conductor ha sido eliminado exitosamente.",
     });
   };
 
@@ -175,41 +228,30 @@ const ShiftsPage = () => {
           </Card>
         </div>
         
-        <ShiftCalendar 
-          shifts={shifts} 
-          drivers={drivers} 
-          onAddShift={handleAddShift} 
-          onDeleteShift={handleDeleteShift} 
-        />
-        
-        <div className="mt-8">
-          <Card className="glass-card bg-gradient-to-r from-blue-50 to-indigo-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UserPlus className="h-5 w-5 text-primary" />
-                <span>Gestión de Conductores</span>
-              </CardTitle>
-              <CardDescription>Añade o modifica conductores para asignar turnos</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {drivers.map(driver => (
-                  <Card key={driver.id} className="overflow-hidden border border-border/50">
-                    <CardContent className="p-4">
-                      <div className="font-medium">{driver.name}</div>
-                      <div className="text-sm text-muted-foreground">{driver.email}</div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              <Button variant="outline" className="mt-6">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Añadir Conductor
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="shifts">Calendario de Turnos</TabsTrigger>
+            <TabsTrigger value="drivers">Gestión de Conductores</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="shifts">
+            <ShiftCalendar 
+              shifts={shifts} 
+              drivers={drivers} 
+              onAddShift={handleAddShift} 
+              onDeleteShift={handleDeleteShift} 
+            />
+          </TabsContent>
+          
+          <TabsContent value="drivers">
+            <DriverManagement 
+              drivers={drivers}
+              onAddDriver={handleAddDriver}
+              onUpdateDriver={handleUpdateDriver}
+              onDeleteDriver={handleDeleteDriver}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </MainLayout>
   );

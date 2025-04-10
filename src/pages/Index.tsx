@@ -2,11 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Calendar, CreditCard, BarChart2, ArrowRight, TrendingUp, Car, Users, Clock } from 'lucide-react';
+import { PlusCircle, Calendar, CreditCard, BarChart2, ArrowRight, TrendingUp, Car, Users, Clock, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { Transfer, Expense, Shift } from '@/types';
+import { Transfer, Expense, Shift, Driver } from '@/types';
+import { ShiftOverview } from '@/components/shifts/ShiftOverview';
+import { format, addDays, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const Index = () => {
   const { user, isAdmin } = useAuth();
@@ -14,8 +17,10 @@ const Index = () => {
     totalTransfers: 0,
     totalIncome: 0,
     totalExpenses: 0,
-    activeDrivers: 0
+    netIncome: 0,
+    upcomingShifts: 0
   });
+  const [upcomingShifts, setUpcomingShifts] = useState<Array<Shift & { driverName: string }>>([]);
 
   // Load data for KPIs
   useEffect(() => {
@@ -31,33 +36,46 @@ const Index = () => {
     const storedShifts = localStorage.getItem('shifts');
     const shifts = storedShifts ? JSON.parse(storedShifts) : [];
     
+    // Load drivers
+    const storedDrivers = localStorage.getItem('drivers');
+    const drivers = storedDrivers ? JSON.parse(storedDrivers) : [];
+    
     // Calculate stats
     const totalTransfers = transfers.length;
     const totalIncome = transfers.reduce((sum: number, transfer: Transfer) => sum + (transfer.price || 0), 0);
     const totalExpenses = expenses.reduce((sum: number, expense: Expense) => sum + (expense.amount || 0), 0);
+    const netIncome = totalIncome - totalExpenses;
     
-    // Count active drivers (those with shifts this week)
+    // Get upcoming shifts (next 7 days)
     const today = new Date();
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 7);
+    const nextWeek = addDays(today, 7);
     
-    const activeDriversIds = new Set(
-      shifts
-        .filter((shift: Shift) => {
-          const shiftDate = new Date(shift.date);
-          return shiftDate >= weekStart && shiftDate <= weekEnd;
-        })
-        .map((shift: Shift) => shift.driverId)
-    );
+    const upcoming = shifts
+      .filter((shift: Shift) => {
+        const shiftDate = new Date(shift.date);
+        return isWithinInterval(shiftDate, {
+          start: startOfDay(today),
+          end: endOfDay(nextWeek)
+        });
+      })
+      .map((shift: Shift) => {
+        const driver = drivers.find((d: Driver) => d.id === shift.driverId);
+        return {
+          ...shift,
+          driverName: driver ? driver.name : 'Conductor no asignado'
+        };
+      })
+      .sort((a: Shift, b: Shift) => new Date(a.date).getTime() - new Date(b.date).getTime());
     
     setStats({
       totalTransfers,
       totalIncome,
       totalExpenses,
-      activeDrivers: activeDriversIds.size
+      netIncome,
+      upcomingShifts: upcoming.length
     });
+    
+    setUpcomingShifts(upcoming.slice(0, 3));
   }, []);
 
   return (
@@ -122,14 +140,14 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="stat-card from-purple-500 to-purple-600 animated-gradient bg-gradient-to-r text-white">
+            <div className="stat-card from-purple-500 to-indigo-600 animated-gradient bg-gradient-to-r text-white">
               <div className="flex justify-between items-start">
-                <h3 className="text-lg font-medium">Conductores</h3>
-                <Users className="h-5 w-5 opacity-80" />
+                <h3 className="text-lg font-medium">Beneficio</h3>
+                <BarChart2 className="h-5 w-5 opacity-80" />
               </div>
               <div className="mt-4">
-                <p className="text-3xl font-bold">{stats.activeDrivers}</p>
-                <p className="text-xs opacity-80 mt-1">Conductores activos</p>
+                <p className="text-3xl font-bold">{stats.netIncome}€</p>
+                <p className="text-xs opacity-80 mt-1">Ingresos netos</p>
               </div>
             </div>
           </div>
@@ -213,48 +231,92 @@ const Index = () => {
           </Card>
         </div>
 
-        <div className="relative overflow-hidden rounded-xl p-6 glass-card bg-gradient-to-r from-primary to-accent text-white shadow-lg mb-8">
-          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
-          <div className="relative">
-            <h2 className="text-xl font-bold mb-2">Maximiza tus ganancias</h2>
-            <p className="max-w-3xl mb-4">
-              Controla tus transfers, gastos y turnos de forma eficiente para optimizar tu operación en Ibiza.
-            </p>
-            <Button asChild variant="secondary">
-              <Link to="/transfers">Comienza ahora</Link>
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Replacing the promotional section with upcoming shifts visualization */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle>Próximos Turnos</CardTitle>
-              <CardDescription>Consulta los próximos días de trabajo</CardDescription>
+              <CardTitle className="flex items-center justify-between">
+                <span>Próximos Turnos</span>
+                <Button variant="ghost" size="sm" asChild className="text-primary">
+                  <Link to="/shifts">
+                    <span>Ver todos</span>
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardTitle>
+              <CardDescription>Turnos programados para los próximos días</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Gestiona tus turnos de 12 y 24 horas fácilmente con nuestro calendario.
+              {upcomingShifts.length > 0 ? (
+                <div className="space-y-3">
+                  {upcomingShifts.map((shift) => (
+                    <div 
+                      key={shift.id} 
+                      className={`p-3 rounded-lg flex justify-between items-center ${
+                        shift.isFullDay 
+                          ? 'bg-primary/10 border border-primary/20' 
+                          : 'bg-secondary/10 border border-secondary/20'
+                      }`}
+                    >
+                      <div>
+                        <div className="font-medium">{shift.driverName}</div>
+                        <div className="text-sm text-muted-foreground flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {format(new Date(shift.date), 'EEEE, d MMMM', { locale: es })}
+                        </div>
+                      </div>
+                      <div className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        shift.isFullDay 
+                          ? 'bg-primary/20 text-primary' 
+                          : 'bg-secondary/20 text-secondary'
+                      }`}>
+                        {shift.isFullDay ? 'Turno 24h' : 'Turno 12h'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <Clock className="h-10 w-10 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">No hay turnos programados próximamente</p>
+                  <Button asChild variant="outline" className="mt-4">
+                    <Link to="/shifts">Asignar Turnos</Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle>Distribución de Turnos</CardTitle>
+              <CardDescription>Visualización semanal de turnos asignados</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ShiftOverview />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="glass-card bg-gradient-to-r from-blue-50 to-indigo-50">
+          <CardHeader>
+            <CardTitle>Gestión de Conductores</CardTitle>
+            <CardDescription>Añade, modifica y elimina conductores para tu flota</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-muted-foreground">
+                Administra los perfiles de tus conductores para asignarles turnos y servicios
               </p>
-              <Button asChild variant="outline">
-                <Link to="/shifts">Ver Calendario de Turnos</Link>
+              <Button asChild>
+                <Link to="/shifts">
+                  Gestionar Conductores
+                  <Users className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle>¿Necesitas ayuda?</CardTitle>
-              <CardDescription>Recursos para utilizar la aplicación</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Explora todas las funcionalidades de Ibiza Transfer Hub para sacar el máximo provecho.
-              </p>
-              <Button variant="outline">Ver Guía de Uso</Button>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </MainLayout>
   );

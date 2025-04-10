@@ -24,7 +24,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Shift, Driver } from '@/types';
 import { addDays, format, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CalendarClock, Check, Clock, User } from 'lucide-react';
+import { CalendarClock, Check, Clock, User, Calendar as CalendarIcon } from 'lucide-react';
 
 interface ShiftCalendarProps {
   shifts: Shift[];
@@ -61,21 +61,21 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
     return (
       <div className="flex flex-col items-center justify-center w-full h-full relative">
         {shift.isFullDay ? (
-          <div className="absolute inset-0 bg-primary/20 rounded-md border border-primary/30">
-            <div className="absolute top-0 left-0 right-0 bg-primary text-white text-[10px] px-1 py-0.5 rounded-t-md text-center font-medium truncate">
+          <div className="absolute inset-0 rounded-md" style={{ backgroundColor: 'hsl(var(--shift-24h-light))' }}>
+            <div className="absolute top-0 left-0 right-0 px-1 py-0.5 rounded-t-md text-center font-medium truncate text-[10px] text-white" style={{ backgroundColor: 'hsl(var(--shift-24h))' }}>
               {shortName}
             </div>
-            <div className="absolute bottom-0 right-0 p-0.5">
-              <Clock className="h-2.5 w-2.5 text-primary" />
+            <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--shift-24h))' }}>
+              <Clock className="h-2 w-2 text-white" />
             </div>
           </div>
         ) : (
-          <div className="absolute inset-0 bg-secondary/20 rounded-md border border-secondary/30">
-            <div className="absolute top-0 left-0 right-0 bg-secondary text-white text-[10px] px-1 py-0.5 rounded-t-md text-center font-medium truncate">
+          <div className="absolute inset-0 rounded-md" style={{ backgroundColor: 'hsl(var(--shift-12h-light))' }}>
+            <div className="absolute top-0 left-0 right-0 px-1 py-0.5 rounded-t-md text-center font-medium truncate text-[10px] text-white" style={{ backgroundColor: 'hsl(var(--shift-12h))' }}>
               {shortName}
             </div>
-            <div className="absolute bottom-0 right-0 p-0.5">
-              <Clock className="h-2.5 w-2.5 text-secondary" />
+            <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--shift-12h))' }}>
+              <Clock className="h-2 w-2 text-white" />
             </div>
           </div>
         )}
@@ -113,7 +113,15 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
     const driverName = getDriverNameById(shift.driverId);
     
     return (
-      <Card className={`mt-4 border ${shift.isFullDay ? 'border-primary/50 bg-primary/5' : 'border-secondary/50 bg-secondary/5'}`}>
+      <Card className={`mt-4 border ${shift.isFullDay 
+        ? 'border-[hsl(var(--shift-24h))]' 
+        : 'border-[hsl(var(--shift-12h))]'}`}
+        style={{ 
+          backgroundColor: shift.isFullDay 
+            ? 'hsl(var(--shift-24h-light))' 
+            : 'hsl(var(--shift-12h-light))' 
+        }}
+      >
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div>
@@ -126,7 +134,7 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
                 <span>{shift.isFullDay ? 'Turno de 24 horas' : 'Turno de 12 horas'}</span>
               </p>
               <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
-                <CalendarClock className="h-3.5 w-3.5" />
+                <CalendarIcon className="h-3.5 w-3.5" />
                 <span>{format(date, 'EEEE, d MMMM yyyy', { locale: es })}</span>
               </p>
             </div>
@@ -155,7 +163,7 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
         <div className="mb-4">
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full shine-effect">
+              <Button className="w-full shine-effect bg-gradient-to-r from-primary to-accent text-white">
                 <CalendarClock className="mr-2 h-4 w-4" />
                 Asignar Nuevo Turno
               </Button>
@@ -191,14 +199,14 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
                     <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
                       <RadioGroupItem value="half" id="half" />
                       <Label htmlFor="half" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <div className="w-3 h-3 rounded-full bg-secondary" />
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--shift-12h))' }} />
                         <span>Turno de 12 horas</span>
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
                       <RadioGroupItem value="full" id="full" />
                       <Label htmlFor="full" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <div className="w-3 h-3 rounded-full bg-primary" />
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--shift-24h))' }} />
                         <span>Turno de 24 horas</span>
                       </Label>
                     </div>
@@ -231,11 +239,11 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
             
             <div className="mt-4 flex items-center justify-center gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-secondary" />
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--shift-12h))' }} />
                 <span className="text-sm">Turno de 12 horas</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-primary" />
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--shift-24h))' }} />
                 <span className="text-sm">Turno de 24 horas</span>
               </div>
             </div>
