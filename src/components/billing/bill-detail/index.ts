@@ -1,0 +1,2 @@
+
+export { BillDetail } from './BillDetail';
