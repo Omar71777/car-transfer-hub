@@ -15,35 +15,56 @@ serve(async (req) => {
   }
 
   try {
-    // Create Supabase client
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "No authorization header" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      )
-    }
-
-    // Extract the token from the Authorization header
-    const token = authHeader.replace('Bearer ', '')
-    
-    // Create a Supabase client with the user's JWT
+    // Create Supabase client with service role
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
     
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
-
-    // Verify the JWT and get the user
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error("Missing Supabase credentials")
+    }
     
-    if (authError || !user) {
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    
+    // Get the request body
+    let userId: string | null = null
+    
+    // Check if this is an admin deleting a user or a user deleting themselves
+    const body = await req.json().catch(() => null)
+    const authHeader = req.headers.get('Authorization')
+    
+    if (body && body.userId) {
+      // Admin is deleting a user
+      userId = body.userId
+      console.log("Admin deleting user:", userId)
+    } else if (authHeader) {
+      // User is deleting themselves
+      // Extract the token from the Authorization header
+      const token = authHeader.replace('Bearer ', '')
+      
+      // Verify the JWT and get the user
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+      
+      if (authError || !user) {
+        return new Response(
+          JSON.stringify({ error: "Invalid token" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        )
+      }
+      
+      userId = user.id
+      console.log("User deleting their own account:", userId)
+    } else {
       return new Response(
-        JSON.stringify({ error: "Invalid token" }),
+        JSON.stringify({ error: "No authorization header or userId provided" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       )
     }
+    
+    if (!userId) {
+      throw new Error("No user ID provided")
+    }
 
-    const userId = user.id
+    console.log("Starting delete process for user:", userId)
 
     // Delete user's expenses
     const { error: expensesError } = await supabase
@@ -52,7 +73,7 @@ serve(async (req) => {
       .eq('user_id', userId)
 
     if (expensesError) {
-      throw new Error(`Error deleting expenses: ${expensesError.message}`)
+      console.log(`Error deleting expenses: ${expensesError.message}`)
     }
 
     // Delete user's transfers
@@ -62,7 +83,7 @@ serve(async (req) => {
       .eq('user_id', userId)
 
     if (transfersError) {
-      throw new Error(`Error deleting transfers: ${transfersError.message}`)
+      console.log(`Error deleting transfers: ${transfersError.message}`)
     }
 
     // Delete the user's profile
@@ -83,10 +104,11 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, message: "User deleted successfully" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     )
   } catch (error) {
+    console.error("Error in delete-account function:", error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

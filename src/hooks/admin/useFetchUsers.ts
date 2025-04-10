@@ -11,12 +11,18 @@ export function useFetchUsers() {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
+      // Use the service role to bypass RLS for admin operations
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error details:', error);
+        throw error;
+      }
+      
+      console.log('Fetched users:', data);
       setUsers(data || []);
     } catch (error: any) {
       console.error('Error fetching users:', error);

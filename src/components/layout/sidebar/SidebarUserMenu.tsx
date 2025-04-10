@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogOut, Settings } from 'lucide-react';
 import { 
   SidebarGroup, 
@@ -18,6 +18,7 @@ interface SidebarUserMenuProps {
 
 export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Helper to determine if a path is active
   const isActive = (path: string) => location.pathname.includes(path);
@@ -30,6 +31,20 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
         ? "text-sidebar-primary font-medium bg-sidebar-selected shadow-sm" 
         : "text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground"
     );
+  };
+
+  const handleSignOut = async () => {
+    try {
+      // Call the provided signOut function
+      await onSignOut();
+      
+      // Force navigation to auth page in case the signOut function doesn't redirect
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      // If there's an error, try to force a redirect anyway
+      window.location.href = '/auth';
+    }
   };
 
   return (
@@ -51,7 +66,7 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
           
           <SidebarMenuItem>
             <SidebarMenuButton 
-              onClick={onSignOut}
+              onClick={handleSignOut}
               className="text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground transition-colors duration-200"
             >
               <LogOut size={20} />

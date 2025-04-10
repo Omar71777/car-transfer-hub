@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -64,11 +63,28 @@ export function useAuthOperations() {
 
   const signOut = async () => {
     try {
+      console.log('Signing out user...');
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+      
+      // Clear state explicitly
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setIsAdmin(false);
+      
+      console.log('User signed out successfully');
       toast.success('Sesión cerrada con éxito');
+      
+      // Force page reload to ensure all state is cleared
+      window.location.href = '/auth';
     } catch (error: any) {
-      toast.error(`Error: ${error.message}`);
+      console.error('SignOut error full details:', error);
+      toast.error(`Error al cerrar sesión: ${error.message}`);
     }
   };
 
@@ -103,13 +119,19 @@ export function useAuthOperations() {
     if (!user || !session) return false;
     
     try {
+      console.log('Deleting account for user:', user.id);
       const { data, error } = await supabase.functions.invoke('delete-account', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error from delete-account function:', error);
+        throw error;
+      }
+      
+      console.log('Account deletion response:', data);
       
       await supabase.auth.signOut();
       
