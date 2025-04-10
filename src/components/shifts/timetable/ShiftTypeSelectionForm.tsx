@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Clock12Icon, Clock24Icon, CalendarIcon } from 'lucide-react';
+import { Clock, Clock12, CalendarIcon } from 'lucide-react';
 
 interface ShiftTypeSelectionFormProps {
   day: Date;
@@ -36,7 +36,7 @@ export function ShiftTypeSelectionForm({
           variant="outline"
           onClick={() => onTypeSelect('half')}
         >
-          <Clock12Icon className="mr-2 h-4 w-4" />
+          <Clock12 className="mr-2 h-4 w-4" />
           <div className="flex flex-col items-start">
             <span>Turno de 12 horas</span>
             <span className="text-xs text-muted-foreground">Media jornada</span>
@@ -48,7 +48,7 @@ export function ShiftTypeSelectionForm({
           variant="outline"
           onClick={() => onTypeSelect('full')}
         >
-          <Clock24Icon className="mr-2 h-4 w-4" />
+          <Clock className="mr-2 h-4 w-4" />
           <div className="flex flex-col items-start">
             <span>Turno de 24 horas</span>
             <span className="text-xs text-muted-foreground">Jornada completa</span>
