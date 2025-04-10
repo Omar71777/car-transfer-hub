@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { Transfer } from '@/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransferDialogsProps {
   isExpenseDialogOpen: boolean;
@@ -14,7 +15,6 @@ interface TransferDialogsProps {
   editingTransfer: Transfer | null;
   onExpenseSubmit: (values: any) => void;
   onEditSubmit: (values: any) => void;
-  isMobile: boolean;
 }
 
 export function TransferDialogs({
@@ -25,9 +25,10 @@ export function TransferDialogs({
   selectedTransferId,
   editingTransfer,
   onExpenseSubmit,
-  onEditSubmit,
-  isMobile
+  onEditSubmit
 }: TransferDialogsProps) {
+  const isMobile = useIsMobile();
+  
   return (
     <>
       <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>

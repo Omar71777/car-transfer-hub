@@ -21,6 +21,7 @@ const MobileSidebarToggle = () => {
       size="icon" 
       className="md:hidden fixed top-2 left-2 z-50 bg-background/80 backdrop-blur-sm"
       onClick={() => setOpenMobile(!openMobile)}
+      aria-label="Toggle menu"
     >
       <Menu className="h-5 w-5" />
       <span className="sr-only">Toggle menu</span>

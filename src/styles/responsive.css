@@ -1,10 +1,12 @@
 
 /* Responsive fixes */
 @media (max-width: 768px) {
+  /* Table cells */
   .timetable-cell {
     @apply p-0.5;
   }
   
+  /* Scrollable containers */
   .timetable-scroll {
     max-height: calc(100vh - 280px);
   }
@@ -54,5 +56,20 @@
   /* Better spacing for stacked elements */
   .mobile-stack > * + * {
     @apply mt-3;
+  }
+  
+  /* Fix for mobile dialogs */
+  [role="dialog"] {
+    @apply p-2 max-w-[95vw];
+  }
+  
+  /* Mobile-friendly forms */
+  .form-row {
+    @apply flex-col;
+  }
+  
+  /* Better scrolling on mobile */
+  .mobile-scroll {
+    @apply -mx-4 px-4 overflow-x-auto;
   }
 }

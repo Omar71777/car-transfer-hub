@@ -8,6 +8,7 @@ import { EmptyTransfersRow } from './table/EmptyTransfersRow';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { capitalizeFirstLetter } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransfersTableProps {
   transfers: Transfer[];
@@ -25,6 +26,7 @@ export function TransfersTable({
   onDeleteMultiple = (ids) => ids.forEach(onDelete)
 }: TransfersTableProps) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const isMobile = useIsMobile();
   
   const handleSelectRow = (id: string, selected: boolean) => {
     if (selected) {
@@ -68,30 +70,32 @@ export function TransfersTable({
         </div>
       )}
       <div className="rounded-md border overflow-hidden glass-card px-[7px]">
-        <Table>
-          <TransferTableHeader 
-            onSelectAll={handleSelectAll} 
-            allSelected={selectedRows.length === transfers.length && transfers.length > 0}
-            someSelected={selectedRows.length > 0 && selectedRows.length < transfers.length}
-          />
-          <TableBody>
-            {transfers.length === 0 ? (
-              <EmptyTransfersRow />
-            ) : (
-              transfers.map(transfer => (
-                <TransferTableRow
-                  key={transfer.id}
-                  transfer={transfer}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onAddExpense={onAddExpense}
-                  selected={selectedRows.includes(transfer.id)}
-                  onSelectRow={handleSelectRow}
-                />
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <div className={isMobile ? "overflow-x-auto -mx-4 px-4" : ""}>
+          <Table>
+            <TransferTableHeader 
+              onSelectAll={handleSelectAll} 
+              allSelected={selectedRows.length === transfers.length && transfers.length > 0}
+              someSelected={selectedRows.length > 0 && selectedRows.length < transfers.length}
+            />
+            <TableBody>
+              {transfers.length === 0 ? (
+                <EmptyTransfersRow />
+              ) : (
+                transfers.map(transfer => (
+                  <TransferTableRow
+                    key={transfer.id}
+                    transfer={transfer}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    onAddExpense={onAddExpense}
+                    selected={selectedRows.includes(transfer.id)}
+                    onSelectRow={handleSelectRow}
+                  />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

@@ -25,7 +25,8 @@ export function TransfersReportTable({
       : t.commission);
   }, 0);
 
-  return <div className="overflow-x-auto">
+  return (
+    <div className="overflow-x-auto">
       <Table>
         <TableCaption>Lista de todos los transfers registrados</TableCaption>
         <TableHeader>
@@ -41,44 +42,55 @@ export function TransfersReportTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {loading ? <TableRow>
+          {loading ? (
+            <TableRow>
               <TableCell colSpan={isMobile ? 5 : 8} className="text-center py-8">Cargando...</TableCell>
-            </TableRow> : transfers.length === 0 ? <TableRow>
+            </TableRow>
+          ) : transfers.length === 0 ? (
+            <TableRow>
               <TableCell colSpan={isMobile ? 5 : 8} className="text-center py-8">No hay transfers registrados</TableCell>
-            </TableRow> : transfers.map(transfer => {
+            </TableRow>
+          ) : transfers.map(transfer => {
             // Calculate commission amount based on commission type
             const commissionAmount = transfer.commissionType === 'percentage'
               ? transfer.price * transfer.commission / 100
               : transfer.commission;
             
-            return <TableRow key={transfer.id}>
-                  <TableCell>{transfer.date}</TableCell>
-                  {!isMobile && <TableCell>{transfer.time || 'N/A'}</TableCell>}
-                  <TableCell className="max-w-[100px] truncate" title={transfer.origin}>
-                    {transfer.origin}
-                  </TableCell>
-                  <TableCell className="max-w-[100px] truncate" title={transfer.destination}>
-                    {transfer.destination}
-                  </TableCell>
-                  <TableCell className="text-right">{formatCurrency(transfer.price)}</TableCell>
-                  {!isMobile && <TableCell>{transfer.collaborator || 'N/A'}</TableCell>}
-                  {!isMobile && <TableCell>
+            return (
+              <TableRow key={transfer.id}>
+                <TableCell>{transfer.date}</TableCell>
+                {!isMobile && <TableCell>{transfer.time || 'N/A'}</TableCell>}
+                <TableCell className="max-w-[100px] truncate" title={transfer.origin}>
+                  {transfer.origin}
+                </TableCell>
+                <TableCell className="max-w-[100px] truncate" title={transfer.destination}>
+                  {transfer.destination}
+                </TableCell>
+                <TableCell className="text-right">{formatCurrency(transfer.price)}</TableCell>
+                {!isMobile && <TableCell>{transfer.collaborator || 'N/A'}</TableCell>}
+                {!isMobile && (
+                  <TableCell>
                     {transfer.commissionType === 'percentage' 
                       ? `${transfer.commission}%` 
                       : formatCurrency(transfer.commission)}
-                  </TableCell>}
-                  <TableCell className="text-right">{formatCurrency(commissionAmount)}</TableCell>
-                </TableRow>;
+                  </TableCell>
+                )}
+                <TableCell className="text-right">{formatCurrency(commissionAmount)}</TableCell>
+              </TableRow>
+            );
           })}
         </TableBody>
-        {transfers.length > 0 && <TableFooter>
+        {transfers.length > 0 && (
+          <TableFooter>
             <TableRow>
               <TableCell colSpan={isMobile ? 3 : 6} className="text-right font-bold">Totales:</TableCell>
               <TableCell className="text-right font-bold">{formatCurrency(totalPrice)}</TableCell>
               {!isMobile && <TableCell></TableCell>}
               <TableCell className="text-right font-bold">{formatCurrency(totalCommissions)}</TableCell>
             </TableRow>
-          </TableFooter>}
+          </TableFooter>
+        )}
       </Table>
-    </div>;
+    </div>
+  );
 }

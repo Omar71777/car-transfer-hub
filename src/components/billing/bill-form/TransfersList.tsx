@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Search } from 'lucide-react';
 import { Transfer } from '@/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransfersListProps {
   filteredTransfers: Transfer[];
@@ -26,6 +27,8 @@ export function TransfersList({
   onTransferFilterChange,
   formatCurrency
 }: TransfersListProps) {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-2">
@@ -37,10 +40,11 @@ export function TransfersList({
             size="sm" 
             onClick={onSelectAllTransfers}
             disabled={filteredTransfers.length === 0}
+            className={isMobile ? "text-xs px-2" : ""}
           >
             {selectedTransfers.length === filteredTransfers.length && filteredTransfers.length > 0 
-              ? 'Deseleccionar todos' 
-              : 'Seleccionar todos'}
+              ? (isMobile ? 'Deseleccionar' : 'Deseleccionar todos')
+              : (isMobile ? 'Seleccionar' : 'Seleccionar todos')}
           </Button>
         </div>
       </div>
@@ -51,10 +55,10 @@ export function TransfersList({
         </div>
         <Input
           type="text"
-          placeholder="Filtrar transfers por origen o destino..."
+          placeholder={isMobile ? "Filtrar transfers..." : "Filtrar transfers por origen o destino..."}
           value={transferFilter}
           onChange={(e) => onTransferFilterChange(e.target.value)}
-          className="pl-10"
+          className="pl-10 mobile-input"
         />
       </div>
 
