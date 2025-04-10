@@ -1,6 +1,6 @@
 
-import React, { useState, useMemo } from 'react';
-import { format, startOfWeek, addDays } from 'date-fns';
+import React, { useState, useMemo, useEffect } from 'react';
+import { format, startOfWeek, addDays, isSameDay, isAfter, isBefore, isSameHour } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,6 +10,7 @@ import { ShiftCell } from './timetable/ShiftCell';
 import { DriversLegend } from './timetable/DriversLegend';
 import { ShiftPopover } from './timetable/ShiftPopover';
 import { getShiftForTimeSlot } from './timetable/ShiftUtils';
+import { GrabIcon, MoveHorizontalIcon } from 'lucide-react';
 
 interface ShiftTimetableProps {
   shifts: Shift[];
@@ -25,6 +26,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
   const [shiftType, setShiftType] = useState<string>('half');
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{day: Date, hour: number} | null>(null);
+  const [dragEnd, setDragEnd] = useState<{day: Date, hour: number} | null>(null);
   
   // Generate hours for columns (0-23)
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -32,6 +34,29 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
   // Generate days of the week
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start on Monday
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  // Helper to check if a cell is within the current drag selection
+  const isInSelectionRange = (day: Date, hour: number) => {
+    if (!dragStart || !dragEnd) return false;
+    
+    // If dragging on the same day
+    if (isSameDay(dragStart.day, dragEnd.day) && isSameDay(day, dragStart.day)) {
+      const minHour = Math.min(dragStart.hour, dragEnd.hour);
+      const maxHour = Math.max(dragStart.hour, dragEnd.hour);
+      return hour >= minHour && hour <= maxHour;
+    }
+    
+    // If dragging across multiple days
+    if (
+      (isSameDay(day, dragStart.day) && hour >= dragStart.hour) ||
+      (isSameDay(day, dragEnd.day) && hour <= dragEnd.hour) ||
+      (isAfter(day, dragStart.day) && isBefore(day, dragEnd.day))
+    ) {
+      return true;
+    }
+    
+    return false;
+  };
 
   // Create a color map for drivers
   const driverColors = useMemo(() => {
@@ -58,6 +83,9 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
 
   // Handle cell click to select it
   const handleCellClick = (day: Date, hour: number) => {
+    // If we just finished dragging, don't process the click
+    if (isDragging) return;
+    
     // Check if there's already a shift for this cell
     const existingShift = getShiftForTimeSlot(day, hour, shifts, getDriverDetails);
     
@@ -76,27 +104,82 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     // Start drag operation
     setIsDragging(true);
     setDragStart({ day, hour });
+    setDragEnd({ day, hour }); // Initialize drag end to the same cell
+    
+    // Add document-level event listeners
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   const handleMouseUp = () => {
-    if (isDragging && dragStart) {
-      // End drag operation and open the popover
+    if (isDragging && dragStart && dragEnd) {
+      // End drag operation
       setIsDragging(false);
-      setSelectedCell(dragStart);
+      
+      // If dragging resulted in selecting a range of cells
+      if (!isSameDay(dragStart.day, dragEnd.day) || dragStart.hour !== dragEnd.hour) {
+        // For multi-cell selection, we'll determine whether to use the start or end time
+        // based on which gives the most sensible shift:
+        // - For shifts spanning multiple days, we'll set the day to the start day
+        // - For shifts spanning hours, we'll set the hour range based on selection
+        if (isSameDay(dragStart.day, dragEnd.day)) {
+          // Same day, will select between these hours
+          setSelectedCell(dragStart);
+          
+          // Automatically set the shift type based on the hour range
+          const hourRange = Math.abs(dragEnd.hour - dragStart.hour);
+          if (hourRange >= 12) {
+            setShiftType('full');
+          } else {
+            setShiftType('half');
+          }
+        } else {
+          // Multi-day selection, default to start day
+          setSelectedCell(dragStart);
+          setShiftType('full');
+        }
+        
+        // Show a toast to guide the user
+        toast({
+          title: "Selección completada",
+          description: "Ahora puedes configurar el turno para el periodo seleccionado.",
+        });
+      } else {
+        // Single cell selection
+        setSelectedCell(dragStart);
+      }
     }
+    
+    // Remove document-level event listeners
+    document.removeEventListener('mouseup', handleMouseUp);
   };
 
   const handleMouseOver = (day: Date, hour: number) => {
     if (isDragging) {
-      // Visual feedback during drag could be added here
-      // For now, we'll just use the drag start for the cell selection
+      // Update the end of the selection
+      setDragEnd({ day, hour });
     }
   };
+
+  // Add document-level mouse up handler to catch if user releases outside the table
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDragging) {
+        handleMouseUp();
+      }
+    };
+    
+    document.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => {
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging, dragStart, dragEnd]);
 
   // Reset selection when popover closes
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setSelectedCell(null);
+      setDragStart(null);
+      setDragEnd(null);
     }
   };
 
@@ -110,6 +193,9 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
       });
       
       setSelectedCell(null);
+      setDragStart(null);
+      setDragEnd(null);
+      
       toast({
         title: "Turno creado",
         description: `Turno de ${shiftType === 'full' ? '24h' : '12h'} asignado correctamente.`,
@@ -131,11 +217,16 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     <Card className="glass-card">
       <CardHeader>
         <CardTitle>Planificador de Turnos</CardTitle>
-        <CardDescription>Asigna y visualiza los turnos semanales - Haz clic en una celda para asignar un turno</CardDescription>
+        <CardDescription className="flex items-center gap-2">
+          <div>Asigna y visualiza los turnos semanales - Haz clic o arrastra para asignar un turno</div>
+          <div className="flex items-center gap-1 text-xs bg-muted p-1 rounded">
+            <MoveHorizontalIcon className="h-3 w-3" /> Arrastra para seleccionar varios turnos
+          </div>
+        </CardDescription>
       </CardHeader>
       <CardContent className="overflow-auto">
         <div className="border rounded-md">
-          <Table onMouseUp={handleMouseUp}>
+          <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-24">Día / Hora</TableHead>
@@ -165,6 +256,8 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
                         onClick={handleCellClick}
                         onMouseDown={handleMouseDown}
                         onMouseOver={handleMouseOver}
+                        isDragging={isDragging}
+                        isInSelectionRange={isInSelectionRange(day, hour)}
                       />
                     );
                   })}
