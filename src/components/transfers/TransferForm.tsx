@@ -68,6 +68,8 @@ export function TransferForm({
         ...initialValues,
         serviceType: initialValues.serviceType || 'transfer',
         price: initialValues.price.toString(),
+        // Convert hours to string regardless of whether it's a number or string
+        hours: initialValues.hours !== undefined ? initialValues.hours.toString() : '',
         discountType: initialValues.discountType || null,
         discountValue: initialValues.discountValue?.toString() || '',
         commissionType: initialValues.commissionType || 'percentage',
