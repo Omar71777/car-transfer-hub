@@ -16,7 +16,12 @@ export function CollaboratorsOverview({ transfers, loading = false }: Collaborat
   const calculateCommissionStats = () => {
     const collaborators: Record<string, { name: string, transferCount: number, commissionTotal: number }> = {};
     
-    transfers.forEach(transfer => {
+    // Filter out transfers without collaborators first
+    const transfersWithCollaborators = transfers.filter(transfer => 
+      transfer.collaborator && transfer.collaborator.trim() !== ''
+    );
+    
+    transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
       const commissionAmount = (transfer.price * transfer.commission) / 100;

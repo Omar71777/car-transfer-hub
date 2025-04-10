@@ -18,7 +18,7 @@ export function CollaboratorField({ form, collaborators }: CollaboratorFieldProp
       name="collaborator"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Colaborador</FormLabel>
+          <FormLabel>Colaborador (opcional)</FormLabel>
           <Select 
             onValueChange={field.onChange} 
             defaultValue={field.value}
@@ -26,11 +26,11 @@ export function CollaboratorField({ form, collaborators }: CollaboratorFieldProp
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona un colaborador" />
+                <SelectValue placeholder="Sin colaborador" />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value="ninguno">Sin colaborador</SelectItem>
+              <SelectItem value="">Sin colaborador</SelectItem>
               {collaborators.map((collaborator) => (
                 <SelectItem key={collaborator.id} value={collaborator.name}>
                   {collaborator.name}

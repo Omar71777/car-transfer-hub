@@ -15,7 +15,12 @@ export function CollaboratorStatsSection({ transfers, loading = false }: Collabo
   const calculateCollaboratorStats = (): CollaboratorStat[] => {
     const collaboratorStats: Record<string, CollaboratorStat> = {};
     
-    transfers.forEach(transfer => {
+    // Filter out transfers without collaborators first
+    const transfersWithCollaborators = transfers.filter(transfer => 
+      transfer.collaborator && transfer.collaborator.trim() !== ''
+    );
+    
+    transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
       const commissionAmount = (transfer.price * transfer.commission) / 100;

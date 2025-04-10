@@ -76,7 +76,12 @@ const AnalyticsReportPage = () => {
   const generateCollaboratorData = () => {
     const collaborators: Record<string, number> = {};
     
-    transfers.forEach(transfer => {
+    // Filter transfers with collaborators
+    const transfersWithCollaborators = transfers.filter(transfer => 
+      transfer.collaborator && transfer.collaborator.trim() !== ''
+    );
+    
+    transfersWithCollaborators.forEach(transfer => {
       const collaborator = transfer.collaborator || 'Sin colaborador';
       if (!collaborators[collaborator]) {
         collaborators[collaborator] = 0;
@@ -151,7 +156,7 @@ const AnalyticsReportPage = () => {
                     <div className="flex justify-center items-center h-80">
                       <p>Cargando datos...</p>
                     </div>
-                  ) : (
+                  ) : collaboratorData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
                         <Pie
@@ -171,6 +176,10 @@ const AnalyticsReportPage = () => {
                         <Tooltip formatter={(value) => `${value}€`} />
                       </PieChart>
                     </ResponsiveContainer>
+                  ) : (
+                    <div className="flex justify-center items-center h-80">
+                      <p>No hay datos de colaboradores disponibles</p>
+                    </div>
                   )}
                 </CardContent>
               </Card>
