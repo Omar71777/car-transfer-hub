@@ -105,8 +105,8 @@ export function TransferForm({
             <LocationFields form={form} />
             <PricingFields form={form} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <CollaboratorField form={form} collaborators={collaborators} />
               <ClientField form={form} clients={clients} />
+              <CollaboratorField form={form} collaborators={collaborators} />
             </div>
             <PaymentStatusField form={form} />
 

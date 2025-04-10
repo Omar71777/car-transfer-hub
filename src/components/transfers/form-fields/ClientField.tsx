@@ -29,9 +29,8 @@ export function ClientField({ form, clients }: ClientFieldProps) {
     e.preventDefault();
     
     const clientName = form.getValues('clientName');
-    const clientEmail = form.getValues('clientEmail');
     
-    if (!clientName || !clientEmail) {
+    if (!clientName) {
       return;
     }
     
@@ -95,20 +94,6 @@ export function ClientField({ form, clients }: ClientFieldProps) {
                   <FormLabel>Nombre *</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Nombre del cliente" required />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="clientEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email *</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="email" placeholder="Email del cliente" required />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

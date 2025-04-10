@@ -14,11 +14,14 @@ const NewTransferPage = () => {
 
   const handleSubmit = async (values: any) => {
     // Check if we need to create a new client
-    if (values.clientId === 'new' && values.clientName && values.clientEmail) {
-      // Create new client
+    if (values.clientId === 'new' && values.clientName) {
+      // Create new client with just the name
+      // Generate a temporary email if needed
+      const clientEmail = values.clientEmail || `${values.clientName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
+      
       const clientId = await createClient({
         name: values.clientName,
-        email: values.clientEmail,
+        email: clientEmail,
       });
       
       if (clientId) {

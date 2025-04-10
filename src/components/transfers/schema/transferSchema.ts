@@ -21,7 +21,7 @@ export const transferSchema = z.object({
   }),
   clientId: z.string().min(1, { message: 'El cliente es requerido' }),
   clientName: z.string().optional(),
-  clientEmail: z.string().email().optional(),
+  clientEmail: z.string().optional(),
 });
 
 export type TransferFormValues = z.infer<typeof transferSchema>;
