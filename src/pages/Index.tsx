@@ -13,7 +13,7 @@ import { ShiftSection } from '@/components/dashboard/ShiftSection';
 
 const Index = () => {
   const { user, isAdmin } = useAuth();
-  const { stats, upcomingShifts, loading } = useDashboardData();
+  const { stats, loading } = useDashboardData();
 
   return (
     <MainLayout>
@@ -51,7 +51,7 @@ const Index = () => {
         
         {/* Shifts Section */}
         <div className="mb-12 mt-12">
-          <ShiftSection upcomingShifts={upcomingShifts} loading={loading} />
+          <ShiftSection />
         </div>
 
         <Card className="glass-card bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
