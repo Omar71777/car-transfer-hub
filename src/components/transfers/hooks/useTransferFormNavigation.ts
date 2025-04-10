@@ -10,12 +10,19 @@ export const useTransferFormNavigation = (
 ) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showCollaboratorStep, setShowCollaboratorStep] = useState(true);
+  
+  // Safely get form methods - may be null during initial render
   const methods = useFormContext<TransferFormValues>();
   
   // Add logging to track step progression
   useEffect(() => {
-    console.log('Current step:', currentStep, activeSteps[currentStep]?.id);
-    console.log('Form values:', methods.getValues());
+    if (activeSteps[currentStep]) {
+      console.log('Current step:', currentStep, activeSteps[currentStep]?.id);
+      // Only try to log form values if methods is available
+      if (methods) {
+        console.log('Form values:', methods.getValues());
+      }
+    }
   }, [currentStep, activeSteps, methods]);
   
   // Get fields that should be validated for each step
@@ -27,7 +34,7 @@ export const useTransferFormNavigation = (
         return ['date']; // time is optional
       case 'location':
         // For location, we need different validations based on service type
-        if (methods.getValues('serviceType') === 'transfer') {
+        if (methods?.getValues('serviceType') === 'transfer') {
           return ['serviceType', 'origin', 'destination'];
         }
         return ['serviceType', 'origin', 'hours'];
@@ -44,6 +51,11 @@ export const useTransferFormNavigation = (
 
   // Handle next step
   const handleNext = async () => {
+    if (!methods) {
+      console.error('Form methods not available');
+      return;
+    }
+    
     console.log('Attempting to move to next step from:', activeSteps[currentStep]?.id);
     
     // If on pricing step and user selects "No collaborator", skip the commissions

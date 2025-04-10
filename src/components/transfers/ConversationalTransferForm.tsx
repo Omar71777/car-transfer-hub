@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
@@ -35,8 +35,8 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep },
   ];
 
-  const [showCollaboratorStep, setShowCollaboratorStep] = React.useState(true);
-  const [currentStep, setCurrentStep] = React.useState(0);
+  const [showCollaboratorStep, setShowCollaboratorStep] = useState(true);
+  const [currentStep, setCurrentStep] = useState(0);
   
   const {
     collaborators,
@@ -75,7 +75,7 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
       paymentStatus: 'pending',
       clientId: ''
     },
-    mode: 'onTouched'  // Changed from onChange to onTouched for better UX
+    mode: 'onTouched'
   });
 
   // If we don't need the collaborator step, remove it from the flow
@@ -83,11 +83,11 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     ? steps 
     : steps.filter(step => step.id !== 'collaborator');
   
-  // Get navigation handlers
-  const { 
-    handleNext, 
-    handlePrevious 
-  } = useTransferFormNavigation(activeSteps, onSubmit);
+  // Create the navigation handlers first
+  const navigateProps = {
+    handleNext: () => {}, 
+    handlePrevious: () => {}
+  };
 
   return (
     <TransferFormProvider 
@@ -107,12 +107,43 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
             collaborators={collaborators} 
           />
 
+          {/* We initialize the navigation component with the navigation handlers we get from the hook */}
           <TransferFormNavigation 
-            onPrevious={handlePrevious}
-            onNext={handleNext}
+            onPrevious={() => navigateProps.handlePrevious()}
+            onNext={() => navigateProps.handleNext()}
           />
         </CardContent>
       </Card>
+
+      {/* This hook needs to be used inside the FormProvider, but we need to assign its return values */}
+      <NavigationHandlersSetup 
+        activeSteps={activeSteps} 
+        onSubmit={onSubmit} 
+        setHandlers={(handlers) => {
+          navigateProps.handleNext = handlers.handleNext;
+          navigateProps.handlePrevious = handlers.handlePrevious;
+        }}
+      />
     </TransferFormProvider>
   );
 }
+
+// A utility component to set up the navigation handlers
+const NavigationHandlersSetup = ({ 
+  activeSteps, 
+  onSubmit, 
+  setHandlers 
+}: { 
+  activeSteps: any[],
+  onSubmit: (values: any) => void,
+  setHandlers: (handlers: { handleNext: () => void, handlePrevious: () => void }) => void
+}) => {
+  const { handleNext, handlePrevious } = useTransferFormNavigation(activeSteps, onSubmit);
+  
+  // Set the handlers on mount and when they change
+  React.useEffect(() => {
+    setHandlers({ handleNext, handlePrevious });
+  }, [handleNext, handlePrevious, setHandlers]);
+  
+  return null;
+};

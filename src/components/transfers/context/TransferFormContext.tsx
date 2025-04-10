@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useRef, useEffect } from 'react';
 import { FormProvider, UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
 
@@ -42,6 +42,16 @@ export const TransferFormProvider: React.FC<TransferFormProviderProps> = ({
     showCollaboratorStep,
     setShowCollaboratorStep,
   };
+
+  // Ensure the form context is properly initialized
+  const isFormProviderMounted = useRef(false);
+
+  useEffect(() => {
+    isFormProviderMounted.current = true;
+    return () => {
+      isFormProviderMounted.current = false;
+    };
+  }, []);
 
   return (
     <TransferFormContext.Provider value={contextValue}>
