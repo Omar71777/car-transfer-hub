@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,7 +39,8 @@ const CollaboratorsPage = () => {
           destination: transfer.destination,
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
-          commission: Number(transfer.commission)
+          commission: Number(transfer.commission),
+          expenses: [] // Add empty expenses array to match Transfer type
         }));
         
         setTransfers(processedTransfers);

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type Collaborator = {
   id: string;
@@ -13,24 +14,31 @@ export type Collaborator = {
 export function useCollaborators() {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   // Load collaborators from Supabase or localStorage as fallback
   const fetchCollaborators = useCallback(async () => {
     setLoading(true);
     try {
-      // Try to load from Supabase first (assuming future migration)
-      // For now, using localStorage as the source of truth
+      // Try to get from localStorage first as fallback
       const stored = localStorage.getItem('collaborators');
-      const loadedCollaborators = stored ? JSON.parse(stored) : [];
+      const storedCollaborators = stored ? JSON.parse(stored) : [];
       
-      setCollaborators(loadedCollaborators);
+      if (user) {
+        // If user is logged in, try to get from Supabase in future implementation
+        // For now, we're still using localStorage as the source
+        setCollaborators(storedCollaborators);
+      } else {
+        // Fallback to localStorage if not logged in
+        setCollaborators(storedCollaborators);
+      }
     } catch (error) {
       console.error('Error loading collaborators:', error);
       toast.error('Error al cargar colaboradores');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   // Save collaborators to localStorage
   const saveCollaborators = useCallback((updatedCollaborators: Collaborator[]) => {
