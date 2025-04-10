@@ -1,17 +1,15 @@
 
 import React, { useState, useMemo } from 'react';
-import { format, addHours, startOfWeek, addDays, isSameDay, parseISO, isWithinInterval, setHours } from 'date-fns';
+import { format, startOfWeek, addDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Shift, Driver } from '@/types';
-import { Clock, Calendar, Trash2 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { ShiftCell } from './timetable/ShiftCell';
+import { DriversLegend } from './timetable/DriversLegend';
+import { ShiftPopover } from './timetable/ShiftPopover';
+import { getShiftForTimeSlot } from './timetable/ShiftUtils';
 
 interface ShiftTimetableProps {
   shifts: Shift[];
@@ -58,74 +56,16 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     };
   };
 
-  // Function to calculate shift coverage for a specific hour on a specific day
-  const getShiftForTimeSlot = (day: Date, hour: number) => {
-    const cellDateTime = new Date(day);
-    cellDateTime.setHours(hour, 0, 0, 0);
-    
-    // Check which shift covers this time slot
-    for (const shift of shifts) {
-      const shiftDate = parseISO(shift.date);
-      
-      if (shift.isFullDay) {
-        // For 24h shifts that start at the given date
-        const shiftStart = new Date(shiftDate);
-        shiftStart.setHours(0, 0, 0, 0);
-        
-        const shiftEnd = new Date(shiftDate);
-        shiftEnd.setHours(23, 59, 59, 999);
-        
-        if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
-          return { ...getDriverDetails(shift.driverId), shiftId: shift.id };
-        }
-      } else {
-        // For 12h shifts (assuming 10:00 to 22:00)
-        const shiftStart = new Date(shiftDate);
-        shiftStart.setHours(10, 0, 0, 0);
-        
-        const shiftEnd = new Date(shiftDate);
-        shiftEnd.setHours(22, 0, 0, 0);
-        
-        // Check if this 12h shift contains this hour
-        if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
-          return { ...getDriverDetails(shift.driverId), shiftId: shift.id };
-        }
-        
-        // For night shifts (22:00 to 10:00 next day)
-        const prevDay = addDays(day, -1);
-        const prevDayShift = shifts.find(s => {
-          const sDate = parseISO(s.date);
-          return !s.isFullDay && isSameDay(sDate, prevDay);
-        });
-        
-        if (prevDayShift) {
-          const nightShiftStart = new Date(prevDay);
-          nightShiftStart.setHours(22, 0, 0, 0);
-          
-          const nightShiftEnd = new Date(day);
-          nightShiftEnd.setHours(10, 0, 0, 0);
-          
-          if (isWithinInterval(cellDateTime, { start: nightShiftStart, end: nightShiftEnd })) {
-            return { ...getDriverDetails(prevDayShift.driverId), shiftId: prevDayShift.id };
-          }
-        }
-      }
-    }
-    
-    return null;
-  };
-
   // Handle cell click to select it
   const handleCellClick = (day: Date, hour: number) => {
     // Check if there's already a shift for this cell
-    const existingShift = getShiftForTimeSlot(day, hour);
+    const existingShift = getShiftForTimeSlot(day, hour, shifts, getDriverDetails);
     
-    if (existingShift) {
-      // If shift exists, show delete button in the popover
-      setSelectedCell({ day, hour });
-    } else {
-      // If no shift, show add form in the popover
-      setSelectedCell({ day, hour });
+    // Always set the selected cell
+    setSelectedCell({ day, hour });
+    
+    if (!existingShift) {
+      // If no shift, prepare for adding a new one
       setSelectedDriver('');
       setShiftType('half');
     }
@@ -214,29 +154,18 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
                   </TableCell>
                   
                   {hours.map(hour => {
-                    const driverInfo = getShiftForTimeSlot(day, hour);
+                    const driverInfo = getShiftForTimeSlot(day, hour, shifts, getDriverDetails);
                     
                     return (
-                      <TableCell 
-                        key={hour} 
-                        className={`p-1 cursor-pointer relative ${
-                          driverInfo 
-                            ? `${driverInfo.color} text-white opacity-80 hover:opacity-100` 
-                            : 'hover:bg-muted/50'
-                        }`}
-                        title={driverInfo ? `Turno de ${driverInfo.name}` : 'Haz clic para asignar un turno'}
-                        onClick={() => handleCellClick(day, hour)}
-                        onMouseDown={() => handleMouseDown(day, hour)}
-                        onMouseOver={() => handleMouseOver(day, hour)}
-                      >
-                        <div className="w-full h-6 flex items-center justify-center">
-                          {driverInfo && (hour === 12 || hour === 22 || hour === 10) && (
-                            <span className="text-xs truncate max-w-[60px]">
-                              {driverInfo.name}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
+                      <ShiftCell
+                        key={hour}
+                        day={day}
+                        hour={hour}
+                        driverInfo={driverInfo}
+                        onClick={handleCellClick}
+                        onMouseDown={handleMouseDown}
+                        onMouseOver={handleMouseOver}
+                      />
                     );
                   })}
                 </TableRow>
@@ -245,98 +174,25 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
           </Table>
         </div>
         
-        {/* Legend */}
-        <div className="mt-4 flex flex-wrap gap-3">
-          {drivers.map(driver => (
-            <div key={driver.id} className="flex items-center">
-              <div className={`w-3 h-3 rounded-full ${driverColors[driver.id] || 'bg-gray-500'}`} />
-              <span className="text-xs ml-1">{driver.name}</span>
-            </div>
-          ))}
-        </div>
+        {/* Legend for driver colors */}
+        <DriversLegend drivers={drivers} driverColors={driverColors} />
         
         {/* Popover for shift creation/deletion */}
-        {selectedCell && (
-          <Popover open={!!selectedCell} onOpenChange={handleOpenChange}>
-            <PopoverTrigger>
-              <Button className="hidden">Trigger</Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="center">
-              {getShiftForTimeSlot(selectedCell.day, selectedCell.hour) ? (
-                // Shift exists - show delete option
-                <div className="space-y-4">
-                  <div className="text-sm font-medium">
-                    Turno existente para {format(selectedCell.day, 'dd/MM/yyyy', { locale: es })} a las {selectedCell.hour}:00
-                  </div>
-                  <Button 
-                    variant="destructive" 
-                    className="w-full"
-                    onClick={() => {
-                      const shiftInfo = getShiftForTimeSlot(selectedCell.day, selectedCell.hour);
-                      if (shiftInfo && shiftInfo.shiftId) {
-                        handleDeleteShift(shiftInfo.shiftId);
-                      }
-                    }}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Eliminar turno
-                  </Button>
-                </div>
-              ) : (
-                // No shift - show creation form
-                <div className="space-y-4">
-                  <div className="text-sm font-medium">
-                    Asignar turno para {format(selectedCell.day, 'dd/MM/yyyy', { locale: es })} a las {selectedCell.hour}:00
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="driver">Conductor</Label>
-                    <Select value={selectedDriver} onValueChange={setSelectedDriver}>
-                      <SelectTrigger className="w-full" id="driver">
-                        <SelectValue placeholder="Selecciona un conductor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {drivers.map((driver) => (
-                          <SelectItem key={driver.id} value={driver.id}>
-                            {driver.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Tipo de Turno</Label>
-                    <RadioGroup value={shiftType} onValueChange={setShiftType} className="flex flex-col space-y-1">
-                      <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
-                        <RadioGroupItem value="half" id="half" />
-                        <Label htmlFor="half" className="flex items-center gap-2 cursor-pointer flex-1">
-                          <Clock className="h-4 w-4 text-blue-500" />
-                          <span>Turno de 12 horas (10:00-22:00)</span>
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
-                        <RadioGroupItem value="full" id="full" />
-                        <Label htmlFor="full" className="flex items-center gap-2 cursor-pointer flex-1">
-                          <Calendar className="h-4 w-4 text-purple-500" />
-                          <span>Turno de 24 horas</span>
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  
-                  <Button 
-                    className="w-full" 
-                    onClick={handleAddShift}
-                    disabled={!selectedDriver}
-                  >
-                    Guardar Turno
-                  </Button>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
-        )}
+        <ShiftPopover
+          isOpen={!!selectedCell}
+          onOpenChange={handleOpenChange}
+          selectedCell={selectedCell}
+          existingShift={selectedCell 
+            ? getShiftForTimeSlot(selectedCell.day, selectedCell.hour, shifts, getDriverDetails) 
+            : null}
+          selectedDriver={selectedDriver}
+          setSelectedDriver={setSelectedDriver}
+          shiftType={shiftType}
+          setShiftType={setShiftType}
+          drivers={drivers}
+          onAddShift={handleAddShift}
+          onDeleteShift={handleDeleteShift}
+        />
       </CardContent>
     </Card>
   );
