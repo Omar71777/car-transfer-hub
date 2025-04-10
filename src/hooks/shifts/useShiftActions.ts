@@ -33,15 +33,15 @@ export function useShiftActions(
     setSelectedCell({ day, hour });
     
     if (!existingShift) {
-      // If no shift, prepare for adding a new one
+      // Si no hay un turno existente, prepare para agregar uno nuevo
+      // Vamos directamente al formulario de creación, sin selección de tipo
       setSelectedDriver('');
-      setShiftType('half');
-      // Show type selection first
-      setShowTypeSelection(true);
+      setShiftType('full'); // Por defecto asignamos turno completo
+      setShowTypeSelection(false);
     }
   }, [getDriverDetails]);
 
-  // Handle shift type selection
+  // Handle shift type selection (mantenemos por compatibilidad)
   const handleShiftTypeSelect = useCallback((
     type: string,
     setShiftType: (type: string) => void,

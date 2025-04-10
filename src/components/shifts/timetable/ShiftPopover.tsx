@@ -55,13 +55,6 @@ export function ShiftPopover({
             onDelete={onDeleteShift} 
             shiftId={existingShift.shiftId}
           />
-        ) : showTypeSelection ? (
-          <ShiftTypeSelectionForm
-            day={selectedCell.day}
-            hour={selectedCell.hour}
-            onTypeSelect={onShiftTypeSelect}
-            setShowTypeSelection={setShowTypeSelection}
-          />
         ) : (
           <ShiftCreationForm
             day={selectedCell.day}

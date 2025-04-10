@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { TableCell } from '@/components/ui/table';
-import { Driver } from '@/types';
 
 interface ShiftCellProps {
   day: Date;
