@@ -89,6 +89,7 @@ export type Database = {
           destination: string
           id: string
           origin: string
+          payment_status: string | null
           price: number
           time: string | null
           updated_at: string
@@ -102,6 +103,7 @@ export type Database = {
           destination: string
           id?: string
           origin: string
+          payment_status?: string | null
           price: number
           time?: string | null
           updated_at?: string
@@ -115,6 +117,7 @@ export type Database = {
           destination?: string
           id?: string
           origin?: string
+          payment_status?: string | null
           price?: number
           time?: string | null
           updated_at?: string
