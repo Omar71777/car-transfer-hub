@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,7 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import NotFound from "./pages/NotFound";
 import TransfersReportPage from "./pages/admin/reports/TransfersReportPage";
 import AnalyticsReportPage from "./pages/admin/reports/AnalyticsReportPage";
+import UnpaidTransfersPage from "./pages/reports/UnpaidTransfersPage";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +68,7 @@ const AppRoutes = () => (
     
     <Route path="/admin/reports/transfers" element={<ProtectedRoute><TransfersReportPage /></ProtectedRoute>} />
     <Route path="/admin/reports/analytics" element={<ProtectedRoute><AnalyticsReportPage /></ProtectedRoute>} />
+    <Route path="/reports/unpaid" element={<ProtectedRoute><UnpaidTransfersPage /></ProtectedRoute>} />
     
     <Route path="*" element={<NotFound />} />
   </Routes>

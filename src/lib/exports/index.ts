@@ -12,6 +12,7 @@ export { prepareProfitDataForExport } from './profitExport';
 
 // Print exports
 export { printProfitReport } from './printExport';
+export { printUnpaidReport } from './printUnpaidReport';
 
 // Shifts exports
 export { prepareShiftsForExport } from './shiftsExport';
