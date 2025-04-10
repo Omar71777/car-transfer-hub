@@ -27,8 +27,8 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
     return cn(
       "transition-colors duration-200",
       isActive(path) 
-        ? "text-sidebar-primary font-medium bg-[hsl(var(--sidebar-selected))]" 
-        : "hover:bg-[hsl(var(--sidebar-hover))]"
+        ? "text-sidebar-primary font-medium bg-sidebar-selected" 
+        : "hover:bg-sidebar-hover"
     );
   };
 
@@ -52,7 +52,7 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={onSignOut}
-              className="hover:bg-[hsl(var(--sidebar-hover))] transition-colors duration-200"
+              className="hover:bg-sidebar-hover transition-colors duration-200"
             >
               <LogOut size={20} />
               <span>Cerrar Sesión</span>

@@ -233,16 +233,18 @@
 }
 
 /* Sidebar menu state styles */
-.sidebar-menu-item {
-  @apply transition-colors duration-200;
-}
+@layer components {
+  .sidebar-menu-item {
+    @apply transition-colors duration-200;
+  }
 
-.sidebar-menu-item:hover {
-  @apply bg-sidebar-hover text-sidebar-foreground;
-}
+  .sidebar-menu-item:hover {
+    @apply bg-sidebar-hover text-sidebar-foreground;
+  }
 
-.sidebar-menu-item.selected {
-  @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+  .sidebar-menu-item.selected {
+    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+  }
 }
 
 /* Responsive fixes */

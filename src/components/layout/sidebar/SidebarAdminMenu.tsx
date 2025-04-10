@@ -23,8 +23,8 @@ export const SidebarAdminMenu: React.FC = () => {
     return cn(
       "transition-colors duration-200",
       isActive(path) 
-        ? "text-sidebar-primary font-medium bg-[hsl(var(--sidebar-selected))]" 
-        : "hover:bg-[hsl(var(--sidebar-hover))]"
+        ? "text-sidebar-primary font-medium bg-sidebar-selected" 
+        : "hover:bg-sidebar-hover"
     );
   };
 
