@@ -38,6 +38,22 @@ const NewTransferPage = () => {
     if (values.commission === '' || values.commission === undefined) {
       values.commission = 0;
     }
+
+    // Process discount value
+    if (!values.discountType || values.discountValue === '' || values.discountValue === undefined) {
+      values.discountType = null;
+      values.discountValue = 0;
+    }
+    
+    // Make sure extra charges is an array
+    if (!Array.isArray(values.extraCharges)) {
+      values.extraCharges = [];
+    }
+    
+    // Filter out invalid extra charges
+    values.extraCharges = values.extraCharges.filter((charge: any) => 
+      charge && charge.name && charge.price && charge.name.trim() !== ''
+    );
     
     const transferId = await createTransfer(values);
     

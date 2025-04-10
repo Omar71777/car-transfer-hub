@@ -9,6 +9,7 @@ import { ClientStep } from './wizard-steps/ClientStep';
 import { DateTimeStep } from './wizard-steps/DateTimeStep';
 import { LocationStep } from './wizard-steps/LocationStep';
 import { PricingStep } from './wizard-steps/PricingStep';
+import { ExtraChargesStep } from './wizard-steps/ExtraChargesStep';
 import { CollaboratorStep } from './wizard-steps/CollaboratorStep';
 import { ConfirmationStep } from './wizard-steps/ConfirmationStep';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -47,9 +48,14 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     defaultValues: {
       date: new Date().toISOString().split('T')[0],
       time: '',
+      serviceType: 'transfer',
       origin: '',
       destination: '',
+      hours: '',
       price: '',
+      discountType: null,
+      discountValue: '',
+      extraCharges: [],
       collaborator: '',
       commissionType: 'percentage',
       commission: '',
@@ -64,6 +70,7 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     { id: 'client', title: 'Cliente', component: ClientStep },
     { id: 'datetime', title: 'Fecha y Hora', component: DateTimeStep },
     { id: 'location', title: 'Ubicación', component: LocationStep },
+    { id: 'extraCharges', title: 'Cargos Extra', component: ExtraChargesStep },
     { id: 'pricing', title: 'Precio', component: PricingStep },
     { id: 'collaborator', title: 'Colaborador', component: CollaboratorStep },
     { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep },
@@ -96,6 +103,13 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
           ...data,
           price: Number(data.price),
           commission: data.commission ? Number(data.commission) : 0,
+          discountValue: data.discountValue ? Number(data.discountValue) : 0,
+          extraCharges: (data.extraCharges || []).filter(charge => 
+            charge.name && charge.price && charge.name.trim() !== '' && Number(charge.price) > 0
+          ).map(charge => ({
+            name: charge.name,
+            price: Number(charge.price)
+          }))
         };
         onSubmit(processedValues);
       })();
@@ -128,9 +142,11 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
       case 'datetime':
         return ['date', 'time'];
       case 'location':
-        return ['origin', 'destination'];
+        return ['serviceType', 'origin', ...(methods.getValues('serviceType') === 'transfer' ? ['destination'] : ['hours'])];
+      case 'extraCharges':
+        return ['extraCharges'];
       case 'pricing':
-        return ['price', 'paymentStatus'];
+        return ['price', 'paymentStatus', 'discountType', 'discountValue'];
       case 'collaborator':
         return ['collaborator', 'commissionType', 'commission'];
       default:

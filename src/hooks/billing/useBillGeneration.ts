@@ -22,14 +22,68 @@ export function useBillGeneration(
           const transfer = await getTransfer(transferId);
           if (!transfer) continue;
 
+          // Get any extra charges for this transfer
+          const { data: extraCharges, error: extraChargesError } = await supabase
+            .from('extra_charges')
+            .select('*')
+            .eq('transfer_id', transferId);
+            
+          if (extraChargesError) throw extraChargesError;
+          
+          // Calculate price based on service type
+          let transferPrice = transfer.price;
+          if (transfer.service_type === 'dispo' && transfer.hours) {
+            transferPrice = transferPrice * Number(transfer.hours);
+          }
+          
+          // Add extra charges total
+          const extraChargesTotal = (extraCharges || []).reduce(
+            (sum: number, charge: any) => sum + Number(charge.price), 
+            0
+          );
+          
+          // Apply discount if any
+          let discountAmount = 0;
+          if (transfer.discount_type && transfer.discount_value) {
+            if (transfer.discount_type === 'percentage') {
+              discountAmount = transferPrice * (transfer.discount_value / 100);
+            } else {
+              discountAmount = transfer.discount_value;
+            }
+          }
+          
+          // Final transfer price
+          const finalPrice = transferPrice + extraChargesTotal - discountAmount;
+
+          // Create description based on service type
+          let description = '';
+          if (transfer.service_type === 'transfer') {
+            description = `Transfer desde ${transfer.origin} hasta ${transfer.destination} el ${transfer.date}`;
+          } else {
+            description = `Servicio de disposición por ${transfer.hours} horas desde ${transfer.origin} el ${transfer.date}`;
+          }
+          
+          // Add extra charges description if any
+          if (extraCharges && extraCharges.length > 0) {
+            description += ` (incluye ${extraCharges.length} cargo${extraCharges.length !== 1 ? 's' : ''} extra${extraCharges.length !== 1 ? 's' : ''})`;
+          }
+          
+          // Add discount description if any
+          if (transfer.discount_type && transfer.discount_value) {
+            const discountDesc = transfer.discount_type === 'percentage' 
+              ? `${transfer.discount_value}%` 
+              : `${transfer.discount_value}€`;
+            description += ` (descuento de ${discountDesc})`;
+          }
+
           const item = {
             transfer,
-            description: `Transfer desde ${transfer.origin} hasta ${transfer.destination} el ${transfer.date}`,
-            unitPrice: transfer.price,
+            description,
+            unitPrice: finalPrice,
           };
 
           items.push(item);
-          subTotal += transfer.price;
+          subTotal += finalPrice;
         }
 
         let taxAmount = 0;

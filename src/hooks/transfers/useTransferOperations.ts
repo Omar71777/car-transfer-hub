@@ -5,32 +5,53 @@ import { toast } from 'sonner';
 import { Transfer } from '@/types';
 
 export function useTransferOperations(user: any) {
-  const createTransfer = useCallback(async (transferData: Omit<Transfer, 'id' | 'expenses'>) => {
+  const createTransfer = useCallback(async (transferData: Omit<Transfer, 'id' | 'expenses' | 'extraCharges'>) => {
     if (!user) return null;
     
     try {
       // If collaborator is "none", save as null or empty string
       const collaboratorValue = transferData.collaborator === 'none' ? '' : transferData.collaborator.toLowerCase();
       
+      // Create the transfer first
       const { data, error } = await supabase
         .from('transfers')
         .insert({
           date: transferData.date,
           time: transferData.time,
+          service_type: transferData.serviceType,
           origin: transferData.origin.toLowerCase(),
-          destination: transferData.destination.toLowerCase(),
+          destination: transferData.destination?.toLowerCase(),
           price: transferData.price,
+          discount_type: transferData.discountType,
+          discount_value: transferData.discountValue || 0,
           collaborator: collaboratorValue,
           commission: transferData.commission,
           commission_type: transferData.commissionType,
           payment_status: transferData.paymentStatus,
-          client_id: transferData.clientId // This is correct - converting camelCase to snake_case
+          client_id: transferData.clientId
         })
         .select('id')
         .single();
 
       if (error) {
         throw error;
+      }
+
+      // Then create any extra charges if they exist
+      if (transferData.extraCharges && transferData.extraCharges.length > 0) {
+        const extraChargesData = transferData.extraCharges.map(charge => ({
+          transfer_id: data.id,
+          name: charge.name,
+          price: charge.price
+        }));
+
+        const { error: extraChargesError } = await supabase
+          .from('extra_charges')
+          .insert(extraChargesData);
+
+        if (extraChargesError) {
+          throw extraChargesError;
+        }
       }
 
       return data.id as string;
@@ -45,14 +66,27 @@ export function useTransferOperations(user: any) {
     if (!user) return false;
     
     try {
-      const { expenses, commissionType, clientId, paymentStatus, ...rest } = transferData;
+      const { 
+        expenses, 
+        extraCharges, 
+        serviceType,
+        discountType, 
+        discountValue, 
+        commissionType, 
+        clientId, 
+        paymentStatus, 
+        ...rest 
+      } = transferData;
       
       // Convert camelCase to snake_case for database fields
       const dataForDb = {
         ...rest,
+        service_type: serviceType,
         commission_type: commissionType,
+        discount_type: discountType,
+        discount_value: discountValue,
         payment_status: paymentStatus,
-        client_id: clientId, // Fix: use client_id instead of clientId for database
+        client_id: clientId,
         origin: rest.origin?.toLowerCase(),
         destination: rest.destination?.toLowerCase(),
         collaborator: rest.collaborator?.toLowerCase(),
@@ -68,6 +102,36 @@ export function useTransferOperations(user: any) {
         throw error;
       }
 
+      // If updating extra charges
+      if (extraCharges) {
+        // First delete existing extra charges
+        const { error: deleteError } = await supabase
+          .from('extra_charges')
+          .delete()
+          .eq('transfer_id', id);
+          
+        if (deleteError) {
+          throw deleteError;
+        }
+          
+        // Then insert new ones
+        if (extraCharges.length > 0) {
+          const extraChargesData = extraCharges.map(charge => ({
+            transfer_id: id,
+            name: charge.name,
+            price: charge.price
+          }));
+            
+          const { error: insertError } = await supabase
+            .from('extra_charges')
+            .insert(extraChargesData);
+            
+          if (insertError) {
+            throw insertError;
+          }
+        }
+      }
+
       return true;
     } catch (error: any) {
       console.error('Error updating transfer:', error);
@@ -80,6 +144,7 @@ export function useTransferOperations(user: any) {
     if (!user) return false;
     
     try {
+      // Delete expenses first (if any)
       const { error: expensesError } = await supabase
         .from('expenses')
         .delete()
@@ -89,6 +154,17 @@ export function useTransferOperations(user: any) {
         throw expensesError;
       }
 
+      // Delete extra charges (if any)
+      const { error: extraChargesError } = await supabase
+        .from('extra_charges')
+        .delete()
+        .eq('transfer_id', id);
+
+      if (extraChargesError) {
+        throw extraChargesError;
+      }
+
+      // Finally delete the transfer
       const { error } = await supabase
         .from('transfers')
         .delete()

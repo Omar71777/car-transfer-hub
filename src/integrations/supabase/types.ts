@@ -199,6 +199,41 @@ export type Database = {
           },
         ]
       }
+      extra_charges: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          price: number
+          transfer_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          price: number
+          transfer_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
+          transfer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extra_charges_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           company_address: string | null
@@ -257,10 +292,13 @@ export type Database = {
           created_at: string
           date: string
           destination: string
+          discount_type: string | null
+          discount_value: number | null
           id: string
           origin: string
           payment_status: string | null
           price: number
+          service_type: string
           time: string | null
           updated_at: string
           user_id: string
@@ -274,10 +312,13 @@ export type Database = {
           created_at?: string
           date: string
           destination: string
+          discount_type?: string | null
+          discount_value?: number | null
           id?: string
           origin: string
           payment_status?: string | null
           price: number
+          service_type?: string
           time?: string | null
           updated_at?: string
           user_id?: string
@@ -291,10 +332,13 @@ export type Database = {
           created_at?: string
           date?: string
           destination?: string
+          discount_type?: string | null
+          discount_value?: number | null
           id?: string
           origin?: string
           payment_status?: string | null
           price?: number
+          service_type?: string
           time?: string | null
           updated_at?: string
           user_id?: string

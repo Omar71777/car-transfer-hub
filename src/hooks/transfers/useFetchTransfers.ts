@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Transfer } from '@/types';
+import { Transfer, ExtraCharge } from '@/types';
 import { capitalizeFirstLetter } from '@/lib/utils';
 
 export function useFetchTransfers(user: any) {
@@ -14,16 +14,19 @@ export function useFetchTransfers(user: any) {
     
     try {
       setLoading(true);
-      // Remove the clients relationship which was causing the error
+      
       const { data, error } = await supabase
         .from('transfers')
         .select(`
           id,
           date,
           time,
+          service_type,
           origin,
           destination,
           price,
+          discount_type,
+          discount_value,
           collaborator,
           commission,
           commission_type,
@@ -34,6 +37,11 @@ export function useFetchTransfers(user: any) {
             date,
             concept,
             amount
+          ),
+          extra_charges (
+            id,
+            name,
+            price
           )
         `)
         .order('date', { ascending: false });
@@ -52,7 +60,7 @@ export function useFetchTransfers(user: any) {
       }
 
       // Create a map of clients for easy lookup
-      const clientsMap = (clientsData || []).reduce((acc, client) => {
+      const clientsMap = (clientsData || []).reduce((acc: any, client: any) => {
         acc[client.id] = client;
         return acc;
       }, {});
@@ -61,11 +69,14 @@ export function useFetchTransfers(user: any) {
         id: transfer.id,
         date: transfer.date,
         time: transfer.time || '',
+        serviceType: transfer.service_type || 'transfer',
         origin: capitalizeFirstLetter(transfer.origin),
-        destination: capitalizeFirstLetter(transfer.destination),
+        destination: transfer.destination ? capitalizeFirstLetter(transfer.destination) : undefined,
         price: Number(transfer.price),
+        discountType: transfer.discount_type,
+        discountValue: Number(transfer.discount_value) || 0,
         collaborator: transfer.collaborator && transfer.collaborator !== 'none' ? capitalizeFirstLetter(transfer.collaborator) : '',
-        commission: Number(transfer.commission),
+        commission: Number(transfer.commission) || 0,
         commissionType: transfer.commission_type || 'percentage',
         paymentStatus: transfer.payment_status || 'pending',
         clientId: transfer.client_id || '',
@@ -75,12 +86,18 @@ export function useFetchTransfers(user: any) {
           name: clientsMap[transfer.client_id].name,
           email: clientsMap[transfer.client_id].email
         } : undefined,
-        expenses: transfer.expenses.map((expense: any) => ({
+        expenses: (transfer.expenses || []).map((expense: any) => ({
           id: expense.id,
           transferId: transfer.id,
           date: expense.date,
           concept: capitalizeFirstLetter(expense.concept),
           amount: Number(expense.amount)
+        })),
+        extraCharges: (transfer.extra_charges || []).map((charge: any) => ({
+          id: charge.id,
+          transferId: transfer.id,
+          name: capitalizeFirstLetter(charge.name),
+          price: Number(charge.price)
         }))
       }));
 

@@ -4,12 +4,32 @@ import * as z from 'zod';
 export const transferSchema = z.object({
   date: z.string().min(1, { message: 'La fecha es requerida' }),
   time: z.string().optional(),
+  serviceType: z.enum(['transfer', 'dispo'], { 
+    required_error: 'El tipo de servicio es requerido' 
+  }).default('transfer'),
   origin: z.string().min(1, { message: 'El origen es requerido' }),
-  destination: z.string().min(1, { message: 'El destino es requerido' }),
+  destination: z.string().min(1, { message: 'El destino es requerido' }).optional(),
+  hours: z.string().optional(),
   price: z.string().min(1, { message: 'El precio es requerido' }).refine(
     (val) => !isNaN(Number(val)) && Number(val) > 0, 
     { message: 'El precio debe ser un número positivo' }
   ),
+  discountType: z.enum(['percentage', 'fixed']).optional().nullable(),
+  discountValue: z.string().optional()
+    .refine(
+      (val) => val === undefined || val === '' || (!isNaN(Number(val)) && Number(val) >= 0), 
+      { message: 'El descuento debe ser un número positivo o cero' }
+    ),
+  extraCharges: z.array(
+    z.object({
+      id: z.string().optional(),
+      name: z.string().min(1, { message: 'El nombre del cargo es requerido' }).optional(),
+      price: z.string().refine(
+        (val) => val === undefined || val === '' || (!isNaN(Number(val)) && Number(val) >= 0), 
+        { message: 'El precio debe ser un número positivo o cero' }
+      ).optional()
+    })
+  ).optional(),
   collaborator: z.string().optional().default(''),
   commissionType: z.enum(['percentage', 'fixed']).default('percentage'),
   commission: z.string().optional().refine(
