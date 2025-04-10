@@ -1,37 +1,25 @@
-
 import React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Plus, CheckCircle, XCircle, MoreHorizontal } from 'lucide-react';
 import { Transfer } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 interface TransfersTableProps {
   transfers: Transfer[];
   onEdit: (transfer: Transfer) => void;
   onDelete: (id: string) => void;
   onAddExpense: (transferId: string) => void;
 }
-
-export function TransfersTable({ transfers, onEdit, onDelete, onAddExpense }: TransfersTableProps) {
+export function TransfersTable({
+  transfers,
+  onEdit,
+  onDelete,
+  onAddExpense
+}: TransfersTableProps) {
   const isMobile = useIsMobile();
-  
-  return (
-    <div className="rounded-md border overflow-hidden glass-card">
+  return <div className="rounded-md border overflow-hidden glass-card px-[7px]">
       <Table>
         <TableHeader>
           <TableRow>
@@ -47,15 +35,11 @@ export function TransfersTable({ transfers, onEdit, onDelete, onAddExpense }: Tr
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transfers.length === 0 ? (
-            <TableRow>
+          {transfers.length === 0 ? <TableRow>
               <TableCell colSpan={isMobile ? 6 : 9} className="text-center py-8 text-muted-foreground">
                 No hay transfers registrados
               </TableCell>
-            </TableRow>
-          ) : (
-            transfers.map((transfer) => (
-              <TableRow key={transfer.id}>
+            </TableRow> : transfers.map(transfer => <TableRow key={transfer.id}>
                 <TableCell>{transfer.date}</TableCell>
                 {!isMobile && <TableCell>{transfer.time}</TableCell>}
                 <TableCell className="max-w-[100px] truncate" title={transfer.origin}>{transfer.origin}</TableCell>
@@ -64,21 +48,16 @@ export function TransfersTable({ transfers, onEdit, onDelete, onAddExpense }: Tr
                 {!isMobile && <TableCell>{transfer.collaborator}</TableCell>}
                 {!isMobile && <TableCell className="text-right">{transfer.commission}%</TableCell>}
                 <TableCell className="text-center">
-                  {transfer.paymentStatus === 'paid' ? (
-                    <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-800">
+                  {transfer.paymentStatus === 'paid' ? <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-800">
                       <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />
                       {!isMobile && <span className="text-xs font-medium">Cobrado</span>}
-                    </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-100 text-orange-800">
+                    </div> : <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-100 text-orange-800">
                       <XCircle className="h-3 w-3 md:h-4 md:w-4" />
                       {!isMobile && <span className="text-xs font-medium">Pendiente</span>}
-                    </div>
-                  )}
+                    </div>}
                 </TableCell>
                 <TableCell>
-                  {isMobile ? (
-                    <DropdownMenu>
+                  {isMobile ? <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
                           <MoreHorizontal className="h-4 w-4" />
@@ -98,9 +77,7 @@ export function TransfersTable({ transfers, onEdit, onDelete, onAddExpense }: Tr
                           Añadir gasto
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <div className="flex justify-center space-x-2">
+                    </DropdownMenu> : <div className="flex justify-center space-x-2">
                       <Button variant="ghost" size="icon" onClick={() => onEdit(transfer)}>
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -110,14 +87,10 @@ export function TransfersTable({ transfers, onEdit, onDelete, onAddExpense }: Tr
                       <Button variant="ghost" size="icon" onClick={() => onAddExpense(transfer.id)}>
                         <Plus className="h-4 w-4" />
                       </Button>
-                    </div>
-                  )}
+                    </div>}
                 </TableCell>
-              </TableRow>
-            ))
-          )}
+              </TableRow>)}
         </TableBody>
       </Table>
-    </div>
-  );
+    </div>;
 }
