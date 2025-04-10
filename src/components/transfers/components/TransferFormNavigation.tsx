@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useTransferForm } from '../context/TransferFormContext';
 
 interface TransferFormNavigationProps {
@@ -11,6 +11,7 @@ interface TransferFormNavigationProps {
 
 export function TransferFormNavigation({ onPrevious, onNext }: TransferFormNavigationProps) {
   const { currentStep, activeSteps } = useTransferForm();
+  const isLastStep = currentStep === activeSteps.length - 1;
 
   return (
     <div className="flex justify-between mt-8">
@@ -30,9 +31,16 @@ export function TransferFormNavigation({ onPrevious, onNext }: TransferFormNavig
         onClick={onNext}
         className="flex items-center"
       >
-        {currentStep === activeSteps.length - 1 ? 'Completar' : 'Siguiente'}
-        {currentStep !== activeSteps.length - 1 && (
-          <ChevronRight className="ml-1 h-4 w-4" />
+        {isLastStep ? (
+          <>
+            <Check className="mr-1 h-4 w-4" />
+            Completar
+          </>
+        ) : (
+          <>
+            Siguiente
+            <ChevronRight className="ml-1 h-4 w-4" />
+          </>
         )}
       </Button>
     </div>

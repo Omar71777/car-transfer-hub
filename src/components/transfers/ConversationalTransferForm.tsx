@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
@@ -35,7 +35,8 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep },
   ];
 
-  const [showCollaboratorStep, setShowCollaboratorStep] = useState(true);
+  const [showCollaboratorStep, setShowCollaboratorStep] = React.useState(true);
+  const [currentStep, setCurrentStep] = React.useState(0);
   
   const {
     collaborators,
@@ -74,18 +75,19 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
       paymentStatus: 'pending',
       clientId: ''
     },
-    mode: 'onChange'
+    mode: 'onTouched'  // Changed from onChange to onTouched for better UX
   });
 
   // If we don't need the collaborator step, remove it from the flow
   const activeSteps = showCollaboratorStep 
     ? steps 
     : steps.filter(step => step.id !== 'collaborator');
-
-  const [currentStep, setCurrentStep] = useState(0);
   
   // Get navigation handlers
-  const { handleNext, handlePrevious } = useTransferFormNavigation(activeSteps, onSubmit);
+  const { 
+    handleNext, 
+    handlePrevious 
+  } = useTransferFormNavigation(activeSteps, onSubmit);
 
   return (
     <TransferFormProvider 

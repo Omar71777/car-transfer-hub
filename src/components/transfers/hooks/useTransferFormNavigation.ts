@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
+import { toast } from 'sonner';
 
 export const useTransferFormNavigation = (
   activeSteps: Array<{ id: string; title: string; component: React.ComponentType<any> }>,
@@ -21,17 +22,21 @@ export const useTransferFormNavigation = (
   const getFieldsForStep = (stepId: string): string[] => {
     switch (stepId) {
       case 'client':
-        return ['clientId', 'clientName'];
+        return ['clientId']; // Only require clientId, not clientName (which is optional for existing clients)
       case 'datetime':
-        return ['date', 'time'];
+        return ['date']; // time is optional
       case 'location':
-        return ['serviceType', 'origin', ...(methods.getValues('serviceType') === 'transfer' ? ['destination'] : ['hours'])];
-      case 'extraCharges':
-        return ['extraCharges'];
+        // For location, we need different validations based on service type
+        if (methods.getValues('serviceType') === 'transfer') {
+          return ['serviceType', 'origin', 'destination'];
+        }
+        return ['serviceType', 'origin', 'hours'];
       case 'pricing':
-        return ['price', 'paymentStatus', 'discountType', 'discountValue'];
+        return ['price', 'paymentStatus']; // Don't validate discounts as they're optional
+      case 'extraCharges':
+        return []; // Extra charges are optional
       case 'collaborator':
-        return ['collaborator', 'commissionType', 'commission'];
+        return ['collaborator']; // Only validate collaborator selection, commission is optional
       default:
         return [];
     }
@@ -74,14 +79,14 @@ export const useTransferFormNavigation = (
     // Validate current step fields before proceeding
     const stepFields = getFieldsForStep(activeSteps[currentStep]?.id);
     console.log('Validating fields for current step:', stepFields);
-    const isStepValid = await methods.trigger(stepFields as any);
-    console.log('Step validation result:', isStepValid);
-
-    if (isStepValid) {
+    
+    // If there are no fields to validate for this step, or validation passes, proceed
+    if (stepFields.length === 0 || await methods.trigger(stepFields as any)) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo(0, 0);
     } else {
       console.log('Validation errors:', methods.formState.errors);
+      toast.error('Por favor complete todos los campos requeridos antes de continuar');
     }
   };
 

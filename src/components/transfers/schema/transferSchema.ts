@@ -8,8 +8,20 @@ export const transferSchema = z.object({
     required_error: 'El tipo de servicio es requerido' 
   }).default('transfer'),
   origin: z.string().min(1, { message: 'El origen es requerido' }),
-  destination: z.string().min(1, { message: 'El destino es requerido' }).optional(),
-  hours: z.string().optional(),
+  destination: z.string().min(1, { message: 'El destino es requerido' }).optional()
+    .refine((val, ctx) => {
+      if (ctx.parent.serviceType === 'transfer' && (!val || val.trim() === '')) {
+        return false;
+      }
+      return true;
+    }, { message: 'El destino es requerido para transfers' }),
+  hours: z.string().optional()
+    .refine((val, ctx) => {
+      if (ctx.parent.serviceType === 'dispo' && (!val || val.trim() === '')) {
+        return false;
+      }
+      return true;
+    }, { message: 'Las horas son requeridas para disposiciones' }),
   price: z.string().min(1, { message: 'El precio es requerido' }).refine(
     (val) => !isNaN(Number(val)) && Number(val) > 0, 
     { message: 'El precio debe ser un número positivo' }
@@ -23,7 +35,7 @@ export const transferSchema = z.object({
   extraCharges: z.array(
     z.object({
       id: z.string().optional(),
-      name: z.string().min(1, { message: 'El nombre del cargo es requerido' }).optional(),
+      name: z.string().optional(),
       price: z.union([z.string(), z.number()]).optional().transform(val => 
         typeof val === 'string' ? val : val?.toString()
       )
