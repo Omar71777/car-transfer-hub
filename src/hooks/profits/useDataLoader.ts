@@ -51,7 +51,7 @@ export const useDataLoader = (): {
       setTransfers(loadedTransfers);
 
       // Extract unique collaborators
-      const collaborators = [...new Set(loadedTransfers.map((t: Transfer) => t.collaborator))];
+      const collaborators = [...new Set(loadedTransfers.map((t: Transfer) => t.collaborator))] as string[];
       setUniqueCollaborators(collaborators);
 
       // Load expenses from localStorage
@@ -76,7 +76,7 @@ export const useDataLoader = (): {
       setExpenses(loadedExpenses);
 
       // Extract unique expense types
-      const expenseTypes = [...new Set(loadedExpenses.map((e: Expense) => e.concept))];
+      const expenseTypes = [...new Set(loadedExpenses.map((e: Expense) => e.concept))] as string[];
       setUniqueExpenseTypes(expenseTypes);
       
       setLoading(false);
