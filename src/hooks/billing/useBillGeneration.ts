@@ -3,7 +3,14 @@ import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { BillPreview, CreateBillDto, TaxApplicationType } from '@/types/billing';
 import { toast } from 'sonner';
-import { calculateBasePrice, calculateDiscountAmount, calculateExtraChargesTotal } from '@/lib/calculations';
+import { 
+  calculateBasePrice, 
+  calculateDiscountAmount, 
+  calculateExtraChargesTotal, 
+  calculateTotalPrice, 
+  adaptExtraCharges,
+  MinimalTransfer
+} from '@/lib/calculations';
 
 export function useBillGeneration(
   getClient: (id: string) => Promise<any>,
@@ -30,7 +37,7 @@ export function useBillGeneration(
             .eq('transfer_id', transferId);
             
           // Create a formatted transfer for calculations
-          const formattedTransfer = {
+          const formattedTransfer: MinimalTransfer = {
             id: transfer.id,
             serviceType: transfer.service_type || 'transfer',
             price: Number(transfer.price),
@@ -40,7 +47,9 @@ export function useBillGeneration(
             destination: transfer.destination,
             origin: transfer.origin,
             date: transfer.date,
-            extraCharges: extraCharges || []
+            extraCharges: adaptExtraCharges(extraCharges || []),
+            commission: Number(transfer.commission) || 0,
+            commissionType: transfer.commission_type || 'percentage'
           };
           
           // Calculate base price (considering service type)

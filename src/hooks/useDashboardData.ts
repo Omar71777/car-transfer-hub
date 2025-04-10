@@ -4,7 +4,12 @@ import { Transfer, Expense } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { capitalizeFirstLetter } from '@/lib/utils';
-import { calculateBasePrice, calculateCommissionAmount } from '@/lib/calculations';
+import { 
+  calculateBasePrice, 
+  calculateCommissionAmount, 
+  calculateTotalPrice,
+  MinimalTransfer 
+} from '@/lib/calculations';
 
 interface DashboardStats {
   totalTransfers: number;
@@ -35,8 +40,8 @@ export function useDashboardData() {
           
         if (transfersError) throw transfersError;
         
-        // Format transfers to match the Transfer interface
-        const formattedTransfers = transfers.map(transfer => ({
+        // Format transfers to match the MinimalTransfer interface
+        const formattedTransfers: MinimalTransfer[] = transfers.map(transfer => ({
           id: transfer.id,
           price: Number(transfer.price),
           commission: Number(transfer.commission) || 0,
@@ -49,9 +54,6 @@ export function useDashboardData() {
           destination: capitalizeFirstLetter(transfer.destination),
           collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
           extraCharges: [],
-          date: '', // Required for the interface but not used for calculations
-          paymentStatus: 'pending', // Required for the interface but not used for calculations
-          clientId: '', // Required for the interface but not used for calculations
         }));
         
         // Load expenses from Supabase
@@ -67,14 +69,8 @@ export function useDashboardData() {
           sum + calculateCommissionAmount(transfer), 0);
         
         // Calculate total income with the correct price calculation
-        const totalIncome = formattedTransfers.reduce((sum, transfer) => {
-          // Calculate base price (accounting for dispo hours)
-          const basePrice = calculateBasePrice(transfer);
-          
-          // For simplicity, we're not including discounts and extra charges in dashboard 
-          // since we don't have that data from the database call
-          return sum + basePrice;
-        }, 0);
+        const totalIncome = formattedTransfers.reduce((sum, transfer) => 
+          sum + calculateTotalPrice(transfer), 0);
         
         // Add regular expenses and commissions
         const expensesTotal = expenses.reduce((sum, expense) => 
