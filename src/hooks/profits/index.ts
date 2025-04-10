@@ -52,7 +52,7 @@ export function useProfitsData(): ProfitsData {
 
   // Update stats and charts whenever filtered data changes
   useEffect(() => {
-    if (filteredTransfers.length > 0) {
+    if (filteredTransfers.length > 0 || filteredExpenses.length > 0) {
       // Calculate stats
       const newStats = calculateStats(filteredTransfers, filteredExpenses);
       setStats(newStats);

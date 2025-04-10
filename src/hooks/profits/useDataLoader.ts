@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { Transfer, Expense } from '@/types';
 import { useCollaborators } from '@/hooks/useCollaborators';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-// Load profits data from storage
+// Load profits data from Supabase
 export const useDataLoader = (): {
   transfers: Transfer[];
   expenses: Expense[];
@@ -18,30 +20,86 @@ export const useDataLoader = (): {
   const [loading, setLoading] = useState(true);
   const { collaborators } = useCollaborators();
 
-  // Load data from localStorage
+  // Load data from Supabase
   useEffect(() => {
-    const loadProfitsData = () => {
+    const loadProfitsData = async () => {
       setLoading(true);
       
-      // Load transfers from localStorage
-      const storedTransfers = localStorage.getItem('transfers');
-      const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : [];
-      setTransfers(loadedTransfers);
+      try {
+        // Load transfers from Supabase
+        const { data: transfersData, error: transfersError } = await supabase
+          .from('transfers')
+          .select(`
+            id,
+            date,
+            time,
+            origin,
+            destination,
+            price,
+            collaborator,
+            commission
+          `)
+          .order('date', { ascending: false });
 
-      // Get collaborator names from the collaborators list instead of transfers
-      const collaboratorNames = collaborators.map(c => c.name) as string[];
-      setUniqueCollaborators(collaboratorNames);
+        if (transfersError) {
+          throw transfersError;
+        }
 
-      // Load expenses from localStorage
-      const storedExpenses = localStorage.getItem('expenses');
-      const loadedExpenses = storedExpenses ? JSON.parse(storedExpenses) : [];
-      setExpenses(loadedExpenses);
+        // Load expenses from Supabase
+        const { data: expensesData, error: expensesError } = await supabase
+          .from('expenses')
+          .select('*')
+          .order('date', { ascending: false });
 
-      // Extract unique expense types
-      const expenseTypes = [...new Set(loadedExpenses.map((e: Expense) => e.concept))] as string[];
-      setUniqueExpenseTypes(expenseTypes);
-      
-      setLoading(false);
+        if (expensesError) {
+          throw expensesError;
+        }
+
+        // Transform the transfers data to match our Transfer type
+        const processedTransfers = transfersData.map((transfer: any) => ({
+          id: transfer.id,
+          date: transfer.date,
+          time: transfer.time || '',
+          origin: transfer.origin,
+          destination: transfer.destination,
+          price: Number(transfer.price),
+          collaborator: transfer.collaborator || '',
+          commission: Number(transfer.commission),
+          expenses: []
+        }));
+
+        // Transform the expenses data to match our Expense type
+        const processedExpenses = expensesData.map((expense: any) => ({
+          id: expense.id,
+          transferId: expense.transfer_id || '',
+          date: expense.date,
+          concept: expense.concept,
+          amount: Number(expense.amount)
+        }));
+
+        // Assign expenses to their respective transfers
+        processedTransfers.forEach(transfer => {
+          transfer.expenses = processedExpenses.filter(expense => 
+            expense.transferId === transfer.id
+          );
+        });
+
+        setTransfers(processedTransfers);
+        setExpenses(processedExpenses);
+
+        // Get collaborator names from the collaborators list instead of transfers
+        const collaboratorNames = collaborators.map(c => c.name) as string[];
+        setUniqueCollaborators(collaboratorNames);
+
+        // Extract unique expense types
+        const expenseTypes = [...new Set(processedExpenses.map((e: Expense) => e.concept))] as string[];
+        setUniqueExpenseTypes(expenseTypes);
+      } catch (error: any) {
+        console.error('Error fetching data:', error);
+        toast.error(`Error al cargar los datos: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadProfitsData();
