@@ -11,8 +11,8 @@ export const transferSchema = z.object({
   destination: z.string().optional()
     .superRefine((val, ctx) => {
       // Get the serviceType from the form data
-      const formData = ctx.path.length > 0 ? ctx : { parent: { serviceType: 'transfer' } };
-      const serviceType = formData.parent?.serviceType;
+      const data = ctx.path.length > 0 ? ctx.getData() : { serviceType: 'transfer' };
+      const serviceType = data.serviceType;
         
       if (serviceType === 'transfer' && (!val || val.trim() === '')) {
         ctx.addIssue({
@@ -26,8 +26,8 @@ export const transferSchema = z.object({
   hours: z.string().optional()
     .superRefine((val, ctx) => {
       // Get the serviceType from the form data
-      const formData = ctx.path.length > 0 ? ctx : { parent: { serviceType: 'transfer' } };
-      const serviceType = formData.parent?.serviceType;
+      const data = ctx.path.length > 0 ? ctx.getData() : { serviceType: 'transfer' };
+      const serviceType = data.serviceType;
         
       if (serviceType === 'dispo' && (!val || val.trim() === '')) {
         ctx.addIssue({
