@@ -31,7 +31,7 @@ export function ShiftCell({
   // Determine cell styling based on state
   const getCellClasses = () => {
     if (driverInfo) {
-      return `${driverInfo.color} text-white opacity-80 hover:opacity-100`;
+      return `${driverInfo.color} text-white opacity-80 hover:opacity-100 hover:ring-2 hover:ring-white/50 hover:ring-inset transition-all`;
     } else if (isInSelectionRange) {
       return 'bg-primary/30 hover:bg-primary/40';
     } else {
