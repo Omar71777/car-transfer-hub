@@ -10,8 +10,11 @@ export function useTransfers() {
   // Get the fetch functionality
   const { 
     transfers,
+    expenses,
     loading,
     fetchTransfers,
+    fetchTransfersInRange,
+    fetchTransferById,
     setTransfers
   } = useFetchTransfers(user);
   
@@ -25,8 +28,11 @@ export function useTransfers() {
 
   return {
     transfers,
+    expenses,
     loading,
     fetchTransfers,
+    fetchTransfersInRange,
+    fetchTransferById,
     createTransfer,
     updateTransfer,
     deleteTransfer,
