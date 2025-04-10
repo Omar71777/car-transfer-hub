@@ -1,6 +1,6 @@
 
 import { Shift } from '@/types';
-import { parseISO, isWithinInterval, isSameDay, addDays, addHours, addMinutes } from 'date-fns';
+import { parseISO, isWithinInterval, isSameDay, addHours, addMinutes, format } from 'date-fns';
 
 // Function to calculate shift coverage for a specific hour on a specific day
 export function getShiftForTimeSlot(
@@ -9,21 +9,34 @@ export function getShiftForTimeSlot(
   shifts: Shift[], 
   getDriverDetails: (driverId: string) => { name: string; color: string }
 ) {
+  // Format the day to compare with shift dates (YYYY-MM-DD format)
+  const formattedDay = format(day, 'yyyy-MM-dd');
   const cellDateTime = new Date(day);
   cellDateTime.setHours(hour, 0, 0, 0);
   
+  // Debug
+  console.log(`Checking for shifts on ${formattedDay} at ${hour}:00`);
+  
   // Check which shift covers this time slot
   for (const shift of shifts) {
-    const shiftDate = parseISO(shift.date);
+    // Format shift date for easier debugging
+    const shiftFormattedDate = shift.date.split('T')[0];
+    
+    // Debug log to see if the dates match
+    console.log(`Comparing shift date ${shiftFormattedDate} with cell date ${formattedDay}`);
     
     // Skip if not same day - for better performance
-    if (!isSameDay(shiftDate, day)) {
+    if (shiftFormattedDate !== formattedDay) {
       continue;
     }
     
     const shiftHour = shift.startHour || 0; // Default to 0 if not specified
     
+    // Debug log to compare hours
+    console.log(`Shift starts at ${shiftHour}:00, checking hour ${hour}:00, isFullDay: ${shift.isFullDay}`);
+    
     // Create shift start time by combining date and hour
+    const shiftDate = parseISO(shift.date);
     const shiftStart = new Date(shiftDate);
     shiftStart.setHours(shiftHour, 0, 0, 0);
     
@@ -44,9 +57,13 @@ export function getShiftForTimeSlot(
     // This allows a new shift to start exactly when the previous one ends
     const adjustedShiftEnd = addMinutes(shiftEnd, -1);
     
+    // Debug log to see if the cell time is within the shift
+    console.log(`Cell time: ${cellDateTime.toISOString()}, Shift start: ${shiftStart.toISOString()}, Shift end: ${adjustedShiftEnd.toISOString()}`);
+    
     // Check if this cell's time is within the shift period
     // We're using the adjusted end time to prevent overlap issues
     if (isWithinInterval(cellDateTime, { start: shiftStart, end: adjustedShiftEnd })) {
+      console.log(`Found shift! Driver: ${shift.driverId}`);
       const driverDetails = getDriverDetails(shift.driverId);
       return { 
         ...driverDetails, 

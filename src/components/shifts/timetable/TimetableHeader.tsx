@@ -10,6 +10,12 @@ interface TimetableHeaderProps {
 }
 
 export function TimetableHeader({ hours, weekDays }: TimetableHeaderProps) {
+  // Debug: Log the weekDays to see what dates we're working with
+  console.log('TimetableHeader - weekDays:', weekDays.map(day => ({
+    date: day.toISOString(),
+    formatted: format(day, 'yyyy-MM-dd')
+  })));
+
   return (
     <TableHeader>
       <TableRow>

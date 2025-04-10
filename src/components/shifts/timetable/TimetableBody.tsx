@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Shift } from '@/types';
 import { ShiftCell } from './ShiftCell';
@@ -36,6 +36,12 @@ export function TimetableBody({
   isInSelectionRange,
   getShiftForTimeSlot
 }: TimetableBodyProps) {
+  // Debug: Log filtered shifts to see if they're being passed correctly
+  useEffect(() => {
+    console.log('TimetableBody - filteredShifts:', filteredShifts);
+    console.log('TimetableBody - weekDays:', weekDays.map(d => d.toISOString().split('T')[0]));
+  }, [filteredShifts, weekDays]);
+
   // Pre-calculate all driver info for each cell to improve performance
   const cellDriverInfo = useMemo(() => {
     const result: Record<string, Record<number, ReturnType<typeof getShiftForTimeSlot>>> = {};
@@ -45,7 +51,14 @@ export function TimetableBody({
       result[dayStr] = {};
       
       hours.forEach(hour => {
-        result[dayStr][hour] = getShiftForTimeSlot(day, hour, filteredShifts, getDriverDetails);
+        const shiftInfo = getShiftForTimeSlot(day, hour, filteredShifts, getDriverDetails);
+        
+        // Debug: Log if a shift was found for this time slot
+        if (shiftInfo) {
+          console.log(`Found shift for ${day.toISOString().split('T')[0]} at ${hour}:00 - Driver: ${shiftInfo.name}`);
+        }
+        
+        result[dayStr][hour] = shiftInfo;
       });
     });
     
