@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Transfer } from '@/types';
 import { useAuth } from '@/contexts/auth';
+import { capitalizeFirstLetter } from '@/lib/utils';
 
 export function useTransfers() {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -46,10 +47,10 @@ export function useTransfers() {
         id: transfer.id,
         date: transfer.date,
         time: transfer.time || '',
-        origin: transfer.origin,
-        destination: transfer.destination,
+        origin: capitalizeFirstLetter(transfer.origin),
+        destination: capitalizeFirstLetter(transfer.destination),
         price: Number(transfer.price),
-        collaborator: transfer.collaborator || '',
+        collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
         commission: Number(transfer.commission),
         commissionType: 'percentage' as const, // Type assertion to satisfy TypeScript
         paymentStatus: transfer.payment_status || 'pending',
@@ -57,7 +58,7 @@ export function useTransfers() {
           id: expense.id,
           transferId: transfer.id,
           date: expense.date,
-          concept: expense.concept,
+          concept: capitalizeFirstLetter(expense.concept),
           amount: Number(expense.amount)
         }))
       }));
@@ -85,10 +86,10 @@ export function useTransfers() {
         .insert({
           date: transferData.date,
           time: transferData.time,
-          origin: transferData.origin,
-          destination: transferData.destination,
+          origin: transferData.origin.toLowerCase(),
+          destination: transferData.destination.toLowerCase(),
           price: transferData.price,
-          collaborator: transferData.collaborator,
+          collaborator: transferData.collaborator.toLowerCase(),
           commission: transferData.commission,
           // We're not storing commission_type in the database
           payment_status: transferData.paymentStatus
@@ -120,6 +121,10 @@ export function useTransfers() {
       const dataForDb = {
         ...rest,
         payment_status: paymentStatus,
+        // Convert text fields to lowercase for storage
+        origin: rest.origin?.toLowerCase(),
+        destination: rest.destination?.toLowerCase(),
+        collaborator: rest.collaborator?.toLowerCase(),
         updated_at: new Date().toISOString()
       };
       

@@ -4,6 +4,7 @@ import { Transfer, Expense } from '@/types';
 import { useCollaborators } from '@/hooks/useCollaborators';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { capitalizeFirstLetter } from '@/lib/utils';
 
 // Load profits data from Supabase
 export const useDataLoader = (): {
@@ -38,7 +39,6 @@ export const useDataLoader = (): {
             price,
             collaborator,
             commission,
-            commission_type,
             payment_status
           `)
           .order('date', { ascending: false });
@@ -62,12 +62,12 @@ export const useDataLoader = (): {
           id: transfer.id,
           date: transfer.date,
           time: transfer.time || '',
-          origin: transfer.origin,
-          destination: transfer.destination,
+          origin: capitalizeFirstLetter(transfer.origin),
+          destination: capitalizeFirstLetter(transfer.destination),
           price: Number(transfer.price),
-          collaborator: transfer.collaborator || '',
+          collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
           commission: Number(transfer.commission),
-          commissionType: transfer.commission_type || 'percentage', // Add the missing commissionType field
+          commissionType: 'percentage', // Default to percentage since we don't have this in the database
           paymentStatus: transfer.payment_status || 'pending', 
           expenses: []
         }));
@@ -77,7 +77,7 @@ export const useDataLoader = (): {
           id: expense.id,
           transferId: expense.transfer_id || '',
           date: expense.date,
-          concept: expense.concept,
+          concept: capitalizeFirstLetter(expense.concept),
           amount: Number(expense.amount)
         }));
 
@@ -92,7 +92,7 @@ export const useDataLoader = (): {
         setExpenses(processedExpenses);
 
         // Get collaborator names from the collaborators list instead of transfers
-        const collaboratorNames = collaborators.map(c => c.name) as string[];
+        const collaboratorNames = collaborators.map(c => capitalizeFirstLetter(c.name)) as string[];
         setUniqueCollaborators(collaboratorNames);
 
         // Extract unique expense types

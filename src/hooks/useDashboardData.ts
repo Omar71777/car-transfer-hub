@@ -39,7 +39,7 @@ export function useDashboardData() {
           ...transfer,
           origin: capitalizeFirstLetter(transfer.origin),
           destination: capitalizeFirstLetter(transfer.destination),
-          collaborator: capitalizeFirstLetter(transfer.collaborator),
+          collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
         }));
         
         // Load expenses from Supabase
