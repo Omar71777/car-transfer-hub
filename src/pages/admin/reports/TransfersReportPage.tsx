@@ -11,6 +11,7 @@ import {
   TableCaption 
 } from '@/components/ui/table';
 import { useTransfers } from '@/hooks/useTransfers';
+import { useExpenses } from '@/hooks/useExpenses';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { downloadCSV, printProfitReport } from '@/lib/exports';
@@ -19,6 +20,7 @@ import { FileDown, Printer } from 'lucide-react';
 
 const TransfersReportPage = () => {
   const { transfers, loading } = useTransfers();
+  const { expenses } = useExpenses();
 
   const handleExportCSV = () => {
     const data = transfers.map(transfer => ({
@@ -35,20 +37,22 @@ const TransfersReportPage = () => {
   };
 
   const handlePrint = () => {
+    // Calculate total income from transfers
     const totalIncome = transfers.reduce((sum, t) => sum + t.price, 0);
     
-    const totalExpenses = transfers.reduce((sum, t) => {
-      const expensesTotal = t.expenses?.reduce((s, e) => s + e.amount, 0) || 0;
-      return sum + expensesTotal;
-    }, 0);
+    // Correctly calculate total expenses
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
     
+    // Calculate commissions
     const totalCommissions = transfers.reduce(
       (sum, t) => sum + (t.price * t.commission / 100), 
       0
     );
     
+    // Calculate net profit: income - expenses - commissions
     const netProfit = totalIncome - totalExpenses - totalCommissions;
     
+    // Calculate profit margin
     const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
     
     const stats = {
@@ -59,7 +63,8 @@ const TransfersReportPage = () => {
       profitMargin
     };
     
-    printProfitReport('Informe de Transfers', transfers, transfers.flatMap(t => t.expenses || []), stats);
+    // Pass ALL expenses, not just those from transfers
+    printProfitReport('Informe de Transfers', transfers, expenses, stats);
   };
 
   return (
