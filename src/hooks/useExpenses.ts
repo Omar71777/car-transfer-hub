@@ -1,5 +1,4 @@
-
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Expense } from '@/types';
@@ -42,6 +41,11 @@ export function useExpenses() {
       setLoading(false);
     }
   }, [user]);
+
+  // Add useEffect to load expenses when the hook is initialized
+  useEffect(() => {
+    fetchExpenses();
+  }, [fetchExpenses]);
 
   const createExpense = useCallback(async (expenseData: Omit<Expense, 'id'>) => {
     if (!user) return null;

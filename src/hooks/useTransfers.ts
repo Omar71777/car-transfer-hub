@@ -1,5 +1,4 @@
-
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Transfer } from '@/types';
@@ -67,6 +66,10 @@ export function useTransfers() {
       setLoading(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    fetchTransfers();
+  }, [fetchTransfers]);
 
   const createTransfer = useCallback(async (transferData: Omit<Transfer, 'id' | 'expenses'>) => {
     if (!user) return null;
