@@ -1,14 +1,11 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, InfoIcon, Car, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
 export function InformationSection() {
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <h2 className="text-xl font-semibold text-primary">Información y Recursos</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -49,9 +46,7 @@ export function InformationSection() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p className="text-sm">
-                Consulta y organiza todos los transfers pendientes de pago a colaboradores.
-              </p>
+              <p className="text-sm">Consulta y organiza todos los transfers pendientes de pago.</p>
               <Button asChild variant="outline" className="w-full">
                 <Link to="/reports/unpaid">
                   Ver Pendientes
@@ -69,6 +64,5 @@ export function InformationSection() {
           Recuerda mantener actualizada la información de transfers y gastos para obtener informes precisos.
         </AlertDescription>
       </Alert>
-    </div>
-  );
+    </div>;
 }
