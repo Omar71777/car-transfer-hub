@@ -5,10 +5,22 @@ import { ProfitCalculator } from '@/components/profits/ProfitCalculator';
 import { SummaryStats } from '@/components/profits/SummaryStats';
 import { ChartsSection } from '@/components/profits/ChartsSection';
 import { ExportOptions } from '@/components/profits/ExportOptions';
+import { ProfitFilters } from '@/components/profits/ProfitFilters';
 import { useProfitsData } from '@/hooks/useProfitsData';
 
 const ProfitsPage = () => {
-  const { transfers, expenses, stats, chartData, monthlyData, loading } = useProfitsData();
+  const { 
+    transfers, 
+    expenses, 
+    stats, 
+    chartData, 
+    monthlyData, 
+    loading,
+    updateFilters,
+    resetFilters,
+    uniqueCollaborators,
+    uniqueExpenseTypes
+  } = useProfitsData();
 
   return (
     <MainLayout>
@@ -24,6 +36,16 @@ const ProfitsPage = () => {
             transfers={transfers} 
             expenses={expenses} 
             stats={stats} 
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="mb-6">
+          <ProfitFilters
+            collaborators={uniqueCollaborators}
+            expenseTypes={uniqueExpenseTypes}
+            onFilterChange={updateFilters}
+            onResetFilters={resetFilters}
           />
         </div>
 
