@@ -6,7 +6,7 @@ import { formatCurrency, capitalizeFirstLetter } from '@/lib/utils';
 import { PaymentStatusBadge } from './PaymentStatusBadge';
 import { TransferTableActions } from './TransferTableActions';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Checkbox } from '@/components/ui/checkbox';
+import { RowCheckbox } from '@/components/ui/row-checkbox';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -45,11 +45,13 @@ export function TransferTableRow({
   return (
     <TableRow className={selected ? "bg-muted/30" : undefined}>
       <TableCell className="px-2">
-        <Checkbox 
-          checked={selected} 
-          onCheckedChange={handleSelectChange}
-          aria-label={`Select transfer ${transfer.id}`}
-        />
+        {onSelectRow && (
+          <RowCheckbox 
+            id={transfer.id}
+            checked={selected} 
+            onChange={handleSelectChange}
+          />
+        )}
       </TableCell>
       <TableCell>{transfer.date}</TableCell>
       {!isMobile && <TableCell>{transfer.time}</TableCell>}

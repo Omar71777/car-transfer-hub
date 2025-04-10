@@ -3,7 +3,7 @@ import React from 'react';
 import { TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { capitalizeFirstLetter } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Checkbox } from '@/components/ui/checkbox';
+import { RowCheckbox } from '@/components/ui/row-checkbox';
 
 interface TransferTableHeaderProps {
   onSelectAll?: (selected: boolean) => void;
@@ -22,21 +22,14 @@ export function TransferTableHeader({
     <TableHeader>
       <TableRow>
         <TableHead className="w-[50px] px-2">
-          <Checkbox 
-            checked={allSelected} 
-            onCheckedChange={onSelectAll}
-            aria-label="Select all"
-            className="text-center"
-            ref={el => {
-              if (el) {
-                if (someSelected && !allSelected) {
-                  el.indeterminate = true;
-                } else {
-                  el.indeterminate = false;
-                }
-              }
-            }}
-          />
+          {onSelectAll && (
+            <RowCheckbox 
+              id="select-all"
+              checked={allSelected}
+              onChange={onSelectAll}
+              indeterminate={someSelected && !allSelected}
+            />
+          )}
         </TableHead>
         <TableHead>{capitalizeFirstLetter('fecha')}</TableHead>
         {!isMobile && <TableHead>{capitalizeFirstLetter('hora')}</TableHead>}
