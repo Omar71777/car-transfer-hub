@@ -49,7 +49,7 @@ export const useTransferFormNavigation = (
     // If this is the last step, submit the form
     if (currentStep === activeSteps.length - 1) {
       console.log('Final step reached - submitting form');
-      handleSubmit((data) => {
+      return handleSubmit((data) => {
         // Process the form data
         const processedValues = {
           ...data,
@@ -66,7 +66,6 @@ export const useTransferFormNavigation = (
         console.log('Submitting form with data:', processedValues);
         onSubmit(processedValues);
       })();
-      return;
     }
 
     // Validate current step fields before proceeding
