@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -72,7 +71,6 @@ export default function UsersPage() {
     },
   });
 
-  // Redirect if not an admin
   useEffect(() => {
     if (!isAdmin) {
       navigate('/');
@@ -80,7 +78,6 @@ export default function UsersPage() {
     }
   }, [isAdmin, navigate]);
 
-  // Fetch users
   const fetchUsers = async () => {
     if (!isAdmin) return;
     
@@ -107,7 +104,6 @@ export default function UsersPage() {
 
   const toggleUserRole = async (userId: string, currentRole: 'admin' | 'user') => {
     try {
-      // Don't allow changing your own role
       if (userId === user?.id) {
         toast.error('No puedes cambiar tu propio rol');
         return;
@@ -122,7 +118,6 @@ export default function UsersPage() {
 
       if (error) throw error;
       
-      // Update local state
       setUsers(users.map(u => 
         u.id === userId ? { ...u, role: newRole } : u
       ));
@@ -167,7 +162,6 @@ export default function UsersPage() {
 
       if (error) throw error;
       
-      // Update local state
       setUsers(users.map(u => 
         u.id === editingUser.id ? { ...u, ...values } : u
       ));
@@ -184,48 +178,57 @@ export default function UsersPage() {
     if (!editingUser) return;
     
     try {
-      // Admin reset password (only works with service role which we don't have)
-      // In reality, we would need a server-side function to do this
-      // For now, let's show a success message
-      toast.success(`Contraseña actualizada para ${editingUser.email}`);
+      const { error } = await supabase.auth.resetPasswordForEmail(editingUser.email || '', {
+        redirectTo: window.location.origin + '/auth?reset=true',
+      });
+
+      if (error) throw error;
+      
+      toast.success(`Se ha enviado un email para restablecer la contraseña a ${editingUser.email}`);
       setIsPasswordDialogOpen(false);
     } catch (error: any) {
-      console.error('Error updating password:', error);
-      toast.error('Error al actualizar la contraseña');
+      console.error('Error sending password reset:', error);
+      toast.error(`Error al enviar el email de restablecimiento: ${error.message}`);
     }
   };
 
   const onAddUserSubmit = async (values: UserFormValues & PasswordFormValues) => {
     try {
-      // Create user with Supabase auth
-      const { data, error } = await supabase.auth.admin.createUser({
+      const { data, error } = await supabase.auth.signUp({
         email: values.email!,
         password: values.password,
-        email_confirm: true,
-        user_metadata: {
-          first_name: values.first_name,
-          last_name: values.last_name,
-        },
+        options: {
+          data: {
+            first_name: values.first_name,
+            last_name: values.last_name,
+          },
+          emailRedirectTo: window.location.origin + '/auth?signup=true',
+        }
       });
 
       if (error) throw error;
       
-      // The trigger should create the profile, but let's make sure
       if (data.user) {
-        await supabase
+        const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
             id: data.user.id,
             email: values.email,
             first_name: values.first_name,
             last_name: values.last_name,
-            role: 'user', // Default role
+            role: 'user',
           });
         
-        toast.success('Usuario creado con éxito');
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          toast.error(`Error al crear el perfil: ${profileError.message}`);
+          return;
+        }
+        
+        toast.success('Usuario creado con éxito. Se ha enviado un email de verificación.');
         setAddUserDialogOpen(false);
         addUserForm.reset();
-        fetchUsers(); // Refresh user list
+        fetchUsers();
       }
     } catch (error: any) {
       console.error('Error creating user:', error);
@@ -377,7 +380,6 @@ export default function UsersPage() {
         </Card>
       </div>
 
-      {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -445,7 +447,6 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Password Reset Dialog */}
       <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -485,7 +486,6 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Add User Dialog */}
       <Dialog open={addUserDialogOpen} onOpenChange={setAddUserDialogOpen}>
         <DialogContent>
           <DialogHeader>
