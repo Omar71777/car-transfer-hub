@@ -18,7 +18,7 @@ export const calculateStats = (transfers: Transfer[], expenses: Expense[]): Prof
   const totalExpenses = expenses.reduce((sum: number, expense: Expense) => 
     sum + (expense.amount || 0), 0);
   
-  const netProfit = totalIncome - (totalExpenses + totalCommissions);
+  const netProfit = totalIncome - totalExpenses - totalCommissions;
   const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
   
   return {

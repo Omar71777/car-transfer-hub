@@ -57,9 +57,9 @@ export function prepareProfitDataForExport(
     profitsByDate[date].expenses += expense.amount;
   });
   
-  // Calculate profit for each date: income - (expenses + commissions)
+  // Calculate profit for each date: income - expenses - commissions
   Object.values(profitsByDate).forEach(dayData => {
-    dayData.profit = dayData.income - (dayData.expenses + dayData.commissions);
+    dayData.profit = dayData.income - dayData.expenses - dayData.commissions;
   });
   
   // Convert to array and sort by date

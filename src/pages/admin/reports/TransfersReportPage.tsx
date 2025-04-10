@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
@@ -46,7 +47,7 @@ const TransfersReportPage = () => {
       0
     );
     
-    const netProfit = totalIncome - (totalExpenses + totalCommissions);
+    const netProfit = totalIncome - totalExpenses - totalCommissions;
     
     const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
     
