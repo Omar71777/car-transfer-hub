@@ -43,7 +43,7 @@ export function CollaboratorCard({ name, transferCount, commissionTotal, average
             <span className="text-sm font-medium">Comisión Media por Transfer</span>
             <div className="flex items-center gap-1 text-emerald-500">
               <TrendingUp className="h-4 w-4" />
-              <span className="font-bold">{averageCommission ? (averageCommission * 100 / commissionTotal).toFixed(1) : 0}%</span>
+              <span className="font-bold">{formatCurrency(averageCommission)}</span>
             </div>
           </div>
         </div>
