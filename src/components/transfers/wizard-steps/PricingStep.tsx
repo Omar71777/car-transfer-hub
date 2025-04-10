@@ -170,10 +170,12 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
               <FormControl>
                 <RadioGroup
                   onValueChange={(value) => {
-                    field.onChange(value === 'yes' ? '' : 'none');
-                    console.log('Collaborator selection:', value, 'Field value will be:', value === 'yes' ? '' : 'none');
+                    // When user selects "No", set collaborator to 'none'
+                    // When user selects "Yes", set it to empty string so they can select a collaborator
+                    field.onChange(value === 'no' ? 'none' : '');
+                    console.log('Collaborator selection:', value, 'Field value will be:', value === 'no' ? 'none' : '');
                   }}
-                  value={field.value !== 'none' ? 'yes' : 'no'}
+                  value={field.value === 'none' ? 'no' : 'yes'}
                   className="flex flex-col space-y-1"
                 >
                   <div className="flex items-center space-x-2">

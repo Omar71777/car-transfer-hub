@@ -1,5 +1,5 @@
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTransferFormWithFormContext } from '../context/TransferFormContext';
 import { toast } from 'sonner';
 
@@ -13,8 +13,19 @@ export const useTransferFormNavigation = (
     trigger,
     getValues,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setShowCollaboratorStep,
+    watch
   } = useTransferFormWithFormContext();
+  
+  // Watch collaborator value to determine if we should show collaborator step
+  const collaboratorValue = watch('collaborator');
+  
+  // Update showCollaboratorStep based on the collaborator value
+  useEffect(() => {
+    // If collaborator is 'none', we should skip the collaborator step
+    setShowCollaboratorStep(collaboratorValue !== 'none');
+  }, [collaboratorValue, setShowCollaboratorStep]);
   
   // Get fields that should be validated for each step
   const getFieldsForStep = (stepId: string): string[] => {
@@ -35,12 +46,21 @@ export const useTransferFormNavigation = (
       case 'extraCharges':
         return []; // Extra charges are optional
       case 'collaborator':
-        // Use "" for empty value or "none" for no collaborator to allow proper validation
-        return ['collaborator']; 
+        // Collaborator is required if it's a collaborator service
+        return collaboratorValue !== 'none' ? ['collaborator'] : [];
       default:
         return [];
     }
   };
+
+  // Find the next step index, skipping collaborator if needed
+  const getNextStepIndex = useCallback(() => {
+    // If current step + 1 would be collaborator step but we should skip it
+    if (activeSteps[currentStep + 1]?.id === 'collaborator' && collaboratorValue === 'none') {
+      return currentStep + 2; // Skip to the step after collaborator
+    }
+    return currentStep + 1; // Otherwise go to the next step
+  }, [currentStep, activeSteps, collaboratorValue]);
 
   // Handle next step
   const handleNext = useCallback(async () => {
@@ -74,21 +94,27 @@ export const useTransferFormNavigation = (
     
     // If there are no fields to validate for this step, or validation passes, proceed
     if (stepFields.length === 0 || await trigger(stepFields as any)) {
-      setCurrentStep(currentStep + 1);
+      const nextStepIndex = getNextStepIndex();
+      setCurrentStep(nextStepIndex);
       window.scrollTo(0, 0);
     } else {
       console.log('Validation errors:', errors);
       toast.error('Por favor complete todos los campos requeridos antes de continuar');
     }
-  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, getValues, setCurrentStep, errors]);
+  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, getValues, setCurrentStep, errors, getNextStepIndex]);
 
   // Handle previous step
   const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      // If we're on the step after collaborator and collaborator is skipped
+      if (activeSteps[currentStep - 1]?.id === 'collaborator' && collaboratorValue === 'none') {
+        setCurrentStep(currentStep - 2); // Go back two steps to skip collaborator
+      } else {
+        setCurrentStep(currentStep - 1); // Go back one step normally
+      }
       window.scrollTo(0, 0);
     }
-  }, [currentStep, setCurrentStep]);
+  }, [currentStep, setCurrentStep, activeSteps, collaboratorValue]);
 
   return {
     handleNext,
