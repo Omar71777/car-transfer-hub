@@ -28,7 +28,7 @@ export function useDashboardData() {
         // Load transfers from Supabase
         const { data: transfers, error: transfersError } = await supabase
           .from('transfers')
-          .select('id, price, commission, commission_type')
+          .select('id, price, commission')
           .order('date', { ascending: false });
           
         if (transfersError) throw transfersError;
@@ -41,30 +41,28 @@ export function useDashboardData() {
           
         if (expensesError) throw expensesError;
         
-        // Calculate total commissions considering commission type
-        const totalCommissions = transfers.reduce((sum: number, transfer: any) => {
-          // Check commission type and calculate accordingly
-          const commissionAmount = transfer.commission_type === 'percentage'
-            ? ((Number(transfer.price) * Number(transfer.commission)) / 100 || 0)
-            : (Number(transfer.commission) || 0);
+        // Calculate total commissions (assume all are percentage-based since we don't have commission_type)
+        const totalCommissions = transfers.reduce((sum, transfer) => {
+          // Default to percentage-based commission calculation
+          const commissionAmount = (Number(transfer.price) * Number(transfer.commission)) / 100 || 0;
           return sum + commissionAmount;
         }, 0);
         
         // Add regular expenses and commissions
-        const expensesTotal = expenses.reduce((sum: number, expense: Expense) => 
+        const expensesTotal = expenses.reduce((sum, expense) => 
           sum + (Number(expense.amount) || 0), 0);
         const totalExpenses = expensesTotal + totalCommissions;
         
         // Calculate stats
         setStats({
           totalTransfers: transfers.length,
-          totalIncome: transfers.reduce((sum: number, transfer: Transfer) => 
+          totalIncome: transfers.reduce((sum, transfer) => 
             sum + (Number(transfer.price) || 0), 0),
           totalExpenses: totalExpenses,
-          netIncome: transfers.reduce((sum: number, transfer: Transfer) => 
+          netIncome: transfers.reduce((sum, transfer) => 
             sum + (Number(transfer.price) || 0), 0) - totalExpenses
         });
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error loading dashboard data:', error);
         toast.error(`Error al cargar los datos del dashboard: ${error.message}`);
       } finally {

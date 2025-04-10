@@ -21,7 +21,7 @@ const CollaboratorsPage = () => {
         const {
           data,
           error
-        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, commission_type, payment_status').order('date', {
+        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, payment_status').order('date', {
           ascending: false
         });
         if (error) throw error;
@@ -36,7 +36,7 @@ const CollaboratorsPage = () => {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
-          commissionType: transfer.commission_type || 'percentage', // Add the missing commissionType field
+          commissionType: 'percentage', // Default to percentage since we don't have this in DB
           paymentStatus: transfer.payment_status || 'pending',
           expenses: []
         }));
