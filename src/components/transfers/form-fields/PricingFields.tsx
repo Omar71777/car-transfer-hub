@@ -25,7 +25,7 @@ export function PricingFields({
     }) => <FormItem>
             <FormLabel>Comisión (%)</FormLabel>
             <FormControl>
-              <Input type="number" min="0" max="100" step="0.1" placeholder="10.0" className="default value : 0" />
+              <Input type="number" min="0" max="100" step="0.1" placeholder="10.0" className="content: \"0\"" />
             </FormControl>
             <FormMessage />
           </FormItem>} />
