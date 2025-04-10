@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,33 +12,32 @@ import { useAuth } from '@/contexts/auth';
 import { UnpaidPageHeader } from '@/components/reports/unpaid/UnpaidPageHeader';
 import { CollaboratorFilter } from '@/components/reports/unpaid/CollaboratorFilter';
 import { useUnpaidTransfersData } from '@/hooks/useUnpaidTransfersData';
-
 const UnpaidTransfersPage = () => {
-  const { transfers, loading } = useTransfers();
-  const { collaborators } = useCollaborators();
-  const { profile } = useAuth();
+  const {
+    transfers,
+    loading
+  } = useTransfers();
+  const {
+    collaborators
+  } = useCollaborators();
+  const {
+    profile
+  } = useAuth();
   const [selectedCollaborator, setSelectedCollaborator] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<string>('table');
-  
+
   // Use our custom hook to handle unpaid transfers data
-  const { 
-    unpaidTransfers, 
-    getMonthlyUnpaidData 
+  const {
+    unpaidTransfers,
+    getMonthlyUnpaidData
   } = useUnpaidTransfersData(transfers, selectedCollaborator);
-  
   const handlePrint = () => {
     const monthlyUnpaidData = getMonthlyUnpaidData();
-    
-    printUnpaidReport(
-      'Informe de Pagos Pendientes a Colaboradores',
-      selectedCollaborator === 'all' ? monthlyUnpaidData : monthlyUnpaidData.filter(d => d.collaborator === selectedCollaborator),
-      {
-        name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
-        email: profile?.email || ''
-      }
-    );
+    printUnpaidReport('Informe de Pagos Pendientes a Colaboradores', selectedCollaborator === 'all' ? monthlyUnpaidData : monthlyUnpaidData.filter(d => d.collaborator === selectedCollaborator), {
+      name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
+      email: profile?.email || ''
+    });
   };
-  
   const handleExportCSV = () => {
     if (activeTab === 'table') {
       const data = prepareUnpaidDataForExport(unpaidTransfers);
@@ -49,17 +47,11 @@ const UnpaidTransfersPage = () => {
       downloadCSV(data, 'pagos-pendientes-resumen.csv');
     }
   };
-  
-  return (
-    <MainLayout>
-      <div className="py-6">
+  return <MainLayout>
+      <div className="py-6 px-[7px]">
         <UnpaidPageHeader onExportCSV={handleExportCSV} onPrint={handlePrint} />
         
-        <CollaboratorFilter 
-          collaborators={collaborators}
-          selectedCollaborator={selectedCollaborator}
-          onCollaboratorChange={setSelectedCollaborator}
-        />
+        <CollaboratorFilter collaborators={collaborators} selectedCollaborator={selectedCollaborator} onCollaboratorChange={setSelectedCollaborator} />
         
         <Tabs defaultValue="table" onValueChange={setActiveTab}>
           <TabsList>
@@ -84,18 +76,12 @@ const UnpaidTransfersPage = () => {
                 <CardTitle>Resumen por Colaborador y Mes</CardTitle>
               </CardHeader>
               <CardContent>
-                <UnpaidCollaboratorSummary 
-                  monthlyData={getMonthlyUnpaidData()} 
-                  loading={loading}
-                  selectedCollaborator={selectedCollaborator}
-                />
+                <UnpaidCollaboratorSummary monthlyData={getMonthlyUnpaidData()} loading={loading} selectedCollaborator={selectedCollaborator} />
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 };
-
 export default UnpaidTransfersPage;
