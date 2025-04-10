@@ -10,7 +10,11 @@ export const transferSchema = z.object({
   origin: z.string().min(1, { message: 'El origen es requerido' }),
   destination: z.string().optional()
     .superRefine((val, ctx) => {
-      if (ctx.parent.serviceType === 'transfer' && (!val || val.trim() === '')) {
+      // Get the parent object from the ctx.path
+      const serviceType = ctx.path.length > 0 ? 
+        (ctx.getData() as any).serviceType : undefined;
+        
+      if (serviceType === 'transfer' && (!val || val.trim() === '')) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'El destino es requerido para transfers'
@@ -21,7 +25,11 @@ export const transferSchema = z.object({
     }),
   hours: z.string().optional()
     .superRefine((val, ctx) => {
-      if (ctx.parent.serviceType === 'dispo' && (!val || val.trim() === '')) {
+      // Get the parent object from the ctx.path
+      const serviceType = ctx.path.length > 0 ? 
+        (ctx.getData() as any).serviceType : undefined;
+        
+      if (serviceType === 'dispo' && (!val || val.trim() === '')) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Las horas son requeridas para disposiciones'
