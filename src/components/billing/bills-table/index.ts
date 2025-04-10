@@ -1,0 +1,2 @@
+
+export { BillsTable } from './BillsTable';
