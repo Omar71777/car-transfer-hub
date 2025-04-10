@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -5,24 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Transfer, ExtraCharge } from '@/types';
+import { Transfer } from '@/types';
 import { useCollaborators } from '@/hooks/useCollaborators';
 import { useClients } from '@/hooks/useClients';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
-import { DateTimeFields } from './form-fields/DateTimeFields';
-import { LocationFields } from './form-fields/LocationFields';
-import { PricingFields } from './form-fields/PricingFields';
-import { CollaboratorField } from './form-fields/CollaboratorField';
-import { ClientField } from './form-fields/ClientField';
-import { PaymentStatusField } from './form-fields/PaymentStatusField';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ExtraChargesForm } from './form-fields/ExtraChargesForm';
-import { v4 as uuidv4 } from 'uuid';
+import { useExtraCharges } from './hooks/useExtraCharges';
+import { BasicInfoTab } from './form-tabs/BasicInfoTab';
+import { PricingTab } from './form-tabs/PricingTab';
+import { ExtraChargesTab } from './form-tabs/ExtraChargesTab';
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
@@ -48,7 +40,14 @@ export function TransferForm({
   } = useClients();
 
   const [serviceType, setServiceType] = useState<'transfer' | 'dispo'>(initialValues?.serviceType || 'transfer');
-  const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(
+  
+  const { 
+    extraCharges, 
+    setExtraCharges, 
+    handleAddExtraCharge, 
+    handleRemoveExtraCharge, 
+    handleExtraChargeChange 
+  } = useExtraCharges(
     initialValues?.extraCharges 
       ? initialValues.extraCharges.map(charge => ({
           id: charge.id,
@@ -58,7 +57,7 @@ export function TransferForm({
       : []
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchCollaborators();
     fetchClients();
   }, [fetchCollaborators, fetchClients]);
@@ -108,26 +107,6 @@ export function TransferForm({
     defaultValues: getDefaultValues()
   });
 
-  useEffect(() => {
-    setServiceType(form.watch('serviceType'));
-  }, [form.watch]);
-
-  const handleAddExtraCharge = () => {
-    setExtraCharges([...extraCharges, { id: uuidv4(), name: '', price: '' }]);
-  };
-
-  const handleRemoveExtraCharge = (index: number) => {
-    const newExtraCharges = [...extraCharges];
-    newExtraCharges.splice(index, 1);
-    setExtraCharges(newExtraCharges);
-  };
-
-  const handleExtraChargeChange = (index: number, field: keyof ExtraCharge, value: any) => {
-    const newExtraCharges = [...extraCharges];
-    (newExtraCharges[index] as any)[field] = value;
-    setExtraCharges(newExtraCharges);
-  };
-
   function handleSubmit(values: TransferFormValues) {
     const processedValues = {
       ...values,
@@ -168,200 +147,21 @@ export function TransferForm({
               </TabsList>
               
               <TabsContent value="basic" className="space-y-4">
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="serviceType"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Tipo de servicio *</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                              setServiceType(value as 'transfer' | 'dispo');
-                            }}
-                            defaultValue={field.value}
-                            className="flex flex-col space-y-1"
-                            value={field.value}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="transfer" id="transfer-type" />
-                              <Label htmlFor="transfer-type">Transfer (Punto a punto)</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="dispo" id="dispo-type" />
-                              <Label htmlFor="dispo-type">Disposición (Por horas)</Label>
-                            </div>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <DateTimeFields form={form} />
-                  
-                  {serviceType === 'transfer' ? (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="origin"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Lugar de recogida *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Ej: Aeropuerto de Ibiza" {...field} className="w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="destination"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Lugar de destino *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Ej: Hotel Ushuaïa" {...field} className="w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="origin"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Punto de inicio *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Ej: Hotel Ushuaïa" {...field} className="w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="hours"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Horas contratadas *</FormLabel>
-                            <FormControl>
-                              <Input type="number" min="1" step="1" placeholder="4" {...field} className="w-full" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </>
-                  )}
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <ClientField form={form} clients={clients} />
-                    <CollaboratorField form={form} collaborators={collaborators} />
-                  </div>
-                </div>
+                <BasicInfoTab 
+                  form={form} 
+                  serviceType={serviceType} 
+                  setServiceType={setServiceType} 
+                  clients={clients} 
+                  collaborators={collaborators} 
+                />
               </TabsContent>
               
               <TabsContent value="pricing" className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Precio{serviceType === 'dispo' ? ' por hora' : ''} (€) *</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          min="0" 
-                          step="0.01" 
-                          placeholder="120.00" 
-                          {...field} 
-                          className="w-full"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {serviceType === 'dispo' && form.watch('hours') && (
-                  <div className="text-sm text-muted-foreground">
-                    <p>
-                      Precio total para {form.watch('hours')} horas: €
-                      {((Number(form.watch('price')) || 0) * (Number(form.watch('hours')) || 0)).toFixed(2)}
-                    </p>
-                  </div>
-                )}
-                
-                <div className="space-y-3">
-                  <FormLabel>Descuento (opcional)</FormLabel>
-                  <FormField
-                    control={form.control}
-                    name="discountType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Select 
-                          onValueChange={(value) => {
-                            field.onChange(value === "no-discount" ? null : value);
-                          }} 
-                          value={field.value || "no-discount"} 
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar tipo de descuento" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="no-discount">Sin descuento</SelectItem>
-                            <SelectItem value="percentage">Porcentaje (%)</SelectItem>
-                            <SelectItem value="fixed">Monto fijo (€)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {form.watch('discountType') && (
-                    <FormField
-                      control={form.control}
-                      name="discountValue"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              min="0" 
-                              max={form.watch('discountType') === 'percentage' ? "100" : undefined}
-                              step={form.watch('discountType') === 'percentage' ? "1" : "0.01"} 
-                              placeholder={form.watch('discountType') === 'percentage' ? "10" : "25.00"} 
-                              {...field} 
-                              className="w-full"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-                </div>
-                
-                <PaymentStatusField form={form} />
-                
-                <PricingFields form={form} />
+                <PricingTab form={form} serviceType={serviceType} />
               </TabsContent>
               
               <TabsContent value="extras">
-                <ExtraChargesForm 
+                <ExtraChargesTab 
                   extraCharges={extraCharges}
                   onAddCharge={handleAddExtraCharge}
                   onRemoveCharge={handleRemoveExtraCharge}
