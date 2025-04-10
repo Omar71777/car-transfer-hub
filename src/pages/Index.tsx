@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,19 +9,21 @@ import { useDashboardData } from '@/hooks/useDashboardData';
 import { StatCards } from '@/components/dashboard/StatCards';
 import { QuickAccessCards } from '@/components/dashboard/QuickAccessCards';
 import { InformationSection } from '@/components/dashboard/InformationSection';
-
 const Index = () => {
-  const { user, isAdmin } = useAuth();
-  const { stats, loading } = useDashboardData();
-
-  return (
-    <MainLayout>
-      <div className="py-6">
+  const {
+    user,
+    isAdmin
+  } = useAuth();
+  const {
+    stats,
+    loading
+  } = useDashboardData();
+  return <MainLayout>
+      <div className="py-6 px-[10px]">
         <h1 className="text-3xl font-bold mb-2 text-primary">Bienvenido a Ibiza Transfer Hub</h1>
         <p className="text-muted-foreground mb-8">Gestiona tus transfers, gastos y ganancias desde un solo lugar.</p>
         
-        {isAdmin && (
-          <Card className="glass-card mb-8 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50">
+        {isAdmin && <Card className="glass-card mb-8 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50">
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
@@ -37,8 +38,7 @@ const Index = () => {
                 </Button>
               </div>
             </CardContent>
-          </Card>
-        )}
+          </Card>}
         
         {/* KPI Stats Section */}
         <div className="mb-10">
@@ -54,8 +54,6 @@ const Index = () => {
           <InformationSection />
         </div>
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 };
-
 export default Index;
