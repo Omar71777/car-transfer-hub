@@ -86,7 +86,7 @@
   
   /* Better scrolling on mobile */
   .mobile-scroll {
-    @apply -mx-4 px-4 overflow-x-auto;
+    @apply -mx-4 px-4 overflow-x-auto pb-2;
   }
 
   /* Improve dialog sizing and scrolling */
@@ -103,5 +103,15 @@
   /* Prevent horizontal overflow on mobile */
   .overflow-x-hidden-mobile {
     @apply overflow-x-hidden;
+  }
+  
+  /* Make horizontal scroll containers more visible */
+  .mobile-scroll {
+    @apply rounded-md border border-muted/30 p-1;
+  }
+  
+  /* Ensure horizontal scroll works properly on mobile */
+  .mobile-scroll table {
+    min-width: max-content;
   }
 }

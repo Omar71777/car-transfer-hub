@@ -62,7 +62,10 @@ export function TransferTableRow({
         {capitalizeFirstLetter(transfer.destination)}
       </TableCell>
       <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
-      {!isMobile && <TableCell>{capitalizeFirstLetter(transfer.collaborator)}</TableCell>}
+      {!isMobile && <TableCell className="max-w-[120px] truncate" title={transfer.client?.name || ''}>
+        {transfer.client?.name || '-'}
+      </TableCell>}
+      {!isMobile && <TableCell>{capitalizeFirstLetter(transfer.collaborator || '-')}</TableCell>}
       {!isMobile && <TableCell className="text-right">
         {formatCommission(transfer)}
       </TableCell>}

@@ -36,6 +36,7 @@ export function TransferTableHeader({
         <TableHead>{capitalizeFirstLetter('origen')}</TableHead>
         <TableHead>{capitalizeFirstLetter('destino')}</TableHead>
         <TableHead className="text-right">{capitalizeFirstLetter('precio')}</TableHead>
+        {!isMobile && <TableHead>{capitalizeFirstLetter('cliente')}</TableHead>}
         {!isMobile && <TableHead>{capitalizeFirstLetter('colaborador')}</TableHead>}
         {!isMobile && <TableHead className="text-right">{capitalizeFirstLetter('comisión')}</TableHead>}
         <TableHead className="text-center">{capitalizeFirstLetter('estado')}</TableHead>

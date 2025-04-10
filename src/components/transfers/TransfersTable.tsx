@@ -70,7 +70,7 @@ export function TransfersTable({
         </div>
       )}
       <div className="rounded-md border overflow-hidden glass-card px-[7px]">
-        <div className={isMobile ? "overflow-x-auto -mx-4 px-4" : ""}>
+        <div className={isMobile ? "overflow-x-auto -mx-4 px-4 mobile-scroll" : ""}>
           <Table>
             <TransferTableHeader 
               onSelectAll={handleSelectAll} 

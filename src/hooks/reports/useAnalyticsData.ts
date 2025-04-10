@@ -1,6 +1,7 @@
 
 import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
+import { useClients } from '@/hooks/useClients';
 
 export interface MonthlyData {
   name: string;
@@ -15,9 +16,16 @@ export interface CollaboratorData {
   value: number;
 }
 
+export interface ClientData {
+  name: string;
+  value: number;
+  count: number;
+}
+
 export function useAnalyticsData() {
   const { transfers, loading: transfersLoading } = useTransfers();
   const { expenses, loading: expensesLoading } = useExpenses();
+  const { clients, loading: clientsLoading } = useClients();
   
   // Generate monthly data
   const generateMonthlyData = (): MonthlyData[] => {
@@ -82,11 +90,59 @@ export function useAnalyticsData() {
     return Object.entries(collaborators).map(([name, value]) => ({ name, value }));
   };
   
+  // Generate data for client distribution
+  const generateClientData = (): ClientData[] => {
+    const clientsData: Record<string, { value: number, count: number }> = {};
+    
+    transfers.forEach(transfer => {
+      if (transfer.clientId) {
+        const clientName = transfer.client?.name || 'Cliente sin nombre';
+        
+        if (!clientsData[clientName]) {
+          clientsData[clientName] = { value: 0, count: 0 };
+        }
+        
+        clientsData[clientName].value += transfer.price;
+        clientsData[clientName].count += 1;
+      }
+    });
+    
+    return Object.entries(clientsData)
+      .map(([name, data]) => ({ 
+        name, 
+        value: data.value,
+        count: data.count 
+      }))
+      .sort((a, b) => b.value - a.value);
+  };
+  
+  // Get destinations distribution
+  const generateDestinationsData = () => {
+    const destinations: Record<string, number> = {};
+    
+    transfers.forEach(transfer => {
+      const destination = transfer.destination;
+      
+      if (!destinations[destination]) {
+        destinations[destination] = 0;
+      }
+      
+      destinations[destination] += 1;
+    });
+    
+    return Object.entries(destinations)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  };
+  
   return {
     transfers,
     expenses,
+    clients,
     monthlyData: generateMonthlyData(),
     collaboratorData: generateCollaboratorData(),
-    loading: transfersLoading || expensesLoading
+    clientData: generateClientData(),
+    destinationsData: generateDestinationsData(),
+    loading: transfersLoading || expensesLoading || clientsLoading
   };
 }
