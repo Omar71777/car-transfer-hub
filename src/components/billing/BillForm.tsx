@@ -140,10 +140,18 @@ export function BillForm({ onSubmit }: BillFormProps) {
       return;
     }
 
-    onSubmit({
-      ...values,
+    // Ensure all required fields are present
+    const billData: CreateBillDto = {
+      clientId: values.clientId,
+      date: values.date,
+      dueDate: values.dueDate,
       transferIds: selectedTransfers,
-    });
+      taxRate: values.taxRate,
+      taxApplication: values.taxApplication as TaxApplicationType,
+      notes: values.notes
+    };
+
+    onSubmit(billData);
   };
 
   const formatCurrency = (amount: number) => {

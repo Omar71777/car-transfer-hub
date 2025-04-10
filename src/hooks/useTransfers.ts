@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,7 +15,6 @@ export function useTransfers() {
     
     try {
       setLoading(true);
-      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('transfers')
         .select(`
@@ -42,7 +40,6 @@ export function useTransfers() {
         throw error;
       }
 
-      // Transform the data to match our Transfer type
       const transformedData = data.map((transfer: any) => ({
         id: transfer.id,
         date: transfer.date,
@@ -52,7 +49,7 @@ export function useTransfers() {
         price: Number(transfer.price),
         collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
         commission: Number(transfer.commission),
-        commissionType: 'percentage' as const, // Type assertion to satisfy TypeScript
+        commissionType: 'percentage' as const,
         paymentStatus: transfer.payment_status || 'pending',
         expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
@@ -80,7 +77,6 @@ export function useTransfers() {
     if (!user) return null;
     
     try {
-      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('transfers')
         .insert({
@@ -91,7 +87,6 @@ export function useTransfers() {
           price: transferData.price,
           collaborator: transferData.collaborator.toLowerCase(),
           commission: transferData.commission,
-          // We're not storing commission_type in the database
           payment_status: transferData.paymentStatus
         })
         .select('id')
@@ -113,22 +108,18 @@ export function useTransfers() {
     if (!user) return false;
     
     try {
-      // Remove 'expenses' field if it exists as we don't want to update it
       const { expenses, commissionType, ...transferUpdateData } = transferData;
       
-      // Convert paymentStatus to payment_status for the database
       const { paymentStatus, ...rest } = transferUpdateData;
       const dataForDb = {
         ...rest,
         payment_status: paymentStatus,
-        // Convert text fields to lowercase for storage
         origin: rest.origin?.toLowerCase(),
         destination: rest.destination?.toLowerCase(),
         collaborator: rest.collaborator?.toLowerCase(),
         updated_at: new Date().toISOString()
       };
       
-      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('transfers')
         .update(dataForDb)
@@ -150,8 +141,6 @@ export function useTransfers() {
     if (!user) return false;
     
     try {
-      // First delete associated expenses
-      // Use 'from' instead of directly accessing the table name
       const { error: expensesError } = await supabase
         .from('expenses')
         .delete()
@@ -161,8 +150,6 @@ export function useTransfers() {
         throw expensesError;
       }
 
-      // Then delete the transfer
-      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('transfers')
         .delete()
@@ -180,12 +167,29 @@ export function useTransfers() {
     }
   }, [user]);
 
+  const getTransfer = useCallback(async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('transfers')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    } catch (error: any) {
+      console.error('Error fetching transfer:', error);
+      return null;
+    }
+  }, []);
+
   return {
     transfers,
     loading,
     fetchTransfers,
     createTransfer,
     updateTransfer,
-    deleteTransfer
+    deleteTransfer,
+    getTransfer
   };
 }

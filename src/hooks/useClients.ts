@@ -8,16 +8,31 @@ export function useClients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Temporary implementation until database tables are created
   const fetchClients = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .order('name');
-
-      if (error) throw error;
-      setClients(data || []);
+      // For now, return some sample clients
+      const sampleClients: Client[] = [
+        {
+          id: '1',
+          name: 'Sample Client 1',
+          email: 'client1@example.com',
+          phone: '+34 123 456 789',
+          taxId: 'A12345678',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: '2',
+          name: 'Sample Client 2',
+          email: 'client2@example.com',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ];
+      
+      setClients(sampleClients);
     } catch (error: any) {
       toast.error(`Error fetching clients: ${error.message}`);
       console.error('Error fetching clients:', error);
@@ -28,33 +43,20 @@ export function useClients() {
 
   const getClient = useCallback(async (id: string) => {
     try {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data;
+      // Return a sample client for now
+      return clients.find(client => client.id === id) || null;
     } catch (error: any) {
       toast.error(`Error fetching client: ${error.message}`);
       console.error('Error fetching client:', error);
       return null;
     }
-  }, []);
+  }, [clients]);
 
   const createClient = useCallback(async (clientData: CreateClientDto) => {
     try {
-      const { data, error } = await supabase
-        .from('clients')
-        .insert({
-          ...clientData,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data.id;
+      // Just display a toast and return a fake ID for now
+      toast.success('This is a temporary implementation. Database tables need to be created.');
+      return 'temp-id-' + Date.now();
     } catch (error: any) {
       toast.error(`Error creating client: ${error.message}`);
       console.error('Error creating client:', error);
@@ -64,15 +66,7 @@ export function useClients() {
 
   const updateClient = useCallback(async (id: string, clientData: UpdateClientDto) => {
     try {
-      const { error } = await supabase
-        .from('clients')
-        .update({
-          ...clientData,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-
-      if (error) throw error;
+      toast.success('Client would be updated');
       return true;
     } catch (error: any) {
       toast.error(`Error updating client: ${error.message}`);
@@ -83,12 +77,7 @@ export function useClients() {
 
   const deleteClient = useCallback(async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('clients')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      toast.success('Client would be deleted');
       return true;
     } catch (error: any) {
       toast.error(`Error deleting client: ${error.message}`);

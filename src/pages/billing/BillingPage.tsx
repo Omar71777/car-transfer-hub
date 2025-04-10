@@ -121,7 +121,6 @@ const BillingPage = () => {
         <Dialog 
           open={isViewDialogOpen} 
           onOpenChange={setIsViewDialogOpen}
-          className="sm:max-w-[800px]"
         >
           <DialogContent className="sm:max-w-[800px]">
             {viewBill && (

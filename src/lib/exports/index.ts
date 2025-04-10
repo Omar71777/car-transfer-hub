@@ -1,3 +1,4 @@
+
 /**
  * Export utilities index file
  * Re-exports all export-related functions for easy import
@@ -19,4 +20,5 @@ export { prepareShiftsForExport } from './shiftsExport';
 // Unpaid transfers exports
 export { prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from './unpaidExport';
 
-export * from './billExport';
+// Billing exports
+export { printBill, exportBillCsv } from './billExport';
