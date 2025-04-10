@@ -23,7 +23,7 @@ export function formatTransferForCalculations(transfer: any): MinimalTransfer {
     date: transfer.date,
     extraCharges: [],
     commission: Number(transfer.commission) || 0,
-    commissionType: transfer.commission_type || 'percentage'
+    commissionType: (transfer.commission_type || 'percentage') as 'percentage' | 'fixed'
   };
 }
 

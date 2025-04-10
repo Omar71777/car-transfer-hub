@@ -45,7 +45,7 @@ export function useDashboardData() {
           serviceType: transfer.service_type || 'transfer',
           price: Number(transfer.price),
           commission: Number(transfer.commission) || 0,
-          commissionType: transfer.commission_type || 'percentage',
+          commissionType: (transfer.commission_type || 'percentage') as 'percentage' | 'fixed',
           hours: transfer.hours || undefined,
           discountType: transfer.discount_type as 'percentage' | 'fixed' | null,
           discountValue: Number(transfer.discount_value) || 0,
