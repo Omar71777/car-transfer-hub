@@ -22,7 +22,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 export const AppSidebar = () => {
   const location = useLocation();
-  const { isAdmin, signOut, user } = useAuth();
+  const { isAdmin, signOut, user, profile } = useAuth();
   const isMobile = useIsMobile();
   
   const menuItems = [
@@ -38,6 +38,13 @@ export const AppSidebar = () => {
   const adminItems = [
     { icon: Users, label: 'Usuarios', path: '/admin/users' },
   ];
+
+  const getDisplayName = () => {
+    if (profile?.first_name && profile?.last_name) {
+      return `${profile.first_name} ${profile.last_name}`;
+    }
+    return profile?.email || user?.email || 'Usuario';
+  };
 
   return (
     <Sidebar>
@@ -106,7 +113,8 @@ export const AppSidebar = () => {
           {user ? (
             <div className="space-y-2">
               <div className="text-xs text-white/60 px-2">
-                Sesión: {user.email}
+                <div className="font-medium text-white">{getDisplayName()}</div>
+                <div className="text-xs text-white/60 mt-1">{profile?.role === 'admin' ? 'Administrador' : 'Usuario'}</div>
               </div>
               <Button 
                 variant="outline" 

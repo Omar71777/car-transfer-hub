@@ -5,14 +5,24 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Database } from '@/integrations/supabase/types';
 
+type UserProfile = {
+  id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  role: 'admin' | 'user';
+};
+
 type AuthContextType = {
   session: Session | null;
   user: User | null;
+  profile: UserProfile | null;
   isAdmin: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUserProfile: (data: Partial<UserProfile>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,8 +30,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return;
+      }
+
+      setProfile(data as UserProfile);
+      setIsAdmin(data?.role === 'admin');
+    } catch (error) {
+      console.error('Error in fetchUserProfile:', error);
+    }
+  };
 
   useEffect(() => {
     // Set up auth listener
@@ -32,8 +63,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Check admin status when session changes
         if (session?.user) {
-          setTimeout(() => checkAdminStatus(session.user.id), 0);
+          setTimeout(() => fetchUserProfile(session.user.id), 0);
         } else {
+          setProfile(null);
           setIsAdmin(false);
         }
       }
@@ -45,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        checkAdminStatus(session.user.id);
+        fetchUserProfile(session.user.id);
       }
       
       setIsLoading(false);
@@ -53,27 +85,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const checkAdminStatus = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching user role:', error);
-        setIsAdmin(false);
-        return;
-      }
-
-      setIsAdmin(data?.role === 'admin');
-    } catch (error) {
-      console.error('Error checking admin status:', error);
-      setIsAdmin(false);
-    }
-  };
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -115,14 +126,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUserProfile = async (data: Partial<UserProfile>) => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update(data)
+        .eq('id', user.id);
+
+      if (error) throw error;
+      
+      // Update local state
+      setProfile(prev => prev ? { ...prev, ...data } : null);
+      
+      toast.success('Perfil actualizado con éxito');
+    } catch (error: any) {
+      toast.error(`Error al actualizar el perfil: ${error.message}`);
+      throw error;
+    }
+  };
+
   const value = {
     session,
     user,
+    profile,
     isAdmin,
     isLoading,
     signIn,
     signUp,
     signOut,
+    updateUserProfile,
   };
 
   return (

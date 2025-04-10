@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ShiftCalendar } from '@/components/shifts/ShiftCalendar';
-import { DriverManagement } from '@/components/shifts/DriverManagement';
-import { Shift, Driver } from '@/types';
+import { Shift } from '@/types';
 import { generateId } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
 import { 
@@ -13,18 +12,12 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { CalendarClock, Clock } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, CalendarClock, Clock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 // Datos de ejemplo (simulando lo que vendría de Firebase)
-const dummyDrivers: Driver[] = [
-  { id: '1', name: 'Carlos Sánchez', email: 'carlos@example.com' },
-  { id: '2', name: 'María López', email: 'maria@example.com' },
-  { id: '3', name: 'Juan Pérez', email: 'juan@example.com' },
-  { id: '4', name: 'Ana Martínez', email: 'ana@example.com' }
-];
-
 const dummyShifts: Shift[] = [
   { id: '1', date: '2025-04-09', driverId: '1', isFullDay: false },
   { id: '2', date: '2025-04-10', driverId: '2', isFullDay: true },
@@ -34,8 +27,9 @@ const dummyShifts: Shift[] = [
 
 const ShiftsPage = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
-  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [drivers, setDrivers] = useState<any[]>([]);
   const { toast } = useToast();
+  const { isAdmin, profile } = useAuth();
   const [stats, setStats] = useState({
     total: 0,
     fullDay: 0,
@@ -43,8 +37,38 @@ const ShiftsPage = () => {
   });
   const [activeTab, setActiveTab] = useState('shifts');
 
+  // Fetch users (drivers) from Supabase
+  const fetchDrivers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email');
+      
+      if (error) throw error;
+      
+      // Transform to match the driver interface
+      const transformedDrivers = data.map(user => ({
+        id: user.id,
+        name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email,
+        email: user.email
+      }));
+      
+      setDrivers(transformedDrivers);
+    } catch (error) {
+      console.error('Error fetching drivers:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudieron cargar los conductores',
+        variant: 'destructive'
+      });
+    }
+  };
+
   // Cargar datos desde localStorage al montar el componente
   useEffect(() => {
+    // Fetch drivers (users) from Supabase
+    fetchDrivers();
+    
     // Cargar turnos
     const storedShifts = localStorage.getItem('shifts');
     if (storedShifts) {
@@ -52,70 +76,67 @@ const ShiftsPage = () => {
       setShifts(parsedShifts);
       
       // Calculate stats
-      setStats({
-        total: parsedShifts.length,
-        fullDay: parsedShifts.filter((s: Shift) => s.isFullDay).length,
-        halfDay: parsedShifts.filter((s: Shift) => !s.isFullDay).length
-      });
+      updateStats(parsedShifts);
     } else {
       setShifts(dummyShifts);
       localStorage.setItem('shifts', JSON.stringify(dummyShifts));
       
       // Set initial stats
-      setStats({
-        total: dummyShifts.length,
-        fullDay: dummyShifts.filter(s => s.isFullDay).length,
-        halfDay: dummyShifts.filter(s => !s.isFullDay).length
-      });
-    }
-
-    // Cargar conductores
-    const storedDrivers = localStorage.getItem('drivers');
-    if (storedDrivers) {
-      setDrivers(JSON.parse(storedDrivers));
-    } else {
-      setDrivers(dummyDrivers);
-      localStorage.setItem('drivers', JSON.stringify(dummyDrivers));
+      updateStats(dummyShifts);
     }
   }, []);
+
+  // Update stats based on shifts
+  const updateStats = (currentShifts: Shift[]) => {
+    setStats({
+      total: currentShifts.length,
+      fullDay: currentShifts.filter(s => s.isFullDay).length,
+      halfDay: currentShifts.filter(s => !s.isFullDay).length
+    });
+  };
 
   // Guardar turnos en localStorage cada vez que cambian
   useEffect(() => {
     if (shifts.length > 0) {
       localStorage.setItem('shifts', JSON.stringify(shifts));
-      
-      // Update stats when shifts change
-      setStats({
-        total: shifts.length,
-        fullDay: shifts.filter(s => s.isFullDay).length,
-        halfDay: shifts.filter(s => !s.isFullDay).length
-      });
+      updateStats(shifts);
     }
   }, [shifts]);
 
-  // Guardar conductores en localStorage cada vez que cambian
-  useEffect(() => {
-    if (drivers.length > 0) {
-      localStorage.setItem('drivers', JSON.stringify(drivers));
-    }
-  }, [drivers]);
-
   const handleAddShift = (shift: Omit<Shift, 'id'>) => {
+    // If not admin, only allow adding shifts for self
+    if (!isAdmin && profile && shift.driverId !== profile.id) {
+      toast({
+        title: "Acceso denegado",
+        description: "Solo puedes asignar turnos a ti mismo.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // Comprobar si ya existe un turno para esa fecha
     const existingShift = shifts.find(s => s.date === shift.date);
     
     if (existingShift) {
-      // Actualizar el turno existente
-      const updatedShifts = shifts.map(s => 
-        s.date === shift.date 
-          ? { ...s, driverId: shift.driverId, isFullDay: shift.isFullDay } 
-          : s
-      );
-      setShifts(updatedShifts);
-      toast({
-        title: "Turno actualizado",
-        description: "El turno ha sido actualizado exitosamente.",
-      });
+      // Actualizar el turno existente si es admin o su propio turno
+      if (isAdmin || existingShift.driverId === profile?.id) {
+        const updatedShifts = shifts.map(s => 
+          s.date === shift.date 
+            ? { ...s, driverId: shift.driverId, isFullDay: shift.isFullDay } 
+            : s
+        );
+        setShifts(updatedShifts);
+        toast({
+          title: "Turno actualizado",
+          description: "El turno ha sido actualizado exitosamente.",
+        });
+      } else {
+        toast({
+          title: "Acceso denegado",
+          description: "No puedes modificar turnos de otros usuarios.",
+          variant: "destructive"
+        });
+      }
     } else {
       // Crear un nuevo turno
       const newShift = {
@@ -131,53 +152,32 @@ const ShiftsPage = () => {
   };
 
   const handleDeleteShift = (id: string) => {
-    setShifts(shifts.filter(shift => shift.id !== id));
-    toast({
-      title: "Turno eliminado",
-      description: "El turno ha sido eliminado exitosamente.",
-    });
-  };
-
-  const handleAddDriver = (driver: Omit<Driver, 'id'>) => {
-    const newDriver = {
-      id: generateId(),
-      ...driver
-    };
-    setDrivers([...drivers, newDriver]);
-    toast({
-      title: "Conductor añadido",
-      description: "El conductor ha sido añadido exitosamente.",
-    });
-  };
-
-  const handleUpdateDriver = (updatedDriver: Driver) => {
-    const updatedDrivers = drivers.map(driver => 
-      driver.id === updatedDriver.id ? updatedDriver : driver
-    );
-    setDrivers(updatedDrivers);
-    toast({
-      title: "Conductor actualizado",
-      description: "Los datos del conductor han sido actualizados exitosamente.",
-    });
-  };
-
-  const handleDeleteDriver = (id: string) => {
-    // Check if driver has assigned shifts
-    const hasShifts = shifts.some(shift => shift.driverId === id);
+    // Get the shift to check if user can delete it
+    const shiftToDelete = shifts.find(s => s.id === id);
     
-    if (hasShifts) {
+    if (!shiftToDelete) {
       toast({
-        title: "No se puede eliminar",
-        description: "Este conductor tiene turnos asignados. Reasigna o elimina sus turnos primero.",
+        title: "Error",
+        description: "No se encontró el turno",
         variant: "destructive"
       });
       return;
     }
     
-    setDrivers(drivers.filter(driver => driver.id !== id));
+    // If not admin, only allow deleting own shifts
+    if (!isAdmin && profile && shiftToDelete.driverId !== profile.id) {
+      toast({
+        title: "Acceso denegado",
+        description: "Solo puedes eliminar tus propios turnos.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setShifts(shifts.filter(shift => shift.id !== id));
     toast({
-      title: "Conductor eliminado",
-      description: "El conductor ha sido eliminado exitosamente.",
+      title: "Turno eliminado",
+      description: "El turno ha sido eliminado exitosamente.",
     });
   };
 
@@ -228,30 +228,12 @@ const ShiftsPage = () => {
           </Card>
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="shifts">Calendario de Turnos</TabsTrigger>
-            <TabsTrigger value="drivers">Gestión de Conductores</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="shifts">
-            <ShiftCalendar 
-              shifts={shifts} 
-              drivers={drivers} 
-              onAddShift={handleAddShift} 
-              onDeleteShift={handleDeleteShift} 
-            />
-          </TabsContent>
-          
-          <TabsContent value="drivers">
-            <DriverManagement 
-              drivers={drivers}
-              onAddDriver={handleAddDriver}
-              onUpdateDriver={handleUpdateDriver}
-              onDeleteDriver={handleDeleteDriver}
-            />
-          </TabsContent>
-        </Tabs>
+        <ShiftCalendar 
+          shifts={shifts} 
+          drivers={drivers} 
+          onAddShift={handleAddShift} 
+          onDeleteShift={handleDeleteShift} 
+        />
       </div>
     </MainLayout>
   );
