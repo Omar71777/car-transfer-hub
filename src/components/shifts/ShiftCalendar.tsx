@@ -3,28 +3,12 @@ import React, { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Shift, Driver } from '@/types';
-import { addDays, format, isSameDay } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { CalendarClock, Check, Clock, User, Calendar as CalendarIcon } from 'lucide-react';
+import { isSameDay } from 'date-fns';
+import { CalendarClock } from 'lucide-react';
+import { ShiftDialog } from './calendar/ShiftDialog';
+import { ShiftDetails } from './calendar/ShiftDetails';
+import { ShiftCalendarDay } from './calendar/ShiftCalendarDay';
 
 interface ShiftCalendarProps {
   shifts: Shift[];
@@ -39,54 +23,22 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
   const [selectedDriver, setSelectedDriver] = useState<string>('');
   const [shiftType, setShiftType] = useState<string>('half');
 
-  // Función para encontrar el turno en una fecha específica
+  // Find shift for a specific date
   const findShiftByDate = (date: Date) => {
     return shifts.find(shift => isSameDay(new Date(shift.date), date));
   };
 
-  // Función para encontrar el nombre del conductor por ID
+  // Get driver name by ID
   const getDriverNameById = (id: string) => {
     const driver = drivers.find(d => d.id === id);
     return driver ? driver.name : 'Desconocido';
   };
 
-  // Función para renderizar el contenido del día en el calendario
-  const renderDay = (date: Date) => {
-    const shift = findShiftByDate(date);
-    if (!shift) return null;
-
-    const driverName = getDriverNameById(shift.driverId);
-    const shortName = driverName.split(' ')[0]; // Get first name only for display
-    
-    return (
-      <div className="flex flex-col items-center justify-center w-full h-full relative">
-        {shift.isFullDay ? (
-          <div className="absolute inset-0 rounded-md" style={{ backgroundColor: 'hsl(var(--shift-24h-light))' }}>
-            <div className="absolute top-0 left-0 right-0 px-1 py-0.5 rounded-t-md text-center font-medium truncate text-[10px] text-white" style={{ backgroundColor: 'hsl(var(--shift-24h))' }}>
-              {shortName}
-            </div>
-            <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--shift-24h))' }}>
-              <Clock className="h-2 w-2 text-white" />
-            </div>
-          </div>
-        ) : (
-          <div className="absolute inset-0 rounded-md" style={{ backgroundColor: 'hsl(var(--shift-12h-light))' }}>
-            <div className="absolute top-0 left-0 right-0 px-1 py-0.5 rounded-t-md text-center font-medium truncate text-[10px] text-white" style={{ backgroundColor: 'hsl(var(--shift-12h))' }}>
-              {shortName}
-            </div>
-            <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full flex items-center justify-center" style={{ backgroundColor: 'hsl(var(--shift-12h))' }}>
-              <Clock className="h-2 w-2 text-white" />
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
+  // Handle shift form submission
   const handleSubmit = () => {
     if (date && selectedDriver) {
       onAddShift({
-        date: format(date, 'yyyy-MM-dd'),
+        date: date.toISOString().split('T')[0],
         driverId: selectedDriver,
         isFullDay: shiftType === 'full',
       });
@@ -97,6 +49,7 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
     }
   };
 
+  // Handle deleting a shift
   const handleDeleteShift = (date: Date) => {
     const shift = findShiftByDate(date);
     if (shift) {
@@ -104,53 +57,14 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
     }
   };
 
-  const getSelectedShiftInfo = () => {
-    if (!date) return null;
+  // Get the selected shift's driver name
+  const getSelectedShiftDriverName = () => {
+    if (!date) return '';
     
     const shift = findShiftByDate(date);
-    if (!shift) return null;
+    if (!shift) return '';
     
-    const driverName = getDriverNameById(shift.driverId);
-    
-    return (
-      <Card className={`mt-4 border ${shift.isFullDay 
-        ? 'border-[hsl(var(--shift-24h))]' 
-        : 'border-[hsl(var(--shift-12h))]'}`}
-        style={{ 
-          backgroundColor: shift.isFullDay 
-            ? 'hsl(var(--shift-24h-light))' 
-            : 'hsl(var(--shift-12h-light))' 
-        }}
-      >
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="font-medium flex items-center gap-1.5">
-                <User className="h-4 w-4" />
-                <span>{driverName}</span>
-              </h4>
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
-                <Clock className="h-3.5 w-3.5" />
-                <span>{shift.isFullDay ? 'Turno de 24 horas' : 'Turno de 12 horas'}</span>
-              </p>
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
-                <CalendarIcon className="h-3.5 w-3.5" />
-                <span>{format(date, 'EEEE, d MMMM yyyy', { locale: es })}</span>
-              </p>
-            </div>
-            
-            <Button 
-              variant="destructive" 
-              size="sm"
-              onClick={() => handleDeleteShift(date)}
-              className="h-8"
-            >
-              Eliminar
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return getDriverNameById(shift.driverId);
   };
 
   return (
@@ -161,68 +75,13 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
       </CardHeader>
       <CardContent>
         <div className="mb-4">
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="w-full shine-effect bg-gradient-to-r from-primary to-accent text-white">
-                <CalendarClock className="mr-2 h-4 w-4" />
-                Asignar Nuevo Turno
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Asignar Nuevo Turno</DialogTitle>
-                <DialogDescription>
-                  Selecciona un conductor y tipo de turno para la fecha: {date ? format(date, 'dd/MM/yyyy', { locale: es }) : ''}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="driver">Conductor</Label>
-                  <Select value={selectedDriver} onValueChange={setSelectedDriver}>
-                    <SelectTrigger className="w-full" id="driver">
-                      <SelectValue placeholder="Selecciona un conductor" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {drivers.map((driver) => (
-                        <SelectItem key={driver.id} value={driver.id}>
-                          {driver.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Tipo de Turno</Label>
-                  <RadioGroup value={shiftType} onValueChange={setShiftType} className="flex flex-col space-y-1">
-                    <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
-                      <RadioGroupItem value="half" id="half" />
-                      <Label htmlFor="half" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--shift-12h))' }} />
-                        <span>Turno de 12 horas</span>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
-                      <RadioGroupItem value="full" id="full" />
-                      <Label htmlFor="full" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(var(--shift-24h))' }} />
-                        <span>Turno de 24 horas</span>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
-                <Button onClick={handleSubmit} disabled={!selectedDriver}>
-                  <Check className="mr-2 h-4 w-4" />
-                  Guardar
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            className="w-full shine-effect bg-gradient-to-r from-primary to-accent text-white"
+            onClick={() => setDialogOpen(true)}
+          >
+            <CalendarClock className="mr-2 h-4 w-4" />
+            Asignar Nuevo Turno
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-7 md:gap-6 items-start">
@@ -233,7 +92,13 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
               onSelect={setDate}
               className="rounded-md border"
               components={{
-                DayContent: ({ date }) => renderDay(date),
+                DayContent: ({ date }) => (
+                  <ShiftCalendarDay 
+                    date={date} 
+                    shifts={shifts} 
+                    getDriverNameById={getDriverNameById} 
+                  />
+                ),
               }}
             />
             
@@ -253,34 +118,28 @@ export function ShiftCalendar({ shifts, drivers, onAddShift, onDeleteShift }: Sh
             <div className="sticky top-4">
               <h3 className="font-medium mb-3">Detalles del Turno</h3>
               
-              {date && findShiftByDate(date) ? (
-                getSelectedShiftInfo()
-              ) : (
-                <Card className="bg-muted/50">
-                  <CardContent className="p-4 flex flex-col items-center justify-center min-h-[150px] text-center">
-                    <CalendarClock className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      {date 
-                        ? 'No hay turno asignado para esta fecha'
-                        : 'Selecciona una fecha en el calendario'}
-                    </p>
-                    
-                    {date && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="mt-4"
-                        onClick={() => setDialogOpen(true)}
-                      >
-                        Asignar Turno
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
+              <ShiftDetails 
+                date={date}
+                shift={date ? findShiftByDate(date) : undefined}
+                driverName={getSelectedShiftDriverName()}
+                onDeleteShift={handleDeleteShift}
+                onOpenDialog={() => setDialogOpen(true)}
+              />
             </div>
           </div>
         </div>
+
+        <ShiftDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          date={date}
+          selectedDriver={selectedDriver}
+          setSelectedDriver={setSelectedDriver}
+          shiftType={shiftType}
+          setShiftType={setShiftType}
+          drivers={drivers}
+          onSubmit={handleSubmit}
+        />
       </CardContent>
     </Card>
   );
