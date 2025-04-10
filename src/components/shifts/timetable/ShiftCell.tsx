@@ -45,6 +45,19 @@ export function ShiftCell({
   const formattedDate = format(day, 'dd/MM/yyyy');
   const formattedTime = `${hour}:00`;
 
+  // In vertical layout, show driver names more frequently but still avoid cluttering
+  const shouldShowDriverName = () => {
+    if (!driverInfo) return false;
+    
+    if (driverInfo.type === 'half') {
+      // For 12h shifts, show name every 4 hours
+      return hour % 4 === 0;
+    } else {
+      // For 24h and free days, show name every 6 hours
+      return hour % 6 === 0;
+    }
+  };
+
   return (
     <TooltipProvider>
       <Tooltip delayDuration={300}>
@@ -58,9 +71,7 @@ export function ShiftCell({
             onMouseOver={() => onMouseOver(day, hour)}
           >
             <div className="w-full h-6 flex items-center justify-center">
-              {driverInfo && (hour === 12 || hour === 22 || hour === 10 || hour === 0 || 
-                (driverInfo.type === 'half' ? hour % 6 === 0 : hour % 8 === 0)
-              ) && (
+              {driverInfo && shouldShowDriverName() && (
                 <span className="text-xs truncate max-w-[60px]">
                   {driverInfo.name}
                 </span>

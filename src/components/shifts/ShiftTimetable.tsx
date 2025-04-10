@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table } from '@/components/ui/table';
@@ -54,16 +53,13 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     getDriverDetails
   } = useShiftTimetable(shifts, drivers, onAddShift, onDeleteShift);
 
-  // Handle export of shifts to CSV
   const handleExportShifts = () => {
     const exportData = prepareShiftsForExport(shifts, drivers, startDate, endDate);
     
     if (exportData.length === 0) {
-      // No shifts to export
       return;
     }
     
-    // Format date range for filename
     const startDateFormatted = format(startDate, 'yyyyMMdd');
     const endDateFormatted = format(endDate, 'yyyyMMdd');
     const filename = `turnos_${startDateFormatted}_${endDateFormatted}.csv`;
@@ -95,7 +91,6 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
         </div>
       </CardHeader>
       <CardContent className="overflow-auto">
-        {/* Add filter component */}
         <TimetableFilters
           drivers={drivers}
           selectedDriver={filterDriver}
@@ -108,7 +103,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
         
         <div className="border rounded-md">
           <Table>
-            <TimetableHeader hours={hours} />
+            <TimetableHeader hours={hours} weekDays={weekDays} />
             <TimetableBody 
               weekDays={weekDays}
               hours={hours}
@@ -124,10 +119,8 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
           </Table>
         </div>
         
-        {/* Legend for driver colors */}
         <DriversLegend drivers={drivers} driverColors={driverColors} />
         
-        {/* Popover for shift creation/deletion */}
         <ShiftPopover
           isOpen={!!selectedCell}
           onOpenChange={handleOpenChange}

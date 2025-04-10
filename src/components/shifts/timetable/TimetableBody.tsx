@@ -1,7 +1,5 @@
 
 import React from 'react';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Shift } from '@/types';
 import { ShiftCell } from './ShiftCell';
@@ -19,7 +17,8 @@ interface TimetableBodyProps {
   getShiftForTimeSlot: (day: Date, hour: number, shifts: Shift[], getDriverDetails: any) => { 
     name: string; 
     color: string; 
-    shiftId: string 
+    shiftId: string;
+    type?: 'half' | 'full' | 'free';
   } | null;
 }
 
@@ -37,18 +36,18 @@ export function TimetableBody({
 }: TimetableBodyProps) {
   return (
     <TableBody>
-      {weekDays.map(day => (
-        <TableRow key={day.toString()}>
-          <TableCell className="font-medium">
-            {format(day, 'EEEE, d', { locale: es })}
+      {hours.map(hour => (
+        <TableRow key={hour}>
+          <TableCell className="font-medium whitespace-nowrap">
+            {hour}:00
           </TableCell>
           
-          {hours.map(hour => {
+          {weekDays.map(day => {
             const driverInfo = getShiftForTimeSlot(day, hour, filteredShifts, getDriverDetails);
             
             return (
               <ShiftCell
-                key={hour}
+                key={day.toString()}
                 day={day}
                 hour={hour}
                 driverInfo={driverInfo}
