@@ -12,7 +12,7 @@ import { TimetableFilters } from './timetable/TimetableFilters';
 import { useShiftTimetable } from '@/hooks/useShiftTimetable';
 import { getShiftForTimeSlot } from './timetable/ShiftUtils';
 import { Button } from '@/components/ui/button';
-import { downloadCSV, prepareShiftsForExport } from '@/lib/exportUtils';
+import { downloadCSV, prepareShiftsForExport } from '@/lib/exports';
 import { format } from 'date-fns';
 
 interface ShiftTimetableProps {

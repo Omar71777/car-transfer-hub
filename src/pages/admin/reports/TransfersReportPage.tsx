@@ -13,7 +13,7 @@ import {
 import { useTransfers } from '@/hooks/useTransfers';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { downloadCSV, printProfitReport } from '@/lib/exportUtils';
+import { downloadCSV, printProfitReport } from '@/lib/exports';
 import { Button } from '@/components/ui/button';
 import { FileDown, Printer } from 'lucide-react';
 
