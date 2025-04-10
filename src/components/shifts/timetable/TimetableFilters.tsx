@@ -64,14 +64,14 @@ export function TimetableFilters({
       {/* Driver filter */}
       <div className="flex-1">
         <Select 
-          value={selectedDriver || ""} 
-          onValueChange={(value) => onDriverChange(value === "" ? null : value)}
+          value={selectedDriver || "all"} 
+          onValueChange={(value) => onDriverChange(value === "all" ? null : value)}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Todos los conductores" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos los conductores</SelectItem>
+            <SelectItem value="all">Todos los conductores</SelectItem>
             {drivers.map(driver => (
               <SelectItem key={driver.id} value={driver.id}>{driver.name}</SelectItem>
             ))}
