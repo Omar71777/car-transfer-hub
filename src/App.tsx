@@ -36,7 +36,7 @@ const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
     return <Navigate to="/auth" />;
   }
 
-  return <MainLayout>{children}</MainLayout>;
+  return <>{children}</>;
 };
 
 // Admin route component
@@ -51,7 +51,7 @@ const AdminRoute = ({ children }: { children?: React.ReactNode }) => {
     return <Navigate to="/" />;
   }
 
-  return <MainLayout>{children}</MainLayout>;
+  return <>{children}</>;
 };
 
 function App() {
@@ -62,7 +62,7 @@ function App() {
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
 
-            <Route path="/" element={<ProtectedRoute />}>
+            <Route path="/" element={<MainLayout><ProtectedRoute /></MainLayout>}>
               <Route index element={<Index />} />
               <Route path="transfers" element={<TransfersPage />} />
               <Route path="transfers/new" element={<NewTransferPage />} />
