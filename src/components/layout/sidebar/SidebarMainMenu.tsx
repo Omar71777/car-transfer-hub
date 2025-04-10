@@ -8,7 +8,6 @@ import {
   BarChart, 
   Users, 
   Home,
-  FileText,
   CreditCard
 } from 'lucide-react';
 import { 
@@ -105,18 +104,6 @@ export function SidebarMainMenu({ className, ...props }: React.ComponentProps<ty
       </SidebarMenuItem>
       
       <SidebarGroupLabel>Informes</SidebarGroupLabel>
-      
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className={getMenuButtonClass('/admin/reports/transfers')}
-          asChild
-        >
-          <Link to="/admin/reports/transfers">
-            <FileText className="h-5 w-5" />
-            <span>Informe Transfers</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
       
       <SidebarMenuItem>
         <SidebarMenuButton
