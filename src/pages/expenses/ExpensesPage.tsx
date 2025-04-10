@@ -70,7 +70,7 @@ const ExpensesPage = () => {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="text-xs my-0 mx-[15px] py-[33px]">
+              <Button className="text-xs my-0 mx-[2px] py-[34px]">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Nuevo Gasto
               </Button>
