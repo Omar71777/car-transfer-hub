@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -15,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { Transfer } from '@/types';
 
 const transferSchema = z.object({
   date: z.string().min(1, { message: 'La fecha es requerida' }),
@@ -36,14 +36,22 @@ type TransferFormValues = z.infer<typeof transferSchema>;
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
-  defaultValues?: Partial<TransferFormValues>;
+  initialValues?: Transfer; // Add this prop to accept initial values
   isEditing?: boolean;
 }
 
-export function TransferForm({ onSubmit, defaultValues, isEditing = false }: TransferFormProps) {
-  const form = useForm<TransferFormValues>({
-    resolver: zodResolver(transferSchema),
-    defaultValues: defaultValues || {
+export function TransferForm({ onSubmit, initialValues, isEditing = false }: TransferFormProps) {
+  // Convert numeric values to string for the form
+  const getDefaultValues = () => {
+    if (initialValues) {
+      return {
+        ...initialValues,
+        price: initialValues.price.toString(),
+        commission: initialValues.commission.toString(),
+      };
+    }
+    
+    return {
       date: new Date().toISOString().split('T')[0],
       time: '',
       origin: '',
@@ -51,7 +59,12 @@ export function TransferForm({ onSubmit, defaultValues, isEditing = false }: Tra
       price: '',
       collaborator: '',
       commission: '',
-    },
+    };
+  };
+
+  const form = useForm<TransferFormValues>({
+    resolver: zodResolver(transferSchema),
+    defaultValues: getDefaultValues(),
   });
 
   function handleSubmit(values: TransferFormValues) {

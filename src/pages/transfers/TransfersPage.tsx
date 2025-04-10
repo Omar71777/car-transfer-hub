@@ -175,6 +175,7 @@ const TransfersPage = () => {
               <TransferForm 
                 onSubmit={handleEditSubmit} 
                 initialValues={editingTransfer}
+                isEditing={true}
               />
             )}
           </DialogContent>
