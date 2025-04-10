@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Transfer, Expense } from '@/types';
 import { isWithinInterval, parseISO, isValid } from 'date-fns';
@@ -143,7 +144,7 @@ export function useProfitsData() {
 
       // Extract unique collaborators
       const collaborators = [...new Set(loadedTransfers.map((t: Transfer) => t.collaborator))];
-      setUniqueCollaborators(collaborators);
+      setUniqueCollaborators(collaborators as string[]);
 
       // Load expenses from localStorage
       const storedExpenses = localStorage.getItem('expenses');
@@ -169,7 +170,7 @@ export function useProfitsData() {
 
       // Extract unique expense types
       const expenseTypes = [...new Set(loadedExpenses.map((e: Expense) => e.concept))];
-      setUniqueExpenseTypes(expenseTypes);
+      setUniqueExpenseTypes(expenseTypes as string[]);
       
       setLoading(false);
     };

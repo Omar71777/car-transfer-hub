@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Filter, X } from 'lucide-react';
 import { format } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 interface ProfitFiltersProps {
   collaborators: string[];
@@ -25,21 +25,21 @@ export function ProfitFilters({
   onFilterChange, 
   onResetFilters 
 }: ProfitFiltersProps) {
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [collaborator, setCollaborator] = useState<string>('');
   const [expenseType, setExpenseType] = useState<string>('');
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   const handleApplyFilters = () => {
     onFilterChange({
-      dateRange,
+      dateRange: dateRange || {},
       collaborator: collaborator || undefined,
       expenseType: expenseType || undefined
     });
   };
 
   const handleResetFilters = () => {
-    setDateRange({});
+    setDateRange(undefined);
     setCollaborator('');
     setExpenseType('');
     onResetFilters();
@@ -62,7 +62,7 @@ export function ProfitFilters({
                 className="w-full justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange.from ? (
+                {dateRange?.from ? (
                   dateRange.to ? (
                     <>
                       {format(dateRange.from, 'dd/MM/yyyy')} -{' '}
@@ -81,7 +81,7 @@ export function ProfitFilters({
                 mode="range"
                 selected={dateRange}
                 onSelect={(range) => {
-                  setDateRange(range || {});
+                  setDateRange(range);
                   if (range?.to) {
                     setDatePopoverOpen(false);
                   }
