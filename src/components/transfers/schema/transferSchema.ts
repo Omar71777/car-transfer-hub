@@ -15,8 +15,6 @@ export const transferSchema = z.object({
     (val) => !isNaN(Number(val)) && Number(val) >= 0, 
     { message: 'La comisión debe ser un número positivo o cero' }
   ),
-  paymentStatus: z.enum(['cobrado', 'a_cobrar']).optional(),
-  paymentCollaborator: z.string().optional(),
 });
 
 export type TransferFormValues = z.infer<typeof transferSchema>;

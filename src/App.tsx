@@ -1,92 +1,90 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./contexts/auth";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Index from "./pages/Index";
+import AuthPage from "./pages/auth/AuthPage";
+import UsersPage from "./pages/admin/UsersPage";
+import TransfersPage from "./pages/transfers/TransfersPage";
+import NewTransferPage from "./pages/transfers/NewTransferPage";
+import ExpensesPage from "./pages/expenses/ExpensesPage";
+import ProfitsPage from "./pages/profits/ProfitsPage";
+import ShiftsPage from "./pages/shifts/ShiftsPage";
+import CollaboratorsPage from "./pages/collaborators/CollaboratorsPage";
+import ProfilePage from "./pages/profile/ProfilePage";
+import NotFound from "./pages/NotFound";
+import TransfersReportPage from "./pages/admin/reports/TransfersReportPage";
+import AnalyticsReportPage from "./pages/admin/reports/AnalyticsReportPage";
 
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from '@/components/ui/sonner';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { useAuth } from '@/contexts/auth';
-import { SupabaseAuthProvider } from '@/integrations/supabase/SupabaseAuthProvider';
+const queryClient = new QueryClient();
 
-// Import pages
-import Index from '@/pages/Index';
-import AuthPage from '@/pages/auth/AuthPage';
-import TransfersPage from '@/pages/transfers/TransfersPage';
-import NewTransferPage from '@/pages/transfers/NewTransferPage';
-import ExpensesPage from '@/pages/expenses/ExpensesPage';
-import ProfitsPage from '@/pages/profits/ProfitsPage';
-import CollaboratorsPage from '@/pages/collaborators/CollaboratorsPage';
-import ProfilePage from '@/pages/profile/ProfilePage';
-import UsersPage from '@/pages/admin/UsersPage';
-import TransfersReportPage from '@/pages/admin/reports/TransfersReportPage';
-import AnalyticsReportPage from '@/pages/admin/reports/AnalyticsReportPage';
-import NotFound from '@/pages/NotFound';
-import PendingTransfersReportPage from '@/pages/transfers/PendingTransfersReportPage';
-
-// Import components
-import { MainLayout } from '@/components/layout/MainLayout';
-
-// Protected route component
-const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
-  const { profile, isLoading } = useAuth();
-
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+  
   if (isLoading) {
-    return <div>Cargando...</div>; // Show a loading indicator
+    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
   }
-
-  if (!profile) {
+  
+  if (!user) {
     return <Navigate to="/auth" />;
   }
-
+  
   return <>{children}</>;
 };
 
-// Admin route component
-const AdminRoute = ({ children }: { children?: React.ReactNode }) => {
-  const { profile, isAdmin, isLoading } = useAuth();
-
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAdmin, isLoading } = useAuth();
+  
   if (isLoading) {
-    return <div>Cargando...</div>; // Show a loading indicator
+    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
   }
-
-  if (!profile || !isAdmin) {
+  
+  if (!isAdmin) {
     return <Navigate to="/" />;
   }
-
+  
   return <>{children}</>;
 };
 
-function App() {
-  return (
-    <BrowserRouter>
-      <SupabaseAuthProvider>
-        <TooltipProvider>
-          <Routes>
-            <Route path="/auth" element={<AuthPage />} />
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/auth" element={<AuthPage />} />
+    
+    <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+    <Route path="/transfers" element={<ProtectedRoute><TransfersPage /></ProtectedRoute>} />
+    <Route path="/transfers/new" element={<ProtectedRoute><NewTransferPage /></ProtectedRoute>} />
+    <Route path="/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
+    <Route path="/profits" element={<ProtectedRoute><ProfitsPage /></ProtectedRoute>} />
+    <Route path="/shifts" element={<ProtectedRoute><ShiftsPage /></ProtectedRoute>} />
+    <Route path="/collaborators" element={<ProtectedRoute><CollaboratorsPage /></ProtectedRoute>} />
+    <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+    
+    <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
+    
+    <Route path="/admin/reports/transfers" element={<ProtectedRoute><TransfersReportPage /></ProtectedRoute>} />
+    <Route path="/admin/reports/analytics" element={<ProtectedRoute><AnalyticsReportPage /></ProtectedRoute>} />
+    
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<ProtectedRoute><Index /></ProtectedRoute>} />
-              <Route path="transfers" element={<ProtectedRoute><TransfersPage /></ProtectedRoute>} />
-              <Route path="transfers/new" element={<ProtectedRoute><NewTransferPage /></ProtectedRoute>} />
-              <Route path="transfers/pending" element={<ProtectedRoute><PendingTransfersReportPage /></ProtectedRoute>} />
-              <Route path="expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
-              <Route path="profits" element={<ProtectedRoute><ProfitsPage /></ProtectedRoute>} />
-              <Route path="collaborators" element={<ProtectedRoute><CollaboratorsPage /></ProtectedRoute>} />
-              <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-              
-              {/* Admin Routes */}
-              <Route path="admin">
-                <Route path="users" element={<AdminRoute><UsersPage /></AdminRoute>} />
-                <Route path="reports/transfers" element={<AdminRoute><TransfersReportPage /></AdminRoute>} />
-                <Route path="reports/analytics" element={<AdminRoute><AnalyticsReportPage /></AdminRoute>} />
-              </Route>
-            </Route>
-
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-        </TooltipProvider>
-      </SupabaseAuthProvider>
-    </BrowserRouter>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <AppRoutes />
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
 
 export default App;

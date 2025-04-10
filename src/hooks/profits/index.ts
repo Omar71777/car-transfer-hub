@@ -11,8 +11,6 @@ export function useProfitsData(): ProfitsData {
     transfers, 
     expenses, 
     loading, 
-    isLoading,
-    fetchTransfers, 
     uniqueCollaborators,
     uniqueExpenseTypes 
   } = useDataLoader();

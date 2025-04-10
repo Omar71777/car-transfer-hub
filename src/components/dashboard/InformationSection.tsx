@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, InfoIcon, Car, FileText, DollarSign } from 'lucide-react';
+import { ArrowRight, InfoIcon, Car, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function InformationSection() {
@@ -44,13 +44,6 @@ export function InformationSection() {
                 Consulta tus informes financieros en la sección de ganancias.
               </AlertDescription>
             </Alert>
-            
-            <Alert className="bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200">
-              <DollarSign className="h-4 w-4 text-yellow-500" />
-              <AlertDescription>
-                Consulta los transfers pendientes de cobro por colaborador.
-              </AlertDescription>
-            </Alert>
           </div>
           
           <div className="text-center py-4 mt-2">
@@ -64,9 +57,6 @@ export function InformationSection() {
               </Button>
               <Button asChild variant="outline">
                 <Link to="/profits">Ver Ganancias</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/transfers/pending">Transfers A Cobrar</Link>
               </Button>
             </div>
           </div>
