@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { format, startOfWeek, addDays, isSameDay, isAfter, isBefore, isSameHour } from 'date-fns';
+import { format, startOfWeek, endOfWeek, addDays, isSameDay, isAfter, isBefore, isSameHour } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,7 +10,8 @@ import { ShiftCell } from './timetable/ShiftCell';
 import { DriversLegend } from './timetable/DriversLegend';
 import { ShiftPopover } from './timetable/ShiftPopover';
 import { getShiftForTimeSlot } from './timetable/ShiftUtils';
-import { GrabIcon, MoveHorizontalIcon } from 'lucide-react';
+import { TimetableFilters } from './timetable/TimetableFilters';
+import { MoveHorizontalIcon } from 'lucide-react';
 
 interface ShiftTimetableProps {
   shifts: Shift[];
@@ -28,12 +29,39 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
   const [dragStart, setDragStart] = useState<{day: Date, hour: number} | null>(null);
   const [dragEnd, setDragEnd] = useState<{day: Date, hour: number} | null>(null);
   
+  // Filter states
+  const [filterDriver, setFilterDriver] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<Date>(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [endDate, setEndDate] = useState<Date>(() => endOfWeek(new Date(), { weekStartsOn: 1 }));
+  
   // Generate hours for columns (0-23)
   const hours = Array.from({ length: 24 }, (_, i) => i);
   
-  // Generate days of the week
-  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start on Monday
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  // Generate days of the week based on selected date range
+  const weekDays = useMemo(() => {
+    const days = [];
+    let currentDay = new Date(startDate);
+    
+    while (currentDay <= endDate) {
+      days.push(new Date(currentDay));
+      currentDay = addDays(currentDay, 1);
+    }
+    
+    return days;
+  }, [startDate, endDate]);
+
+  // Filter shifts based on selected driver and date range
+  const filteredShifts = useMemo(() => {
+    return shifts.filter(shift => {
+      const shiftDate = new Date(shift.date);
+      const isInDateRange = shiftDate >= startDate && shiftDate <= endDate;
+      
+      if (!isInDateRange) return false;
+      if (filterDriver && shift.driverId !== filterDriver) return false;
+      
+      return true;
+    });
+  }, [shifts, filterDriver, startDate, endDate]);
 
   // Helper to check if a cell is within the current drag selection
   const isInSelectionRange = (day: Date, hour: number) => {
@@ -87,7 +115,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     if (isDragging) return;
     
     // Check if there's already a shift for this cell
-    const existingShift = getShiftForTimeSlot(day, hour, shifts, getDriverDetails);
+    const existingShift = getShiftForTimeSlot(day, hour, filteredShifts, getDriverDetails);
     
     // Always set the selected cell
     setSelectedCell({ day, hour });
@@ -213,6 +241,22 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
     });
   };
 
+  // Handle filter changes
+  const handleDriverFilterChange = (driverId: string | null) => {
+    setFilterDriver(driverId);
+  };
+
+  const handleDateRangeChange = (start: Date, end: Date) => {
+    setStartDate(start);
+    setEndDate(end);
+  };
+
+  const resetFilters = () => {
+    setFilterDriver(null);
+    setStartDate(startOfWeek(new Date(), { weekStartsOn: 1 }));
+    setEndDate(endOfWeek(new Date(), { weekStartsOn: 1 }));
+  };
+
   return (
     <Card className="glass-card">
       <CardHeader>
@@ -225,6 +269,17 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
         </CardDescription>
       </CardHeader>
       <CardContent className="overflow-auto">
+        {/* Add filter component */}
+        <TimetableFilters
+          drivers={drivers}
+          selectedDriver={filterDriver}
+          onDriverChange={handleDriverFilterChange}
+          startDate={startDate}
+          endDate={endDate}
+          onDateRangeChange={handleDateRangeChange}
+          onResetFilters={resetFilters}
+        />
+        
         <div className="border rounded-md">
           <Table>
             <TableHeader>
@@ -245,7 +300,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
                   </TableCell>
                   
                   {hours.map(hour => {
-                    const driverInfo = getShiftForTimeSlot(day, hour, shifts, getDriverDetails);
+                    const driverInfo = getShiftForTimeSlot(day, hour, filteredShifts, getDriverDetails);
                     
                     return (
                       <ShiftCell
@@ -276,7 +331,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
           onOpenChange={handleOpenChange}
           selectedCell={selectedCell}
           existingShift={selectedCell 
-            ? getShiftForTimeSlot(selectedCell.day, selectedCell.hour, shifts, getDriverDetails) 
+            ? getShiftForTimeSlot(selectedCell.day, selectedCell.hour, filteredShifts, getDriverDetails) 
             : null}
           selectedDriver={selectedDriver}
           setSelectedDriver={setSelectedDriver}

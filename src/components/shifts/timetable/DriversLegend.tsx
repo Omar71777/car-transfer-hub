@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Driver } from '@/types';
-import { GripHorizontal } from 'lucide-react';
+import { GripHorizontal, FilterIcon } from 'lucide-react';
 
 interface DriversLegendProps {
   drivers: Driver[];
@@ -20,9 +20,16 @@ export function DriversLegend({ drivers, driverColors }: DriversLegendProps) {
         ))}
       </div>
       
-      <div className="text-xs text-muted-foreground flex items-center">
-        <GripHorizontal className="h-3 w-3 mr-1" />
-        <span>Consejo: Arrastra para seleccionar varios turnos a la vez</span>
+      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+        <div className="flex items-center">
+          <GripHorizontal className="h-3 w-3 mr-1" />
+          <span>Consejo: Arrastra para seleccionar varios turnos a la vez</span>
+        </div>
+        
+        <div className="flex items-center">
+          <FilterIcon className="h-3 w-3 mr-1" />
+          <span>Usa los filtros para visualizar turnos específicos</span>
+        </div>
       </div>
     </div>
   );
