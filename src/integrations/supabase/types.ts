@@ -294,6 +294,7 @@ export type Database = {
           destination: string
           discount_type: string | null
           discount_value: number | null
+          hours: number | null
           id: string
           origin: string
           payment_status: string | null
@@ -314,6 +315,7 @@ export type Database = {
           destination: string
           discount_type?: string | null
           discount_value?: number | null
+          hours?: number | null
           id?: string
           origin: string
           payment_status?: string | null
@@ -334,6 +336,7 @@ export type Database = {
           destination?: string
           discount_type?: string | null
           discount_value?: number | null
+          hours?: number | null
           id?: string
           origin?: string
           payment_status?: string | null

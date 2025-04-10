@@ -51,7 +51,7 @@ export async function createTransfer(user: any, transferData: any) {
       destination: transferData.serviceType === 'transfer' 
         ? transferData.destination?.toLowerCase() 
         : 'N/A', // Default value for dispo service
-      hours: transferData.hours || null,
+      hours: transferData.serviceType === 'dispo' ? Number(transferData.hours) : null,
       price: transferData.price,
       discount_type: transferData.discountType,
       discount_value: transferData.discountValue || 0,
