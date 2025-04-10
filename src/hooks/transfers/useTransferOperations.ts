@@ -24,7 +24,7 @@ export function useTransferOperations(user: any) {
           commission: transferData.commission,
           commission_type: transferData.commissionType,
           payment_status: transferData.paymentStatus,
-          client_id: transferData.clientId
+          client_id: transferData.clientId // This is correct - converting camelCase to snake_case
         })
         .select('id')
         .single();
@@ -45,12 +45,14 @@ export function useTransferOperations(user: any) {
     if (!user) return false;
     
     try {
-      const { expenses, commissionType, ...transferUpdateData } = transferData;
+      const { expenses, commissionType, clientId, paymentStatus, ...rest } = transferData;
       
-      const { paymentStatus, ...rest } = transferUpdateData;
+      // Convert camelCase to snake_case for database fields
       const dataForDb = {
         ...rest,
+        commission_type: commissionType,
         payment_status: paymentStatus,
+        client_id: clientId, // Fix: use client_id instead of clientId for database
         origin: rest.origin?.toLowerCase(),
         destination: rest.destination?.toLowerCase(),
         collaborator: rest.collaborator?.toLowerCase(),
