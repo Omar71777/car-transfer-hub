@@ -34,6 +34,11 @@ const NewTransferPage = () => {
       }
     }
     
+    // Process commission value
+    if (values.commission === '' || values.commission === undefined) {
+      values.commission = 0;
+    }
+    
     const transferId = await createTransfer(values);
     
     if (transferId) {

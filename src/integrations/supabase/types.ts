@@ -253,6 +253,7 @@ export type Database = {
           client_id: string | null
           collaborator: string | null
           commission: number
+          commission_type: string | null
           created_at: string
           date: string
           destination: string
@@ -269,6 +270,7 @@ export type Database = {
           client_id?: string | null
           collaborator?: string | null
           commission: number
+          commission_type?: string | null
           created_at?: string
           date: string
           destination: string
@@ -285,6 +287,7 @@ export type Database = {
           client_id?: string | null
           collaborator?: string | null
           commission?: number
+          commission_type?: string | null
           created_at?: string
           date?: string
           destination?: string
