@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, Plus } from 'lucide-react';
+import { Edit, Trash2, Plus, CheckCircle, XCircle } from 'lucide-react';
 import { Transfer } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 
@@ -33,13 +33,14 @@ export function TransfersTable({ transfers, onEdit, onDelete, onAddExpense }: Tr
             <TableHead className="text-right">Precio</TableHead>
             <TableHead>Colaborador</TableHead>
             <TableHead className="text-right">Comisión</TableHead>
+            <TableHead className="text-center">Estado</TableHead>
             <TableHead className="text-center">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {transfers.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+              <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                 No hay transfers registrados
               </TableCell>
             </TableRow>
@@ -53,6 +54,19 @@ export function TransfersTable({ transfers, onEdit, onDelete, onAddExpense }: Tr
                 <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
                 <TableCell>{transfer.collaborator}</TableCell>
                 <TableCell className="text-right">{transfer.commission}%</TableCell>
+                <TableCell className="text-center">
+                  {transfer.paymentStatus === 'paid' ? (
+                    <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-800">
+                      <CheckCircle className="h-4 w-4" />
+                      <span className="text-xs font-medium">Cobrado</span>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-100 text-orange-800">
+                      <XCircle className="h-4 w-4" />
+                      <span className="text-xs font-medium">Pendiente</span>
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell>
                   <div className="flex justify-center space-x-2">
                     <Button variant="ghost" size="icon" onClick={() => onEdit(transfer)}>

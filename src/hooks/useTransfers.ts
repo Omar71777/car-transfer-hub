@@ -27,6 +27,7 @@ export function useTransfers() {
           price,
           collaborator,
           commission,
+          payment_status,
           expenses (
             id,
             date,
@@ -50,6 +51,7 @@ export function useTransfers() {
         price: Number(transfer.price),
         collaborator: transfer.collaborator || '',
         commission: Number(transfer.commission),
+        paymentStatus: transfer.payment_status || 'pending',
         expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
           transferId: transfer.id,
@@ -86,7 +88,8 @@ export function useTransfers() {
           destination: transferData.destination,
           price: transferData.price,
           collaborator: transferData.collaborator,
-          commission: transferData.commission
+          commission: transferData.commission,
+          payment_status: transferData.paymentStatus
         })
         .select('id')
         .single();
@@ -110,13 +113,18 @@ export function useTransfers() {
       // Remove 'expenses' field if it exists as we don't want to update it
       const { expenses, ...transferUpdateData } = transferData;
       
+      // Convert paymentStatus to payment_status for the database
+      const { paymentStatus, ...rest } = transferUpdateData;
+      const dataForDb = {
+        ...rest,
+        payment_status: paymentStatus,
+        updated_at: new Date().toISOString()
+      };
+      
       // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('transfers')
-        .update({
-          ...transferUpdateData,
-          updated_at: new Date().toISOString()
-        })
+        .update(dataForDb)
         .eq('id', id);
 
       if (error) {

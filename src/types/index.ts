@@ -9,6 +9,7 @@ export interface Transfer {
   collaborator: string;
   commission: number;
   expenses: Expense[];
+  paymentStatus: 'paid' | 'pending';
 }
 
 export interface Expense {

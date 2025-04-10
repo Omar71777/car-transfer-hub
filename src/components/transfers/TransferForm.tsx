@@ -13,6 +13,7 @@ import { DateTimeFields } from './form-fields/DateTimeFields';
 import { LocationFields } from './form-fields/LocationFields';
 import { PricingFields } from './form-fields/PricingFields';
 import { CollaboratorField } from './form-fields/CollaboratorField';
+import { PaymentStatusField } from './form-fields/PaymentStatusField';
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
@@ -41,6 +42,7 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
       price: '',
       collaborator: '',
       commission: '',
+      paymentStatus: 'pending',
     };
   };
 
@@ -79,6 +81,7 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
             <LocationFields form={form} />
             <PricingFields form={form} />
             <CollaboratorField form={form} collaborators={collaborators} />
+            <PaymentStatusField form={form} />
 
             <Button type="submit" className="w-full">
               {isEditing ? 'Actualizar Transfer' : 'Registrar Transfer'}
