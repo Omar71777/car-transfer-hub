@@ -1,46 +1,18 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Transfer } from '@/types';
 import { useCollaborators } from '@/hooks/useCollaborators';
-
-const transferSchema = z.object({
-  date: z.string().min(1, { message: 'La fecha es requerida' }),
-  time: z.string().optional(),
-  origin: z.string().min(1, { message: 'El origen es requerido' }),
-  destination: z.string().min(1, { message: 'El destino es requerido' }),
-  price: z.string().min(1, { message: 'El precio es requerido' }).refine(
-    (val) => !isNaN(Number(val)) && Number(val) > 0, 
-    { message: 'El precio debe ser un número positivo' }
-  ),
-  collaborator: z.string().optional(),
-  commission: z.string().min(1, { message: 'La comisión es requerida' }).refine(
-    (val) => !isNaN(Number(val)) && Number(val) >= 0, 
-    { message: 'La comisión debe ser un número positivo o cero' }
-  ),
-});
-
-type TransferFormValues = z.infer<typeof transferSchema>;
+import { transferSchema, TransferFormValues } from './schema/transferSchema';
+import { DateTimeFields } from './form-fields/DateTimeFields';
+import { LocationFields } from './form-fields/LocationFields';
+import { PricingFields } from './form-fields/PricingFields';
+import { CollaboratorField } from './form-fields/CollaboratorField';
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
@@ -103,125 +75,10 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Fecha</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hora (opcional)</FormLabel>
-                    <FormControl>
-                      <Input type="time" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="origin"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Origen</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Aeropuerto de Ibiza" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="destination"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Destino</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Hotel Ushuaïa" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Precio (€)</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="0" step="0.01" placeholder="120.00" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="commission"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Comisión (%)</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="0" max="100" step="0.1" placeholder="10.0" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="collaborator"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Colaborador</FormLabel>
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un colaborador" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="">Sin colaborador</SelectItem>
-                      {collaborators.map((collaborator) => (
-                        <SelectItem key={collaborator.id} value={collaborator.name}>
-                          {collaborator.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <DateTimeFields form={form} />
+            <LocationFields form={form} />
+            <PricingFields form={form} />
+            <CollaboratorField form={form} collaborators={collaborators} />
 
             <Button type="submit" className="w-full">
               {isEditing ? 'Actualizar Transfer' : 'Registrar Transfer'}
