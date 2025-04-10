@@ -19,6 +19,7 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
   const discountType = watch('discountType');
   const extraCharges = watch('extraCharges') || [];
   const serviceType = watch('serviceType');
+  const collaboratorValue = watch('collaborator');
 
   // Calculate total extra charges
   const totalExtraCharges = extraCharges.reduce((sum: number, charge: any) => {
@@ -80,7 +81,7 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
               <FormItem>
                 <Select 
                   onValueChange={(value) => {
-                    field.onChange(value === "" ? null : value);
+                    field.onChange(value === "no-discount" ? null : value);
                     console.log('Selected discount type:', value);
                   }} 
                   value={field.value || "no-discount"}
@@ -172,7 +173,7 @@ export function PricingStep({ clients, collaborators, formState }: PricingStepPr
                     field.onChange(value === 'yes' ? '' : 'none');
                     console.log('Collaborator selection:', value, 'Field value will be:', value === 'yes' ? '' : 'none');
                   }}
-                  value={field.value !== '' && field.value !== 'none' ? 'yes' : 'no'}
+                  value={field.value !== 'none' ? 'yes' : 'no'}
                   className="flex flex-col space-y-1"
                 >
                   <div className="flex items-center space-x-2">

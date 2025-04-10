@@ -35,7 +35,8 @@ export const useTransferFormNavigation = (
       case 'extraCharges':
         return []; // Extra charges are optional
       case 'collaborator':
-        return ['collaborator']; // Only validate collaborator selection, commission is optional
+        // Use "" for empty value or "none" for no collaborator to allow proper validation
+        return ['collaborator']; 
       default:
         return [];
     }
