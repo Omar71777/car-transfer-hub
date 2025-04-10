@@ -74,7 +74,7 @@ const TransfersPage = () => {
             <p className="text-muted-foreground text-left">Gestiona todos tus servicios de transfer</p>
           </div>
           <Button asChild>
-            <Link to="/transfers/new">
+            <Link to="/transfers/new" className="mx-0 my-0 py-[42px]">
               <PlusCircle className="mr-2 h-4 w-4" />
               Nuevo Transfer
             </Link>
