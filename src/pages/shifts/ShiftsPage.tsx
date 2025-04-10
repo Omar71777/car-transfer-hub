@@ -5,7 +5,8 @@ import { ShiftStats } from '@/components/shifts/ShiftStats';
 import { ShiftTimetable } from '@/components/shifts/ShiftTimetable';
 import { useShifts } from '@/hooks/useShifts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, CalendarIcon } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ShiftsPage = () => {
   const { shifts, drivers, stats, handleAddShift, handleDeleteShift } = useShifts();
@@ -26,6 +27,29 @@ const ShiftsPage = () => {
             El sistema permite que un nuevo turno comience exactamente a la hora en que finaliza el anterior, sin solapamiento.
           </AlertDescription>
         </Alert>
+        
+        {/* Example image of desired layout */}
+        <Card className="mb-6 glass-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5 text-primary" />
+              Diseño de Planificador
+            </CardTitle>
+            <CardDescription>
+              El planificador muestra días como columnas y horas como filas para una visualización clara
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-center">
+              <img 
+                src="/lovable-uploads/edcc9b22-f51b-443a-b987-66de8a970664.png" 
+                alt="Diseño del planificador de turnos" 
+                className="max-w-full h-auto rounded-md border"
+                style={{ maxHeight: '300px' }}
+              />
+            </div>
+          </CardContent>
+        </Card>
         
         {/* Dashboard stats for shifts */}
         <ShiftStats stats={stats} />

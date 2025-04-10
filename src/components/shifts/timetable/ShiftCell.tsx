@@ -40,7 +40,11 @@ function ShiftCellComponent({
       // Add visual indicator for shift boundary hours (start and end hours)
       const isShiftBoundary = driverInfo.startHour === hour || 
                              (driverInfo.endHour && driverInfo.endHour % 24 === hour);
-      const boundaryClass = isShiftBoundary ? 'border-l-4 border-l-primary/70' : '';
+      
+      // For horizontal layout, we highlight boundaries differently - use border-t for start and border-b for end
+      const boundaryClass = isShiftBoundary 
+        ? (driverInfo.startHour === hour ? 'border-t-2 border-t-primary/70' : 'border-b-2 border-b-primary/70')
+        : '';
       
       return `${shiftStyleClass} ${boundaryClass} text-white ring-offset-background ring-offset-1 hover:opacity-100 hover:ring-2 hover:ring-primary/50 hover:ring-inset transition-all`;
     } else if (isInSelectionRange) {
@@ -52,27 +56,21 @@ function ShiftCellComponent({
 
   // Get formatted date and time for tooltip
   const formattedDate = format(day, 'dd/MM/yyyy');
-  const formattedTime = `${hour}:00`;
+  const formattedTime = `${hour.toString().padStart(2, '0')}:00`;
 
-  // In vertical layout, show driver names more frequently but still avoid cluttering
+  // In horizontal layout, we always show the driver name if there's a shift
   const shouldShowDriverName = () => {
-    if (!driverInfo) return false;
-    
-    if (driverInfo.type === 'half') {
-      // For 12h shifts, show name every 3 hours
-      return hour % 3 === 0;
-    } else {
-      // For 24h and free days, show name every 4 hours
-      return hour % 4 === 0;
-    }
+    return !!driverInfo;
   };
 
   // Create formatted time range for the tooltip
   const getTimeRange = () => {
     if (!driverInfo || !driverInfo.startHour) return formattedTime;
     
-    const start = `${driverInfo.startHour}:00`;
-    const end = driverInfo.endHour ? `${driverInfo.endHour % 24}:00` : `${(driverInfo.startHour + 12) % 24}:00`;
+    const start = `${driverInfo.startHour.toString().padStart(2, '0')}:00`;
+    const end = driverInfo.endHour 
+      ? `${(driverInfo.endHour % 24).toString().padStart(2, '0')}:00` 
+      : `${((driverInfo.startHour + 12) % 24).toString().padStart(2, '0')}:00`;
     
     return `${start} - ${end}`;
   };
@@ -92,7 +90,7 @@ function ShiftCellComponent({
           >
             <div className="w-full h-7 flex items-center justify-center">
               {driverInfo && shouldShowDriverName() && (
-                <span className="text-xs font-medium truncate max-w-[60px] px-0.5">
+                <span className="text-xs font-medium truncate max-w-[80px] px-0.5">
                   {driverInfo.name}
                 </span>
               )}

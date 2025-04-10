@@ -1,49 +1,40 @@
 
-import React, { memo } from 'react';
+import React from 'react';
 import { TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
 
 interface TimetableHeaderProps {
   hours: number[];
   weekDays: Date[];
 }
 
-function TimetableHeaderComponent({ hours, weekDays }: TimetableHeaderProps) {
-  // Format weekday name with first letter capitalized
-  const formatWeekday = (date: Date) => {
-    const weekday = format(date, 'EEEE', { locale: es });
-    return weekday.charAt(0).toUpperCase() + weekday.slice(1);
-  };
-
+export function TimetableHeader({ hours, weekDays }: TimetableHeaderProps) {
   return (
-    <TableHeader className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
+    <TableHeader>
       <TableRow>
-        <TableHead className="w-16 py-2 text-center font-medium">Hora</TableHead>
-        {weekDays.map(day => {
-          const isToday = new Date().toDateString() === day.toDateString();
-          return (
-            <TableHead 
-              key={day.toString()} 
-              className={cn(
-                "text-center p-1 whitespace-nowrap",
-                isToday ? "bg-primary/10" : "bg-muted/30"
-              )}
-            >
-              <div className={cn("font-medium", isToday && "text-primary")}>
-                {formatWeekday(day)}
-              </div>
-              <div className="text-sm font-normal">
-                {format(day, 'd MMM', { locale: es })}
-              </div>
-            </TableHead>
-          );
-        })}
+        {/* First cell is empty/corner cell */}
+        <TableHead className="text-center font-semibold sticky left-0 bg-background z-10 min-w-[70px] border-r">
+          Hora
+        </TableHead>
+        
+        {/* Display days as column headers */}
+        {weekDays.map((day) => (
+          <TableHead 
+            key={day.toString()} 
+            className={`text-center whitespace-nowrap py-3 min-w-[130px] ${
+              day.getDay() === 0 || day.getDay() === 6 ? 'bg-muted/30' : ''
+            }`}
+          >
+            <div className="font-medium">
+              {format(day, 'EEEE', { locale: es })}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {format(day, 'd MMM', { locale: es })}
+            </div>
+          </TableHead>
+        ))}
       </TableRow>
     </TableHeader>
   );
 }
-
-// Memoize the component to avoid unnecessary re-renders
-export const TimetableHeader = memo(TimetableHeaderComponent);

@@ -79,12 +79,12 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
             <CardTitle className="flex items-center gap-2">
               Planificador de Turnos
               <Badge variant="outline" className="ml-2 bg-primary/10">
-                Vista Vertical
+                Vista Horizontal
               </Badge>
             </CardTitle>
             <CardDescription>
               <div className="flex items-center gap-1 text-sm mt-1">
-                Haz clic o arrastra para asignar un turno - Vista optimizada para móviles
+                Haz clic o arrastra para asignar un turno - Mostrando días como columnas y horas como filas
               </div>
             </CardDescription>
           </div>

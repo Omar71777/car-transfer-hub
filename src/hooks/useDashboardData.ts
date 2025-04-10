@@ -45,11 +45,11 @@ export function useDashboardData() {
           
         if (expensesError) throw expensesError;
         
-        // Load shifts from localStorage for now (will be migrated to Supabase later)
+        // Load shifts from localStorage (will be migrated to Supabase later)
         const storedShifts = localStorage.getItem('shifts');
         const shifts = storedShifts ? JSON.parse(storedShifts) : [];
         
-        // Load drivers from localStorage for now (will be migrated to Supabase later)
+        // Load drivers from localStorage (will be migrated to Supabase later)
         const storedDrivers = localStorage.getItem('drivers');
         const drivers = storedDrivers ? JSON.parse(storedDrivers) : [];
         
@@ -58,16 +58,16 @@ export function useDashboardData() {
         const totalIncome = transfers.reduce((sum: number, transfer: Transfer) => 
           sum + (Number(transfer.price) || 0), 0);
         
-        // Calcular las comisiones totales
+        // Calculate total commissions
         const totalCommissions = transfers.reduce((sum: number, transfer: Transfer) => 
           sum + ((Number(transfer.price) * Number(transfer.commission)) / 100 || 0), 0);
         
-        // Sumar los gastos regulares y las comisiones
+        // Add regular expenses and commissions
         const expensesTotal = expenses.reduce((sum: number, expense: Expense) => 
           sum + (Number(expense.amount) || 0), 0);
         const totalExpenses = expensesTotal + totalCommissions;
         
-        // Calcular el ingreso neto después de gastos y comisiones
+        // Calculate net income after expenses and commissions
         const netIncome = totalIncome - totalExpenses;
         
         // Get upcoming shifts (next 7 days)

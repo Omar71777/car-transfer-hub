@@ -19,6 +19,8 @@ interface TimetableBodyProps {
     color: string; 
     shiftId: string;
     type?: 'half' | 'full' | 'free';
+    startHour?: number;
+    endHour?: number;
   } | null;
 }
 
@@ -52,19 +54,22 @@ export function TimetableBody({
   
   return (
     <TableBody>
+      {/* Create a row for each hour */}
       {hours.map(hour => (
         <TableRow key={hour} className={hour % 2 === 0 ? 'bg-muted/10' : ''}>
+          {/* Hour cell (first column) */}
           <TableCell className="font-medium text-center whitespace-nowrap sticky left-0 bg-background/95 border-r z-10">
-            {hour}:00
+            {hour.toString().padStart(2, '0')}:00
           </TableCell>
           
+          {/* Create cells for each day */}
           {weekDays.map(day => {
             const dayStr = day.toISOString();
             const driverInfo = cellDriverInfo[dayStr][hour];
             
             return (
               <ShiftCell
-                key={day.toString()}
+                key={day.toString() + hour}
                 day={day}
                 hour={hour}
                 driverInfo={driverInfo}

@@ -15,6 +15,12 @@ export function getShiftForTimeSlot(
   // Check which shift covers this time slot
   for (const shift of shifts) {
     const shiftDate = parseISO(shift.date);
+    
+    // Skip if not same day - for better performance
+    if (!isSameDay(shiftDate, day)) {
+      continue;
+    }
+    
     const shiftHour = shift.startHour || 0; // Default to 0 if not specified
     
     // Create shift start time by combining date and hour
@@ -41,8 +47,9 @@ export function getShiftForTimeSlot(
     // Check if this cell's time is within the shift period
     // We're using the adjusted end time to prevent overlap issues
     if (isWithinInterval(cellDateTime, { start: shiftStart, end: adjustedShiftEnd })) {
+      const driverDetails = getDriverDetails(shift.driverId);
       return { 
-        ...getDriverDetails(shift.driverId), 
+        ...driverDetails, 
         shiftId: shift.id,
         type: shift.isFreeDay ? 'free' as const : (shift.isFullDay ? 'full' as const : 'half' as const),
         startHour: shiftHour, // Add startHour for tooltip information
@@ -84,7 +91,7 @@ export function getShiftHours(startHour: number, type: 'half' | 'full' | 'free')
     return '24h';
   }
   
-  return `${startHour}:00 - ${endHour}:00`;
+  return `${startHour.toString().padStart(2, '0')}:00 - ${endHour.toString().padStart(2, '0')}:00`;
 }
 
 // Get localized shift type for display
