@@ -37,8 +37,10 @@ export async function createTransfer(user: any, transferData: any) {
     }
     
     // Format data for insertion
-    // If collaborator is "none", save as null or empty string
-    const collaboratorValue = transferData.collaborator === 'none' ? '' : transferData.collaborator;
+    // If collaborator is "none" or empty, save as empty string
+    const collaboratorValue = transferData.collaborator === 'none' || !transferData.collaborator 
+      ? '' 
+      : transferData.collaborator;
     
     console.log('Preparing transfer data for database insertion');
     

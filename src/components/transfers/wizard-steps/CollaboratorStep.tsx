@@ -22,12 +22,17 @@ export function CollaboratorStep({ clients, collaborators, formState }: Collabor
   const price = watch('price');
   const commission = watch('commission');
   
-  // If we arrived at this step, ensure a collaborator is set
+  // If we arrived at this step, ensure a collaborator is set, but only if collaborators exist
   useEffect(() => {
-    // If no collaborator is selected, default to the first one in the list
     const currentCollaborator = watch('collaborator');
-    if ((!currentCollaborator || currentCollaborator === 'none') && collaborators.length > 0) {
+    
+    // Only set a default collaborator if there are collaborators and none is selected
+    if ((!currentCollaborator || currentCollaborator === 'none') && 
+        collaborators && collaborators.length > 0) {
       setValue('collaborator', collaborators[0].name);
+    } else if ((!currentCollaborator || currentCollaborator === '') && 
+              (!collaborators || collaborators.length === 0)) {
+      setValue('collaborator', 'none');
     }
   }, [collaborators, setValue, watch]);
   
@@ -79,11 +84,18 @@ export function CollaboratorStep({ clients, collaborators, formState }: Collabor
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {collaborators.map((collaborator) => (
-                    <SelectItem key={collaborator.id} value={collaborator.name}>
-                      {collaborator.name}
+                  <SelectItem value="none">Sin colaborador</SelectItem>
+                  {collaborators && collaborators.length > 0 ? (
+                    collaborators.map((collaborator) => (
+                      <SelectItem key={collaborator.id} value={collaborator.name}>
+                        {collaborator.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>
+                      No hay colaboradores disponibles
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

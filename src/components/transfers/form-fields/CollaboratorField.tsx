@@ -31,11 +31,17 @@ export function CollaboratorField({ form, collaborators }: CollaboratorFieldProp
             </FormControl>
             <SelectContent>
               <SelectItem value="none">Sin colaborador</SelectItem>
-              {collaborators.map((collaborator) => (
-                <SelectItem key={collaborator.id} value={collaborator.name}>
-                  {collaborator.name}
+              {collaborators && collaborators.length > 0 ? (
+                collaborators.map((collaborator) => (
+                  <SelectItem key={collaborator.id} value={collaborator.name}>
+                    {collaborator.name}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="" disabled>
+                  No hay colaboradores disponibles
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
           <FormMessage />

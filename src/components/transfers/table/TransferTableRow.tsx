@@ -26,33 +26,46 @@ export function TransferTableRow({
   selected,
   onSelectRow
 }: TransferTableRowProps) {
+  // Check if transfer has all required properties
+  if (!transfer || !transfer.id) {
+    console.error('Invalid transfer data:', transfer);
+    return null;
+  }
+
   // Calculate total with extras and discount
   const calculateTotal = () => {
-    // Base price
-    let basePrice = transfer.price;
-    
-    // For dispo service, multiply by hours if available
-    if (transfer.serviceType === 'dispo' && transfer.hours) {
-      basePrice = basePrice * Number(transfer.hours);
-    }
-    
-    // Add extra charges
-    const extraChargesTotal = (transfer.extraCharges || []).reduce(
-      (sum, charge) => sum + (typeof charge.price === 'string' ? Number(charge.price) : charge.price), 0
-    );
-    
-    // Calculate discount
-    let discountAmount = 0;
-    if (transfer.discountType && transfer.discountValue) {
-      if (transfer.discountType === 'percentage') {
-        discountAmount = basePrice * (transfer.discountValue / 100);
-      } else {
-        discountAmount = transfer.discountValue;
+    try {
+      // Base price
+      let basePrice = Number(transfer.price) || 0;
+      
+      // For dispo service, multiply by hours if available
+      if (transfer.serviceType === 'dispo' && transfer.hours) {
+        basePrice = basePrice * Number(transfer.hours);
       }
+      
+      // Add extra charges
+      const extraChargesTotal = Array.isArray(transfer.extraCharges) 
+        ? transfer.extraCharges.reduce(
+            (sum, charge) => sum + (typeof charge.price === 'string' ? Number(charge.price) : (charge.price || 0)), 0
+          )
+        : 0;
+      
+      // Calculate discount
+      let discountAmount = 0;
+      if (transfer.discountType && transfer.discountValue) {
+        if (transfer.discountType === 'percentage') {
+          discountAmount = basePrice * (Number(transfer.discountValue) / 100);
+        } else {
+          discountAmount = Number(transfer.discountValue);
+        }
+      }
+      
+      // Calculate final total
+      return basePrice + extraChargesTotal - discountAmount;
+    } catch (error) {
+      console.error('Error calculating total:', error);
+      return 0;
     }
-    
-    // Calculate final total
-    return basePrice + extraChargesTotal - discountAmount;
   };
 
   // Format discount for display
@@ -67,7 +80,7 @@ export function TransferTableRow({
   };
 
   // Get total number of extra charges
-  const extraChargesCount = (transfer.extraCharges || []).length;
+  const extraChargesCount = Array.isArray(transfer.extraCharges) ? transfer.extraCharges.length : 0;
 
   return (
     <TableRow className={selected ? 'bg-accent/20' : undefined}>
@@ -87,7 +100,7 @@ export function TransferTableRow({
               <Car className="h-4 w-4 mr-1 text-primary" />
             )}
             <span>
-              {transfer.origin} 
+              {transfer.origin || 'N/A'} 
               {transfer.serviceType === 'transfer' && transfer.destination && (
                 <> → {transfer.destination}</>
               )}
@@ -105,12 +118,12 @@ export function TransferTableRow({
           )}
         </div>
       </TableCell>
-      <TableCell>{transfer.date}</TableCell>
+      <TableCell>{transfer.date || 'N/A'}</TableCell>
       <TableCell>
         <div className="space-y-1">
           <div className="flex items-center gap-1">
             <span>{formatCurrency(calculateTotal())}</span>
-            {transfer.discountType && transfer.discountValue > 0 && (
+            {transfer.discountType && Number(transfer.discountValue) > 0 && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
