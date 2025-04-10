@@ -51,7 +51,12 @@ export function TransferForm({
   // State for the service type and extra charges
   const [serviceType, setServiceType] = useState<'transfer' | 'dispo'>(initialValues?.serviceType || 'transfer');
   const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(
-    initialValues?.extraCharges || []
+    initialValues?.extraCharges 
+      ? initialValues.extraCharges.map(charge => ({
+          ...charge,
+          price: charge.price.toString() // Convert numbers to strings for form
+        }))
+      : []
   );
 
   // Ensure collaborators and clients are fetched when the component mounts
@@ -73,7 +78,13 @@ export function TransferForm({
         commission: initialValues.commission?.toString() || '',
         paymentStatus: initialValues.paymentStatus as 'paid' | 'pending',
         clientId: initialValues.clientId || '',
-        extraCharges: initialValues.extraCharges || []
+        extraCharges: initialValues.extraCharges 
+          ? initialValues.extraCharges.map(charge => ({
+              id: charge.id,
+              name: charge.name,
+              price: charge.price.toString() // Convert to string for form
+            }))
+          : []
       };
     }
     return {
@@ -107,7 +118,7 @@ export function TransferForm({
 
   // Handle extra charges
   const handleAddExtraCharge = () => {
-    setExtraCharges([...extraCharges, { id: uuidv4(), name: '', price: 0 }]);
+    setExtraCharges([...extraCharges, { id: uuidv4(), name: '', price: '' }]);
   };
 
   const handleRemoveExtraCharge = (index: number) => {

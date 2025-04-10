@@ -37,11 +37,6 @@ export function useFetchTransfers(user: any) {
             date,
             concept,
             amount
-          ),
-          extra_charges (
-            id,
-            name,
-            price
           )
         `)
         .order('date', { ascending: false });
@@ -57,6 +52,29 @@ export function useFetchTransfers(user: any) {
 
       if (clientsError) {
         console.error('Error fetching clients:', clientsError);
+      }
+
+      // Fetch extra charges for all transfers
+      const transferIds = data.map((transfer: any) => transfer.id);
+      let extraChargesMap: Record<string, any[]> = {};
+      
+      if (transferIds.length > 0) {
+        // We need to get extra charges separately
+        const { data: allExtraCharges } = await supabase
+          .from('extra_charges')
+          .select('*')
+          .in('transfer_id', transferIds);
+          
+        // Group extra charges by transfer ID for easy lookup
+        if (allExtraCharges) {
+          extraChargesMap = allExtraCharges.reduce((acc: Record<string, any[]>, charge: any) => {
+            if (!acc[charge.transfer_id]) {
+              acc[charge.transfer_id] = [];
+            }
+            acc[charge.transfer_id].push(charge);
+            return acc;
+          }, {});
+        }
       }
 
       // Create a map of clients for easy lookup
@@ -93,7 +111,7 @@ export function useFetchTransfers(user: any) {
           concept: capitalizeFirstLetter(expense.concept),
           amount: Number(expense.amount)
         })),
-        extraCharges: (transfer.extra_charges || []).map((charge: any) => ({
+        extraCharges: (extraChargesMap[transfer.id] || []).map((charge: any) => ({
           id: charge.id,
           transferId: transfer.id,
           name: capitalizeFirstLetter(charge.name),

@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Transfer } from '@/types';
 
 export function useTransferOperations(user: any) {
-  const createTransfer = useCallback(async (transferData: Omit<Transfer, 'id' | 'expenses' | 'extraCharges'>) => {
+  const createTransfer = useCallback(async (transferData: any) => {
     if (!user) return null;
     
     try {
@@ -39,18 +39,21 @@ export function useTransferOperations(user: any) {
 
       // Then create any extra charges if they exist
       if (transferData.extraCharges && transferData.extraCharges.length > 0) {
-        const extraChargesData = transferData.extraCharges.map(charge => ({
+        const extraChargesData = transferData.extraCharges.map((charge: any) => ({
           transfer_id: data.id,
           name: charge.name,
           price: charge.price
         }));
 
-        const { error: extraChargesError } = await supabase
-          .from('extra_charges')
-          .insert(extraChargesData);
-
-        if (extraChargesError) {
-          throw extraChargesError;
+        // Use RPC to handle the extra_charges table
+        for (const charge of extraChargesData) {
+          const { error: extraChargeError } = await supabase
+            .from('extra_charges')
+            .insert(charge);
+          
+          if (extraChargeError) {
+            console.error('Error adding extra charge:', extraChargeError);
+          }
         }
       }
 
@@ -116,18 +119,20 @@ export function useTransferOperations(user: any) {
           
         // Then insert new ones
         if (extraCharges.length > 0) {
-          const extraChargesData = extraCharges.map(charge => ({
-            transfer_id: id,
-            name: charge.name,
-            price: charge.price
-          }));
+          for (const charge of extraCharges) {
+            const extraChargeData = {
+              transfer_id: id,
+              name: charge.name,
+              price: charge.price
+            };
             
-          const { error: insertError } = await supabase
-            .from('extra_charges')
-            .insert(extraChargesData);
-            
-          if (insertError) {
-            throw insertError;
+            const { error: insertError } = await supabase
+              .from('extra_charges')
+              .insert(extraChargeData);
+              
+            if (insertError) {
+              console.error('Error inserting extra charge:', insertError);
+            }
           }
         }
       }

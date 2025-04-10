@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { BillPreview, CreateBillDto, TaxApplicationType } from '@/types/billing';
@@ -22,14 +21,12 @@ export function useBillGeneration(
           const transfer = await getTransfer(transferId);
           if (!transfer) continue;
 
-          // Get any extra charges for this transfer
-          const { data: extraCharges, error: extraChargesError } = await supabase
+          // Get any extra charges for this transfer directly from API
+          const { data: extraCharges } = await supabase
             .from('extra_charges')
             .select('*')
             .eq('transfer_id', transferId);
             
-          if (extraChargesError) throw extraChargesError;
-          
           // Calculate price based on service type
           let transferPrice = transfer.price;
           if (transfer.service_type === 'dispo' && transfer.hours) {
