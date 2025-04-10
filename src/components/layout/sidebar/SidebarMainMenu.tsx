@@ -83,18 +83,6 @@ export const SidebarMainMenu: React.FC = () => {
 
       <SidebarMenuItem>
         <SidebarMenuButton
-          className={getMenuButtonClass('/shifts')}
-          asChild
-        >
-          <Link to="/shifts">
-            <Calendar size={20} />
-            <span>Turnos</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-
-      <SidebarMenuItem>
-        <SidebarMenuButton
           className={getMenuButtonClass('/collaborators')}
           asChild
         >
