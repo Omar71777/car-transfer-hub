@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { Shift } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -34,14 +33,13 @@ export function useShiftActions(
     
     if (!existingShift) {
       // Si no hay un turno existente, prepare para agregar uno nuevo
-      // Vamos directamente al formulario de creación, sin selección de tipo
       setSelectedDriver('');
-      setShiftType('full'); // Por defecto asignamos turno completo
+      setShiftType('half'); // Default to 12-hour shift
       setShowTypeSelection(false);
     }
   }, [getDriverDetails]);
 
-  // Handle shift type selection (mantenemos por compatibilidad)
+  // Handle shift type selection (keeping for compatibility)
   const handleShiftTypeSelect = useCallback((
     type: string,
     setShiftType: (type: string) => void,
@@ -68,7 +66,8 @@ export function useShiftActions(
         date: selectedCell.day.toISOString().split('T')[0],
         driverId: selectedDriver,
         isFullDay: shiftType === 'full' || shiftType === 'free',
-        isFreeDay: shiftType === 'free'
+        isFreeDay: shiftType === 'free',
+        startHour: selectedCell.hour // Store the starting hour
       });
       
       setSelectedCell(null);
@@ -77,7 +76,7 @@ export function useShiftActions(
       
       toast({
         title: "Turno creado",
-        description: `Turno de ${shiftTypeLabel} asignado correctamente.`,
+        description: `Turno de ${shiftTypeLabel} asignado correctamente a partir de las ${selectedCell.hour}:00.`,
       });
     }
   }, [onAddShift, toast]);

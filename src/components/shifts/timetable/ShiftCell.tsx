@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { TableCell } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
 
 interface ShiftCellProps {
   day: Date;
@@ -9,6 +11,7 @@ interface ShiftCellProps {
     name: string;
     color: string;
     shiftId: string;
+    type?: 'half' | 'full' | 'free';
   } | null;
   onClick: (day: Date, hour: number) => void;
   onMouseDown: (day: Date, hour: number) => void;
@@ -38,23 +41,44 @@ export function ShiftCell({
     }
   };
 
+  // Get formatted date and time for tooltip
+  const formattedDate = format(day, 'dd/MM/yyyy');
+  const formattedTime = `${hour}:00`;
+
   return (
-    <TableCell 
-      className={`p-1 cursor-pointer relative ${getCellClasses()} ${
-        isDragging ? 'cursor-grabbing' : ''
-      }`}
-      title={driverInfo ? `Turno de ${driverInfo.name}` : 'Haz clic para asignar un turno'}
-      onClick={() => onClick(day, hour)}
-      onMouseDown={() => onMouseDown(day, hour)}
-      onMouseOver={() => onMouseOver(day, hour)}
-    >
-      <div className="w-full h-6 flex items-center justify-center">
-        {driverInfo && (hour === 12 || hour === 22 || hour === 10) && (
-          <span className="text-xs truncate max-w-[60px]">
-            {driverInfo.name}
-          </span>
-        )}
-      </div>
-    </TableCell>
+    <TooltipProvider>
+      <Tooltip delayDuration={300}>
+        <TooltipTrigger asChild>
+          <TableCell 
+            className={`p-1 cursor-pointer relative ${getCellClasses()} ${
+              isDragging ? 'cursor-grabbing' : ''
+            }`}
+            onClick={() => onClick(day, hour)}
+            onMouseDown={() => onMouseDown(day, hour)}
+            onMouseOver={() => onMouseOver(day, hour)}
+          >
+            <div className="w-full h-6 flex items-center justify-center">
+              {driverInfo && (hour === 12 || hour === 22 || hour === 10 || hour === driverInfo.type === 'half' ? hour : hour % 2 === 0) && (
+                <span className="text-xs truncate max-w-[60px]">
+                  {driverInfo.name}
+                </span>
+              )}
+            </div>
+          </TableCell>
+        </TooltipTrigger>
+        <TooltipContent>
+          <div className="text-xs">
+            <div>{formattedDate} - {formattedTime}</div>
+            {driverInfo && (
+              <div className="font-semibold">
+                {driverInfo.name} - {driverInfo.type === 'half' ? 'Turno 12h' : 
+                                     driverInfo.type === 'free' ? 'Día libre' : 'Turno 24h'}
+              </div>
+            )}
+            {!driverInfo && 'Haz clic para asignar un turno'}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

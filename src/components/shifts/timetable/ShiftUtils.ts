@@ -1,6 +1,6 @@
 
 import { Shift } from '@/types';
-import { parseISO, isWithinInterval, isSameDay, addDays } from 'date-fns';
+import { parseISO, isWithinInterval, isSameDay, addDays, addHours } from 'date-fns';
 
 // Function to calculate shift coverage for a specific hour on a specific day
 export function getShiftForTimeSlot(
@@ -15,50 +15,32 @@ export function getShiftForTimeSlot(
   // Check which shift covers this time slot
   for (const shift of shifts) {
     const shiftDate = parseISO(shift.date);
+    const shiftHour = shift.startHour || 0; // Default to 0 if not specified
     
-    // Handle free days and full days (both 24 hours)
+    // Create shift start time by combining date and hour
+    const shiftStart = new Date(shiftDate);
+    shiftStart.setHours(shiftHour, 0, 0, 0);
+    
+    let shiftEnd;
+    
     if (shift.isFullDay) {
-      // For 24h shifts that start at the given date
-      const shiftStart = new Date(shiftDate);
-      shiftStart.setHours(0, 0, 0, 0);
-      
-      const shiftEnd = new Date(shiftDate);
-      shiftEnd.setHours(23, 59, 59, 999);
-      
-      if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
-        return { ...getDriverDetails(shift.driverId), shiftId: shift.id };
-      }
+      // For full day shifts (24h), the end is 24 hours after start
+      shiftEnd = addHours(shiftStart, 24);
+    } else if (shift.isFreeDay) {
+      // Free days are also 24 hours
+      shiftEnd = addHours(shiftStart, 24);
     } else {
-      // For 12h shifts (assuming 10:00 to 22:00)
-      const shiftStart = new Date(shiftDate);
-      shiftStart.setHours(10, 0, 0, 0);
-      
-      const shiftEnd = new Date(shiftDate);
-      shiftEnd.setHours(22, 0, 0, 0);
-      
-      // Check if this 12h shift contains this hour
-      if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
-        return { ...getDriverDetails(shift.driverId), shiftId: shift.id };
-      }
-      
-      // For night shifts (22:00 to 10:00 next day)
-      const prevDay = addDays(day, -1);
-      const prevDayShift = shifts.find(s => {
-        const sDate = parseISO(s.date);
-        return !s.isFullDay && isSameDay(sDate, prevDay);
-      });
-      
-      if (prevDayShift) {
-        const nightShiftStart = new Date(prevDay);
-        nightShiftStart.setHours(22, 0, 0, 0);
-        
-        const nightShiftEnd = new Date(day);
-        nightShiftEnd.setHours(10, 0, 0, 0);
-        
-        if (isWithinInterval(cellDateTime, { start: nightShiftStart, end: nightShiftEnd })) {
-          return { ...getDriverDetails(prevDayShift.driverId), shiftId: prevDayShift.id };
-        }
-      }
+      // For 12h shifts
+      shiftEnd = addHours(shiftStart, 12);
+    }
+    
+    // Check if this cell's time is within the shift period
+    if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
+      return { 
+        ...getDriverDetails(shift.driverId), 
+        shiftId: shift.id,
+        type: shift.isFreeDay ? 'free' : (shift.isFullDay ? 'full' : 'half')
+      };
     }
   }
   

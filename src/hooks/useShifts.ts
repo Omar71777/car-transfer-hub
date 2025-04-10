@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { Shift } from '@/types';
 import { generateId } from '@/lib/utils';
@@ -19,7 +20,7 @@ export function useShifts() {
   const updateStats = useCallback((currentShifts: Shift[]) => {
     setStats({
       total: currentShifts.length,
-      fullDay: currentShifts.filter(s => s.isFullDay).length,
+      fullDay: currentShifts.filter(s => s.isFullDay && !s.isFreeDay).length,
       halfDay: currentShifts.filter(s => !s.isFullDay).length
     });
   }, []);
@@ -81,24 +82,45 @@ export function useShifts() {
       return;
     }
     
-    const existingShift = shifts.find(s => s.date === shift.date);
+    // Check for overlapping shifts for the same day and hour range
+    const shiftDate = new Date(shift.date);
+    const startHour = shift.startHour || 0;
+    const endHour = shift.isFullDay ? startHour + 24 : startHour + 12;
     
-    if (existingShift) {
-      if (isAdmin || existingShift.driverId === profile?.id) {
-        const updatedShifts = shifts.map(s => 
-          s.date === shift.date 
-            ? { ...s, driverId: shift.driverId, isFullDay: shift.isFullDay } 
-            : s
-        );
-        setShifts(updatedShifts);
+    const overlappingShift = shifts.find(s => {
+      const existingDate = new Date(s.date);
+      const existingStartHour = s.startHour || 0;
+      const existingEndHour = s.isFullDay ? existingStartHour + 24 : existingStartHour + 12;
+      
+      const sameDay = existingDate.toDateString() === shiftDate.toDateString();
+      
+      // Check if hours overlap
+      const hoursOverlap = (
+        (startHour >= existingStartHour && startHour < existingEndHour) ||
+        (endHour > existingStartHour && endHour <= existingEndHour) ||
+        (startHour <= existingStartHour && endHour >= existingEndHour)
+      );
+      
+      return sameDay && hoursOverlap;
+    });
+    
+    if (overlappingShift) {
+      if (isAdmin || overlappingShift.driverId === profile?.id) {
+        // Replace the existing shift
+        const updatedShifts = shifts.filter(s => s.id !== overlappingShift.id);
+        const newShift = {
+          id: generateId(),
+          ...shift
+        };
+        setShifts([...updatedShifts, newShift]);
         toast({
           title: "Turno actualizado",
-          description: "El turno ha sido actualizado exitosamente.",
+          description: "El turno existente ha sido reemplazado exitosamente.",
         });
       } else {
         toast({
-          title: "Acceso denegado",
-          description: "No puedes modificar turnos de otros usuarios.",
+          title: "Turnos solapados",
+          description: "Ya existe un turno asignado para este periodo. Por favor elige otro horario.",
           variant: "destructive"
         });
       }

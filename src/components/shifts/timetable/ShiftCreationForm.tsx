@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Driver } from '@/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock, Calendar, Clock12 } from 'lucide-react';
 
 interface ShiftCreationFormProps {
   day: Date;
@@ -30,10 +30,25 @@ export function ShiftCreationForm({
   drivers,
   onSubmit
 }: ShiftCreationFormProps) {
+  // Calculate the end hour for display
+  const getEndHour = () => {
+    if (shiftType === 'half') {
+      return (hour + 12) % 24;
+    } else {
+      return hour; // For 24h shifts, end hour = start hour
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <div className="text-sm font-medium">
-        Asignar turno para {format(day, 'dd/MM/yyyy', { locale: es })} a las {hour}:00
+      <div className="text-sm font-medium space-y-1">
+        <div>Asignar turno a partir de:</div>
+        <div className="flex items-center gap-2 text-primary font-bold">
+          <Calendar className="h-4 w-4" />
+          {format(day, 'dd/MM/yyyy', { locale: es })}
+          <Clock className="h-4 w-4 ml-2" />
+          {hour}:00
+        </div>
       </div>
       
       <div className="space-y-2">
@@ -58,15 +73,32 @@ export function ShiftCreationForm({
           <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
             <RadioGroupItem value="half" id="half" />
             <Label htmlFor="half" className="flex items-center gap-2 cursor-pointer flex-1">
-              <Clock className="h-4 w-4 text-blue-500" />
-              <span>Turno de 12 horas (10:00-22:00)</span>
+              <Clock12 className="h-4 w-4 text-blue-500" />
+              <span>
+                Turno de 12 horas 
+                <span className="text-sm text-muted-foreground ml-1">
+                  ({hour}:00 - {getEndHour()}:00)
+                </span>
+              </span>
             </Label>
           </div>
           <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
             <RadioGroupItem value="full" id="full" />
             <Label htmlFor="full" className="flex items-center gap-2 cursor-pointer flex-1">
-              <Calendar className="h-4 w-4 text-purple-500" />
-              <span>Turno de 24 horas</span>
+              <Clock className="h-4 w-4 text-purple-500" />
+              <span>
+                Turno de 24 horas 
+                <span className="text-sm text-muted-foreground ml-1">
+                  (día completo)
+                </span>
+              </span>
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
+            <RadioGroupItem value="free" id="free" />
+            <Label htmlFor="free" className="flex items-center gap-2 cursor-pointer flex-1">
+              <Calendar className="h-4 w-4 text-green-500" />
+              <span>Día libre (24 horas)</span>
             </Label>
           </div>
         </RadioGroup>

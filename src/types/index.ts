@@ -31,6 +31,7 @@ export interface Shift {
   driverId: string;
   isFullDay: boolean; // true para 24h, false para 12h
   isFreeDay?: boolean; // true para día libre
+  startHour?: number; // hora de inicio del turno
 }
 
 export interface UserProfile {
