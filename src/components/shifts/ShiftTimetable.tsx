@@ -258,8 +258,8 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
         {/* Popover for shift creation/deletion */}
         {selectedCell && (
           <Popover open={!!selectedCell} onOpenChange={handleOpenChange}>
-            <PopoverTrigger asChild>
-              <div className="hidden">Trigger</div> {/* Hidden trigger, popover controlled programmatically */}
+            <PopoverTrigger>
+              <Button className="hidden">Trigger</Button>
             </PopoverTrigger>
             <PopoverContent className="w-80" align="center">
               {getShiftForTimeSlot(selectedCell.day, selectedCell.hour) ? (
