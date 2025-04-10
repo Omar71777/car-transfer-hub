@@ -12,10 +12,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-gradient-to-br from-background to-blue-50">
+        <div className="min-h-screen flex w-full bg-background">
           <AppSidebar />
-          <main className="flex-1 p-4 md:p-6 overflow-auto">
-            {children}
+          <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto max-w-full">
+            <div className="container mx-auto max-w-7xl">
+              {children}
+            </div>
           </main>
         </div>
       </SidebarProvider>

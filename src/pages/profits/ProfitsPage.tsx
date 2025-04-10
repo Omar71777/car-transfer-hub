@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ProfitCalculator } from '@/components/profits/ProfitCalculator';
 import { Transfer, Expense } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { TrendingUp, TrendingDown, ArrowRight, DollarSign, CreditCard, BarChart2 } from 'lucide-react';
+import { ChartContainer } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from 'recharts';
 
 // Datos de ejemplo para fallback
 const dummyTransfers: Transfer[] = [
@@ -50,22 +54,62 @@ const dummyExpenses: Expense[] = [
 const ProfitsPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [stats, setStats] = useState({
+    totalIncome: 0,
+    totalExpenses: 0,
+    netProfit: 0,
+    profitMargin: 0,
+  });
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [monthlyData, setMonthlyData] = useState<any[]>([]);
 
   useEffect(() => {
     // Cargar transfers desde localStorage
     const storedTransfers = localStorage.getItem('transfers');
-    if (storedTransfers) {
-      setTransfers(JSON.parse(storedTransfers));
-    } else {
-      setTransfers(dummyTransfers);
-    }
+    const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : dummyTransfers;
+    setTransfers(loadedTransfers);
 
     // Cargar expenses desde localStorage
     const storedExpenses = localStorage.getItem('expenses');
-    if (storedExpenses) {
-      setExpenses(JSON.parse(storedExpenses));
-    } else {
-      setExpenses(dummyExpenses);
+    const loadedExpenses = storedExpenses ? JSON.parse(storedExpenses) : dummyExpenses;
+    setExpenses(loadedExpenses);
+
+    // Calculate statistics
+    if (loadedTransfers.length > 0) {
+      const totalIncome = loadedTransfers.reduce((sum: number, transfer: Transfer) => 
+        sum + (transfer.price || 0), 0);
+      
+      const totalExpenses = loadedExpenses.reduce((sum: number, expense: Expense) => 
+        sum + (expense.amount || 0), 0);
+      
+      const netProfit = totalIncome - totalExpenses;
+      const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
+      
+      setStats({
+        totalIncome,
+        totalExpenses,
+        netProfit,
+        profitMargin
+      });
+
+      // Generate chart data
+      const categories = ['Ingresos', 'Gastos', 'Beneficio Neto'];
+      const chartData = [
+        { name: 'Ingresos', value: totalIncome, fill: '#3b82f6' },
+        { name: 'Gastos', value: totalExpenses, fill: '#ef4444' },
+        { name: 'Beneficio Neto', value: netProfit, fill: '#10b981' }
+      ];
+      setChartData(chartData);
+
+      // Generate monthly data (example data - in a real app this would be calculated from actual transfers)
+      const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+      const monthlyData = months.map(month => ({
+        name: month,
+        ingresos: Math.floor(Math.random() * 5000) + 3000,
+        gastos: Math.floor(Math.random() * 2000) + 1000,
+        beneficio: Math.floor(Math.random() * 3000) + 2000,
+      }));
+      setMonthlyData(monthlyData);
     }
   }, []);
 
@@ -73,11 +117,134 @@ const ProfitsPage = () => {
     <MainLayout>
       <div className="py-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-1 text-ibiza-900">Ganancias</h1>
+          <h1 className="text-3xl font-bold mb-1 text-primary">Ganancias</h1>
           <p className="text-muted-foreground">Analiza tus ingresos, gastos y beneficios</p>
         </div>
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="glass-card shine-effect border-l-4 border-l-blue-500">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Ingresos Totales</p>
+                  <h3 className="text-2xl font-bold text-blue-500 mt-1">{stats.totalIncome.toFixed(2)}€</h3>
+                </div>
+                <TrendingUp className="h-10 w-10 text-blue-500/40" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card shine-effect border-l-4 border-l-red-500">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Gastos Totales</p>
+                  <h3 className="text-2xl font-bold text-red-500 mt-1">{stats.totalExpenses.toFixed(2)}€</h3>
+                </div>
+                <TrendingDown className="h-10 w-10 text-red-500/40" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card shine-effect border-l-4 border-l-green-500">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Beneficio Neto</p>
+                  <h3 className="text-2xl font-bold text-green-500 mt-1">{stats.netProfit.toFixed(2)}€</h3>
+                </div>
+                <DollarSign className="h-10 w-10 text-green-500/40" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card shine-effect border-l-4 border-l-purple-500">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Margen de Beneficio</p>
+                  <h3 className="text-2xl font-bold text-purple-500 mt-1">{stats.profitMargin.toFixed(2)}%</h3>
+                </div>
+                <BarChart2 className="h-10 w-10 text-purple-500/40" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
         
-        <ProfitCalculator transfers={transfers} expenses={expenses} />
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle>Resumen Financiero</CardTitle>
+              <CardDescription>Comparativa de ingresos, gastos y beneficios</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ChartContainer
+                  config={{
+                    ingresos: { color: "#3b82f6" },
+                    gastos: { color: "#ef4444" },
+                    beneficio: { color: "#10b981" },
+                  }}
+                >
+                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip 
+                      formatter={(value) => [`${value}€`, '']}
+                      contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+                    />
+                    <Bar dataKey="value" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle>Evolución Mensual</CardTitle>
+              <CardDescription>Tendencia de ingresos y gastos por mes</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ChartContainer
+                  config={{
+                    ingresos: { color: "#3b82f6" },
+                    gastos: { color: "#ef4444" },
+                    beneficio: { color: "#10b981" },
+                  }}
+                >
+                  <LineChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip 
+                      formatter={(value) => [`${value}€`, '']}
+                      contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}
+                    />
+                    <Legend />
+                    <Line type="monotone" dataKey="ingresos" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="gastos" stroke="#ef4444" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="beneficio" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                  </LineChart>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Profit Calculator */}
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle>Calculadora de Ganancias</CardTitle>
+            <CardDescription>Analiza los detalles de tus ingresos y gastos</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProfitCalculator transfers={transfers} expenses={expenses} />
+          </CardContent>
+        </Card>
       </div>
     </MainLayout>
   );

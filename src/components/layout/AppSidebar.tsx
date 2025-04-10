@@ -18,10 +18,12 @@ import {
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const AppSidebar = () => {
   const location = useLocation();
   const { isAdmin, signOut, user } = useAuth();
+  const isMobile = useIsMobile();
   
   const menuItems = [
     { icon: Home, label: 'Inicio', path: '/' },
@@ -38,14 +40,19 @@ export const AppSidebar = () => {
   ];
 
   return (
-    <Sidebar>
+    <Sidebar defaultCollapsed={isMobile}>
       <SidebarHeader className="px-6 py-4">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-white">Ibiza Transfer Hub</span>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-white/90 flex items-center justify-center">
+              <span className="text-primary text-lg font-bold">ITH</span>
+            </div>
+            <span className="text-xl font-bold text-white">Ibiza Transfer Hub</span>
+          </Link>
           <SidebarTrigger className="ml-auto lg:hidden" />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="px-2">
         <SidebarGroup>
           <SidebarGroupLabel className="text-sidebar-accent-foreground/80">Navegación</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -53,7 +60,10 @@ export const AppSidebar = () => {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <SidebarMenuButton asChild className={cn(
-                    location.pathname === item.path ? "bg-sidebar-accent text-sidebar-accent-foreground" : "")
+                    "transition-all",
+                    location.pathname === item.path 
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+                      : "hover:bg-sidebar-background/80 hover:text-white")
                   }>
                     <Link to={item.path} className="flex items-center gap-3">
                       <item.icon size={18} />
@@ -74,7 +84,10 @@ export const AppSidebar = () => {
                 {adminItems.map((item) => (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton asChild className={cn(
-                      location.pathname === item.path ? "bg-sidebar-accent text-sidebar-accent-foreground" : "")
+                      "transition-all",
+                      location.pathname === item.path 
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+                        : "hover:bg-sidebar-background/80 hover:text-white")
                     }>
                       <Link to={item.path} className="flex items-center gap-3">
                         <item.icon size={18} />
@@ -89,16 +102,16 @@ export const AppSidebar = () => {
         )}
       </SidebarContent>
       <SidebarFooter>
-        <div className="px-6 py-4 space-y-4">
+        <div className="px-4 py-4 space-y-4">
           {user ? (
             <div className="space-y-2">
-              <div className="text-xs text-white/60">
+              <div className="text-xs text-white/60 px-2">
                 Sesión: {user.email}
               </div>
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full"
+                className="w-full bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80"
                 onClick={() => signOut()}
               >
                 <LogOut size={16} className="mr-2" />
@@ -106,11 +119,11 @@ export const AppSidebar = () => {
               </Button>
             </div>
           ) : (
-            <Button asChild variant="outline" size="sm" className="w-full">
+            <Button asChild variant="outline" size="sm" className="w-full bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/80">
               <Link to="/auth">Iniciar Sesión</Link>
             </Button>
           )}
-          <p className="text-xs text-white/60">Ibiza Transfer Hub © 2025</p>
+          <p className="text-xs text-white/60 px-2">Ibiza Transfer Hub © 2025</p>
         </div>
       </SidebarFooter>
     </Sidebar>
