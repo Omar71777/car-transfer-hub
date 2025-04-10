@@ -12,13 +12,17 @@ import { toast } from 'sonner';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
+import { PaymentStatusDialog } from '@/components/transfers/PaymentStatusDialog';
+import { useCollaborators } from '@/hooks/useCollaborators';
 
 const TransfersPage = () => {
   const { transfers, loading, fetchTransfers, updateTransfer, deleteTransfer } = useTransfers();
   const { createExpense } = useExpenses();
+  const { collaborators } = useCollaborators();
   const [selectedTransferId, setSelectedTransferId] = useState<string | null>(null);
   const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
 
   useEffect(() => {
@@ -71,6 +75,26 @@ const TransfersPage = () => {
     }
   };
 
+  const handleUpdatePaymentStatus = (transfer: Transfer) => {
+    setEditingTransfer(transfer);
+    setIsPaymentDialogOpen(true);
+  };
+
+  const handlePaymentStatusSubmit = async (paymentData: any) => {
+    if (!editingTransfer) return;
+    
+    const success = await updateTransfer(editingTransfer.id, {
+      paymentStatus: paymentData.paymentStatus,
+      paymentCollaborator: paymentData.paymentStatus === 'a_cobrar' ? paymentData.paymentCollaborator : null
+    });
+    
+    if (success) {
+      setIsPaymentDialogOpen(false);
+      toast.success("Estado de pago actualizado");
+      fetchTransfers();
+    }
+  };
+
   return (
     <MainLayout>
       <div className="py-6">
@@ -97,6 +121,7 @@ const TransfersPage = () => {
             onEdit={handleEditTransfer} 
             onDelete={handleDeleteTransfer}
             onAddExpense={handleAddExpense}
+            onUpdatePaymentStatus={handleUpdatePaymentStatus}
           />
         )}
 
@@ -123,6 +148,13 @@ const TransfersPage = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        <PaymentStatusDialog 
+          open={isPaymentDialogOpen}
+          onOpenChange={setIsPaymentDialogOpen}
+          onSubmit={handlePaymentStatusSubmit}
+          collaborators={collaborators}
+        />
       </div>
     </MainLayout>
   );

@@ -9,6 +9,8 @@ export interface Transfer {
   collaborator: string;
   commission: number;
   expenses: Expense[];
+  paymentStatus: 'cobrado' | 'a_cobrar';
+  paymentCollaborator?: string;
 }
 
 export interface Expense {

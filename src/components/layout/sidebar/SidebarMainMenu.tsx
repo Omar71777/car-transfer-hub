@@ -1,135 +1,41 @@
+import React from "react"
+import { Car, Home } from "lucide-react"
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { BadgeEuro, BarChart3, Building2, FileSpreadsheet, Files, Home, TruckIcon } from 'lucide-react';
-import { 
-  SidebarMenu, 
-  SidebarMenuItem, 
-  SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton
-} from '@/components/ui/sidebar';
-import { cn } from '@/lib/utils';
+import { SidebarMenuItem } from "@/components/ui/sidebar/sidebar-menu-button"
+import { SidebarMenuSub } from "@/components/ui/sidebar/sidebar-menu-elements"
 
-export const SidebarMainMenu: React.FC = () => {
-  const location = useLocation();
-
-  // Helper to determine if a path is active
-  const isActive = (path: string) => {
-    if (path === '/' && location.pathname === '/') return true;
-    return path !== '/' && location.pathname.includes(path);
-  };
-
-  // Get class names for menu buttons based on active state
-  const getMenuButtonClass = (path: string) => {
-    return cn(
-      "transition-colors duration-200",
-      isActive(path) 
-        ? "text-sidebar-primary font-medium bg-sidebar-selected" 
-        : "hover:bg-sidebar-hover"
-    );
-  };
-
+export function SidebarMainMenu() {
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className={getMenuButtonClass('/')}
-          asChild
-        >
-          <Link to="/">
-            <Home size={20} />
-            <span>Inicio</span>
-          </Link>
-        </SidebarMenuButton>
+    <>
+      <SidebarMenuItem href="/" icon={Home}>
+        Dashboard
+      </SidebarMenuItem>
+      
+      <SidebarMenuSub icon={Car} label="Transfers">
+        <SidebarMenuItem href="/transfers">
+          Todos los Transfers
+        </SidebarMenuItem>
+        <SidebarMenuItem href="/transfers/new">
+          Nuevo Transfer
+        </SidebarMenuItem>
+        <SidebarMenuItem href="/transfers/pending">
+          Transfers A Cobrar
+        </SidebarMenuItem>
+      </SidebarMenuSub>
+      
+      <SidebarMenuSub icon={Car} label="Expenses">
+        <SidebarMenuItem href="/expenses">
+          Todos los Expenses
+        </SidebarMenuItem>
+      </SidebarMenuSub>
+
+      <SidebarMenuItem href="/profits" icon={Car}>
+        Profits
       </SidebarMenuItem>
 
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className={getMenuButtonClass('/transfers')}
-          asChild
-        >
-          <Link to="/transfers">
-            <TruckIcon size={20} />
-            <span>Transfers</span>
-          </Link>
-        </SidebarMenuButton>
+      <SidebarMenuItem href="/collaborators" icon={Car}>
+        Collaborators
       </SidebarMenuItem>
-
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className={getMenuButtonClass('/expenses')}
-          asChild
-        >
-          <Link to="/expenses">
-            <Files size={20} />
-            <span>Gastos</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className={getMenuButtonClass('/profits')}
-          asChild
-        >
-          <Link to="/profits">
-            <BadgeEuro size={20} />
-            <span>Ganancias</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className={getMenuButtonClass('/collaborators')}
-          asChild
-        >
-          <Link to="/collaborators">
-            <Building2 size={20} />
-            <span>Colaboradores</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-
-      {/* Reports Menu - With improved visual state styling */}
-      <SidebarMenuItem>
-        <SidebarMenuButton 
-          className={cn(
-            "transition-colors duration-200",
-            isActive('/admin/reports') 
-              ? "text-sidebar-primary font-medium bg-sidebar-selected" 
-              : "hover:bg-sidebar-hover"
-          )}
-        >
-          <span>Reportes</span>
-        </SidebarMenuButton>
-        <SidebarMenuSub>
-          <SidebarMenuSubItem>
-            <SidebarMenuSubButton 
-              className={getMenuButtonClass('/admin/reports/transfers')}
-              asChild
-            >
-              <Link to="/admin/reports/transfers">
-                <FileSpreadsheet size={20} />
-                <span>Transfers</span>
-              </Link>
-            </SidebarMenuSubButton>
-          </SidebarMenuSubItem>
-          <SidebarMenuSubItem>
-            <SidebarMenuSubButton 
-              className={getMenuButtonClass('/admin/reports/analytics')}
-              asChild
-            >
-              <Link to="/admin/reports/analytics">
-                <BarChart3 size={20} />
-                <span>Análisis</span>
-              </Link>
-            </SidebarMenuSubButton>
-          </SidebarMenuSubItem>
-        </SidebarMenuSub>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    </>
   );
-};
+}

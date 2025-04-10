@@ -27,6 +27,8 @@ export function useTransfers() {
           price,
           collaborator,
           commission,
+          payment_status,
+          payment_collaborator,
           expenses (
             id,
             date,
@@ -50,6 +52,8 @@ export function useTransfers() {
         price: Number(transfer.price),
         collaborator: transfer.collaborator || '',
         commission: Number(transfer.commission),
+        paymentStatus: transfer.payment_status || 'cobrado',
+        paymentCollaborator: transfer.payment_collaborator || '',
         expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
           transferId: transfer.id,
@@ -86,7 +90,9 @@ export function useTransfers() {
           destination: transferData.destination,
           price: transferData.price,
           collaborator: transferData.collaborator,
-          commission: transferData.commission
+          commission: transferData.commission,
+          payment_status: transferData.paymentStatus,
+          payment_collaborator: transferData.paymentCollaborator
         })
         .select('id')
         .single();
@@ -110,13 +116,22 @@ export function useTransfers() {
       // Remove 'expenses' field if it exists as we don't want to update it
       const { expenses, ...transferUpdateData } = transferData;
       
+      // Map to Supabase snake_case fields
+      const supabaseData = {
+        ...transferUpdateData,
+        payment_status: transferUpdateData.paymentStatus,
+        payment_collaborator: transferUpdateData.paymentCollaborator,
+        updated_at: new Date().toISOString()
+      };
+      
+      // Remove the camelCase versions to prevent duplicates
+      if (supabaseData.paymentStatus) delete supabaseData.paymentStatus;
+      if (supabaseData.paymentCollaborator) delete supabaseData.paymentCollaborator;
+      
       // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('transfers')
-        .update({
-          ...transferUpdateData,
-          updated_at: new Date().toISOString()
-        })
+        .update(supabaseData)
         .eq('id', id);
 
       if (error) {
@@ -165,12 +180,29 @@ export function useTransfers() {
     }
   }, [user]);
 
+  const getPendingTransfersByCollaborator = useCallback(() => {
+    const pendingTransfers = transfers.filter(t => t.paymentStatus === 'a_cobrar');
+    const grouped: Record<string, Transfer[]> = {};
+    
+    pendingTransfers.forEach(transfer => {
+      if (transfer.paymentCollaborator) {
+        if (!grouped[transfer.paymentCollaborator]) {
+          grouped[transfer.paymentCollaborator] = [];
+        }
+        grouped[transfer.paymentCollaborator].push(transfer);
+      }
+    });
+    
+    return grouped;
+  }, [transfers]);
+
   return {
     transfers,
     loading,
     fetchTransfers,
     createTransfer,
     updateTransfer,
-    deleteTransfer
+    deleteTransfer,
+    getPendingTransfersByCollaborator
   };
 }
