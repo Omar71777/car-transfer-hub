@@ -16,6 +16,8 @@ import ShiftsPage from "./pages/shifts/ShiftsPage";
 import CollaboratorsPage from "./pages/collaborators/CollaboratorsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import NotFound from "./pages/NotFound";
+import TransfersReportPage from "./pages/admin/reports/TransfersReportPage";
+import AnalyticsReportPage from "./pages/admin/reports/AnalyticsReportPage";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,10 @@ const AppRoutes = () => (
     
     {/* Admin routes */}
     <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
+    
+    {/* New Report Routes */}
+    <Route path="/admin/reports/transfers" element={<AdminRoute><TransfersReportPage /></AdminRoute>} />
+    <Route path="/admin/reports/analytics" element={<AdminRoute><AnalyticsReportPage /></AdminRoute>} />
     
     <Route path="*" element={<NotFound />} />
   </Routes>
