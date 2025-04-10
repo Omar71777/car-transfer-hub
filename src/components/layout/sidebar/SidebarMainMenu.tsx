@@ -11,81 +11,136 @@ import {
   FileText,
   CreditCard
 } from 'lucide-react';
-import { SidebarMenuProps } from '@/components/ui/sidebar/sidebar-menu';
-import { SidebarMenu, SidebarMenuHeader } from '@/components/ui/sidebar';
+import { 
+  SidebarMenu, 
+  SidebarMenuItem, 
+  SidebarMenuButton 
+} from '@/components/ui/sidebar';
+import { SidebarGroupLabel } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
-export function SidebarMainMenu(props: SidebarMenuProps) {
+export function SidebarMainMenu({ className, ...props }: React.ComponentProps<typeof SidebarMenu>) {
   const location = useLocation();
 
+  // Helper to determine if a path is active
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.includes(path);
+  };
+
+  // Get class names for menu buttons based on active state
+  const getMenuButtonClass = (path: string) => {
+    return cn(
+      "transition-colors duration-200",
+      isActive(path) 
+        ? "text-sidebar-primary font-medium bg-sidebar-selected" 
+        : "hover:bg-sidebar-hover"
+    );
+  };
+
   return (
-    <SidebarMenu {...props}>
-      <SidebarMenuHeader>Navegación</SidebarMenuHeader>
+    <SidebarMenu className={className} {...props}>
+      <SidebarGroupLabel>Navegación</SidebarGroupLabel>
       
-      <Link 
-        to="/"
-        className={`sidebar-menu-item ${location.pathname === '/' && 'active'}`}
-      >
-        <Home className="h-5 w-5" />
-        <span>Dashboard</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/')}
+          asChild
+        >
+          <Link to="/">
+            <Home className="h-5 w-5" />
+            <span>Dashboard</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <Link
-        to="/transfers"
-        className={`sidebar-menu-item ${location.pathname.includes('/transfers') && 'active'}`}
-      >
-        <Banknote className="h-5 w-5" />
-        <span>Transfers</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/transfers')}
+          asChild
+        >
+          <Link to="/transfers">
+            <Banknote className="h-5 w-5" />
+            <span>Transfers</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <Link
-        to="/expenses"
-        className={`sidebar-menu-item ${location.pathname.includes('/expenses') && 'active'}`}
-      >
-        <Receipt className="h-5 w-5" />
-        <span>Gastos</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/expenses')}
+          asChild
+        >
+          <Link to="/expenses">
+            <Receipt className="h-5 w-5" />
+            <span>Gastos</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <Link
-        to="/profits"
-        className={`sidebar-menu-item ${location.pathname.includes('/profits') && 'active'}`}
-      >
-        <BarChart className="h-5 w-5" />
-        <span>Beneficios</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/profits')}
+          asChild
+        >
+          <Link to="/profits">
+            <BarChart className="h-5 w-5" />
+            <span>Beneficios</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <Link
-        to="/collaborators"
-        className={`sidebar-menu-item ${location.pathname.includes('/collaborators') && 'active'}`}
-      >
-        <Users className="h-5 w-5" />
-        <span>Colaboradores</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/collaborators')}
+          asChild
+        >
+          <Link to="/collaborators">
+            <Users className="h-5 w-5" />
+            <span>Colaboradores</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <SidebarMenuHeader>Informes</SidebarMenuHeader>
+      <SidebarGroupLabel>Informes</SidebarGroupLabel>
       
-      <Link
-        to="/admin/reports/transfers"
-        className={`sidebar-menu-item ${location.pathname.includes('/admin/reports/transfers') && 'active'}`}
-      >
-        <FileText className="h-5 w-5" />
-        <span>Informe Transfers</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/admin/reports/transfers')}
+          asChild
+        >
+          <Link to="/admin/reports/transfers">
+            <FileText className="h-5 w-5" />
+            <span>Informe Transfers</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <Link
-        to="/reports/unpaid"
-        className={`sidebar-menu-item ${location.pathname.includes('/reports/unpaid') && 'active'}`}
-      >
-        <CreditCard className="h-5 w-5" />
-        <span>Pagos Pendientes</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/reports/unpaid')}
+          asChild
+        >
+          <Link to="/reports/unpaid">
+            <CreditCard className="h-5 w-5" />
+            <span>Pagos Pendientes</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <Link
-        to="/admin/reports/analytics"
-        className={`sidebar-menu-item ${location.pathname.includes('/admin/reports/analytics') && 'active'}`}
-      >
-        <BarChart className="h-5 w-5" />
-        <span>Análisis</span>
-      </Link>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          className={getMenuButtonClass('/admin/reports/analytics')}
+          asChild
+        >
+          <Link to="/admin/reports/analytics">
+            <BarChart className="h-5 w-5" />
+            <span>Análisis</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
     </SidebarMenu>
   );
 }
