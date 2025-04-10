@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BillForm } from '@/components/billing/BillForm';
 import { BillsTable } from '@/components/billing/BillsTable';
 import { BillDetail } from '@/components/billing/BillDetail';
+import { BillEditForm } from '@/components/billing/BillEditForm';
 import { useBilling } from '@/hooks/useBilling';
 import { Bill, CreateBillDto } from '@/types/billing';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,11 +13,23 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from 'sonner';
 
 const BillingPage = () => {
-  const { bills, loading, fetchBills, createBill, getBill, updateBillStatus, deleteBill } = useBilling();
+  const { 
+    bills, 
+    loading, 
+    fetchBills, 
+    createBill, 
+    getBill, 
+    updateBill, 
+    updateBillStatus, 
+    deleteBill, 
+    printBill,
+    exportBillCsv
+  } = useBilling();
 
   const [activeTab, setActiveTab] = useState('bills');
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
   const [viewBill, setViewBill] = useState<Bill | null>(null);
@@ -38,14 +51,25 @@ const BillingPage = () => {
     }
   };
 
+  const handleEditBill = async (bill: Bill) => {
+    const fullBill = await getBill(bill.id);
+    if (fullBill) {
+      setSelectedBill(fullBill);
+      setIsEditDialogOpen(true);
+    }
+  };
+
   const handleDeleteBill = (bill: Bill) => {
     setSelectedBill(bill);
     setIsDeleteDialogOpen(true);
   };
 
-  const handlePrintBill = (bill: Bill) => {
-    // For now, we'll just show a toast
-    toast.info('Impresión de factura no implementada');
+  const handlePrintBill = async (bill: Bill) => {
+    await printBill(bill.id);
+  };
+
+  const handleDownloadBill = async (bill: Bill) => {
+    await exportBillCsv(bill.id);
   };
 
   const handleFormSubmit = async (values: CreateBillDto) => {
@@ -55,6 +79,23 @@ const BillingPage = () => {
       setIsFormDialogOpen(false);
       fetchBills();
       setActiveTab('bills');
+    }
+  };
+
+  const handleEditSubmit = async (id: string, data: Partial<Bill>) => {
+    const success = await updateBill(id, data);
+    if (success) {
+      toast.success('Factura actualizada con éxito');
+      setIsEditDialogOpen(false);
+      fetchBills();
+      
+      // Si la factura está siendo visualizada, actualizar la vista
+      if (viewBill && viewBill.id === id) {
+        const updatedBill = await getBill(id);
+        if (updatedBill) {
+          setViewBill(updatedBill);
+        }
+      }
     }
   };
 
@@ -74,8 +115,21 @@ const BillingPage = () => {
 
     const success = await updateBillStatus(viewBill.id, status);
     if (success) {
-      toast.success(`Factura marcada como ${status === 'sent' ? 'enviada' : 'pagada'}`);
-      setIsViewDialogOpen(false);
+      const statusMessages = {
+        draft: 'borrador',
+        sent: 'enviada',
+        paid: 'pagada',
+        cancelled: 'cancelada'
+      };
+      
+      toast.success(`Factura marcada como ${statusMessages[status]}`);
+      
+      // Actualizar la factura en la vista
+      const updatedBill = await getBill(viewBill.id);
+      if (updatedBill) {
+        setViewBill(updatedBill);
+      }
+      
       fetchBills();
     }
   };
@@ -99,6 +153,7 @@ const BillingPage = () => {
               bills={bills}
               onAdd={handleAddBill}
               onView={handleViewBill}
+              onEdit={handleEditBill}
               onPrint={handlePrintBill}
               onDelete={handleDeleteBill}
             />
@@ -126,9 +181,30 @@ const BillingPage = () => {
             {viewBill && (
               <BillDetail
                 bill={viewBill}
-                onPrint={() => handlePrintBill(viewBill)}
-                onDownload={() => toast.info('Descarga de factura no implementada')}
+                onEdit={() => {
+                  setIsViewDialogOpen(false);
+                  handleEditBill(viewBill);
+                }}
+                onPrint={handlePrintBill}
+                onDownload={() => handleDownloadBill(viewBill)}
                 onStatusChange={handleStatusChange}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        <Dialog 
+          open={isEditDialogOpen} 
+          onOpenChange={setIsEditDialogOpen}
+        >
+          <DialogContent className="sm:max-w-[800px]">
+            <DialogHeader>
+              <DialogTitle>Editar Factura</DialogTitle>
+            </DialogHeader>
+            {selectedBill && (
+              <BillEditForm 
+                bill={selectedBill} 
+                onSubmit={(data) => handleEditSubmit(selectedBill.id, data)} 
               />
             )}
           </DialogContent>

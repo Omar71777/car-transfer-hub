@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Bill, BillPreview, CreateBillDto, TaxApplicationType } from '@/types/billing';
@@ -241,6 +242,40 @@ export function useBilling() {
     }
   }, []);
 
+  const updateBill = useCallback(async (id: string, data: Partial<Bill>) => {
+    try {
+      // Filtramos solo los campos que se pueden actualizar
+      const updateData: any = {};
+      
+      if (data.notes !== undefined) updateData.notes = data.notes;
+      if (data.date !== undefined) updateData.date = data.date;
+      if (data.due_date !== undefined) updateData.due_date = data.due_date;
+      if (data.tax_rate !== undefined) updateData.tax_rate = data.tax_rate;
+      if (data.tax_application !== undefined) updateData.tax_application = data.tax_application;
+      
+      // Si no hay datos para actualizar, salimos
+      if (Object.keys(updateData).length === 0) {
+        return false;
+      }
+      
+      updateData.updated_at = new Date().toISOString();
+      
+      const { error } = await supabase
+        .from('bills')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      toast.success('Factura actualizada con éxito');
+      return true;
+    } catch (error: any) {
+      toast.error(`Error al actualizar factura: ${error.message}`);
+      console.error('Error updating bill:', error);
+      return false;
+    }
+  }, []);
+
   const deleteBill = useCallback(async (id: string) => {
     try {
       const { data: billItems, error: itemsQueryError } = await supabase
@@ -316,6 +351,7 @@ export function useBilling() {
     getBill,
     calculateBillPreview,
     createBill,
+    updateBill,
     updateBillStatus,
     deleteBill,
     exportBillCsv,

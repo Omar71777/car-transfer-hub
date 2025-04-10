@@ -78,15 +78,18 @@ export function useAuthOperations() {
     try {
       console.log('Actualizando perfil con datos:', data);
       
+      // Asegurarse de que los datos de empresa están incluidos correctamente
+      const updateData: Partial<UserProfile> = {...data};
+      
       const { error } = await supabase
         .from('profiles')
-        .update(data)
+        .update(updateData)
         .eq('id', user.id);
 
       if (error) throw error;
       
       // Actualizar el estado local con los nuevos datos
-      setProfile(prev => prev ? { ...prev, ...data } : null);
+      setProfile(prev => prev ? { ...prev, ...updateData } : null);
       
       toast.success('Perfil actualizado con éxito');
     } catch (error: any) {

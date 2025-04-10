@@ -5,7 +5,7 @@ import { Bill } from '@/types/billing';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Printer, Download, Send, RotateCcw } from 'lucide-react';
+import { Printer, Download, Send, RotateCcw, Pencil } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,12 +15,13 @@ import {
 
 interface BillDetailProps {
   bill: Bill;
-  onPrint: () => void;
+  onEdit: () => void;
+  onPrint: (bill: Bill) => void;
   onDownload: () => void;
   onStatusChange: (status: Bill['status']) => void;
 }
 
-export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDetailProps) {
+export function BillDetail({ bill, onEdit, onPrint, onDownload, onStatusChange }: BillDetailProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
@@ -54,7 +55,20 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
     }
   };
 
+  // Determinar los estados siguientes válidos para esta factura
+  const getNextStates = () => {
+    switch (bill.status) {
+      case 'draft':
+        return ['sent', 'cancelled'];
+      case 'sent':
+        return ['paid', 'cancelled'];
+      default:
+        return [];
+    }
+  };
+
   const previousStates = getPreviousStates();
+  const nextStates = getNextStates();
 
   return (
     <div className="space-y-6">
@@ -69,7 +83,7 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
           </div>
         </div>
         <div className="flex space-x-2">
-          <Button size="sm" variant="outline" onClick={onPrint}>
+          <Button size="sm" variant="outline" onClick={() => onPrint(bill)}>
             <Printer className="h-4 w-4 mr-2" />
             Imprimir
           </Button>
@@ -77,18 +91,29 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
             <Download className="h-4 w-4 mr-2" />
             Descargar
           </Button>
+          <Button size="sm" variant="outline" onClick={onEdit}>
+            <Pencil className="h-4 w-4 mr-2" />
+            Editar
+          </Button>
           
-          {bill.status === 'draft' && (
-            <Button size="sm" onClick={() => onStatusChange('sent')}>
-              <Send className="h-4 w-4 mr-2" />
-              Marcar como enviada
-            </Button>
-          )}
-          
-          {bill.status === 'sent' && (
-            <Button size="sm" onClick={() => onStatusChange('paid')}>
-              Marcar como pagada
-            </Button>
+          {nextStates.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm">
+                  Cambiar estado
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {nextStates.map(state => (
+                  <DropdownMenuItem key={state} onClick={() => onStatusChange(state as Bill['status'])}>
+                    {state === 'sent' ? 'Marcar como enviada' : 
+                     state === 'paid' ? 'Marcar como pagada' :
+                     state === 'cancelled' ? 'Cancelar factura' : 
+                     `Cambiar a ${state}`}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           
           {previousStates.length > 0 && (
@@ -102,7 +127,9 @@ export function BillDetail({ bill, onPrint, onDownload, onStatusChange }: BillDe
               <DropdownMenuContent>
                 {previousStates.map(state => (
                   <DropdownMenuItem key={state} onClick={() => onStatusChange(state as Bill['status'])}>
-                    {state === 'draft' ? 'Revertir a borrador' : state === 'sent' ? 'Revertir a enviada' : 'Revertir'}
+                    {state === 'draft' ? 'Revertir a borrador' : 
+                     state === 'sent' ? 'Revertir a enviada' : 
+                     `Revertir a ${state}`}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>

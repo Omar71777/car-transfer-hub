@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Eye, FileText, Printer, Trash, Plus } from 'lucide-react';
+import { Eye, FileText, Printer, Trash, Plus, Pencil } from 'lucide-react';
 import { Bill } from '@/types/billing';
 import { Badge } from '@/components/ui/badge';
 
@@ -17,11 +17,12 @@ interface BillsTableProps {
   bills: Bill[];
   onAdd: () => void;
   onView: (bill: Bill) => void;
+  onEdit: (bill: Bill) => void;
   onPrint: (bill: Bill) => void;
   onDelete: (bill: Bill) => void;
 }
 
-export function BillsTable({ bills, onAdd, onView, onPrint, onDelete }: BillsTableProps) {
+export function BillsTable({ bills, onAdd, onView, onEdit, onPrint, onDelete }: BillsTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
@@ -87,6 +88,9 @@ export function BillsTable({ bills, onAdd, onView, onPrint, onDelete }: BillsTab
                 <TableCell className="text-right space-x-1">
                   <Button size="sm" variant="outline" onClick={() => onView(bill)}>
                     <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => onEdit(bill)}>
+                    <Pencil className="h-4 w-4" />
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => onPrint(bill)}>
                     <Printer className="h-4 w-4" />
