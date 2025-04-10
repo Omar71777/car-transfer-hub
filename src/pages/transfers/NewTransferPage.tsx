@@ -2,33 +2,21 @@
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TransferForm } from '@/components/transfers/TransferForm';
-import { generateId } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Transfer } from '@/types';
+import { useTransfers } from '@/hooks/useTransfers';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
+  const { createTransfer } = useTransfers();
 
-  const handleSubmit = (values: any) => {
-    // Crear el nuevo transfer
-    const newTransfer: Transfer = {
-      id: generateId(),
-      ...values,
-      expenses: []
-    };
+  const handleSubmit = async (values: any) => {
+    const transferId = await createTransfer(values);
     
-    // Obtener transfers existentes del localStorage
-    const existingTransfers = localStorage.getItem('transfers');
-    const transfers = existingTransfers ? JSON.parse(existingTransfers) : [];
-    
-    // Agregar el nuevo transfer y guardar en localStorage
-    transfers.push(newTransfer);
-    localStorage.setItem('transfers', JSON.stringify(transfers));
-    
-    // Mostrar notificación y redireccionar
-    toast.success('Transfer creado exitosamente');
-    navigate('/transfers');
+    if (transferId) {
+      toast.success('Transfer creado exitosamente');
+      navigate('/transfers');
+    }
   };
 
   return (

@@ -5,9 +5,8 @@ import { ExpensesTable } from '@/components/expenses/ExpensesTable';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { Expense, Transfer } from '@/types';
-import { generateId } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
+import { Expense } from '@/types';
+import { useExpenses } from '@/hooks/useExpenses';
 import {
   Dialog,
   DialogContent,
@@ -16,90 +15,28 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-// Datos de ejemplo (simulando lo que vendría de Firebase)
-const dummyExpenses: Expense[] = [
-  {
-    id: '1',
-    transferId: '1',
-    date: '2025-04-09',
-    concept: 'Combustible',
-    amount: 45.50
-  },
-  {
-    id: '2',
-    transferId: '2',
-    date: '2025-04-09',
-    concept: 'Peaje',
-    amount: 12.30
-  },
-  {
-    id: '3',
-    transferId: '3',
-    date: '2025-04-10',
-    concept: 'Lavado de vehículo',
-    amount: 25.00
-  }
-];
-
 const ExpensesPage = () => {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const { expenses, loading, fetchExpenses, createExpense, updateExpense, deleteExpense } = useExpenses();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentExpense, setCurrentExpense] = useState<Expense | null>(null);
-  const { toast } = useToast();
 
-  // Cargar expenses desde localStorage al montar el componente
   useEffect(() => {
-    const storedExpenses = localStorage.getItem('expenses');
-    if (storedExpenses) {
-      setExpenses(JSON.parse(storedExpenses));
-    } else {
-      setExpenses(dummyExpenses);
-      localStorage.setItem('expenses', JSON.stringify(dummyExpenses));
-    }
-  }, []);
+    fetchExpenses();
+  }, [fetchExpenses]);
 
-  // Guardar expenses en localStorage cada vez que cambian
-  useEffect(() => {
-    if (expenses.length > 0) {
-      localStorage.setItem('expenses', JSON.stringify(expenses));
-    }
-  }, [expenses]);
-
-  // Función para agregar un nuevo gasto al transfer correspondiente
-  const updateTransferWithExpense = (newExpense: Expense) => {
-    const storedTransfers = localStorage.getItem('transfers');
-    if (storedTransfers) {
-      const transfers: Transfer[] = JSON.parse(storedTransfers);
-      const updatedTransfers = transfers.map(transfer => 
-        transfer.id === newExpense.transferId 
-          ? { ...transfer, expenses: [...transfer.expenses, newExpense] } 
-          : transfer
-      );
-      localStorage.setItem('transfers', JSON.stringify(updatedTransfers));
-    }
-  };
-
-  const handleAddExpense = (values: any) => {
-    const newExpense = {
-      id: generateId(),
+  const handleAddExpense = async (values: any) => {
+    const expenseId = await createExpense({
       transferId: values.transferId || '',
       date: values.date,
       concept: values.concept,
       amount: parseFloat(values.amount)
-    };
-
-    setExpenses([...expenses, newExpense]);
-    
-    // Si el gasto está asociado a un transfer, también actualizamos ese transfer
-    if (newExpense.transferId) {
-      updateTransferWithExpense(newExpense);
-    }
-    
-    setIsDialogOpen(false);
-    toast({
-      title: "Gasto registrado",
-      description: "El gasto ha sido registrado exitosamente.",
     });
+    
+    if (expenseId) {
+      setIsDialogOpen(false);
+      await fetchExpenses();
+      toast.success("Gasto registrado con éxito");
+    }
   };
 
   const handleEditExpense = (expense: Expense) => {
@@ -107,56 +44,31 @@ const ExpensesPage = () => {
     setIsDialogOpen(true);
   };
 
-  const handleUpdateExpense = (values: any) => {
+  const handleUpdateExpense = async (values: any) => {
     if (!currentExpense) return;
 
-    const updatedExpense = {
-      ...currentExpense,
+    const success = await updateExpense(currentExpense.id, {
+      transferId: values.transferId || currentExpense.transferId,
       date: values.date,
       concept: values.concept,
-      amount: parseFloat(values.amount),
-      transferId: values.transferId || currentExpense.transferId
-    };
-
-    setExpenses(expenses.map(expense => 
-      expense.id === currentExpense.id 
-        ? updatedExpense
-        : expense
-    ));
-    
-    setIsDialogOpen(false);
-    setCurrentExpense(null);
-    toast({
-      title: "Gasto actualizado",
-      description: "El gasto ha sido actualizado exitosamente.",
+      amount: parseFloat(values.amount)
     });
+    
+    if (success) {
+      setIsDialogOpen(false);
+      setCurrentExpense(null);
+      await fetchExpenses();
+      toast.success("Gasto actualizado con éxito");
+    }
   };
 
-  const handleDeleteExpense = (id: string) => {
-    // Buscar el gasto para ver si está asociado a un transfer
-    const expenseToDelete = expenses.find(expense => expense.id === id);
+  const handleDeleteExpense = async (id: string) => {
+    const success = await deleteExpense(id);
     
-    // Eliminar gasto de la lista de gastos
-    setExpenses(expenses.filter(expense => expense.id !== id));
-    
-    // Si el gasto está asociado a un transfer, también actualizamos ese transfer
-    if (expenseToDelete && expenseToDelete.transferId) {
-      const storedTransfers = localStorage.getItem('transfers');
-      if (storedTransfers) {
-        const transfers: Transfer[] = JSON.parse(storedTransfers);
-        const updatedTransfers = transfers.map(transfer => 
-          transfer.id === expenseToDelete.transferId 
-            ? { ...transfer, expenses: transfer.expenses.filter(e => e.id !== id) } 
-            : transfer
-        );
-        localStorage.setItem('transfers', JSON.stringify(updatedTransfers));
-      }
+    if (success) {
+      await fetchExpenses();
+      toast.success("Gasto eliminado con éxito");
     }
-    
-    toast({
-      title: "Gasto eliminado",
-      description: "El gasto ha sido eliminado exitosamente.",
-    });
   };
 
   return (
@@ -190,11 +102,17 @@ const ExpensesPage = () => {
           </Dialog>
         </div>
 
-        <ExpensesTable 
-          expenses={expenses} 
-          onEdit={handleEditExpense} 
-          onDelete={handleDeleteExpense}
-        />
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-muted-foreground">Cargando gastos...</p>
+          </div>
+        ) : (
+          <ExpensesTable 
+            expenses={expenses} 
+            onEdit={handleEditExpense} 
+            onDelete={handleDeleteExpense}
+          />
+        )}
       </div>
     </MainLayout>
   );

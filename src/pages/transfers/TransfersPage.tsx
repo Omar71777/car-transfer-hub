@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TransfersTable } from '@/components/transfers/TransfersTable';
@@ -7,102 +8,47 @@ import { PlusCircle } from 'lucide-react';
 import { Transfer } from '@/types';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { generateId } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { TransferForm } from '@/components/transfers/TransferForm';
-
-const dummyTransfers: Transfer[] = [
-  {
-    id: '1',
-    date: '2025-04-09',
-    time: '09:30',
-    origin: 'Aeropuerto de Ibiza',
-    destination: 'Hotel Ushuaïa',
-    price: 85,
-    collaborator: 'Carlos Sánchez',
-    commission: 10,
-    expenses: []
-  },
-  {
-    id: '2',
-    date: '2025-04-09',
-    time: '14:45',
-    origin: 'Hotel Pacha',
-    destination: 'Playa d\'en Bossa',
-    price: 65,
-    collaborator: 'María López',
-    commission: 15,
-    expenses: []
-  },
-  {
-    id: '3',
-    date: '2025-04-10',
-    time: '11:15',
-    origin: 'Puerto de Ibiza',
-    destination: 'Cala Comte',
-    price: 120,
-    collaborator: 'Juan Pérez',
-    commission: 10,
-    expenses: []
-  }
-];
+import { useTransfers } from '@/hooks/useTransfers';
+import { useExpenses } from '@/hooks/useExpenses';
 
 const TransfersPage = () => {
-  const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const { transfers, loading, fetchTransfers, updateTransfer, deleteTransfer } = useTransfers();
+  const { createExpense } = useExpenses();
   const [selectedTransferId, setSelectedTransferId] = useState<string | null>(null);
   const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const storedTransfers = localStorage.getItem('transfers');
-    if (storedTransfers) {
-      setTransfers(JSON.parse(storedTransfers));
-    } else {
-      setTransfers(dummyTransfers);
-      localStorage.setItem('transfers', JSON.stringify(dummyTransfers));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (transfers.length > 0) {
-      localStorage.setItem('transfers', JSON.stringify(transfers));
-    }
-  }, [transfers]);
+    fetchTransfers();
+  }, [fetchTransfers]);
 
   const handleEditTransfer = (transfer: Transfer) => {
     setEditingTransfer(transfer);
     setIsEditDialogOpen(true);
   };
 
-  const handleEditSubmit = (values: any) => {
+  const handleEditSubmit = async (values: any) => {
     if (!editingTransfer) return;
     
-    const updatedTransfer = {
-      ...editingTransfer,
-      ...values
-    };
-
-    setTransfers(prevTransfers => 
-      prevTransfers.map(transfer => 
-        transfer.id === editingTransfer.id ? updatedTransfer : transfer
-      )
-    );
-
-    setIsEditDialogOpen(false);
-    toast({
-      title: "Transfer actualizado",
-      description: "El transfer ha sido actualizado exitosamente.",
-    });
+    const success = await updateTransfer(editingTransfer.id, values);
+    
+    if (success) {
+      setIsEditDialogOpen(false);
+      toast.success("Transfer actualizado");
+      fetchTransfers();
+    }
   };
 
-  const handleDeleteTransfer = (id: string) => {
-    setTransfers(transfers.filter(transfer => transfer.id !== id));
-    toast({
-      title: "Transfer eliminado",
-      description: "El transfer ha sido eliminado exitosamente.",
-    });
+  const handleDeleteTransfer = async (id: string) => {
+    const success = await deleteTransfer(id);
+    
+    if (success) {
+      toast.success("Transfer eliminado");
+      fetchTransfers();
+    }
   };
 
   const handleAddExpense = (transferId: string) => {
@@ -110,28 +56,19 @@ const TransfersPage = () => {
     setIsExpenseDialogOpen(true);
   };
 
-  const handleExpenseSubmit = (values: any) => {
-    const newExpense = {
-      id: generateId(),
+  const handleExpenseSubmit = async (values: any) => {
+    const expenseId = await createExpense({
       transferId: selectedTransferId || '',
       date: values.date,
       concept: values.concept,
-      amount: values.amount
-    };
-
-    setTransfers(prevTransfers => 
-      prevTransfers.map(transfer => 
-        transfer.id === selectedTransferId 
-          ? { ...transfer, expenses: [...transfer.expenses, newExpense] } 
-          : transfer
-      )
-    );
-
-    setIsExpenseDialogOpen(false);
-    toast({
-      title: "Gasto añadido",
-      description: "El gasto ha sido añadido al transfer exitosamente.",
+      amount: parseFloat(values.amount)
     });
+    
+    if (expenseId) {
+      setIsExpenseDialogOpen(false);
+      toast.success("Gasto añadido al transfer");
+      fetchTransfers();
+    }
   };
 
   return (
@@ -150,12 +87,18 @@ const TransfersPage = () => {
           </Button>
         </div>
 
-        <TransfersTable 
-          transfers={transfers} 
-          onEdit={handleEditTransfer} 
-          onDelete={handleDeleteTransfer}
-          onAddExpense={handleAddExpense}
-        />
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-muted-foreground">Cargando transfers...</p>
+          </div>
+        ) : (
+          <TransfersTable 
+            transfers={transfers} 
+            onEdit={handleEditTransfer} 
+            onDelete={handleDeleteTransfer}
+            onAddExpense={handleAddExpense}
+          />
+        )}
 
         <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
           <DialogContent>

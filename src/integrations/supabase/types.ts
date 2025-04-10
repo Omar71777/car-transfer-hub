@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      expenses: {
+        Row: {
+          amount: number
+          concept: string
+          created_at: string
+          date: string
+          id: string
+          transfer_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          concept: string
+          created_at?: string
+          date: string
+          id?: string
+          transfer_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          amount?: number
+          concept?: string
+          created_at?: string
+          date?: string
+          id?: string
+          transfer_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -36,6 +77,48 @@ export type Database = {
           last_name?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      transfers: {
+        Row: {
+          collaborator: string | null
+          commission: number
+          created_at: string
+          date: string
+          destination: string
+          id: string
+          origin: string
+          price: number
+          time: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          collaborator?: string | null
+          commission: number
+          created_at?: string
+          date: string
+          destination: string
+          id?: string
+          origin: string
+          price: number
+          time?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          collaborator?: string | null
+          commission?: number
+          created_at?: string
+          date?: string
+          destination?: string
+          id?: string
+          origin?: string
+          price?: number
+          time?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
