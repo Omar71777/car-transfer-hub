@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { 
@@ -7,7 +8,8 @@ import {
   TableRow, 
   TableHead, 
   TableCell,
-  TableCaption 
+  TableCaption,
+  TableFooter
 } from '@/components/ui/table';
 import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
@@ -17,6 +19,7 @@ import { downloadCSV, printProfitReport } from '@/lib/exports';
 import { Button } from '@/components/ui/button';
 import { FileDown, Printer } from 'lucide-react';
 import { useAuth } from '@/contexts/auth';
+import { formatCurrency } from '@/lib/utils';
 
 const TransfersReportPage = () => {
   const { transfers, loading } = useTransfers();
@@ -31,7 +34,8 @@ const TransfersReportPage = () => {
       Destino: transfer.destination,
       Precio: transfer.price,
       Colaborador: transfer.collaborator || 'N/A',
-      Comisión: transfer.commission + '%'
+      Comisión: transfer.commission + '%',
+      'Importe Comisión': (transfer.price * transfer.commission / 100).toFixed(2) + '€'
     }));
 
     downloadCSV(data, 'transfers-report.csv');
@@ -77,6 +81,10 @@ const TransfersReportPage = () => {
     );
   };
 
+  // Calculate totals
+  const totalPrice = transfers.reduce((sum, t) => sum + t.price, 0);
+  const totalCommissions = transfers.reduce((sum, t) => sum + (t.price * t.commission / 100), 0);
+
   return (
     <MainLayout>
       <div className="py-6">
@@ -118,34 +126,49 @@ const TransfersReportPage = () => {
                       <TableHead>Hora</TableHead>
                       <TableHead>Origen</TableHead>
                       <TableHead>Destino</TableHead>
-                      <TableHead>Precio (€)</TableHead>
+                      <TableHead className="text-right">Precio (€)</TableHead>
                       <TableHead>Colaborador</TableHead>
-                      <TableHead>Comisión</TableHead>
+                      <TableHead>Comisión (%)</TableHead>
+                      <TableHead className="text-right">Importe Comisión (€)</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8">Cargando...</TableCell>
+                        <TableCell colSpan={8} className="text-center py-8">Cargando...</TableCell>
                       </TableRow>
                     ) : transfers.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8">No hay transfers registrados</TableCell>
+                        <TableCell colSpan={8} className="text-center py-8">No hay transfers registrados</TableCell>
                       </TableRow>
                     ) : (
-                      transfers.map((transfer) => (
-                        <TableRow key={transfer.id}>
-                          <TableCell>{transfer.date}</TableCell>
-                          <TableCell>{transfer.time || 'N/A'}</TableCell>
-                          <TableCell>{transfer.origin}</TableCell>
-                          <TableCell>{transfer.destination}</TableCell>
-                          <TableCell>{transfer.price}€</TableCell>
-                          <TableCell>{transfer.collaborator || 'N/A'}</TableCell>
-                          <TableCell>{transfer.commission}%</TableCell>
-                        </TableRow>
-                      ))
+                      transfers.map((transfer) => {
+                        const commissionAmount = transfer.price * transfer.commission / 100;
+                        return (
+                          <TableRow key={transfer.id}>
+                            <TableCell>{transfer.date}</TableCell>
+                            <TableCell>{transfer.time || 'N/A'}</TableCell>
+                            <TableCell>{transfer.origin}</TableCell>
+                            <TableCell>{transfer.destination}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(transfer.price)}</TableCell>
+                            <TableCell>{transfer.collaborator || 'N/A'}</TableCell>
+                            <TableCell>{transfer.commission}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(commissionAmount)}</TableCell>
+                          </TableRow>
+                        );
+                      })
                     )}
                   </TableBody>
+                  {transfers.length > 0 && (
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-right font-bold">Totales:</TableCell>
+                        <TableCell className="text-right font-bold">{formatCurrency(totalPrice)}</TableCell>
+                        <TableCell colSpan={2}></TableCell>
+                        <TableCell className="text-right font-bold">{formatCurrency(totalCommissions)}</TableCell>
+                      </TableRow>
+                    </TableFooter>
+                  )}
                 </Table>
               </CardContent>
             </Card>
