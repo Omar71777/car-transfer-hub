@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, InfoIcon, Car, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export function ShiftSection() {
+export function InformationSection() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">

@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/auth';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { StatCards } from '@/components/dashboard/StatCards';
 import { QuickAccessCards } from '@/components/dashboard/QuickAccessCards';
-import { ShiftSection } from '@/components/dashboard/ShiftSection';
+import { InformationSection } from '@/components/dashboard/InformationSection';
 
 const Index = () => {
   const { user, isAdmin } = useAuth();
@@ -51,7 +51,7 @@ const Index = () => {
         
         {/* Information Section */}
         <div className="mb-12 mt-12">
-          <ShiftSection />
+          <InformationSection />
         </div>
       </div>
     </MainLayout>
