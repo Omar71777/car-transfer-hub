@@ -1,16 +1,13 @@
 
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { ShiftStats } from '@/components/shifts/ShiftStats';
-import { ShiftTimetable } from '@/components/shifts/ShiftTimetable';
-import { useShifts } from '@/hooks/useShifts';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon, CalendarIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { InfoIcon } from 'lucide-react';
 
 const ShiftsPage = () => {
-  const { shifts, drivers, stats, handleAddShift, handleDeleteShift } = useShifts();
-
   return (
     <MainLayout>
       <div className="py-6">
@@ -21,48 +18,40 @@ const ShiftsPage = () => {
         
         <Alert className="mb-6 bg-blue-50 dark:bg-blue-950/30 border-blue-200">
           <InfoIcon className="h-4 w-4 text-blue-500" />
-          <AlertTitle>Planificación de turnos consecutivos</AlertTitle>
+          <AlertTitle>Funcionalidad en desarrollo</AlertTitle>
           <AlertDescription>
-            Para crear turnos consecutivos, simplemente asigna un nuevo turno que comience justo cuando termina el anterior.
-            El sistema permite que un nuevo turno comience exactamente a la hora en que finaliza el anterior, sin solapamiento.
+            El planificador de turnos está actualmente en fase de desarrollo. 
+            Estamos trabajando para implementar una solución robusta que permita gestionar los turnos de forma eficiente.
           </AlertDescription>
         </Alert>
         
-        {/* Example image of desired layout */}
-        <Card className="mb-6 glass-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5 text-primary" />
-              Diseño de Planificador
+              Planificador de Turnos
             </CardTitle>
             <CardDescription>
-              El planificador muestra días como columnas y horas como filas para una visualización clara
+              El planificador de turnos estará disponible próximamente
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex justify-center">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <div className="text-center max-w-md">
+              <p className="text-muted-foreground mb-4">
+                Estamos desarrollando un planificador de turnos intuitivo que te permitirá gestionar los horarios de los conductores de forma eficiente.
+              </p>
               <img 
                 src="/lovable-uploads/edcc9b22-f51b-443a-b987-66de8a970664.png" 
                 alt="Diseño del planificador de turnos" 
-                className="max-w-full h-auto rounded-md border"
+                className="max-w-full h-auto rounded-md border mx-auto"
                 style={{ maxHeight: '300px' }}
               />
+              <p className="mt-4 text-sm text-muted-foreground">
+                Imagen de referencia del diseño que estamos implementando
+              </p>
             </div>
           </CardContent>
         </Card>
-        
-        {/* Dashboard stats for shifts */}
-        <ShiftStats stats={stats} />
-        
-        {/* Interactive shift timetable */}
-        <div className="mt-6">
-          <ShiftTimetable 
-            shifts={shifts} 
-            drivers={drivers} 
-            onAddShift={handleAddShift}
-            onDeleteShift={handleDeleteShift}
-          />
-        </div>
       </div>
     </MainLayout>
   );
