@@ -67,7 +67,7 @@ export const useDataLoader = (): {
           price: Number(transfer.price),
           collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
           commission: Number(transfer.commission),
-          commissionType: 'percentage', // Default to percentage since we don't have this in the database
+          commissionType: 'percentage' as const, // Use "as const" to satisfy TypeScript's type requirement
           paymentStatus: transfer.payment_status || 'pending', 
           expenses: []
         }));
