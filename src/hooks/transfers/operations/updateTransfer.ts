@@ -15,7 +15,8 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       discountValue, 
       commissionType, 
       clientId, 
-      paymentStatus, 
+      paymentStatus,
+      hours,
       ...rest 
     } = transferData;
     
@@ -28,6 +29,8 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       discount_value: discountValue,
       payment_status: paymentStatus,
       client_id: clientId,
+      // Convert hours to number for database if it exists
+      hours: hours !== undefined ? Number(hours) : undefined,
       origin: rest.origin?.toLowerCase(),
       destination: rest.destination?.toLowerCase(),
       collaborator: rest.collaborator?.toLowerCase(),

@@ -131,7 +131,7 @@ export async function fetchAllTransfers(user: any) {
         serviceType,
         origin,
         destination,
-        hours: transfer.hours !== null ? Number(transfer.hours) : undefined,
+        hours: transfer.hours !== null ? transfer.hours : undefined, // Keep as number from DB
         price: Number(transfer.price),
         discountType: transfer.discount_type,
         discountValue: Number(transfer.discount_value) || 0,
