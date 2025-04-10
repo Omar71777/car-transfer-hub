@@ -8,57 +8,57 @@ export function useClients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Temporary implementation until database tables are created
   const fetchClients = useCallback(async () => {
     setLoading(true);
     try {
-      // For now, return some sample clients
-      const sampleClients: Client[] = [
-        {
-          id: '1',
-          name: 'Sample Client 1',
-          email: 'client1@example.com',
-          phone: '+34 123 456 789',
-          taxId: 'A12345678',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        },
-        {
-          id: '2',
-          name: 'Sample Client 2',
-          email: 'client2@example.com',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
-      ];
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
       
-      setClients(sampleClients);
+      setClients(data as Client[]);
+      setLoading(false);
     } catch (error: any) {
-      toast.error(`Error fetching clients: ${error.message}`);
+      toast.error(`Error al cargar clientes: ${error.message}`);
       console.error('Error fetching clients:', error);
-    } finally {
       setLoading(false);
     }
   }, []);
 
   const getClient = useCallback(async (id: string) => {
     try {
-      // Return a sample client for now
-      return clients.find(client => client.id === id) || null;
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      
+      return data as Client;
     } catch (error: any) {
-      toast.error(`Error fetching client: ${error.message}`);
+      toast.error(`Error al obtener cliente: ${error.message}`);
       console.error('Error fetching client:', error);
       return null;
     }
-  }, [clients]);
+  }, []);
 
   const createClient = useCallback(async (clientData: CreateClientDto) => {
     try {
-      // Just display a toast and return a fake ID for now
-      toast.success('This is a temporary implementation. Database tables need to be created.');
-      return 'temp-id-' + Date.now();
+      const { data, error } = await supabase
+        .from('clients')
+        .insert([clientData])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      toast.success('Cliente creado con éxito');
+      return data.id;
     } catch (error: any) {
-      toast.error(`Error creating client: ${error.message}`);
+      toast.error(`Error al crear cliente: ${error.message}`);
       console.error('Error creating client:', error);
       return null;
     }
@@ -66,10 +66,17 @@ export function useClients() {
 
   const updateClient = useCallback(async (id: string, clientData: UpdateClientDto) => {
     try {
-      toast.success('Client would be updated');
+      const { error } = await supabase
+        .from('clients')
+        .update(clientData)
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      toast.success('Cliente actualizado con éxito');
       return true;
     } catch (error: any) {
-      toast.error(`Error updating client: ${error.message}`);
+      toast.error(`Error al actualizar cliente: ${error.message}`);
       console.error('Error updating client:', error);
       return false;
     }
@@ -77,10 +84,30 @@ export function useClients() {
 
   const deleteClient = useCallback(async (id: string) => {
     try {
-      toast.success('Client would be deleted');
+      // Verificar si el cliente tiene facturas
+      const { data: bills, error: billsError } = await supabase
+        .from('bills')
+        .select('id')
+        .eq('client_id', id);
+
+      if (billsError) throw billsError;
+      
+      if (bills && bills.length > 0) {
+        toast.error('No se puede eliminar un cliente con facturas asociadas');
+        return false;
+      }
+      
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      toast.success('Cliente eliminado con éxito');
       return true;
     } catch (error: any) {
-      toast.error(`Error deleting client: ${error.message}`);
+      toast.error(`Error al eliminar cliente: ${error.message}`);
       console.error('Error deleting client:', error);
       return false;
     }

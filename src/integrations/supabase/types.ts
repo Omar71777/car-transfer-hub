@@ -9,6 +9,155 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bill_items: {
+        Row: {
+          bill_id: string
+          created_at: string
+          description: string
+          id: string
+          quantity: number
+          total_price: number
+          transfer_id: string
+          unit_price: number
+        }
+        Insert: {
+          bill_id: string
+          created_at?: string
+          description: string
+          id?: string
+          quantity?: number
+          total_price: number
+          transfer_id: string
+          unit_price: number
+        }
+        Update: {
+          bill_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          quantity?: number
+          total_price?: number
+          transfer_id?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bill_items_bill_id_fkey"
+            columns: ["bill_id"]
+            isOneToOne: false
+            referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bill_items_transfer_id_fkey"
+            columns: ["transfer_id"]
+            isOneToOne: false
+            referencedRelation: "transfers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bills: {
+        Row: {
+          client_id: string
+          created_at: string
+          date: string
+          due_date: string
+          id: string
+          notes: string | null
+          number: string
+          status: string
+          sub_total: number
+          tax_amount: number
+          tax_application: string
+          tax_rate: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          date: string
+          due_date: string
+          id?: string
+          notes?: string | null
+          number: string
+          status?: string
+          sub_total: number
+          tax_amount: number
+          tax_application: string
+          tax_rate: number
+          total: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          date?: string
+          due_date?: string
+          id?: string
+          notes?: string | null
+          number?: string
+          status?: string
+          sub_total?: number
+          tax_amount?: number
+          tax_application?: string
+          tax_rate?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bills_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -52,6 +201,12 @@ export type Database = {
       }
       profiles: {
         Row: {
+          company_address: string | null
+          company_email: string | null
+          company_logo: string | null
+          company_name: string | null
+          company_phone: string | null
+          company_tax_id: string | null
           created_at: string
           email: string | null
           first_name: string | null
@@ -61,6 +216,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          company_address?: string | null
+          company_email?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          company_phone?: string | null
+          company_tax_id?: string | null
           created_at?: string
           email?: string | null
           first_name?: string | null
@@ -70,6 +231,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          company_address?: string | null
+          company_email?: string | null
+          company_logo?: string | null
+          company_name?: string | null
+          company_phone?: string | null
+          company_tax_id?: string | null
           created_at?: string
           email?: string | null
           first_name?: string | null
@@ -82,6 +249,7 @@ export type Database = {
       }
       transfers: {
         Row: {
+          billed: boolean | null
           collaborator: string | null
           commission: number
           created_at: string
@@ -96,6 +264,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billed?: boolean | null
           collaborator?: string | null
           commission: number
           created_at?: string
@@ -110,6 +279,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          billed?: boolean | null
           collaborator?: string | null
           commission?: number
           created_at?: string

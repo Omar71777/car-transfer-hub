@@ -7,6 +7,12 @@ export type UserProfile = {
   first_name: string | null;
   last_name: string | null;
   role: 'admin' | 'user';
+  company_name: string | null;
+  company_address: string | null;
+  company_tax_id: string | null;
+  company_phone: string | null;
+  company_email: string | null;
+  company_logo: string | null;
 };
 
 export type AuthContextType = {
