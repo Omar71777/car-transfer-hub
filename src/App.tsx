@@ -17,7 +17,6 @@ import ShiftsPage from "./pages/shifts/ShiftsPage";
 import CollaboratorsPage from "./pages/collaborators/CollaboratorsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import NotFound from "./pages/NotFound";
-import TransfersReportPage from "./pages/admin/reports/TransfersReportPage";
 import AnalyticsReportPage from "./pages/admin/reports/AnalyticsReportPage";
 import UnpaidTransfersPage from "./pages/reports/UnpaidTransfersPage";
 
@@ -66,9 +65,11 @@ const AppRoutes = () => (
     
     <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
     
-    <Route path="/admin/reports/transfers" element={<ProtectedRoute><TransfersReportPage /></ProtectedRoute>} />
     <Route path="/admin/reports/analytics" element={<ProtectedRoute><AnalyticsReportPage /></ProtectedRoute>} />
     <Route path="/reports/unpaid" element={<ProtectedRoute><UnpaidTransfersPage /></ProtectedRoute>} />
+    
+    {/* Redirect old reports route to the main transfers page */}
+    <Route path="/admin/reports/transfers" element={<Navigate to="/transfers" />} />
     
     <Route path="*" element={<NotFound />} />
   </Routes>
