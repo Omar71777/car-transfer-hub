@@ -43,7 +43,16 @@ const Index = () => {
     // Calculate stats
     const totalTransfers = transfers.length;
     const totalIncome = transfers.reduce((sum: number, transfer: Transfer) => sum + (transfer.price || 0), 0);
-    const totalExpenses = expenses.reduce((sum: number, expense: Expense) => sum + (expense.amount || 0), 0);
+    
+    // Calcular las comisiones totales
+    const totalCommissions = transfers.reduce((sum: number, transfer: Transfer) => 
+      sum + ((transfer.price * transfer.commission) / 100 || 0), 0);
+    
+    // Sumar los gastos regulares y las comisiones
+    const expensesTotal = expenses.reduce((sum: number, expense: Expense) => sum + (expense.amount || 0), 0);
+    const totalExpenses = expensesTotal + totalCommissions;
+    
+    // Calcular el ingreso neto después de gastos y comisiones
     const netIncome = totalIncome - totalExpenses;
     
     // Get upcoming shifts (next 7 days)

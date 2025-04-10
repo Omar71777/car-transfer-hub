@@ -86,10 +86,12 @@ const ProfitsPage = () => {
         sum + (transfer.price || 0), 0);
       
       const totalCommissions = loadedTransfers.reduce((sum: number, transfer: Transfer) => 
-        sum + ((transfer.price * transfer.commission) / 100 || 0), 0);
+        sum + calculateCommission(transfer), 0);
       
-      const totalExpenses = loadedExpenses.reduce((sum: number, expense: Expense) => 
-        sum + (expense.amount || 0), 0) + totalCommissions;
+      const expensesTotal = loadedExpenses.reduce((sum: number, expense: Expense) => 
+        sum + (expense.amount || 0), 0);
+      
+      const totalExpenses = expensesTotal + totalCommissions;
       
       const netProfit = totalIncome - totalExpenses;
       const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
@@ -105,7 +107,7 @@ const ProfitsPage = () => {
       // Generate chart data
       const chartData = [
         { name: 'Ingresos', value: totalIncome, fill: '#3b82f6' },
-        { name: 'Gastos', value: totalExpenses - totalCommissions, fill: '#ef4444' },
+        { name: 'Gastos', value: expensesTotal, fill: '#ef4444' },
         { name: 'Comisiones', value: totalCommissions, fill: '#f59e0b' },
         { name: 'Beneficio Neto', value: netProfit, fill: '#10b981' }
       ];
