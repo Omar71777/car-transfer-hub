@@ -11,6 +11,9 @@ export interface MinimalTransfer {
   commission?: number;
   commissionType?: 'percentage' | 'fixed';
   extraCharges?: ExtraCharge[];
+  destination?: string;
+  origin?: string;
+  date?: string;
 }
 
 /**

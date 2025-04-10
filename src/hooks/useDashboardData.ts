@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Transfer, Expense } from '@/types';
+import { Expense } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { capitalizeFirstLetter } from '@/lib/utils';
@@ -42,17 +42,15 @@ export function useDashboardData() {
         
         // Format transfers to match the MinimalTransfer interface
         const formattedTransfers: MinimalTransfer[] = transfers.map(transfer => ({
-          id: transfer.id,
+          serviceType: transfer.service_type || 'transfer',
           price: Number(transfer.price),
           commission: Number(transfer.commission) || 0,
           commissionType: transfer.commission_type || 'percentage',
-          serviceType: transfer.service_type || 'transfer',
           hours: transfer.hours || undefined,
-          discountType: transfer.discount_type || null,
+          discountType: transfer.discount_type as 'percentage' | 'fixed' | null,
           discountValue: Number(transfer.discount_value) || 0,
           origin: capitalizeFirstLetter(transfer.origin),
           destination: capitalizeFirstLetter(transfer.destination),
-          collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
           extraCharges: [],
         }));
         
