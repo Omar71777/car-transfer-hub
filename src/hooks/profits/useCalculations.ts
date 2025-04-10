@@ -1,3 +1,4 @@
+
 import { Transfer, Expense } from '@/types';
 import { ProfitStats } from './types';
 
@@ -14,10 +15,8 @@ export const calculateStats = (transfers: Transfer[], expenses: Expense[]): Prof
   const totalCommissions = transfers.reduce((sum: number, transfer: Transfer) => 
     sum + calculateCommission(transfer), 0);
   
-  const expensesTotal = expenses.reduce((sum: number, expense: Expense) => 
+  const totalExpenses = expenses.reduce((sum: number, expense: Expense) => 
     sum + (expense.amount || 0), 0);
-  
-  const totalExpenses = expensesTotal;
   
   const netProfit = totalIncome - (totalExpenses + totalCommissions);
   const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
