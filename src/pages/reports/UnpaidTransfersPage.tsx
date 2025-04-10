@@ -6,12 +6,13 @@ import { UnpaidTransfersTable } from '@/components/reports/UnpaidTransfersTable'
 import { UnpaidCollaboratorSummary } from '@/components/reports/UnpaidCollaboratorSummary';
 import { useCollaborators } from '@/hooks/useCollaborators';
 import { printUnpaidReport } from '@/lib/exports/printUnpaidReport';
-import { downloadCSV, prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from '@/lib/exports';
+import { downloadCSVFromData, prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from '@/lib/exports';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/auth';
 import { UnpaidPageHeader } from '@/components/reports/unpaid/UnpaidPageHeader';
 import { CollaboratorFilter } from '@/components/reports/unpaid/CollaboratorFilter';
 import { useUnpaidTransfersData } from '@/hooks/useUnpaidTransfersData';
+
 const UnpaidTransfersPage = () => {
   const {
     transfers,
@@ -26,7 +27,6 @@ const UnpaidTransfersPage = () => {
   const [selectedCollaborator, setSelectedCollaborator] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<string>('table');
 
-  // Use our custom hook to handle unpaid transfers data
   const {
     unpaidTransfers,
     getMonthlyUnpaidData
@@ -41,10 +41,10 @@ const UnpaidTransfersPage = () => {
   const handleExportCSV = () => {
     if (activeTab === 'table') {
       const data = prepareUnpaidDataForExport(unpaidTransfers);
-      downloadCSV(data, 'pagos-pendientes-detalle.csv');
+      downloadCSVFromData(data, 'pagos-pendientes-detalle.csv');
     } else {
       const data = prepareUnpaidSummaryForExport(getMonthlyUnpaidData());
-      downloadCSV(data, 'pagos-pendientes-resumen.csv');
+      downloadCSVFromData(data, 'pagos-pendientes-resumen.csv');
     }
   };
   return <MainLayout>

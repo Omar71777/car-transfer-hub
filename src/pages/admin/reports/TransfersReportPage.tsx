@@ -4,11 +4,12 @@ import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { downloadCSV, printProfitReport } from '@/lib/exports';
+import { downloadCSVFromData, printProfitReport } from '@/lib/exports';
 import { useAuth } from '@/contexts/auth';
 import { TransfersPageHeader } from '@/components/reports/transfers/TransfersPageHeader';
 import { TransfersReportTable } from '@/components/reports/transfers/TransfersReportTable';
 import { TransfersSummary } from '@/components/reports/transfers/TransfersSummary';
+
 const TransfersReportPage = () => {
   const {
     transfers,
@@ -20,6 +21,7 @@ const TransfersReportPage = () => {
   const {
     profile
   } = useAuth();
+
   const handleExportCSV = () => {
     const data = transfers.map(transfer => ({
       Fecha: transfer.date,
@@ -31,22 +33,14 @@ const TransfersReportPage = () => {
       Comisión: transfer.commission + '%',
       'Importe Comisión': (transfer.price * transfer.commission / 100).toFixed(2) + '€'
     }));
-    downloadCSV(data, 'transfers-report.csv');
+    downloadCSVFromData(data, 'transfers-report.csv');
   };
+
   const handlePrint = () => {
-    // Calculate total income from transfers
     const totalIncome = transfers.reduce((sum, t) => sum + t.price, 0);
-
-    // Correctly calculate total expenses
     const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-
-    // Calculate commissions
     const totalCommissions = transfers.reduce((sum, t) => sum + t.price * t.commission / 100, 0);
-
-    // Calculate net profit: income - expenses - commissions
     const netProfit = totalIncome - totalExpenses - totalCommissions;
-
-    // Calculate profit margin
     const profitMargin = totalIncome > 0 ? netProfit / totalIncome * 100 : 0;
     const stats = {
       totalIncome,
@@ -55,13 +49,12 @@ const TransfersReportPage = () => {
       netProfit,
       profitMargin
     };
-
-    // Pass user information and ALL expenses
     printProfitReport('Informe de Transfers', transfers, expenses, stats, {
       name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
       email: profile?.email || ''
     });
   };
+
   return <MainLayout>
       <div className="py-6">
         <TransfersPageHeader onExportCSV={handleExportCSV} onPrint={handlePrint} />
@@ -97,4 +90,5 @@ const TransfersReportPage = () => {
       </div>
     </MainLayout>;
 };
+
 export default TransfersReportPage;

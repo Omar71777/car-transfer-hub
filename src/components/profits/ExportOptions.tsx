@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Download, Printer, FileDown, FileText } from 'lucide-react';
-import { downloadCSV, printProfitReport, prepareProfitDataForExport } from '@/lib/exports';
+import { downloadCSVFromData, printProfitReport, prepareProfitDataForExport } from '@/lib/exports';
 import { Transfer, Expense } from '@/types';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/auth';
@@ -25,14 +26,14 @@ export function ExportOptions({ transfers, expenses, stats }: ExportOptionsProps
   const handleExportCSV = () => {
     const { dailyData, summaryData } = prepareProfitDataForExport(transfers, expenses, stats);
     
-    // Export daily data
-    downloadCSV(
+    // Export daily data - Now using downloadCSVFromData which takes only data and filename
+    downloadCSVFromData(
       dailyData, 
       `ganancias-diarias-${format(new Date(), 'yyyy-MM-dd')}.csv`
     );
     
     // Export summary in a separate file
-    downloadCSV(
+    downloadCSVFromData(
       summaryData, 
       `resumen-ganancias-${format(new Date(), 'yyyy-MM-dd')}.csv`
     );

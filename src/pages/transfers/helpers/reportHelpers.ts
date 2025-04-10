@@ -1,7 +1,6 @@
-
 import { Transfer } from '@/types';
 import { Expense } from '@/types';
-import { downloadCSV, printProfitReport } from '@/lib/exports';
+import { downloadCSVFromData, printProfitReport } from '@/lib/exports';
 
 export function generateExportData(transfers: Transfer[]) {
   return transfers.map(transfer => ({
@@ -18,7 +17,7 @@ export function generateExportData(transfers: Transfer[]) {
 
 export function handleExportCSV(transfers: Transfer[]) {
   const data = generateExportData(transfers);
-  downloadCSV(data, 'transfers-report.csv');
+  downloadCSVFromData(data, 'transfers-report.csv');
 }
 
 export function generateReportStats(transfers: Transfer[], expenses: Expense[]) {
