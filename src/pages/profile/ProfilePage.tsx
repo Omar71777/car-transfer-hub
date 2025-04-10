@@ -6,7 +6,7 @@ import { ProfileForm } from '@/components/profile/ProfileForm';
 import { DeleteAccountDialog } from '@/components/profile/DeleteAccountDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { Loader, UserX } from 'lucide-react';
 
 const ProfilePage = () => {

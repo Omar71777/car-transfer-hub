@@ -1,33 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+
+import { useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Database } from '@/integrations/supabase/types';
+import { UserProfile } from './types';
 
-type UserProfile = {
-  id: string;
-  email: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  role: 'admin' | 'user';
-};
-
-type AuthContextType = {
-  session: Session | null;
-  user: User | null;
-  profile: UserProfile | null;
-  isAdmin: boolean;
-  isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateUserProfile: (data: Partial<UserProfile>) => Promise<void>;
-  deleteAccount: () => Promise<boolean>;
-};
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function useAuthOperations() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -53,35 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Error in fetchUserProfile:', error);
     }
   };
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          setTimeout(() => fetchUserProfile(session.user.id), 0);
-        } else {
-          setProfile(null);
-          setIsAdmin(false);
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      }
-      
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -171,30 +120,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const value = {
+  return {
     session,
+    setSession,
     user,
+    setUser,
     profile,
     isAdmin,
     isLoading,
+    setIsLoading,
+    fetchUserProfile,
     signIn,
     signUp,
     signOut,
     updateUserProfile,
     deleteAccount,
   };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -6,7 +5,7 @@ import { Download, Printer, FileDown, FileText } from 'lucide-react';
 import { downloadCSV, printProfitReport, prepareProfitDataForExport } from '@/lib/exports';
 import { Transfer, Expense } from '@/types';
 import { format } from 'date-fns';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 
 interface ExportOptionsProps {
   transfers: Transfer[];

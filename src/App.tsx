@@ -1,10 +1,9 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/auth";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Index from "./pages/Index";
 import AuthPage from "./pages/auth/AuthPage";
@@ -22,7 +21,6 @@ import AnalyticsReportPage from "./pages/admin/reports/AnalyticsReportPage";
 
 const queryClient = new QueryClient();
 
-// Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
   
@@ -37,7 +35,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Admin route component
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, isLoading } = useAuth();
   
@@ -65,10 +62,8 @@ const AppRoutes = () => (
     <Route path="/collaborators" element={<ProtectedRoute><CollaboratorsPage /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
     
-    {/* Admin routes */}
     <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
     
-    {/* Reports Routes - Now accessible to all users */}
     <Route path="/admin/reports/transfers" element={<ProtectedRoute><TransfersReportPage /></ProtectedRoute>} />
     <Route path="/admin/reports/analytics" element={<ProtectedRoute><AnalyticsReportPage /></ProtectedRoute>} />
     

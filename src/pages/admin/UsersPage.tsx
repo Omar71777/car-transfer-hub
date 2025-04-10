@@ -5,7 +5,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { RefreshCw, UserPlus } from 'lucide-react';
 import { UserFormDialog } from '@/components/admin/UserFormDialog';
 import { PasswordResetDialog } from '@/components/admin/PasswordResetDialog';

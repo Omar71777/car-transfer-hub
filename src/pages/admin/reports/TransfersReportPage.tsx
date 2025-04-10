@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { downloadCSV, printProfitReport } from '@/lib/exports';
 import { Button } from '@/components/ui/button';
 import { FileDown, Printer } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 
 const TransfersReportPage = () => {
   const { transfers, loading } = useTransfers();

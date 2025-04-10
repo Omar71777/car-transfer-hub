@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Users } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { StatCards } from '@/components/dashboard/StatCards';
 import { QuickAccessCards } from '@/components/dashboard/QuickAccessCards';
