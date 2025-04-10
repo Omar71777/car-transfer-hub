@@ -49,19 +49,24 @@ export function UnpaidTransfersTable({ transfers, loading = false }: UnpaidTrans
               </TableCell>
             </TableRow>
           ) : (
-            transfers.map((transfer) => (
-              <TableRow key={transfer.id}>
-                <TableCell>{transfer.date}</TableCell>
-                <TableCell>{transfer.collaborator || 'N/A'}</TableCell>
-                <TableCell>{transfer.origin}</TableCell>
-                <TableCell>{transfer.destination}</TableCell>
-                <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
-                <TableCell className="text-right">{transfer.commission}%</TableCell>
-                <TableCell className="text-right font-medium">
-                  {formatCurrency((transfer.price * transfer.commission) / 100)}
-                </TableCell>
-              </TableRow>
-            ))
+            transfers.map((transfer) => {
+              const commissionAmount = (transfer.price * transfer.commission) / 100;
+              const amountToPay = transfer.price - commissionAmount;
+              
+              return (
+                <TableRow key={transfer.id}>
+                  <TableCell>{transfer.date}</TableCell>
+                  <TableCell>{transfer.collaborator || 'N/A'}</TableCell>
+                  <TableCell>{transfer.origin}</TableCell>
+                  <TableCell>{transfer.destination}</TableCell>
+                  <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
+                  <TableCell className="text-right">{transfer.commission}%</TableCell>
+                  <TableCell className="text-right font-medium">
+                    {formatCurrency(amountToPay)}
+                  </TableCell>
+                </TableRow>
+              );
+            })
           )}
           {transfers.length > 0 && (
             <TableRow className="bg-muted/50">
@@ -69,7 +74,10 @@ export function UnpaidTransfersTable({ transfers, loading = false }: UnpaidTrans
               <TableCell className="text-right font-semibold">
                 {formatCurrency(
                   transfers.reduce(
-                    (sum, transfer) => sum + (transfer.price * transfer.commission) / 100, 
+                    (sum, transfer) => {
+                      const commissionAmount = (transfer.price * transfer.commission) / 100;
+                      return sum + (transfer.price - commissionAmount);
+                    }, 
                     0
                   )
                 )}

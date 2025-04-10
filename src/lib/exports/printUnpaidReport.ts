@@ -131,6 +131,7 @@ export function printUnpaidReport(
       
       monthData.transfers.forEach(transfer => {
         const commissionAmount = (transfer.price * transfer.commission) / 100;
+        const amountToPay = transfer.price - commissionAmount;
         
         printWindow.document.write(`
           <tr>
@@ -139,7 +140,7 @@ export function printUnpaidReport(
             <td>${transfer.destination}</td>
             <td class="right">${transfer.price.toFixed(2)}€</td>
             <td class="right">${transfer.commission}%</td>
-            <td class="right">${commissionAmount.toFixed(2)}€</td>
+            <td class="right">${amountToPay.toFixed(2)}€</td>
           </tr>
         `);
       });

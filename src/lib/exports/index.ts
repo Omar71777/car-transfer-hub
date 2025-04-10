@@ -16,3 +16,6 @@ export { printUnpaidReport } from './printUnpaidReport';
 
 // Shifts exports
 export { prepareShiftsForExport } from './shiftsExport';
+
+// Unpaid transfers exports
+export { prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from './unpaidExport';

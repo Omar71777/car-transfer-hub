@@ -6,13 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { useTransfers } from '@/hooks/useTransfers';
 import { Transfer } from '@/types';
-import { formatCurrency } from '@/lib/utils';
 import { UnpaidTransfersTable } from '@/components/reports/UnpaidTransfersTable';
 import { UnpaidCollaboratorSummary } from '@/components/reports/UnpaidCollaboratorSummary';
 import { useCollaborators } from '@/hooks/useCollaborators';
 import { Printer, FileDown } from 'lucide-react';
 import { printUnpaidReport } from '@/lib/exports/printUnpaidReport';
-import { downloadCSV } from '@/lib/exports';
+import { downloadCSV, prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from '@/lib/exports';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { useAuth } from '@/contexts/auth';
@@ -23,6 +22,7 @@ const UnpaidTransfersPage = () => {
   const { profile } = useAuth();
   const [selectedCollaborator, setSelectedCollaborator] = useState<string>('all');
   const [unpaidTransfers, setUnpaidTransfers] = useState<Transfer[]>([]);
+  const [activeTab, setActiveTab] = useState<string>('table');
   
   // Filter transfers for unpaid ones
   useEffect(() => {
@@ -44,11 +44,14 @@ const UnpaidTransfersPage = () => {
     return collaboratorNames;
   };
   
-  // Calculate total unpaid amount for a collaborator
+  // Calculate total unpaid amount for a collaborator - now calculating price minus commission
   const calculateUnpaidTotal = (collaboratorName: string) => {
     return transfers
       .filter(t => t.paymentStatus === 'pending' && t.collaborator === collaboratorName)
-      .reduce((sum, t) => sum + (t.price * t.commission / 100), 0);
+      .reduce((sum, t) => {
+        const commissionAmount = (t.price * t.commission / 100);
+        return sum + (t.price - commissionAmount);
+      }, 0);
   };
   
   // Group unpaid transfers by month for each collaborator
@@ -81,9 +84,12 @@ const UnpaidTransfersPage = () => {
         }
       });
       
-      // Calculate total for each month
+      // Calculate total for each month - now calculating price minus commission
       Object.entries(monthGroups).forEach(([month, monthTransfers]) => {
-        const total = monthTransfers.reduce((sum, t) => sum + (t.price * t.commission / 100), 0);
+        const total = monthTransfers.reduce((sum, t) => {
+          const commissionAmount = (t.price * t.commission / 100);
+          return sum + (t.price - commissionAmount);
+        }, 0);
         
         monthlyData.push({
           collaborator: name,
@@ -112,17 +118,13 @@ const UnpaidTransfersPage = () => {
   };
   
   const handleExportCSV = () => {
-    const data = unpaidTransfers.map(transfer => ({
-      Fecha: transfer.date,
-      Colaborador: transfer.collaborator || 'N/A',
-      Origen: transfer.origin,
-      Destino: transfer.destination,
-      Precio: transfer.price,
-      Comisión: `${transfer.commission}%`,
-      'Importe Comisión': (transfer.price * transfer.commission / 100).toFixed(2) + '€'
-    }));
-    
-    downloadCSV(data, 'pagos-pendientes.csv');
+    if (activeTab === 'table') {
+      const data = prepareUnpaidDataForExport(unpaidTransfers);
+      downloadCSV(data, 'pagos-pendientes-detalle.csv');
+    } else {
+      const data = prepareUnpaidSummaryForExport(getMonthlyUnpaidData());
+      downloadCSV(data, 'pagos-pendientes-resumen.csv');
+    }
   };
   
   return (
@@ -168,7 +170,7 @@ const UnpaidTransfersPage = () => {
           </CardContent>
         </Card>
         
-        <Tabs defaultValue="table">
+        <Tabs defaultValue="table" onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="table">Transfers Pendientes</TabsTrigger>
             <TabsTrigger value="summary">Resumen por Colaborador</TabsTrigger>
