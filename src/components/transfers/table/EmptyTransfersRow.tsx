@@ -9,7 +9,7 @@ export function EmptyTransfersRow() {
   
   return (
     <TableRow>
-      <TableCell colSpan={isMobile ? 6 : 9} className="text-center py-8 text-muted-foreground">
+      <TableCell colSpan={isMobile ? 7 : 10} className="text-center py-8 text-muted-foreground">
         {capitalizeFirstLetter('no hay transfers registrados')}
       </TableCell>
     </TableRow>

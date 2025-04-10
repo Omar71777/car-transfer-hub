@@ -12,6 +12,7 @@ interface TransferManagementTabProps {
   onEdit: (transfer: Transfer) => void;
   onDelete: (id: string) => void;
   onAddExpense: (transferId: string) => void;
+  onDeleteMultiple?: (ids: string[]) => void;
 }
 
 export function TransferManagementTab({
@@ -19,7 +20,8 @@ export function TransferManagementTab({
   loading,
   onEdit,
   onDelete,
-  onAddExpense
+  onAddExpense,
+  onDeleteMultiple
 }: TransferManagementTabProps) {
   return (
     <>
@@ -45,7 +47,8 @@ export function TransferManagementTab({
           transfers={transfers} 
           onEdit={onEdit} 
           onDelete={onDelete} 
-          onAddExpense={onAddExpense} 
+          onAddExpense={onAddExpense}
+          onDeleteMultiple={onDeleteMultiple}
         />
       )}
     </>
