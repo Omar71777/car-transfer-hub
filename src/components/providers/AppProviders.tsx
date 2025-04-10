@@ -2,6 +2,7 @@
 import React from 'react';
 import { CapitalizeProvider } from '@/contexts/CapitalizeContext';
 import { AuthProvider } from '@/contexts/auth/AuthProvider';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 interface AppProvidersProps {
   children: React.ReactNode;
@@ -10,9 +11,11 @@ interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <AuthProvider>
-      <CapitalizeProvider>
-        {children}
-      </CapitalizeProvider>
+      <ThemeProvider>
+        <CapitalizeProvider>
+          {children}
+        </CapitalizeProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }
