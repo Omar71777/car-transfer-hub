@@ -13,6 +13,8 @@ interface ShiftCellProps {
     color: string;
     shiftId: string;
     type?: 'half' | 'full' | 'free';
+    startHour?: number;
+    endHour?: number;
   } | null;
   onClick: (day: Date, hour: number) => void;
   onMouseDown: (day: Date, hour: number) => void;
@@ -35,7 +37,12 @@ function ShiftCellComponent({
   const getCellClasses = () => {
     if (driverInfo) {
       const shiftStyleClass = driverInfo.type ? getShiftStyle(driverInfo.type) : '';
-      return `${shiftStyleClass} text-white ring-offset-background ring-offset-1 hover:opacity-100 hover:ring-2 hover:ring-primary/50 hover:ring-inset transition-all`;
+      // Add visual indicator for shift boundary hours (start and end hours)
+      const isShiftBoundary = driverInfo.startHour === hour || 
+                             (driverInfo.endHour && driverInfo.endHour % 24 === hour);
+      const boundaryClass = isShiftBoundary ? 'border-l-4 border-l-primary/70' : '';
+      
+      return `${shiftStyleClass} ${boundaryClass} text-white ring-offset-background ring-offset-1 hover:opacity-100 hover:ring-2 hover:ring-primary/50 hover:ring-inset transition-all`;
     } else if (isInSelectionRange) {
       return 'bg-primary/20 hover:bg-primary/30 transition-colors animate-pulse';
     } else {
@@ -58,6 +65,16 @@ function ShiftCellComponent({
       // For 24h and free days, show name every 4 hours
       return hour % 4 === 0;
     }
+  };
+
+  // Create formatted time range for the tooltip
+  const getTimeRange = () => {
+    if (!driverInfo || !driverInfo.startHour) return formattedTime;
+    
+    const start = `${driverInfo.startHour}:00`;
+    const end = driverInfo.endHour ? `${driverInfo.endHour % 24}:00` : `${(driverInfo.startHour + 12) % 24}:00`;
+    
+    return `${start} - ${end}`;
   };
 
   return (
@@ -84,7 +101,7 @@ function ShiftCellComponent({
         </TooltipTrigger>
         <TooltipContent className="z-50 bg-popover/95 backdrop-blur-sm">
           <div className="text-xs space-y-1">
-            <div className="font-medium">{formattedDate} - {formattedTime}</div>
+            <div className="font-medium">{formattedDate} - {getTimeRange()}</div>
             {driverInfo && (
               <div className="space-y-1">
                 <div className="font-semibold flex items-center gap-1.5">

@@ -1,6 +1,6 @@
 
 import { Shift } from '@/types';
-import { parseISO, isWithinInterval, isSameDay, addDays, addHours } from 'date-fns';
+import { parseISO, isWithinInterval, isSameDay, addDays, addHours, addMinutes } from 'date-fns';
 
 // Function to calculate shift coverage for a specific hour on a specific day
 export function getShiftForTimeSlot(
@@ -34,12 +34,19 @@ export function getShiftForTimeSlot(
       shiftEnd = addHours(shiftStart, 12);
     }
     
+    // To ensure shifts don't overlap at the exact end time, subtract 1 minute from end time
+    // This allows a new shift to start exactly when the previous one ends
+    const adjustedShiftEnd = addMinutes(shiftEnd, -1);
+    
     // Check if this cell's time is within the shift period
-    if (isWithinInterval(cellDateTime, { start: shiftStart, end: shiftEnd })) {
+    // We're using the adjusted end time to prevent overlap issues
+    if (isWithinInterval(cellDateTime, { start: shiftStart, end: adjustedShiftEnd })) {
       return { 
         ...getDriverDetails(shift.driverId), 
         shiftId: shift.id,
-        type: shift.isFreeDay ? 'free' as const : (shift.isFullDay ? 'full' as const : 'half' as const)
+        type: shift.isFreeDay ? 'free' as const : (shift.isFullDay ? 'full' as const : 'half' as const),
+        startHour: shiftHour, // Add startHour for tooltip information
+        endHour: shiftHour + (shift.isFullDay || shift.isFreeDay ? 24 : 12) // Add endHour for tooltip
       };
     }
   }
