@@ -42,10 +42,10 @@ export function useTransferOperations(user: any) {
         const extraChargesData = transferData.extraCharges.map((charge: any) => ({
           transfer_id: data.id,
           name: charge.name,
-          price: charge.price
+          price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
         }));
 
-        // Use RPC to handle the extra_charges table
+        // Insert extra charges one by one
         for (const charge of extraChargesData) {
           const { error: extraChargeError } = await supabase
             .from('extra_charges')
@@ -123,7 +123,7 @@ export function useTransferOperations(user: any) {
             const extraChargeData = {
               transfer_id: id,
               name: charge.name,
-              price: charge.price
+              price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
             };
             
             const { error: insertError } = await supabase

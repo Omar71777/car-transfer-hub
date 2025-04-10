@@ -53,8 +53,9 @@ export function TransferForm({
   const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(
     initialValues?.extraCharges 
       ? initialValues.extraCharges.map(charge => ({
-          ...charge,
-          price: charge.price.toString() // Convert numbers to strings for form
+          id: charge.id,
+          name: charge.name,
+          price: typeof charge.price === 'number' ? charge.price.toString() : charge.price
         }))
       : []
   );
@@ -82,7 +83,7 @@ export function TransferForm({
           ? initialValues.extraCharges.map(charge => ({
               id: charge.id,
               name: charge.name,
-              price: charge.price.toString() // Convert to string for form
+              price: typeof charge.price === 'number' ? charge.price.toString() : charge.price
             }))
           : []
       };

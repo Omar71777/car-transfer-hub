@@ -40,6 +40,7 @@ export const useDataLoader = (): {
             collaborator,
             commission,
             payment_status,
+            service_type,
             client_id
           `)
           .order('date', { ascending: false });
@@ -63,15 +64,17 @@ export const useDataLoader = (): {
           id: transfer.id,
           date: transfer.date,
           time: transfer.time || '',
+          serviceType: transfer.service_type || 'transfer',
           origin: capitalizeFirstLetter(transfer.origin),
           destination: capitalizeFirstLetter(transfer.destination),
           price: Number(transfer.price),
           collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
           commission: Number(transfer.commission),
-          commissionType: 'percentage' as const, // Use "as const" to satisfy TypeScript's type requirement
+          commissionType: 'percentage' as const,
           paymentStatus: transfer.payment_status || 'pending', 
-          clientId: transfer.client_id || '', // Add the clientId property
-          expenses: []
+          clientId: transfer.client_id || '',
+          expenses: [],
+          extraCharges: []
         }));
 
         // Transform the expenses data to match our Expense type

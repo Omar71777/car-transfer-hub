@@ -21,7 +21,7 @@ const CollaboratorsPage = () => {
         const {
           data,
           error
-        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, payment_status, client_id').order('date', {
+        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, payment_status, service_type, client_id').order('date', {
           ascending: false
         });
         if (error) throw error;
@@ -36,10 +36,12 @@ const CollaboratorsPage = () => {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
-          commissionType: 'percentage' as const, // Type assertion to make TypeScript happy
+          commissionType: 'percentage' as const, 
           paymentStatus: transfer.payment_status || 'pending',
-          clientId: transfer.client_id || '', // Add the clientId property
-          expenses: []
+          clientId: transfer.client_id || '',
+          serviceType: transfer.service_type || 'transfer',
+          expenses: [],
+          extraCharges: []
         }));
         setTransfers(processedTransfers);
       } catch (error: any) {

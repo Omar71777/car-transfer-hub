@@ -29,7 +29,7 @@ export interface ExtraCharge {
   id: string;
   transferId: string;
   name: string;
-  price: number;
+  price: number | string;
 }
 
 export interface Expense {
