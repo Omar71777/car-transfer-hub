@@ -34,7 +34,7 @@ export function ShiftSection() {
             <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200">
               <Car className="h-4 w-4 text-blue-500" />
               <AlertDescription>
-                Gestiona tus transferencias fácilmente desde la sección de transfers.
+                Gestiona tus transfers fácilmente desde la sección de transfers.
               </AlertDescription>
             </Alert>
             
