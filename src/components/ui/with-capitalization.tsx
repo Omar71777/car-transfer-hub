@@ -3,7 +3,7 @@ import React from 'react';
 import { capitalizeFirstLetter, capitalizeWords } from '@/lib/utils';
 
 // HOC to automatically capitalize text in child components
-export function withCapitalization<P extends object>(
+export function withCapitalization<P extends { children?: React.ReactNode }>(
   Component: React.ComponentType<P>,
   options: { capitalizeAllWords?: boolean } = {}
 ): React.FC<P> {
@@ -53,6 +53,11 @@ export function withCapitalization<P extends object>(
         : capitalizeFirstLetter(processedProps.label);
     }
 
-    return <Component {...processedProps as P}>{capitalizeTextNodes(props.children)}</Component>;
+    // Now handle children specifically
+    if ('children' in props) {
+      return <Component {...processedProps}>{capitalizeTextNodes(props.children)}</Component>;
+    }
+
+    return <Component {...processedProps} />;
   };
 }

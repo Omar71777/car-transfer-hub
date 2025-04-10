@@ -18,16 +18,16 @@ export function capitalizeTextFields<T extends Record<string, any>>(data: T): T 
   
   // Handle objects
   if (typeof data === 'object' && data !== null) {
-    const result = { ...data };
+    const result = { ...data } as T;
     
     for (const key in result) {
       // If it's a known text field, capitalize it
       if (TEXT_FIELDS_TO_CAPITALIZE.includes(key) && typeof result[key] === 'string') {
-        result[key] = capitalizeFirstLetter(result[key]);
+        result[key as keyof T] = capitalizeFirstLetter(result[key]) as any;
       }
       // If it's an object or array, recurse
       else if (typeof result[key] === 'object' && result[key] !== null) {
-        result[key] = capitalizeTextFields(result[key]);
+        result[key as keyof T] = capitalizeTextFields(result[key]) as any;
       }
     }
     

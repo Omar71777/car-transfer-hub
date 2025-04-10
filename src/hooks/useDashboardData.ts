@@ -45,15 +45,15 @@ export function useDashboardData() {
         // Load expenses from Supabase
         const { data: expenses, error: expensesError } = await supabase
           .from('expenses')
-          .select('amount, description')
+          .select('amount, concept')
           .order('date', { ascending: false });
           
         if (expensesError) throw expensesError;
         
-        // Capitalize expense descriptions
+        // Capitalize expense descriptions (using concept field instead of description)
         const capitalizedExpenses = expenses.map(expense => ({
           ...expense,
-          description: capitalizeFirstLetter(expense.description),
+          concept: capitalizeFirstLetter(expense.concept),
         }));
         
         // Calculate total commissions (assume all are percentage-based since we don't have commission_type)
