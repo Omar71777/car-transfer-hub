@@ -24,3 +24,32 @@ export interface UseUserOperationsProps {
   setUserToDelete: (user: Profile | null) => void;
   fetchUsers: () => Promise<void>;
 }
+
+export interface UseToggleUserRoleProps {
+  users: Profile[];
+  setUsers: React.Dispatch<React.SetStateAction<Profile[]>>;
+}
+
+export interface UseUpdateUserProps {
+  users: Profile[];
+  setUsers: React.Dispatch<React.SetStateAction<Profile[]>>;
+  editingUser: Profile | null;
+  setIsEditDialogOpen: (open: boolean) => void;
+}
+
+export interface UseResetPasswordProps {
+  editingUser: Profile | null;
+  setIsPasswordDialogOpen: (open: boolean) => void;
+}
+
+export interface UseCreateUserProps {
+  fetchUsers: () => Promise<void>;
+  setAddUserDialogOpen: (open: boolean) => void;
+}
+
+export interface UseDeleteUserProps {
+  users: Profile[];
+  setUsers: React.Dispatch<React.SetStateAction<Profile[]>>;
+  setDeleteConfirmOpen: (open: boolean) => void;
+  setUserToDelete: (user: Profile | null) => void;
+}
