@@ -57,7 +57,7 @@ export function CollaboratorManagement() {
               Añade, edita o elimina colaboradores para asignar a transfers
             </CardDescription>
           </div>
-          <Button onClick={openAddDialog} className="shrink-0 text-xs mx-[8px] text-center py-0 px-[15px]">
+          <Button onClick={openAddDialog} className="shrink-0 text-center py-0 text-xs mx-0 px-[13px]">
             <Plus className="mr-2 h-4 w-4" />
             Nuevo Colaborador
           </Button>
