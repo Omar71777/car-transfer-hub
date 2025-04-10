@@ -38,7 +38,7 @@ export function TransferTableRow({
     
     // Add extra charges
     const extraChargesTotal = (transfer.extraCharges || []).reduce(
-      (sum, charge) => sum + charge.price, 0
+      (sum, charge) => sum + (typeof charge.price === 'string' ? Number(charge.price) : charge.price), 0
     );
     
     // Calculate discount
