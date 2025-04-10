@@ -1,9 +1,8 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Shift } from '@/types';
 import { generateId } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { supabase } from '@/integrations/supabase/client';
 
 export function useShifts() {
@@ -17,7 +16,6 @@ export function useShifts() {
     halfDay: 0
   });
 
-  // Update stats based on shifts
   const updateStats = useCallback((currentShifts: Shift[]) => {
     setStats({
       total: currentShifts.length,
@@ -26,7 +24,6 @@ export function useShifts() {
     });
   }, []);
 
-  // Fetch users (drivers) from Supabase
   const fetchDrivers = useCallback(async () => {
     try {
       const { data, error } = await supabase
@@ -35,7 +32,6 @@ export function useShifts() {
       
       if (error) throw error;
       
-      // Transform to match the driver interface
       const transformedDrivers = data.map(user => ({
         id: user.id,
         name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email,
@@ -53,36 +49,29 @@ export function useShifts() {
     }
   }, [toast]);
 
-  // Load data on mount
   useEffect(() => {
-    // Fetch drivers from Supabase
     fetchDrivers();
     
-    // Load shifts from localStorage
     const storedShifts = localStorage.getItem('shifts');
     if (storedShifts) {
       const parsedShifts = JSON.parse(storedShifts);
       setShifts(parsedShifts);
       
-      // Calculate stats
       updateStats(parsedShifts);
     } else {
       setShifts([]);
       localStorage.setItem('shifts', JSON.stringify([]));
       
-      // Set initial stats
       updateStats([]);
     }
   }, [fetchDrivers, updateStats]);
 
-  // Save shifts to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('shifts', JSON.stringify(shifts));
     updateStats(shifts);
   }, [shifts, updateStats]);
 
   const handleAddShift = useCallback((shift: Omit<Shift, 'id'>) => {
-    // If not admin, only allow adding shifts for self
     if (!isAdmin && profile && shift.driverId !== profile.id) {
       toast({
         title: "Acceso denegado",
@@ -92,11 +81,9 @@ export function useShifts() {
       return;
     }
     
-    // Check if a shift already exists for that date
     const existingShift = shifts.find(s => s.date === shift.date);
     
     if (existingShift) {
-      // Update existing shift if admin or own shift
       if (isAdmin || existingShift.driverId === profile?.id) {
         const updatedShifts = shifts.map(s => 
           s.date === shift.date 
@@ -116,7 +103,6 @@ export function useShifts() {
         });
       }
     } else {
-      // Create a new shift
       const newShift = {
         id: generateId(),
         ...shift
@@ -130,7 +116,6 @@ export function useShifts() {
   }, [shifts, isAdmin, profile, toast]);
 
   const handleDeleteShift = useCallback((id: string) => {
-    // Get the shift to check if user can delete it
     const shiftToDelete = shifts.find(s => s.id === id);
     
     if (!shiftToDelete) {
@@ -142,7 +127,6 @@ export function useShifts() {
       return;
     }
     
-    // If not admin, only allow deleting own shifts
     if (!isAdmin && profile && shiftToDelete.driverId !== profile.id) {
       toast({
         title: "Acceso denegado",

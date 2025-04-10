@@ -2,7 +2,7 @@
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Sidebar } from '@/components/ui/sidebar';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { useSidebar } from '@/components/ui/sidebar/sidebar-provider';
 import { SidebarUserProfile } from './sidebar/SidebarUserProfile';
 import { SidebarMainMenu } from './sidebar/SidebarMainMenu';
