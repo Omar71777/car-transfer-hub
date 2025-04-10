@@ -46,7 +46,17 @@
   /* Better dialog sizing for mobile */
   [role="dialog"] .dialog-content, 
   [role="alertdialog"] .dialog-content {
-    @apply max-w-[95vw] max-h-[90vh] overflow-y-auto p-3;
+    @apply max-w-[92vw] max-h-[85vh] overflow-y-auto p-3;
+  }
+  
+  /* Space for form fields on mobile */
+  form .grid {
+    @apply gap-y-3;
+  }
+  
+  /* Make sure inputs are properly sized on mobile */
+  input, select, textarea {
+    @apply max-w-full;
   }
 }
 
@@ -66,7 +76,7 @@
   
   /* Fix for mobile dialogs */
   [role="dialog"] {
-    @apply p-2 max-w-[95vw];
+    @apply p-2;
   }
   
   /* Mobile-friendly forms */
@@ -83,5 +93,15 @@
   [role="dialog"] .overflow-y-auto,
   [role="alertdialog"] .overflow-y-auto {
     max-height: 70vh;
+  }
+  
+  /* Smaller spacing in form elements on mobile */
+  .space-y-4.mobile-spacing {
+    @apply space-y-2;
+  }
+  
+  /* Prevent horizontal overflow on mobile */
+  .overflow-x-hidden-mobile {
+    @apply overflow-x-hidden;
   }
 }

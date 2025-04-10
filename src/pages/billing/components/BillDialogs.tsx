@@ -52,7 +52,7 @@ export function BillDialogs({
   return (
     <>
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
-        <DialogContent className={isMobile ? "" : "sm:max-w-[800px]"}>
+        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Crear Nueva Factura</DialogTitle>
           </DialogHeader>
@@ -64,7 +64,7 @@ export function BillDialogs({
         open={isViewDialogOpen} 
         onOpenChange={setIsViewDialogOpen}
       >
-        <DialogContent className={isMobile ? "" : "sm:max-w-[800px]"}>
+        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Detalle de Factura</DialogTitle>
           </DialogHeader>
@@ -87,7 +87,7 @@ export function BillDialogs({
         open={isEditDialogOpen} 
         onOpenChange={setIsEditDialogOpen}
       >
-        <DialogContent className={isMobile ? "" : "sm:max-w-[800px]"}>
+        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Editar Factura</DialogTitle>
           </DialogHeader>
@@ -103,7 +103,7 @@ export function BillDialogs({
       </Dialog>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[min(450px,90vw)]">
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
             <AlertDialogDescription>
