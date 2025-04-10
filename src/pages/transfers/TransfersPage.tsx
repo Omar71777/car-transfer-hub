@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/contexts/auth';
 import { useTransferDialogs } from './hooks/useTransferDialogs';
 import { TransferManagementTab } from './components/TransferManagementTab';
@@ -29,7 +28,6 @@ const TransfersPage = () => {
   } = useExpenses();
   
   const { profile } = useAuth();
-  const isMobile = useIsMobile();
   
   const {
     selectedTransferId,
@@ -149,7 +147,6 @@ const TransfersPage = () => {
           editingTransfer={editingTransfer}
           onExpenseSubmit={handleExpenseSubmit}
           onEditSubmit={handleEditSubmit}
-          isMobile={isMobile}
         />
       </div>
     </MainLayout>
