@@ -52,12 +52,12 @@ export const adaptExtraCharges = (charges: any[]): ExtraCharge[] => {
 export const calculateExtraChargesTotal = (extraCharges: ExtraCharge[] | any[] = []): number => {
   if (!extraCharges || !Array.isArray(extraCharges)) return 0;
   
-  return extraCharges.reduce((sum: number, charge: any): number => {
+  return extraCharges.reduce((sum, charge) => {
     // Handle both ExtraCharge format and database format
     const price = charge.price !== undefined ? charge.price : 0;
     const chargePrice = typeof price === 'string' ? Number(price) : (price || 0);
     return sum + chargePrice;
-  }, 0); // Explicitly provide 0 as the initial value to ensure number type
+  }, 0); // Explicitly provide 0 as the initial value
 };
 
 /**
