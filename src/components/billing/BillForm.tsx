@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -95,8 +96,8 @@ export function BillForm({ onSubmit }: BillFormProps) {
     
     return availableTransfers.filter(transfer => {
       // If a client is selected, only show transfers for that client
-      if (selectedClientId && transfer.client_id) {
-        return transfer.client_id === selectedClientId;
+      if (selectedClientId && transfer.clientId) {
+        return transfer.clientId === selectedClientId;
       }
       
       // Otherwise, filter by transfer origin/destination
