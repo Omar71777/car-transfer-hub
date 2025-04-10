@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TransfersTable } from '@/components/transfers/TransfersTable';
@@ -10,8 +9,8 @@ import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { generateId } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
+import { TransferForm } from '@/components/transfers/TransferForm';
 
-// Datos de ejemplo (usado solo si no hay datos en localStorage)
 const dummyTransfers: Transfer[] = [
   {
     id: '1',
@@ -52,21 +51,20 @@ const TransfersPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [selectedTransferId, setSelectedTransferId] = useState<string | null>(null);
   const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
   const { toast } = useToast();
 
-  // Cargar los transfers al montar el componente
   useEffect(() => {
     const storedTransfers = localStorage.getItem('transfers');
     if (storedTransfers) {
       setTransfers(JSON.parse(storedTransfers));
     } else {
-      // Si no hay datos en localStorage, usar los datos de ejemplo
       setTransfers(dummyTransfers);
       localStorage.setItem('transfers', JSON.stringify(dummyTransfers));
     }
   }, []);
 
-  // Guardar los transfers cuando cambien
   useEffect(() => {
     if (transfers.length > 0) {
       localStorage.setItem('transfers', JSON.stringify(transfers));
@@ -74,8 +72,29 @@ const TransfersPage = () => {
   }, [transfers]);
 
   const handleEditTransfer = (transfer: Transfer) => {
-    // En un caso real, esto redireccionaría a la página de edición
-    console.log('Editar transfer:', transfer);
+    setEditingTransfer(transfer);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = (values: any) => {
+    if (!editingTransfer) return;
+    
+    const updatedTransfer = {
+      ...editingTransfer,
+      ...values
+    };
+
+    setTransfers(prevTransfers => 
+      prevTransfers.map(transfer => 
+        transfer.id === editingTransfer.id ? updatedTransfer : transfer
+      )
+    );
+
+    setIsEditDialogOpen(false);
+    toast({
+      title: "Transfer actualizado",
+      description: "El transfer ha sido actualizado exitosamente.",
+    });
   };
 
   const handleDeleteTransfer = (id: string) => {
@@ -144,6 +163,20 @@ const TransfersPage = () => {
               <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
             </DialogHeader>
             <ExpenseForm onSubmit={handleExpenseSubmit} transferId={selectedTransferId || ''} />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Editar Transfer</DialogTitle>
+            </DialogHeader>
+            {editingTransfer && (
+              <TransferForm 
+                onSubmit={handleEditSubmit} 
+                initialValues={editingTransfer}
+              />
+            )}
           </DialogContent>
         </Dialog>
       </div>
