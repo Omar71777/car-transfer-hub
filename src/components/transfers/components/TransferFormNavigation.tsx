@@ -13,12 +13,22 @@ export function TransferFormNavigation({ onPrevious, onNext }: TransferFormNavig
   const { currentStep, activeSteps } = useTransferForm();
   const isLastStep = currentStep === activeSteps.length - 1;
   
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onNext();
+  };
+  
+  const handlePrevious = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onPrevious();
+  };
+  
   return (
     <div className="flex justify-between mt-8">
       <Button
         type="button"
         variant="outline"
-        onClick={onPrevious}
+        onClick={handlePrevious}
         disabled={currentStep === 0}
         className="flex items-center"
       >
@@ -28,7 +38,7 @@ export function TransferFormNavigation({ onPrevious, onNext }: TransferFormNavig
 
       <Button
         type="button"
-        onClick={onNext}
+        onClick={handleNext}
         className="flex items-center"
       >
         {isLastStep ? (
