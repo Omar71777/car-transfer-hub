@@ -53,6 +53,7 @@ export const useTransferFormNavigation = (
   const handleNext = async () => {
     if (!methods) {
       console.error('Form methods not available');
+      toast.error('Error al procesar el formulario. Inténtelo de nuevo.');
       return;
     }
     
@@ -76,7 +77,7 @@ export const useTransferFormNavigation = (
           commission: data.commission ? Number(data.commission) : 0,
           discountValue: data.discountValue ? Number(data.discountValue) : 0,
           extraCharges: (data.extraCharges || []).filter(charge => 
-            charge.name && charge.price && charge.name.trim() !== '' && Number(charge.price) > 0
+            charge.name && charge.price && charge.name.trim() !== ''
           ).map(charge => ({
             name: charge.name,
             price: Number(charge.price)

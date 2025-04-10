@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardContent } from '@/components/ui/card';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
@@ -51,7 +51,7 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
   } = useClients();
 
   // Fetch data when component mounts
-  React.useEffect(() => {
+  useEffect(() => {
     fetchCollaborators();
     fetchClients();
   }, [fetchCollaborators, fetchClients]);
@@ -82,68 +82,51 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
   const activeSteps = showCollaboratorStep 
     ? steps 
     : steps.filter(step => step.id !== 'collaborator');
-  
-  // Create the navigation handlers first
-  const navigateProps = {
-    handleNext: () => {}, 
-    handlePrevious: () => {}
-  };
 
   return (
-    <TransferFormProvider 
-      methods={methods}
-      currentStep={currentStep}
-      setCurrentStep={setCurrentStep}
-      activeSteps={activeSteps}
-      showCollaboratorStep={showCollaboratorStep}
-      setShowCollaboratorStep={setShowCollaboratorStep}
-    >
-      <Card className="glass-card w-full max-w-2xl mx-auto">
-        <CardContent className="p-4 md:p-6">
-          <StepProgressBar />
+    <FormProvider {...methods}>
+      <TransferFormProvider 
+        methods={methods}
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        activeSteps={activeSteps}
+        showCollaboratorStep={showCollaboratorStep}
+        setShowCollaboratorStep={setShowCollaboratorStep}
+      >
+        <Card className="glass-card w-full max-w-2xl mx-auto">
+          <CardContent className="p-4 md:p-6">
+            <StepProgressBar />
 
-          <StepRenderer 
-            clients={clients} 
-            collaborators={collaborators} 
-          />
+            <StepRenderer 
+              clients={clients} 
+              collaborators={collaborators} 
+            />
 
-          {/* We initialize the navigation component with the navigation handlers we get from the hook */}
-          <TransferFormNavigation 
-            onPrevious={() => navigateProps.handlePrevious()}
-            onNext={() => navigateProps.handleNext()}
-          />
-        </CardContent>
-      </Card>
-
-      {/* This hook needs to be used inside the FormProvider, but we need to assign its return values */}
-      <NavigationHandlersSetup 
-        activeSteps={activeSteps} 
-        onSubmit={onSubmit} 
-        setHandlers={(handlers) => {
-          navigateProps.handleNext = handlers.handleNext;
-          navigateProps.handlePrevious = handlers.handlePrevious;
-        }}
-      />
-    </TransferFormProvider>
+            <FormNavigationContainer 
+              activeSteps={activeSteps}
+              onSubmit={onSubmit}
+            />
+          </CardContent>
+        </Card>
+      </TransferFormProvider>
+    </FormProvider>
   );
 }
 
-// A utility component to set up the navigation handlers
-const NavigationHandlersSetup = ({ 
+// Separate component to ensure form context is fully initialized
+const FormNavigationContainer = ({ 
   activeSteps, 
-  onSubmit, 
-  setHandlers 
+  onSubmit 
 }: { 
   activeSteps: any[],
-  onSubmit: (values: any) => void,
-  setHandlers: (handlers: { handleNext: () => void, handlePrevious: () => void }) => void
+  onSubmit: (values: any) => void
 }) => {
   const { handleNext, handlePrevious } = useTransferFormNavigation(activeSteps, onSubmit);
   
-  // Set the handlers on mount and when they change
-  React.useEffect(() => {
-    setHandlers({ handleNext, handlePrevious });
-  }, [handleNext, handlePrevious, setHandlers]);
-  
-  return null;
+  return (
+    <TransferFormNavigation 
+      onPrevious={handlePrevious}
+      onNext={handleNext}
+    />
+  );
 };
