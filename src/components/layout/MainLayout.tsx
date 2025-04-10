@@ -36,7 +36,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <SidebarProvider defaultOpen={!isMobile}>
         <div className="min-h-screen flex w-full bg-background">
           <AppSidebar />
-          <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto max-w-full">
+          <main className="flex-1 p-2 sm:p-4 md:p-6 lg:p-8 overflow-auto max-w-full">
             <MobileSidebarToggle />
             <div className="container mx-auto max-w-7xl pt-8 md:pt-0">
               {children}

@@ -17,14 +17,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { downloadCSV, printProfitReport } from '@/lib/exports';
 import { Button } from '@/components/ui/button';
-import { FileDown, Printer } from 'lucide-react';
+import { FileDown, Printer, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '@/contexts/auth';
 import { formatCurrency } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const TransfersReportPage = () => {
   const { transfers, loading } = useTransfers();
   const { expenses } = useExpenses();
   const { profile } = useAuth();
+  const isMobile = useIsMobile();
 
   const handleExportCSV = () => {
     const data = transfers.map(transfer => ({
@@ -88,28 +96,49 @@ const TransfersReportPage = () => {
   return (
     <MainLayout>
       <div className="py-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold mb-1 text-primary">Informes de Transfers</h1>
-            <p className="text-muted-foreground">Análisis detallado de los transfers realizados</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 text-primary">Informes de Transfers</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Análisis detallado de los transfers realizados</p>
           </div>
           
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExportCSV}>
-              <FileDown className="h-4 w-4 mr-2" />
-              Exportar CSV
-            </Button>
-            <Button variant="outline" onClick={handlePrint}>
-              <Printer className="h-4 w-4 mr-2" />
-              Imprimir
-            </Button>
-          </div>
+          {isMobile ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <MoreHorizontal className="h-4 w-4 mr-2" />
+                  Acciones
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportCSV}>
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Exportar CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handlePrint}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Imprimir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleExportCSV}>
+                <FileDown className="h-4 w-4 mr-2" />
+                Exportar CSV
+              </Button>
+              <Button variant="outline" onClick={handlePrint}>
+                <Printer className="h-4 w-4 mr-2" />
+                Imprimir
+              </Button>
+            </div>
+          )}
         </div>
 
         <Tabs defaultValue="table" className="w-full">
-          <TabsList>
-            <TabsTrigger value="table">Tabla de Transfers</TabsTrigger>
-            <TabsTrigger value="summary">Resumen</TabsTrigger>
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger value="table" className="flex-1 sm:flex-initial">Tabla de Transfers</TabsTrigger>
+            <TabsTrigger value="summary" className="flex-1 sm:flex-initial">Resumen</TabsTrigger>
           </TabsList>
           
           <TabsContent value="table" className="mt-6">
@@ -117,59 +146,65 @@ const TransfersReportPage = () => {
               <CardHeader>
                 <CardTitle>Todos los Transfers</CardTitle>
               </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableCaption>Lista de todos los transfers registrados</TableCaption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Hora</TableHead>
-                      <TableHead>Origen</TableHead>
-                      <TableHead>Destino</TableHead>
-                      <TableHead className="text-right">Precio (€)</TableHead>
-                      <TableHead>Colaborador</TableHead>
-                      <TableHead>Comisión (%)</TableHead>
-                      <TableHead className="text-right">Importe Comisión (€)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
+              <CardContent className="px-0 sm:px-6">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableCaption>Lista de todos los transfers registrados</TableCaption>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8">Cargando...</TableCell>
+                        <TableHead>Fecha</TableHead>
+                        {!isMobile && <TableHead>Hora</TableHead>}
+                        <TableHead className="max-w-[100px]">Origen</TableHead>
+                        <TableHead className="max-w-[100px]">Destino</TableHead>
+                        <TableHead className="text-right">Precio (€)</TableHead>
+                        {!isMobile && <TableHead>Colaborador</TableHead>}
+                        {!isMobile && <TableHead>Comisión (%)</TableHead>}
+                        <TableHead className="text-right">Importe (€)</TableHead>
                       </TableRow>
-                    ) : transfers.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8">No hay transfers registrados</TableCell>
-                      </TableRow>
-                    ) : (
-                      transfers.map((transfer) => {
-                        const commissionAmount = transfer.price * transfer.commission / 100;
-                        return (
-                          <TableRow key={transfer.id}>
-                            <TableCell>{transfer.date}</TableCell>
-                            <TableCell>{transfer.time || 'N/A'}</TableCell>
-                            <TableCell>{transfer.origin}</TableCell>
-                            <TableCell>{transfer.destination}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(transfer.price)}</TableCell>
-                            <TableCell>{transfer.collaborator || 'N/A'}</TableCell>
-                            <TableCell>{transfer.commission}</TableCell>
-                            <TableCell className="text-right">{formatCurrency(commissionAmount)}</TableCell>
-                          </TableRow>
-                        );
-                      })
+                    </TableHeader>
+                    <TableBody>
+                      {loading ? (
+                        <TableRow>
+                          <TableCell colSpan={isMobile ? 5 : 8} className="text-center py-8">Cargando...</TableCell>
+                        </TableRow>
+                      ) : transfers.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={isMobile ? 5 : 8} className="text-center py-8">No hay transfers registrados</TableCell>
+                        </TableRow>
+                      ) : (
+                        transfers.map((transfer) => {
+                          const commissionAmount = transfer.price * transfer.commission / 100;
+                          return (
+                            <TableRow key={transfer.id}>
+                              <TableCell>{transfer.date}</TableCell>
+                              {!isMobile && <TableCell>{transfer.time || 'N/A'}</TableCell>}
+                              <TableCell className="max-w-[100px] truncate" title={transfer.origin}>
+                                {transfer.origin}
+                              </TableCell>
+                              <TableCell className="max-w-[100px] truncate" title={transfer.destination}>
+                                {transfer.destination}
+                              </TableCell>
+                              <TableCell className="text-right">{formatCurrency(transfer.price)}</TableCell>
+                              {!isMobile && <TableCell>{transfer.collaborator || 'N/A'}</TableCell>}
+                              {!isMobile && <TableCell>{transfer.commission}</TableCell>}
+                              <TableCell className="text-right">{formatCurrency(commissionAmount)}</TableCell>
+                            </TableRow>
+                          );
+                        })
+                      )}
+                    </TableBody>
+                    {transfers.length > 0 && (
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell colSpan={isMobile ? 3 : 6} className="text-right font-bold">Totales:</TableCell>
+                          <TableCell className="text-right font-bold">{formatCurrency(totalPrice)}</TableCell>
+                          {!isMobile && <TableCell></TableCell>}
+                          <TableCell className="text-right font-bold">{formatCurrency(totalCommissions)}</TableCell>
+                        </TableRow>
+                      </TableFooter>
                     )}
-                  </TableBody>
-                  {transfers.length > 0 && (
-                    <TableFooter>
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-right font-bold">Totales:</TableCell>
-                        <TableCell className="text-right font-bold">{formatCurrency(totalPrice)}</TableCell>
-                        <TableCell colSpan={2}></TableCell>
-                        <TableCell className="text-right font-bold">{formatCurrency(totalCommissions)}</TableCell>
-                      </TableRow>
-                    </TableFooter>
-                  )}
-                </Table>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
