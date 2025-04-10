@@ -27,6 +27,7 @@ export function useTransfers() {
           price,
           collaborator,
           commission,
+          commission_type,
           payment_status,
           expenses (
             id,
@@ -51,6 +52,7 @@ export function useTransfers() {
         price: Number(transfer.price),
         collaborator: transfer.collaborator || '',
         commission: Number(transfer.commission),
+        commissionType: transfer.commission_type || 'percentage',
         paymentStatus: transfer.payment_status || 'pending',
         expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
@@ -89,6 +91,7 @@ export function useTransfers() {
           price: transferData.price,
           collaborator: transferData.collaborator,
           commission: transferData.commission,
+          commission_type: transferData.commissionType,
           payment_status: transferData.paymentStatus
         })
         .select('id')
@@ -114,10 +117,12 @@ export function useTransfers() {
       const { expenses, ...transferUpdateData } = transferData;
       
       // Convert paymentStatus to payment_status for the database
-      const { paymentStatus, ...rest } = transferUpdateData;
+      // and commissionType to commission_type
+      const { paymentStatus, commissionType, ...rest } = transferUpdateData;
       const dataForDb = {
         ...rest,
         payment_status: paymentStatus,
+        commission_type: commissionType,
         updated_at: new Date().toISOString()
       };
       

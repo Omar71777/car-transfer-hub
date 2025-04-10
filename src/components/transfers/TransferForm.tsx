@@ -43,6 +43,7 @@ export function TransferForm({
       return {
         ...initialValues,
         price: initialValues.price.toString(),
+        commissionType: initialValues.commissionType || 'percentage',
         commission: initialValues.commission?.toString() || '',
         paymentStatus: initialValues.paymentStatus as 'paid' | 'pending'
       };
@@ -54,6 +55,7 @@ export function TransferForm({
       destination: '',
       price: '',
       collaborator: '',
+      commissionType: 'percentage' as const,
       commission: '',
       paymentStatus: 'pending' as const
     };
@@ -69,7 +71,9 @@ export function TransferForm({
     const processedValues = {
       ...values,
       price: Number(values.price),
-      commission: values.commission ? Number(values.commission) : 0
+      commission: values.commission ? Number(values.commission) : 0,
+      // Store the commission type along with the value
+      commissionType: values.commissionType
     };
     
     onSubmit(processedValues);
@@ -92,7 +96,7 @@ export function TransferForm({
             <CollaboratorField form={form} collaborators={collaborators} />
             <PaymentStatusField form={form} />
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full mobile-btn">
               {isEditing ? 'Actualizar Transfer' : 'Registrar Transfer'}
             </Button>
           </form>

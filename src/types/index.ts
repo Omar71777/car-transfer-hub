@@ -8,6 +8,7 @@ export interface Transfer {
   price: number;
   collaborator: string;
   commission: number;
+  commissionType: 'percentage' | 'fixed';
   expenses: Expense[];
   paymentStatus: 'paid' | 'pending';
 }
