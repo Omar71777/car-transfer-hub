@@ -42,6 +42,12 @@
   .mobile-input {
     @apply h-9 px-2 py-1.5 text-sm;
   }
+
+  /* Better dialog sizing for mobile */
+  [role="dialog"] .dialog-content, 
+  [role="alertdialog"] .dialog-content {
+    @apply max-w-[95vw] max-h-[90vh] overflow-y-auto p-3;
+  }
 }
 
 /* Touch-friendly tap targets */
@@ -71,5 +77,11 @@
   /* Better scrolling on mobile */
   .mobile-scroll {
     @apply -mx-4 px-4 overflow-x-auto;
+  }
+
+  /* Improve dialog sizing and scrolling */
+  [role="dialog"] .overflow-y-auto,
+  [role="alertdialog"] .overflow-y-auto {
+    max-height: 70vh;
   }
 }

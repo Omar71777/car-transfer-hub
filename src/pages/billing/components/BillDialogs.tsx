@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { BillForm } from '@/components/billing/BillForm';
 import { BillEditForm } from '@/components/billing/BillEditForm';
 import { BillDetail } from '@/components/billing/BillDetail';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BillDialogsProps {
   isFormDialogOpen: boolean;
@@ -46,10 +47,12 @@ export function BillDialogs({
   handleDownloadBill,
   handleStatusChange,
 }: BillDialogsProps) {
+  const isMobile = useIsMobile();
+  
   return (
     <>
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className={isMobile ? "" : "sm:max-w-[800px]"}>
           <DialogHeader>
             <DialogTitle>Crear Nueva Factura</DialogTitle>
           </DialogHeader>
@@ -61,7 +64,7 @@ export function BillDialogs({
         open={isViewDialogOpen} 
         onOpenChange={setIsViewDialogOpen}
       >
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className={isMobile ? "" : "sm:max-w-[800px]"}>
           <DialogHeader>
             <DialogTitle>Detalle de Factura</DialogTitle>
           </DialogHeader>
@@ -84,7 +87,7 @@ export function BillDialogs({
         open={isEditDialogOpen} 
         onOpenChange={setIsEditDialogOpen}
       >
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className={isMobile ? "" : "sm:max-w-[800px]"}>
           <DialogHeader>
             <DialogTitle>Editar Factura</DialogTitle>
           </DialogHeader>

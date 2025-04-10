@@ -32,7 +32,7 @@ export function TransferDialogs({
   return (
     <>
       <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
-        <DialogContent className={isMobile ? "max-w-[95vw] p-4 rounded-lg" : ""}>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
           </DialogHeader>
@@ -41,7 +41,7 @@ export function TransferDialogs({
       </Dialog>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className={isMobile ? "max-w-[95vw] p-4 rounded-lg" : "sm:max-w-[600px]"}>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Editar Transfer</DialogTitle>
           </DialogHeader>
