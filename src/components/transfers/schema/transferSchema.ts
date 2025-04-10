@@ -10,10 +10,11 @@ export const transferSchema = z.object({
   origin: z.string().min(1, { message: 'El origen es requerido' }),
   destination: z.string().optional()
     .superRefine((val, ctx) => {
-      // Get the parent data to check the service type
-      // This accesses the current input data being validated 
-      const formData = ctx.path.length > 0 ? ctx : { parent: { serviceType: 'transfer' } };
-      const serviceType = formData.parent?.serviceType;
+      // Access the serviceType from the parent data
+      // We're getting the serviceType directly from the context object
+      const serviceType = ctx.path.length > 0 
+        ? (ctx as any).data?.serviceType || 'transfer'  // Use type assertion to access data
+        : 'transfer';
         
       if (serviceType === 'transfer' && (!val || val.trim() === '')) {
         ctx.addIssue({
@@ -26,9 +27,11 @@ export const transferSchema = z.object({
     }),
   hours: z.string().optional()
     .superRefine((val, ctx) => {
-      // Get the parent data to check the service type
-      const formData = ctx.path.length > 0 ? ctx : { parent: { serviceType: 'transfer' } };
-      const serviceType = formData.parent?.serviceType;
+      // Access the serviceType from the parent data
+      // We're getting the serviceType directly from the context object
+      const serviceType = ctx.path.length > 0 
+        ? (ctx as any).data?.serviceType || 'transfer'  // Use type assertion to access data
+        : 'transfer';
         
       if (serviceType === 'dispo' && (!val || val.trim() === '')) {
         ctx.addIssue({
