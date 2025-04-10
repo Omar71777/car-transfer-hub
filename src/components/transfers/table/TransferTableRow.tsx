@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Edit2, Trash2, Receipt, Car, Clock, Tag, PackagePlus } from 'lucide-rea
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { calculateTotalPrice, calculateDiscountAmount, calculateExtraChargesTotal } from '@/lib/calculations';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -31,42 +31,6 @@ export function TransferTableRow({
     console.error('Invalid transfer data:', transfer);
     return null;
   }
-
-  // Calculate total with extras and discount
-  const calculateTotal = () => {
-    try {
-      // Base price
-      let basePrice = Number(transfer.price) || 0;
-      
-      // For dispo service, multiply by hours if available
-      if (transfer.serviceType === 'dispo' && transfer.hours) {
-        basePrice = basePrice * Number(transfer.hours);
-      }
-      
-      // Add extra charges
-      const extraChargesTotal = Array.isArray(transfer.extraCharges) 
-        ? transfer.extraCharges.reduce(
-            (sum, charge) => sum + (typeof charge.price === 'string' ? Number(charge.price) : (charge.price || 0)), 0
-          )
-        : 0;
-      
-      // Calculate discount
-      let discountAmount = 0;
-      if (transfer.discountType && transfer.discountValue) {
-        if (transfer.discountType === 'percentage') {
-          discountAmount = basePrice * (Number(transfer.discountValue) / 100);
-        } else {
-          discountAmount = Number(transfer.discountValue);
-        }
-      }
-      
-      // Calculate final total
-      return basePrice + extraChargesTotal - discountAmount;
-    } catch (error) {
-      console.error('Error calculating total:', error);
-      return 0;
-    }
-  };
 
   // Format discount for display
   const formatDiscount = () => {
@@ -122,7 +86,7 @@ export function TransferTableRow({
       <TableCell>
         <div className="space-y-1">
           <div className="flex items-center gap-1">
-            <span>{formatCurrency(calculateTotal())}</span>
+            <span>{formatCurrency(calculateTotalPrice(transfer))}</span>
             {transfer.discountType && Number(transfer.discountValue) > 0 && (
               <TooltipProvider>
                 <Tooltip>

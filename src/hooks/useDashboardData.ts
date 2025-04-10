@@ -4,6 +4,7 @@ import { Transfer, Expense } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { capitalizeFirstLetter } from '@/lib/utils';
+import { calculateBasePrice, calculateCommissionAmount } from '@/lib/calculations';
 
 interface DashboardStats {
   totalTransfers: number;
@@ -29,17 +30,28 @@ export function useDashboardData() {
         // Load transfers from Supabase
         const { data: transfers, error: transfersError } = await supabase
           .from('transfers')
-          .select('id, price, commission, origin, destination, collaborator')
+          .select('id, price, commission, commission_type, service_type, hours, origin, destination, collaborator, discount_type, discount_value')
           .order('date', { ascending: false });
           
         if (transfersError) throw transfersError;
         
-        // Capitalize text fields
-        const capitalizedTransfers = transfers.map(transfer => ({
-          ...transfer,
+        // Format transfers to match the Transfer interface
+        const formattedTransfers = transfers.map(transfer => ({
+          id: transfer.id,
+          price: Number(transfer.price),
+          commission: Number(transfer.commission) || 0,
+          commissionType: transfer.commission_type || 'percentage',
+          serviceType: transfer.service_type || 'transfer',
+          hours: transfer.hours || undefined,
+          discountType: transfer.discount_type || null,
+          discountValue: Number(transfer.discount_value) || 0,
           origin: capitalizeFirstLetter(transfer.origin),
           destination: capitalizeFirstLetter(transfer.destination),
           collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
+          extraCharges: [],
+          date: '', // Required for the interface but not used for calculations
+          paymentStatus: 'pending', // Required for the interface but not used for calculations
+          clientId: '', // Required for the interface but not used for calculations
         }));
         
         // Load expenses from Supabase
@@ -50,32 +62,31 @@ export function useDashboardData() {
           
         if (expensesError) throw expensesError;
         
-        // Capitalize expense descriptions (using concept field instead of description)
-        const capitalizedExpenses = expenses.map(expense => ({
-          ...expense,
-          concept: capitalizeFirstLetter(expense.concept),
-        }));
+        // Calculate total commissions with the correct method
+        const totalCommissions = formattedTransfers.reduce((sum, transfer) => 
+          sum + calculateCommissionAmount(transfer), 0);
         
-        // Calculate total commissions (assume all are percentage-based since we don't have commission_type)
-        const totalCommissions = capitalizedTransfers.reduce((sum, transfer) => {
-          // Default to percentage-based commission calculation
-          const commissionAmount = (Number(transfer.price) * Number(transfer.commission)) / 100 || 0;
-          return sum + commissionAmount;
+        // Calculate total income with the correct price calculation
+        const totalIncome = formattedTransfers.reduce((sum, transfer) => {
+          // Calculate base price (accounting for dispo hours)
+          const basePrice = calculateBasePrice(transfer);
+          
+          // For simplicity, we're not including discounts and extra charges in dashboard 
+          // since we don't have that data from the database call
+          return sum + basePrice;
         }, 0);
         
         // Add regular expenses and commissions
-        const expensesTotal = capitalizedExpenses.reduce((sum, expense) => 
+        const expensesTotal = expenses.reduce((sum, expense) => 
           sum + (Number(expense.amount) || 0), 0);
         const totalExpenses = expensesTotal + totalCommissions;
         
         // Calculate stats
         setStats({
-          totalTransfers: capitalizedTransfers.length,
-          totalIncome: capitalizedTransfers.reduce((sum, transfer) => 
-            sum + (Number(transfer.price) || 0), 0),
+          totalTransfers: formattedTransfers.length,
+          totalIncome: totalIncome,
           totalExpenses: totalExpenses,
-          netIncome: capitalizedTransfers.reduce((sum, transfer) => 
-            sum + (Number(transfer.price) || 0), 0) - totalExpenses
+          netIncome: totalIncome - totalExpenses
         });
       } catch (error: any) {
         console.error('Error loading dashboard data:', error);

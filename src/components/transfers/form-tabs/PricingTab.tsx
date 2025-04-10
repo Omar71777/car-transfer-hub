@@ -14,6 +14,15 @@ interface PricingTabProps {
 }
 
 export function PricingTab({ form, serviceType }: PricingTabProps) {
+  const hours = form.watch('hours');
+  const price = form.watch('price');
+  
+  // Calculate total price for dispo services
+  const calculateTotalPrice = () => {
+    if (serviceType !== 'dispo' || !hours || !price) return price;
+    return (Number(price) * Number(hours)).toFixed(2);
+  };
+
   return (
     <div className="space-y-4">
       <FormField
@@ -37,11 +46,10 @@ export function PricingTab({ form, serviceType }: PricingTabProps) {
         )}
       />
       
-      {serviceType === 'dispo' && form.watch('hours') && (
+      {serviceType === 'dispo' && hours && price && (
         <div className="text-sm text-muted-foreground">
           <p>
-            Precio total para {form.watch('hours')} horas: €
-            {((Number(form.watch('price')) || 0) * (Number(form.watch('hours')) || 0)).toFixed(2)}
+            Precio total para {hours} horas: €{calculateTotalPrice()}
           </p>
         </div>
       )}
@@ -101,7 +109,7 @@ export function PricingTab({ form, serviceType }: PricingTabProps) {
       
       <PaymentStatusField form={form} />
       
-      <PricingFields form={form} />
+      <PricingFields form={form} serviceType={serviceType} />
     </div>
   );
 }

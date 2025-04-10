@@ -1,27 +1,21 @@
-
 import { Transfer, Expense } from '@/types';
 import { ProfitStats } from './types';
 import { format, parse, parseISO, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
 
 // Calculate commission based on commission type
 export const calculateCommission = (transfer: Transfer): number => {
-  if (!transfer.commission) return 0;
-  
-  if (transfer.commissionType === 'percentage') {
-    return (transfer.price * transfer.commission) / 100;
-  } else {
-    return transfer.commission;
-  }
+  return calculateCommissionAmount(transfer);
 };
 
 // Calculate main stats from transfers and expenses
 export const calculateStats = (transfers: Transfer[], expenses: Expense[]): ProfitStats => {
-  const totalIncome = transfers.reduce((sum, transfer) => sum + transfer.price, 0);
+  const totalIncome = transfers.reduce((sum, transfer) => sum + calculateTotalPrice(transfer), 0);
   
   // Sum commissions based on type
   const totalCommissions = transfers.reduce((sum, transfer) => {
-    return sum + calculateCommission(transfer);
+    return sum + calculateCommissionAmount(transfer);
   }, 0);
   
   const regularExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
@@ -90,8 +84,9 @@ export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]) 
         };
       }
       
-      monthlyData[monthYearKey].income += transfer.price;
-      monthlyData[monthYearKey].commissions += calculateCommission(transfer);
+      // Use the correct total price calculation
+      monthlyData[monthYearKey].income += calculateTotalPrice(transfer);
+      monthlyData[monthYearKey].commissions += calculateCommissionAmount(transfer);
     } catch (error) {
       console.error('Error processing transfer date:', error);
     }

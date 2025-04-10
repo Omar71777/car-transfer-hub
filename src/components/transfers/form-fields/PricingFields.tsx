@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -9,45 +8,40 @@ import { Label } from '@/components/ui/label';
 
 interface PricingFieldsProps {
   form: UseFormReturn<TransferFormValues>;
+  serviceType?: 'transfer' | 'dispo';
 }
 
 export function PricingFields({
-  form
+  form,
+  serviceType = 'transfer'
 }: PricingFieldsProps) {
   const commissionType = form.watch('commissionType');
   const price = form.watch('price');
   const commission = form.watch('commission');
+  const hours = form.watch('hours');
   
-  // Calculate the equivalent fixed amount or percentage when values change
-  useEffect(() => {
-    if (!price || !commission) return;
-    
-    const priceNum = Number(price);
-    const commissionNum = Number(commission);
-    
-    // Don't update if we don't have valid numbers
-    if (isNaN(priceNum) || isNaN(commissionNum) || priceNum <= 0) return;
-    
-    // We don't need to update anything since both values will be saved
-    // This is just for display purposes
-  }, [price, commission, commissionType]);
+  // Calculate the total price for a dispo service
+  const getTotalPrice = () => {
+    if (serviceType !== 'dispo' || !hours || !price) return Number(price) || 0;
+    return Number(price) * Number(hours);
+  };
   
   // Calculate the equivalent value based on the opposite commission type
   const getEquivalentValue = () => {
     if (!price || !commission) return null;
     
-    const priceNum = Number(price);
+    const totalPrice = getTotalPrice();
     const commissionNum = Number(commission);
     
-    if (isNaN(priceNum) || isNaN(commissionNum) || priceNum <= 0) return null;
+    if (isNaN(totalPrice) || isNaN(commissionNum) || totalPrice <= 0) return null;
     
     if (commissionType === 'percentage') {
       // Calculate the fixed amount equivalent to the percentage
-      const fixedAmount = (priceNum * commissionNum) / 100;
+      const fixedAmount = (totalPrice * commissionNum) / 100;
       return `${fixedAmount.toFixed(2)}€`;
     } else {
       // Calculate the percentage equivalent to the fixed amount
-      const percentage = (commissionNum / priceNum) * 100;
+      const percentage = (commissionNum / totalPrice) * 100;
       return `${percentage.toFixed(1)}%`;
     }
   };
@@ -122,6 +116,9 @@ export function PricingFields({
               </FormControl>
               {commission && price && (
                 <p className="text-xs text-muted-foreground mt-1">
+                  {serviceType === 'dispo' && hours && (
+                    <span className="block mb-1">Aplicado sobre el precio total: €{getTotalPrice().toFixed(2)}</span>
+                  )}
                   Equivalente a: {getEquivalentValue()}
                 </p>
               )}

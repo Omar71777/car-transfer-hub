@@ -1,7 +1,9 @@
+
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { BillPreview, CreateBillDto, TaxApplicationType } from '@/types/billing';
 import { toast } from 'sonner';
+import { calculateBasePrice, calculateDiscountAmount, calculateExtraChargesTotal } from '@/lib/calculations';
 
 export function useBillGeneration(
   getClient: (id: string) => Promise<any>,
@@ -27,30 +29,31 @@ export function useBillGeneration(
             .select('*')
             .eq('transfer_id', transferId);
             
-          // Calculate price based on service type
-          let transferPrice = transfer.price;
-          if (transfer.service_type === 'dispo' && transfer.hours) {
-            transferPrice = transferPrice * Number(transfer.hours);
-          }
+          // Create a formatted transfer for calculations
+          const formattedTransfer = {
+            id: transfer.id,
+            serviceType: transfer.service_type || 'transfer',
+            price: Number(transfer.price),
+            hours: transfer.hours || undefined,
+            discountType: transfer.discount_type,
+            discountValue: Number(transfer.discount_value) || 0,
+            destination: transfer.destination,
+            origin: transfer.origin,
+            date: transfer.date,
+            extraCharges: extraCharges || []
+          };
+          
+          // Calculate base price (considering service type)
+          const basePrice = calculateBasePrice(formattedTransfer);
           
           // Add extra charges total
-          const extraChargesTotal = (extraCharges || []).reduce(
-            (sum: number, charge: any) => sum + Number(charge.price), 
-            0
-          );
+          const extraChargesTotal = calculateExtraChargesTotal(extraCharges || []);
           
-          // Apply discount if any
-          let discountAmount = 0;
-          if (transfer.discount_type && transfer.discount_value) {
-            if (transfer.discount_type === 'percentage') {
-              discountAmount = transferPrice * (transfer.discount_value / 100);
-            } else {
-              discountAmount = transfer.discount_value;
-            }
-          }
+          // Apply discount
+          const discountAmount = calculateDiscountAmount(formattedTransfer);
           
           // Final transfer price
-          const finalPrice = transferPrice + extraChargesTotal - discountAmount;
+          const finalPrice = basePrice + extraChargesTotal - discountAmount;
 
           // Create description based on service type
           let description = '';
