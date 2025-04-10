@@ -13,6 +13,7 @@ import NewTransferPage from "./pages/transfers/NewTransferPage";
 import ExpensesPage from "./pages/expenses/ExpensesPage";
 import ProfitsPage from "./pages/profits/ProfitsPage";
 import ShiftsPage from "./pages/shifts/ShiftsPage";
+import CollaboratorsPage from "./pages/collaborators/CollaboratorsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const AppRoutes = () => (
     <Route path="/expenses" element={<ProtectedRoute><ExpensesPage /></ProtectedRoute>} />
     <Route path="/profits" element={<ProtectedRoute><ProfitsPage /></ProtectedRoute>} />
     <Route path="/shifts" element={<ProtectedRoute><ShiftsPage /></ProtectedRoute>} />
+    <Route path="/collaborators" element={<ProtectedRoute><CollaboratorsPage /></ProtectedRoute>} />
     
     {/* Admin routes */}
     <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />

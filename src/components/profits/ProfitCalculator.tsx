@@ -15,6 +15,11 @@ interface ProfitCalculatorProps {
 export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps) {
   const [tab, setTab] = useState('daily');
   
+  // Calculate commissions total for a transfer
+  const calculateCommission = (transfer: Transfer) => {
+    return (transfer.price * transfer.commission) / 100;
+  };
+  
   // Calcular ganancias diarias
   const calculateDailyData = () => {
     const currentDate = new Date();
@@ -29,7 +34,8 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
       const dayExpenses = expenses.filter(e => isSameDay(new Date(e.date), day));
       
       const income = dayTransfers.reduce((sum, t) => sum + t.price, 0);
-      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommission(t), 0);
+      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + commissionsTotal;
       const profit = income - expense;
       
       return {
@@ -57,7 +63,8 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
       const dayExpenses = expenses.filter(e => isSameDay(new Date(e.date), day));
       
       const income = dayTransfers.reduce((sum, t) => sum + t.price, 0);
-      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommission(t), 0);
+      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + commissionsTotal;
       
       return {
         day,
@@ -91,7 +98,8 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
   // Calcular totales
   const calculateTotals = () => {
     const totalIncome = transfers.reduce((sum, t) => sum + t.price, 0);
-    const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalCommissions = transfers.reduce((sum, t) => sum + calculateCommission(t), 0);
+    const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0) + totalCommissions;
     const totalProfit = totalIncome - totalExpense;
     
     return { totalIncome, totalExpense, totalProfit };
@@ -120,7 +128,7 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
           
           <Card>
             <CardHeader className="py-4">
-              <CardTitle className="text-base text-destructive">Gastos Totales</CardTitle>
+              <CardTitle className="text-base text-destructive">Gastos Totales (+ Comisiones)</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">{formatCurrency(totalExpense)}</p>
@@ -156,7 +164,7 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
                   <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                   <Legend />
                   <Bar dataKey="income" name="Ingresos" fill="#0088e6" />
-                  <Bar dataKey="expense" name="Gastos" fill="#ff6b6b" />
+                  <Bar dataKey="expense" name="Gastos (+ Comisiones)" fill="#ff6b6b" />
                   <Bar dataKey="profit" name="Ganancia" fill="#4ade80" />
                 </BarChart>
               </ResponsiveContainer>
@@ -176,7 +184,7 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
                   <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                   <Legend />
                   <Bar dataKey="income" name="Ingresos" fill="#0088e6" />
-                  <Bar dataKey="expense" name="Gastos" fill="#ff6b6b" />
+                  <Bar dataKey="expense" name="Gastos (+ Comisiones)" fill="#ff6b6b" />
                   <Bar dataKey="profit" name="Ganancia" fill="#4ade80" />
                 </BarChart>
               </ResponsiveContainer>
