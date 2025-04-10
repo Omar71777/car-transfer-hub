@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -11,21 +11,29 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Transfer } from '@/types';
+import { useCollaborators } from '@/hooks/useCollaborators';
 
 const transferSchema = z.object({
   date: z.string().min(1, { message: 'La fecha es requerida' }),
-  time: z.string().optional(), // Changed from required to optional
+  time: z.string().optional(),
   origin: z.string().min(1, { message: 'El origen es requerido' }),
   destination: z.string().min(1, { message: 'El destino es requerido' }),
   price: z.string().min(1, { message: 'El precio es requerido' }).refine(
     (val) => !isNaN(Number(val)) && Number(val) > 0, 
     { message: 'El precio debe ser un número positivo' }
   ),
-  collaborator: z.string().optional(), // Changed from required to optional
+  collaborator: z.string().optional(),
   commission: z.string().min(1, { message: 'La comisión es requerida' }).refine(
     (val) => !isNaN(Number(val)) && Number(val) >= 0, 
     { message: 'La comisión debe ser un número positivo o cero' }
@@ -36,11 +44,13 @@ type TransferFormValues = z.infer<typeof transferSchema>;
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
-  initialValues?: Transfer; // Add this prop to accept initial values
+  initialValues?: Transfer;
   isEditing?: boolean;
 }
 
 export function TransferForm({ onSubmit, initialValues, isEditing = false }: TransferFormProps) {
+  const { collaborators, loading: loadingCollaborators } = useCollaborators();
+  
   // Convert numeric values to string for the form
   const getDefaultValues = () => {
     if (initialValues) {
@@ -188,10 +198,26 @@ export function TransferForm({ onSubmit, initialValues, isEditing = false }: Tra
               name="collaborator"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Colaborador (opcional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre del colaborador" {...field} />
-                  </FormControl>
+                  <FormLabel>Colaborador</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un colaborador" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="">Sin colaborador</SelectItem>
+                      {collaborators.map((collaborator) => (
+                        <SelectItem key={collaborator.id} value={collaborator.name}>
+                          {collaborator.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

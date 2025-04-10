@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Transfer, Expense } from '@/types';
+import { useCollaborators } from '@/hooks/useCollaborators';
 
 // Load profits data from storage
 export const useDataLoader = (): {
@@ -15,6 +16,7 @@ export const useDataLoader = (): {
   const [uniqueCollaborators, setUniqueCollaborators] = useState<string[]>([]);
   const [uniqueExpenseTypes, setUniqueExpenseTypes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const { collaborators } = useCollaborators();
 
   // Load data from localStorage
   useEffect(() => {
@@ -50,9 +52,9 @@ export const useDataLoader = (): {
       const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : dummyTransfers;
       setTransfers(loadedTransfers);
 
-      // Extract unique collaborators
-      const collaborators = [...new Set(loadedTransfers.map((t: Transfer) => t.collaborator))] as string[];
-      setUniqueCollaborators(collaborators);
+      // Get collaborator names from the collaborators list instead of transfers
+      const collaboratorNames = collaborators.map(c => c.name) as string[];
+      setUniqueCollaborators(collaboratorNames);
 
       // Load expenses from localStorage
       const storedExpenses = localStorage.getItem('expenses');
@@ -83,7 +85,7 @@ export const useDataLoader = (): {
     };
 
     loadProfitsData();
-  }, []); // Empty dependency array to run only once on mount
+  }, [collaborators]); // Rerun when collaborators change
 
   return {
     transfers,
