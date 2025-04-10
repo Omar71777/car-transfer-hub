@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,6 +26,7 @@ import { useTransfers } from '@/hooks/useTransfers';
 import { BillPreview, CreateBillDto, TaxApplicationType } from '@/types/billing';
 import { Client } from '@/types/client';
 import { Transfer } from '@/types';
+import { Filter, Search } from 'lucide-react';
 
 const billSchema = z.object({
   clientId: z.string().min(1, { message: 'El cliente es requerido' }),
@@ -52,6 +52,7 @@ export function BillForm({ onSubmit }: BillFormProps) {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [billPreview, setBillPreview] = useState<BillPreview | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [transferFilter, setTransferFilter] = useState('');
 
   // Initialize with default values
   const form = useForm<z.infer<typeof billSchema>>({
@@ -85,6 +86,29 @@ export function BillForm({ onSubmit }: BillFormProps) {
 
   // Filter out already billed transfers
   const availableTransfers = transfers.filter(t => !t.billed);
+
+  // Get transfers filtered by client name if a filter is set
+  const getFilteredTransfers = () => {
+    if (!transferFilter) return availableTransfers;
+
+    const selectedClientId = form.watch('clientId');
+    
+    return availableTransfers.filter(transfer => {
+      // If a client is selected, only show transfers for that client
+      if (selectedClientId && transfer.client_id) {
+        return transfer.client_id === selectedClientId;
+      }
+      
+      // Otherwise, filter by transfer origin/destination
+      const searchLower = transferFilter.toLowerCase();
+      return (
+        transfer.origin.toLowerCase().includes(searchLower) ||
+        transfer.destination.toLowerCase().includes(searchLower)
+      );
+    });
+  };
+
+  const filteredTransfers = getFilteredTransfers();
 
   // Calculate bill preview whenever selection changes
   useEffect(() => {
@@ -125,10 +149,10 @@ export function BillForm({ onSubmit }: BillFormProps) {
   };
 
   const handleSelectAllTransfers = () => {
-    if (selectedTransfers.length === availableTransfers.length) {
+    if (selectedTransfers.length === filteredTransfers.length) {
       setSelectedTransfers([]);
     } else {
-      setSelectedTransfers(availableTransfers.map(t => t.id));
+      setSelectedTransfers(filteredTransfers.map(t => t.id));
     }
   };
 
@@ -158,6 +182,14 @@ export function BillForm({ onSubmit }: BillFormProps) {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
 
+  // Handle client selection change to filter transfers
+  const handleClientChange = (clientId: string) => {
+    form.setValue('clientId', clientId);
+    
+    // Clear the selected transfers when changing client
+    setSelectedTransfers([]);
+  };
+
   return (
     <Card className="glass-card w-full max-w-4xl mx-auto">
       <CardContent className="pt-4 px-4 md:px-6">
@@ -172,7 +204,7 @@ export function BillForm({ onSubmit }: BillFormProps) {
                     <FormItem>
                       <FormLabel>Cliente</FormLabel>
                       <Select 
-                        onValueChange={field.onChange} 
+                        onValueChange={(value) => handleClientChange(value)} 
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -292,25 +324,42 @@ export function BillForm({ onSubmit }: BillFormProps) {
               <div className="space-y-4">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-medium">Transfers a facturar</h3>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleSelectAllTransfers}
-                    disabled={availableTransfers.length === 0}
-                  >
-                    {selectedTransfers.length === availableTransfers.length ? 'Deseleccionar todos' : 'Seleccionar todos'}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleSelectAllTransfers}
+                      disabled={filteredTransfers.length === 0}
+                    >
+                      {selectedTransfers.length === filteredTransfers.length && filteredTransfers.length > 0 
+                        ? 'Deseleccionar todos' 
+                        : 'Seleccionar todos'}
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="relative mb-2">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <Search className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder="Filtrar transfers por origen o destino..."
+                    value={transferFilter}
+                    onChange={(e) => setTransferFilter(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
 
-                {availableTransfers.length === 0 ? (
+                {filteredTransfers.length === 0 ? (
                   <div className="text-center p-4 border rounded-md bg-muted/20">
                     <p className="text-muted-foreground">No hay transfers disponibles para facturar</p>
                   </div>
                 ) : (
                   <div className="border rounded-md overflow-hidden max-h-[300px] overflow-y-auto">
                     <div className="divide-y">
-                      {availableTransfers.map((transfer) => (
+                      {filteredTransfers.map((transfer) => (
                         <div key={transfer.id} className="p-3 hover:bg-accent/10">
                           <div className="flex items-start space-x-2">
                             <Checkbox

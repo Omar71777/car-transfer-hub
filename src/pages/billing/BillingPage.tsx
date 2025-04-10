@@ -23,7 +23,8 @@ const BillingPage = () => {
     updateBillStatus, 
     deleteBill, 
     printBill,
-    exportBillCsv
+    exportBillCsv,
+    updateBillTransfers
   } = useBilling();
 
   const [activeTab, setActiveTab] = useState('bills');
@@ -82,7 +83,16 @@ const BillingPage = () => {
     }
   };
 
-  const handleEditSubmit = async (id: string, data: Partial<Bill>) => {
+  const handleEditSubmit = async (id: string, data: Partial<Bill>, addedTransferIds: string[] = [], removedTransferIds: string[] = []) => {
+    // If there are transfers to add or remove, update them first
+    if (addedTransferIds.length > 0 || removedTransferIds.length > 0) {
+      const transfersUpdated = await updateBillTransfers(id, addedTransferIds, removedTransferIds);
+      if (!transfersUpdated) {
+        return;
+      }
+    }
+    
+    // Then update the bill data
     const success = await updateBill(id, data);
     if (success) {
       toast.success('Factura actualizada con éxito');
@@ -178,6 +188,9 @@ const BillingPage = () => {
           onOpenChange={setIsViewDialogOpen}
         >
           <DialogContent className="sm:max-w-[800px]">
+            <DialogHeader>
+              <DialogTitle>Detalle de Factura</DialogTitle>
+            </DialogHeader>
             {viewBill && (
               <BillDetail
                 bill={viewBill}
@@ -204,7 +217,9 @@ const BillingPage = () => {
             {selectedBill && (
               <BillEditForm 
                 bill={selectedBill} 
-                onSubmit={(data) => handleEditSubmit(selectedBill.id, data)} 
+                onSubmit={(data, addedTransferIds, removedTransferIds) => 
+                  handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds)
+                } 
               />
             )}
           </DialogContent>
