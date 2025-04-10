@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -38,7 +37,6 @@ import {
 } from '@/components/ui/table';
 import { Plus, Pencil, Trash2, Phone, Mail } from 'lucide-react';
 import { Collaborator, useCollaborators } from '@/hooks/useCollaborators';
-import { useToast } from '@/hooks/use-toast';
 
 const collaboratorSchema = z.object({
   name: z.string().min(1, { message: 'El nombre es requerido' }),
@@ -50,7 +48,6 @@ type CollaboratorFormValues = z.infer<typeof collaboratorSchema>;
 
 export function CollaboratorManagement() {
   const { collaborators, addCollaborator, updateCollaborator, deleteCollaborator } = useCollaborators();
-  const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentCollaborator, setCurrentCollaborator] = useState<Collaborator | null>(null);
@@ -91,11 +88,14 @@ export function CollaboratorManagement() {
 
   const handleSubmit = (values: CollaboratorFormValues) => {
     if (currentCollaborator) {
-      // Update existing collaborator
       updateCollaborator(currentCollaborator.id, values);
     } else {
-      // Add new collaborator
-      addCollaborator(values);
+      const newCollaborator: Omit<Collaborator, 'id'> = {
+        name: values.name,
+        phone: values.phone,
+        email: values.email,
+      };
+      addCollaborator(newCollaborator);
     }
     setIsDialogOpen(false);
   };
@@ -185,7 +185,6 @@ export function CollaboratorManagement() {
         </CardContent>
       </Card>
 
-      {/* Add/Edit Collaborator Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -247,7 +246,6 @@ export function CollaboratorManagement() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
