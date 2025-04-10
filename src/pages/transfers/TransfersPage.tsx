@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { TransfersTable } from '@/components/transfers/TransfersTable';
@@ -12,50 +11,48 @@ import { toast } from 'sonner';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
-
 const TransfersPage = () => {
-  const { transfers, loading, fetchTransfers, updateTransfer, deleteTransfer } = useTransfers();
-  const { createExpense } = useExpenses();
+  const {
+    transfers,
+    loading,
+    fetchTransfers,
+    updateTransfer,
+    deleteTransfer
+  } = useTransfers();
+  const {
+    createExpense
+  } = useExpenses();
   const [selectedTransferId, setSelectedTransferId] = useState<string | null>(null);
   const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
-
   useEffect(() => {
     fetchTransfers();
   }, [fetchTransfers]);
-
   const handleEditTransfer = (transfer: Transfer) => {
     setEditingTransfer(transfer);
     setIsEditDialogOpen(true);
   };
-
   const handleEditSubmit = async (values: any) => {
     if (!editingTransfer) return;
-    
     const success = await updateTransfer(editingTransfer.id, values);
-    
     if (success) {
       setIsEditDialogOpen(false);
       toast.success("Transfer actualizado");
       fetchTransfers();
     }
   };
-
   const handleDeleteTransfer = async (id: string) => {
     const success = await deleteTransfer(id);
-    
     if (success) {
       toast.success("Transfer eliminado");
       fetchTransfers();
     }
   };
-
   const handleAddExpense = (transferId: string) => {
     setSelectedTransferId(transferId);
     setIsExpenseDialogOpen(true);
   };
-
   const handleExpenseSubmit = async (values: any) => {
     const expenseId = await createExpense({
       transferId: selectedTransferId || '',
@@ -63,17 +60,14 @@ const TransfersPage = () => {
       concept: values.concept,
       amount: parseFloat(values.amount)
     });
-    
     if (expenseId) {
       setIsExpenseDialogOpen(false);
       toast.success("Gasto añadido al transfer");
       fetchTransfers();
     }
   };
-
-  return (
-    <MainLayout>
-      <div className="py-6">
+  return <MainLayout>
+      <div className="py-[40px] px-[3px]">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold mb-1 text-ibiza-900">Transfers</h1>
@@ -87,18 +81,9 @@ const TransfersPage = () => {
           </Button>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
+        {loading ? <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">Cargando transfers...</p>
-          </div>
-        ) : (
-          <TransfersTable 
-            transfers={transfers} 
-            onEdit={handleEditTransfer} 
-            onDelete={handleDeleteTransfer}
-            onAddExpense={handleAddExpense}
-          />
-        )}
+          </div> : <TransfersTable transfers={transfers} onEdit={handleEditTransfer} onDelete={handleDeleteTransfer} onAddExpense={handleAddExpense} />}
 
         <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
           <DialogContent>
@@ -114,18 +99,10 @@ const TransfersPage = () => {
             <DialogHeader>
               <DialogTitle>Editar Transfer</DialogTitle>
             </DialogHeader>
-            {editingTransfer && (
-              <TransferForm 
-                onSubmit={handleEditSubmit} 
-                initialValues={editingTransfer}
-                isEditing={true}
-              />
-            )}
+            {editingTransfer && <TransferForm onSubmit={handleEditSubmit} initialValues={editingTransfer} isEditing={true} />}
           </DialogContent>
         </Dialog>
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 };
-
 export default TransfersPage;
