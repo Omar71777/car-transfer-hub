@@ -66,7 +66,7 @@ export function useTransfers() {
         origin: capitalizeFirstLetter(transfer.origin),
         destination: capitalizeFirstLetter(transfer.destination),
         price: Number(transfer.price),
-        collaborator: transfer.collaborator ? capitalizeFirstLetter(transfer.collaborator) : '',
+        collaborator: transfer.collaborator && transfer.collaborator !== 'none' ? capitalizeFirstLetter(transfer.collaborator) : '',
         commission: Number(transfer.commission),
         commissionType: transfer.commission_type || 'percentage',
         paymentStatus: transfer.payment_status || 'pending',
@@ -103,6 +103,9 @@ export function useTransfers() {
     if (!user) return null;
     
     try {
+      // If collaborator is "none", save as null or empty string
+      const collaboratorValue = transferData.collaborator === 'none' ? '' : transferData.collaborator.toLowerCase();
+      
       const { data, error } = await supabase
         .from('transfers')
         .insert({
@@ -111,7 +114,7 @@ export function useTransfers() {
           origin: transferData.origin.toLowerCase(),
           destination: transferData.destination.toLowerCase(),
           price: transferData.price,
-          collaborator: transferData.collaborator.toLowerCase(),
+          collaborator: collaboratorValue,
           commission: transferData.commission,
           commission_type: transferData.commissionType,
           payment_status: transferData.paymentStatus,

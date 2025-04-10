@@ -22,7 +22,7 @@ export function CollaboratorField({ form, collaborators }: CollaboratorFieldProp
           <Select 
             onValueChange={field.onChange} 
             defaultValue={field.value}
-            value={field.value}
+            value={field.value || undefined}
           >
             <FormControl>
               <SelectTrigger>
@@ -30,7 +30,7 @@ export function CollaboratorField({ form, collaborators }: CollaboratorFieldProp
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value="">Sin colaborador</SelectItem>
+              <SelectItem value="none">Sin colaborador</SelectItem>
               {collaborators.map((collaborator) => (
                 <SelectItem key={collaborator.id} value={collaborator.name}>
                   {collaborator.name}
