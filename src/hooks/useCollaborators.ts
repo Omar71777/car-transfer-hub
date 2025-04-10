@@ -18,14 +18,8 @@ export function useCollaborators() {
     setLoading(true);
     try {
       const stored = localStorage.getItem('collaborators');
-      // Default collaborators if none exist
-      const defaultCollaborators: Collaborator[] = [
-        { id: '1', name: 'Carlos Sánchez', phone: '666111222', email: 'carlos@example.com' },
-        { id: '2', name: 'María López', phone: '666333444', email: 'maria@example.com' },
-        { id: '3', name: 'Juan Rodríguez', phone: '666555666', email: 'juan@example.com' },
-      ];
+      const loadedCollaborators = stored ? JSON.parse(stored) : [];
       
-      const loadedCollaborators = stored ? JSON.parse(stored) : defaultCollaborators;
       setCollaborators(loadedCollaborators);
     } catch (error) {
       console.error('Error loading collaborators:', error);

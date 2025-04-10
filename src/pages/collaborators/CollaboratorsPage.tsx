@@ -19,7 +19,7 @@ const CollaboratorsPage = () => {
   useEffect(() => {
     // Cargar transfers desde localStorage
     const storedTransfers = localStorage.getItem('transfers');
-    // No más datos dummy, solo cargar lo que hay en localStorage
+    // Cargar solo lo que hay en localStorage
     const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : [];
     setTransfers(loadedTransfers);
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ShiftCalendar } from '@/components/shifts/ShiftCalendar';
@@ -16,14 +15,6 @@ import { CalendarClock, Clock } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-
-// Datos de ejemplo (simulando lo que vendría de Firebase)
-const dummyShifts: Shift[] = [
-  { id: '1', date: '2025-04-09', driverId: '1', isFullDay: false },
-  { id: '2', date: '2025-04-10', driverId: '2', isFullDay: true },
-  { id: '3', date: '2025-04-11', driverId: '3', isFullDay: false },
-  { id: '4', date: '2025-04-12', driverId: '4', isFullDay: true }
-];
 
 const ShiftsPage = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -78,11 +69,11 @@ const ShiftsPage = () => {
       // Calculate stats
       updateStats(parsedShifts);
     } else {
-      setShifts(dummyShifts);
-      localStorage.setItem('shifts', JSON.stringify(dummyShifts));
+      setShifts([]);
+      localStorage.setItem('shifts', JSON.stringify([]));
       
       // Set initial stats
-      updateStats(dummyShifts);
+      updateStats([]);
     }
   }, []);
 
@@ -97,10 +88,8 @@ const ShiftsPage = () => {
 
   // Guardar turnos en localStorage cada vez que cambian
   useEffect(() => {
-    if (shifts.length > 0) {
-      localStorage.setItem('shifts', JSON.stringify(shifts));
-      updateStats(shifts);
-    }
+    localStorage.setItem('shifts', JSON.stringify(shifts));
+    updateStats(shifts);
   }, [shifts]);
 
   const handleAddShift = (shift: Omit<Shift, 'id'>) => {
