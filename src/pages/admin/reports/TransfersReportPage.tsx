@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useTransfers } from '@/hooks/useTransfers';
@@ -10,12 +9,17 @@ import { useAuth } from '@/contexts/auth';
 import { TransfersPageHeader } from '@/components/reports/transfers/TransfersPageHeader';
 import { TransfersReportTable } from '@/components/reports/transfers/TransfersReportTable';
 import { TransfersSummary } from '@/components/reports/transfers/TransfersSummary';
-
 const TransfersReportPage = () => {
-  const { transfers, loading } = useTransfers();
-  const { expenses } = useExpenses();
-  const { profile } = useAuth();
-
+  const {
+    transfers,
+    loading
+  } = useTransfers();
+  const {
+    expenses
+  } = useExpenses();
+  const {
+    profile
+  } = useAuth();
   const handleExportCSV = () => {
     const data = transfers.map(transfer => ({
       Fecha: transfer.date,
@@ -27,29 +31,23 @@ const TransfersReportPage = () => {
       Comisión: transfer.commission + '%',
       'Importe Comisión': (transfer.price * transfer.commission / 100).toFixed(2) + '€'
     }));
-
     downloadCSV(data, 'transfers-report.csv');
   };
-
   const handlePrint = () => {
     // Calculate total income from transfers
     const totalIncome = transfers.reduce((sum, t) => sum + t.price, 0);
-    
+
     // Correctly calculate total expenses
     const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-    
+
     // Calculate commissions
-    const totalCommissions = transfers.reduce(
-      (sum, t) => sum + (t.price * t.commission / 100), 
-      0
-    );
-    
+    const totalCommissions = transfers.reduce((sum, t) => sum + t.price * t.commission / 100, 0);
+
     // Calculate net profit: income - expenses - commissions
     const netProfit = totalIncome - totalExpenses - totalCommissions;
-    
+
     // Calculate profit margin
-    const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
-    
+    const profitMargin = totalIncome > 0 ? netProfit / totalIncome * 100 : 0;
     const stats = {
       totalIncome,
       totalExpenses,
@@ -57,29 +55,18 @@ const TransfersReportPage = () => {
       netProfit,
       profitMargin
     };
-    
+
     // Pass user information and ALL expenses
-    printProfitReport(
-      'Informe de Transfers', 
-      transfers, 
-      expenses, 
-      stats, 
-      {
-        name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
-        email: profile?.email || ''
-      }
-    );
+    printProfitReport('Informe de Transfers', transfers, expenses, stats, {
+      name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
+      email: profile?.email || ''
+    });
   };
-
-  return (
-    <MainLayout>
+  return <MainLayout>
       <div className="py-6">
-        <TransfersPageHeader 
-          onExportCSV={handleExportCSV} 
-          onPrint={handlePrint} 
-        />
+        <TransfersPageHeader onExportCSV={handleExportCSV} onPrint={handlePrint} />
 
-        <Tabs defaultValue="table" className="w-full">
+        <Tabs defaultValue="table" className="w-full px-[9px]">
           <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="table" className="flex-1 sm:flex-initial">Tabla de Transfers</TabsTrigger>
             <TabsTrigger value="summary" className="flex-1 sm:flex-initial">Resumen</TabsTrigger>
@@ -108,8 +95,6 @@ const TransfersReportPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 };
-
 export default TransfersReportPage;
