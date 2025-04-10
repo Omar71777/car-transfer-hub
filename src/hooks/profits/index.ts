@@ -4,10 +4,17 @@ import { Transfer, Expense } from '@/types';
 import { Filters, ProfitStats, ProfitsData } from './types';
 import { calculateCommission, calculateStats, generateChartData, generateMonthlyData } from './useCalculations';
 import { applyFilters } from './useFilters';
+import { useDataLoader } from './useDataLoader';
 
 export function useProfitsData(): ProfitsData {
-  const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const { 
+    transfers, 
+    expenses, 
+    loading, 
+    uniqueCollaborators,
+    uniqueExpenseTypes 
+  } = useDataLoader();
+  
   const [filteredTransfers, setFilteredTransfers] = useState<Transfer[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
   const [stats, setStats] = useState<ProfitStats>({
@@ -19,10 +26,13 @@ export function useProfitsData(): ProfitsData {
   });
   const [chartData, setChartData] = useState<any[]>([]);
   const [monthlyData, setMonthlyData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<Filters>({});
-  const [uniqueCollaborators, setUniqueCollaborators] = useState<string[]>([]);
-  const [uniqueExpenseTypes, setUniqueExpenseTypes] = useState<string[]>([]);
+
+  // Initialize filtered data when transfers and expenses are loaded
+  useEffect(() => {
+    setFilteredTransfers(transfers);
+    setFilteredExpenses(expenses);
+  }, [transfers, expenses]);
 
   // Apply filters to transfers and expenses
   const updateFilters = (newFilters: Filters) => {
@@ -39,76 +49,6 @@ export function useProfitsData(): ProfitsData {
     setFilteredTransfers(transfers);
     setFilteredExpenses(expenses);
   };
-
-  useEffect(() => {
-    const loadProfitsData = () => {
-      setLoading(true);
-      
-      // Load transfers from localStorage
-      const storedTransfers = localStorage.getItem('transfers');
-      const dummyTransfers = [
-        {
-          id: '1',
-          date: '2025-04-09',
-          time: '09:30',
-          origin: 'Aeropuerto de Ibiza',
-          destination: 'Hotel Ushuaïa',
-          price: 85,
-          collaborator: 'Carlos Sánchez',
-          commission: 10,
-          expenses: []
-        },
-        {
-          id: '2',
-          date: '2025-04-09',
-          time: '14:45',
-          origin: 'Hotel Pacha',
-          destination: 'Playa d\'en Bossa',
-          price: 65,
-          collaborator: 'María López',
-          commission: 15,
-          expenses: []
-        }
-      ];
-      const loadedTransfers = storedTransfers ? JSON.parse(storedTransfers) : dummyTransfers;
-      setTransfers(loadedTransfers);
-      setFilteredTransfers(loadedTransfers);
-
-      // Extract unique collaborators
-      const collaborators = [...new Set(loadedTransfers.map((t: Transfer) => t.collaborator))];
-      setUniqueCollaborators(collaborators as string[]);
-
-      // Load expenses from localStorage
-      const storedExpenses = localStorage.getItem('expenses');
-      const dummyExpenses = [
-        {
-          id: '1',
-          transferId: '1',
-          date: '2025-04-09',
-          concept: 'Combustible',
-          amount: 45.50
-        },
-        {
-          id: '2',
-          transferId: '2',
-          date: '2025-04-09',
-          concept: 'Peaje',
-          amount: 12.30
-        }
-      ];
-      const loadedExpenses = storedExpenses ? JSON.parse(storedExpenses) : dummyExpenses;
-      setExpenses(loadedExpenses);
-      setFilteredExpenses(loadedExpenses);
-
-      // Extract unique expense types
-      const expenseTypes = [...new Set(loadedExpenses.map((e: Expense) => e.concept))];
-      setUniqueExpenseTypes(expenseTypes as string[]);
-      
-      setLoading(false);
-    };
-
-    loadProfitsData();
-  }, []);
 
   // Update stats and charts whenever filtered data changes
   useEffect(() => {
@@ -143,5 +83,6 @@ export function useProfitsData(): ProfitsData {
   };
 }
 
-// Re-export the types for easier imports
+// Re-export the types and utility functions for easier imports
 export * from './types';
+export { calculateCommission } from './useCalculations';
