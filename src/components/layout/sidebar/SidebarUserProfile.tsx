@@ -25,7 +25,7 @@ export const SidebarUserProfile: React.FC<SidebarUserProfileProps> = ({
   };
   return <div className="px-4 py-6 flex items-center bg-ibiza-800">
       <Avatar className="h-9 w-9 mr-2">
-        <AvatarFallback>{getInitials()}</AvatarFallback>
+        <AvatarFallback className="text-gray-950">{getInitials()}</AvatarFallback>
       </Avatar>
       <div className="flex flex-col justify-center overflow-hidden">
         <p className="text-sm font-medium truncate">
