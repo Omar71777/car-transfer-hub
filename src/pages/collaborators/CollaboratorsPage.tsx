@@ -1,28 +1,19 @@
-
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CollaboratorCard } from '@/components/collaborators/CollaboratorCard';
 import { CollaboratorsOverview } from '@/components/collaborators/CollaboratorsOverview';
+import { CollaboratorStatsSection } from '@/components/collaborators/CollaboratorStatsSection';
 import { CollaboratorManagement } from '@/components/collaborators/CollaboratorManagement';
+import { MonthlyStatsCard } from '@/components/collaborators/MonthlyStatsCard';
 import { Transfer } from '@/types';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { formatCurrency } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCollaborators } from '@/hooks/useCollaborators';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-type MonthlyCollaboratorStats = {
-  month: string;
-  collaborator: string;
-  transferCount: number;
-  commissionTotal: number;
-};
+import { MonthlyCollaboratorStats, CollaboratorStat } from '@/components/collaborators/types';
 
 const CollaboratorsPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [collaboratorStats, setCollaboratorStats] = useState<any[]>([]);
+  const [collaboratorStats, setCollaboratorStats] = useState<CollaboratorStat[]>([]);
   const [monthlyStats, setMonthlyStats] = useState<MonthlyCollaboratorStats[]>([]);
   const [loading, setLoading] = useState(true);
   const { collaborators } = useCollaborators();
@@ -119,7 +110,6 @@ const CollaboratorsPage = () => {
       const monthDisplay = new Date(`${year}-${month}-01`).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
       const capitalizedMonthDisplay = monthDisplay.charAt(0).toUpperCase() + monthDisplay.slice(1);
       
-      // Capitalize first letter of collaborator name
       const capitalizedCollaborator = transfer.collaborator.charAt(0).toUpperCase() + transfer.collaborator.slice(1);
       
       const commissionAmount = (transfer.price * transfer.commission) / 100;
@@ -177,63 +167,9 @@ const CollaboratorsPage = () => {
               <CollaboratorsOverview transfers={transfers} />
             </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Rendimiento por Colaborador</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {collaboratorStats.map((collab) => (
-                  <CollaboratorCard
-                    key={collab.name}
-                    name={collab.name.charAt(0).toUpperCase() + collab.name.slice(1)}
-                    transferCount={collab.transferCount}
-                    commissionTotal={collab.commissionTotal}
-                    averageCommission={collab.averageCommission}
-                  />
-                ))}
-                {collaboratorStats.length === 0 && (
-                  <div className="col-span-full text-center py-12 text-muted-foreground">
-                    No hay datos de colaboradores disponibles
-                  </div>
-                )}
-              </div>
-            </div>
+            <CollaboratorStatsSection collaboratorStats={collaboratorStats} />
 
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Comisiones Mensuales por Colaborador</CardTitle>
-                <CardDescription>Resumen mensual de transfers y comisiones por colaborador</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Mes</TableHead>
-                      <TableHead>Colaborador</TableHead>
-                      <TableHead className="text-right">Cantidad de Transfers</TableHead>
-                      <TableHead className="text-right">Total Comisión</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {monthlyStats.map((stat, index) => (
-                      <TableRow key={`${stat.month}-${stat.collaborator}-${index}`}>
-                        <TableCell>{stat.month}</TableCell>
-                        <TableCell>{stat.collaborator}</TableCell>
-                        <TableCell className="text-right">{stat.transferCount}</TableCell>
-                        <TableCell className="text-right font-medium text-amber-500">
-                          {formatCurrency(stat.commissionTotal)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {monthlyStats.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                          No hay datos mensuales disponibles
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <MonthlyStatsCard monthlyStats={monthlyStats} />
           </TabsContent>
           
           <TabsContent value="management">
