@@ -39,7 +39,8 @@ export const useDataLoader = (): {
             price,
             collaborator,
             commission,
-            payment_status
+            payment_status,
+            client_id
           `)
           .order('date', { ascending: false });
 
@@ -69,6 +70,7 @@ export const useDataLoader = (): {
           commission: Number(transfer.commission),
           commissionType: 'percentage' as const, // Use "as const" to satisfy TypeScript's type requirement
           paymentStatus: transfer.payment_status || 'pending', 
+          clientId: transfer.client_id || '', // Add the clientId property
           expenses: []
         }));
 
