@@ -1,115 +1,119 @@
-
-import { useState, useEffect } from 'react';
-import { Transfer, Expense } from '@/types';
-import { useCollaborators } from '@/hooks/useCollaborators';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Transfer, Expense } from '@/types';
 import { toast } from 'sonner';
 
-// Load profits data from Supabase
-export const useDataLoader = (): {
-  transfers: Transfer[];
-  expenses: Expense[];
-  loading: boolean;
-  uniqueCollaborators: string[];
-  uniqueExpenseTypes: string[];
-} => {
-  const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [uniqueCollaborators, setUniqueCollaborators] = useState<string[]>([]);
-  const [uniqueExpenseTypes, setUniqueExpenseTypes] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { collaborators } = useCollaborators();
+export interface DashboardStats {
+  totalRevenue: number;
+  totalExpenses: number;
+  netProfit: number;
+  transferCount: number;
+  averageCommission: number;
+}
 
-  // Load data from Supabase
-  useEffect(() => {
-    const loadProfitsData = async () => {
-      setLoading(true);
+export const useDataLoader = () => {
+  const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalRevenue: 0,
+    totalExpenses: 0,
+    netProfit: 0,
+    transferCount: 0,
+    averageCommission: 0,
+  });
+
+  const fetchTransfers = useCallback(async () => {
+    try {
+      setIsLoading(true);
       
-      try {
-        // Load transfers from Supabase
-        const { data: transfersData, error: transfersError } = await supabase
-          .from('transfers')
-          .select(`
+      const { data, error } = await supabase
+        .from('transfers')
+        .select(`
+          id,
+          date,
+          time,
+          origin,
+          destination,
+          price,
+          collaborator,
+          commission,
+          payment_status,
+          payment_collaborator,
+          expenses (
             id,
             date,
-            time,
-            origin,
-            destination,
-            price,
-            collaborator,
-            commission
-          `)
-          .order('date', { ascending: false });
+            concept,
+            amount
+          )
+        `)
+        .order('date', { ascending: false });
 
-        if (transfersError) {
-          throw transfersError;
-        }
+      if (error) {
+        throw error;
+      }
 
-        // Load expenses from Supabase
-        const { data: expensesData, error: expensesError } = await supabase
-          .from('expenses')
-          .select('*')
-          .order('date', { ascending: false });
-
-        if (expensesError) {
-          throw expensesError;
-        }
-
-        // Transform the transfers data to match our Transfer type
-        const processedTransfers = transfersData.map((transfer: any) => ({
-          id: transfer.id,
-          date: transfer.date,
-          time: transfer.time || '',
-          origin: transfer.origin,
-          destination: transfer.destination,
-          price: Number(transfer.price),
-          collaborator: transfer.collaborator || '',
-          commission: Number(transfer.commission),
-          expenses: []
-        }));
-
-        // Transform the expenses data to match our Expense type
-        const processedExpenses = expensesData.map((expense: any) => ({
+      // Transform the data to match our Transfer type
+      const transformedData = data.map((transfer: any) => ({
+        id: transfer.id,
+        date: transfer.date,
+        time: transfer.time || '',
+        origin: transfer.origin,
+        destination: transfer.destination,
+        price: Number(transfer.price),
+        collaborator: transfer.collaborator || '',
+        commission: Number(transfer.commission),
+        paymentStatus: transfer.payment_status || 'cobrado',
+        paymentCollaborator: transfer.payment_collaborator || '',
+        expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
-          transferId: expense.transfer_id || '',
+          transferId: transfer.id,
           date: expense.date,
           concept: expense.concept,
           amount: Number(expense.amount)
-        }));
+        }))
+      }));
 
-        // Assign expenses to their respective transfers
-        processedTransfers.forEach(transfer => {
-          transfer.expenses = processedExpenses.filter(expense => 
-            expense.transferId === transfer.id
-          );
-        });
+      setTransfers(transformedData);
+      
+    } catch (error: any) {
+      console.error('Error fetching data:', error);
+      toast.error(`Error al cargar los datos: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-        setTransfers(processedTransfers);
-        setExpenses(processedExpenses);
+  const calculateStats = useCallback(() => {
+    const totalRevenue = transfers.reduce((sum, transfer) => sum + transfer.price, 0);
+    const totalExpenses = transfers.reduce((sum, transfer) => {
+      return sum + transfer.expenses.reduce((expenseSum, expense) => expenseSum + expense.amount, 0);
+    }, 0);
+    const netProfit = totalRevenue - totalExpenses;
+    const transferCount = transfers.length;
+    const totalCommission = transfers.reduce((sum, transfer) => sum + transfer.commission, 0);
+    const averageCommission = transferCount > 0 ? totalCommission / transferCount : 0;
 
-        // Get collaborator names from the collaborators list instead of transfers
-        const collaboratorNames = collaborators.map(c => c.name) as string[];
-        setUniqueCollaborators(collaboratorNames);
+    setStats({
+      totalRevenue,
+      totalExpenses,
+      netProfit,
+      transferCount,
+      averageCommission,
+    });
+  }, [transfers]);
 
-        // Extract unique expense types
-        const expenseTypes = [...new Set(processedExpenses.map((e: Expense) => e.concept))] as string[];
-        setUniqueExpenseTypes(expenseTypes);
-      } catch (error: any) {
-        console.error('Error fetching data:', error);
-        toast.error(`Error al cargar los datos: ${error.message}`);
-      } finally {
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
+    fetchTransfers();
+  }, [fetchTransfers]);
 
-    loadProfitsData();
-  }, [collaborators]); // Rerun when collaborators change
+  useEffect(() => {
+    calculateStats();
+  }, [transfers, calculateStats]);
 
   return {
     transfers,
-    expenses,
-    loading,
-    uniqueCollaborators,
-    uniqueExpenseTypes
+    stats,
+    isLoading,
+    fetchTransfers,
   };
 };

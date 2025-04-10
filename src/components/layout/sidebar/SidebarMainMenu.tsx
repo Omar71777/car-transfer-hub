@@ -1,41 +1,42 @@
+
 import React from "react"
 import { Car, Home } from "lucide-react"
 
-import { SidebarMenuItem } from "@/components/ui/sidebar/sidebar-menu-button"
-import { SidebarMenuSub } from "@/components/ui/sidebar/sidebar-menu-elements"
+import { SidebarItem } from "@/components/ui/sidebar/sidebar-menu-elements"
+import { SidebarMenu } from "@/components/ui/sidebar/sidebar-menu"
 
 export function SidebarMainMenu() {
   return (
     <>
-      <SidebarMenuItem href="/" icon={Home}>
+      <SidebarItem href="/" icon={Home}>
         Dashboard
-      </SidebarMenuItem>
+      </SidebarItem>
       
-      <SidebarMenuSub icon={Car} label="Transfers">
-        <SidebarMenuItem href="/transfers">
+      <SidebarMenu icon={Car} title="Transfers">
+        <SidebarItem href="/transfers">
           Todos los Transfers
-        </SidebarMenuItem>
-        <SidebarMenuItem href="/transfers/new">
+        </SidebarItem>
+        <SidebarItem href="/transfers/new">
           Nuevo Transfer
-        </SidebarMenuItem>
-        <SidebarMenuItem href="/transfers/pending">
+        </SidebarItem>
+        <SidebarItem href="/transfers/pending">
           Transfers A Cobrar
-        </SidebarMenuItem>
-      </SidebarMenuSub>
+        </SidebarItem>
+      </SidebarMenu>
       
-      <SidebarMenuSub icon={Car} label="Expenses">
-        <SidebarMenuItem href="/expenses">
+      <SidebarMenu icon={Car} title="Expenses">
+        <SidebarItem href="/expenses">
           Todos los Expenses
-        </SidebarMenuItem>
-      </SidebarMenuSub>
+        </SidebarItem>
+      </SidebarMenu>
 
-      <SidebarMenuItem href="/profits" icon={Car}>
+      <SidebarItem href="/profits" icon={Car}>
         Profits
-      </SidebarMenuItem>
+      </SidebarItem>
 
-      <SidebarMenuItem href="/collaborators" icon={Car}>
+      <SidebarItem href="/collaborators" icon={Car}>
         Collaborators
-      </SidebarMenuItem>
+      </SidebarItem>
     </>
   );
 }

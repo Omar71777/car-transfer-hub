@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from 'next-themes';
@@ -8,14 +9,13 @@ import { SupabaseAuthProvider } from '@/integrations/supabase/SupabaseAuthProvid
 
 // Import pages
 import Index from '@/pages/Index';
-import AuthPage from '@/pages/AuthPage';
+import AuthPage from '@/pages/auth/AuthPage';
 import TransfersPage from '@/pages/transfers/TransfersPage';
 import NewTransferPage from '@/pages/transfers/NewTransferPage';
-import ShiftsPage from '@/pages/ShiftsPage';
-import ExpensesPage from '@/pages/ExpensesPage';
-import ProfitsPage from '@/pages/ProfitsPage';
-import CollaboratorsPage from '@/pages/CollaboratorsPage';
-import ProfilePage from '@/pages/ProfilePage';
+import ExpensesPage from '@/pages/expenses/ExpensesPage';
+import ProfitsPage from '@/pages/profits/ProfitsPage';
+import CollaboratorsPage from '@/pages/collaborators/CollaboratorsPage';
+import ProfilePage from '@/pages/profile/ProfilePage';
 import UsersPage from '@/pages/admin/UsersPage';
 import TransfersReportPage from '@/pages/admin/reports/TransfersReportPage';
 import AnalyticsReportPage from '@/pages/admin/reports/AnalyticsReportPage';
@@ -27,13 +27,13 @@ import { MainLayout } from '@/components/layout/MainLayout';
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { profile, isLoading } = useAuth();
 
-  if (loading) {
+  if (isLoading) {
     return <div>Cargando...</div>; // Show a loading indicator
   }
 
-  if (!isAuthenticated) {
+  if (!profile) {
     return <Navigate to="/auth" />;
   }
 
@@ -42,13 +42,13 @@ const ProtectedRoute = ({ children }: { children?: React.ReactNode }) => {
 
 // Admin route component
 const AdminRoute = ({ children }: { children?: React.ReactNode }) => {
-  const { isAdmin, isAuthenticated, loading } = useAuth();
+  const { profile, isAdmin, isLoading } = useAuth();
 
-  if (loading) {
+  if (isLoading) {
     return <div>Cargando...</div>; // Show a loading indicator
   }
 
-  if (!isAuthenticated || !isAdmin) {
+  if (!profile || !isAdmin) {
     return <Navigate to="/" />;
   }
 
@@ -64,22 +64,21 @@ function App() {
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
 
-              <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<Index />} />
-                <Route path="/transfers" element={<TransfersPage />} />
-                <Route path="/transfers/new" element={<NewTransferPage />} />
-                <Route path="/transfers/pending" element={<PendingTransfersReportPage />} />
-                <Route path="/shifts" element={<ShiftsPage />} />
-                <Route path="/expenses" element={<ExpensesPage />} />
-                <Route path="/profits" element={<ProfitsPage />} />
-                <Route path="/collaborators" element={<CollaboratorsPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/" element={<ProtectedRoute />}>
+                <Route index element={<Index />} />
+                <Route path="transfers" element={<TransfersPage />} />
+                <Route path="transfers/new" element={<NewTransferPage />} />
+                <Route path="transfers/pending" element={<PendingTransfersReportPage />} />
+                <Route path="expenses" element={<ExpensesPage />} />
+                <Route path="profits" element={<ProfitsPage />} />
+                <Route path="collaborators" element={<CollaboratorsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 
                 {/* Admin Routes */}
-                <Route element={<AdminRoute />}>
-                  <Route path="/admin/users" element={<UsersPage />} />
-                  <Route path="/admin/reports/transfers" element={<TransfersReportPage />} />
-                  <Route path="/admin/reports/analytics" element={<AnalyticsReportPage />} />
+                <Route path="admin" element={<AdminRoute />}>
+                  <Route path="users" element={<UsersPage />} />
+                  <Route path="reports/transfers" element={<TransfersReportPage />} />
+                  <Route path="reports/analytics" element={<AnalyticsReportPage />} />
                 </Route>
               </Route>
 
