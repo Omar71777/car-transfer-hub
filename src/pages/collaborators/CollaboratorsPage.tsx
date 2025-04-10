@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { CollaboratorsOverview } from '@/components/collaborators/CollaboratorsOverview';
@@ -8,24 +7,23 @@ import { Transfer } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { CollaboratorStatsSection } from '@/components/collaborators/CollaboratorStatsSection';
 import { toast } from 'sonner';
-
 const CollaboratorsPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Fetch transfers to calculate collaborator stats
   useEffect(() => {
     const fetchTransfers = async () => {
       setLoading(true);
-      
       try {
-        const { data, error } = await supabase
-          .from('transfers')
-          .select('id, date, time, origin, destination, price, collaborator, commission, payment_status')
-          .order('date', { ascending: false });
-          
+        const {
+          data,
+          error
+        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, payment_status').order('date', {
+          ascending: false
+        });
         if (error) throw error;
-        
+
         // Transform data to match our Transfer type
         const processedTransfers = data.map((transfer: any) => ({
           id: transfer.id,
@@ -39,9 +37,7 @@ const CollaboratorsPage = () => {
           paymentStatus: transfer.payment_status || 'pending',
           expenses: []
         }));
-        
         setTransfers(processedTransfers);
-        
       } catch (error: any) {
         console.error('Error fetching transfers:', error);
         toast.error(`Error al cargar los transfers: ${error.message}`);
@@ -49,19 +45,16 @@ const CollaboratorsPage = () => {
         setLoading(false);
       }
     };
-    
     fetchTransfers();
   }, []);
-  
-  return (
-    <MainLayout>
-      <div className="py-6">
+  return <MainLayout>
+      <div className="py-0 px-[3px]">
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-1 text-primary">Colaboradores</h1>
           <p className="text-muted-foreground">Gestiona tus colaboradores y su rendimiento</p>
         </div>
         
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6 px-[3px]">
           <TabsList>
             <TabsTrigger value="overview">Resumen</TabsTrigger>
             <TabsTrigger value="management">Gestión</TabsTrigger>
@@ -81,8 +74,6 @@ const CollaboratorsPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 };
-
 export default CollaboratorsPage;
