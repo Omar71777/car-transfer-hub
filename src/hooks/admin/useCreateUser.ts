@@ -23,13 +23,15 @@ export function useCreateUser({
         return;
       }
       
-      const { data, error } = await supabase.auth.admin.createUser({
+      // Since client-side can't use admin.createUser, we'll use regular signup
+      const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password: values.password,
-        email_confirm: true,
-        user_metadata: {
-          first_name: values.first_name,
-          last_name: values.last_name,
+        options: {
+          data: {
+            first_name: values.first_name,
+            last_name: values.last_name,
+          }
         }
       });
 
@@ -43,9 +45,10 @@ export function useCreateUser({
       
       if (data.user) {
         try {
+          // Create profile record for the new user
           const { error: profileError } = await supabase
             .from('profiles')
-            .insert({
+            .upsert({
               id: data.user.id,
               email: cleanEmail,
               first_name: values.first_name,
@@ -59,7 +62,7 @@ export function useCreateUser({
             return;
           }
           
-          toast.success('Usuario creado con éxito');
+          toast.success('Usuario creado con éxito. El usuario necesitará confirmar su email antes de poder iniciar sesión.');
           setAddUserDialogOpen(false);
           await fetchUsers();
         } catch (profileError: any) {

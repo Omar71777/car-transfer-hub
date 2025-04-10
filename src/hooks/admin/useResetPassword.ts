@@ -12,6 +12,7 @@ export function useResetPassword({
     if (!editingUser) return;
     
     try {
+      // This operation is allowed for client-side code
       const { error } = await supabase.auth.resetPasswordForEmail(editingUser.email || '', {
         redirectTo: window.location.origin + '/auth?reset=true',
       });

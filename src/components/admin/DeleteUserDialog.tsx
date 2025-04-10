@@ -45,10 +45,11 @@ export function DeleteUserDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Eliminar usuario?</AlertDialogTitle>
+          <AlertDialogTitle>¿Eliminar perfil de usuario?</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta acción no se puede deshacer. Se eliminará el usuario {user?.email} 
-            permanentemente del sistema.
+            Esta acción eliminará el perfil del usuario {user?.email}. 
+            Ten en cuenta que la cuenta de autenticación permanecerá en el sistema, 
+            pero el usuario ya no podrá acceder a la aplicación.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
