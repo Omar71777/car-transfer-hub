@@ -4,6 +4,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Bill } from '@/types/billing';
 import { BillStatusBadge } from './BillStatusBadge';
 import { BillTableActions } from './BillTableActions';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BillTableRowProps {
   bill: Bill;
@@ -22,12 +23,14 @@ export function BillTableRow({
   onPrint, 
   onDelete 
 }: BillTableRowProps) {
+  const isMobile = useIsMobile();
+  
   return (
     <TableRow key={bill.id}>
       <TableCell className="font-medium">{bill.number}</TableCell>
       <TableCell>{bill.client?.name || '-'}</TableCell>
       <TableCell>{bill.date}</TableCell>
-      <TableCell>{bill.due_date}</TableCell>
+      {!isMobile && <TableCell>{bill.due_date}</TableCell>}
       <TableCell>{formatCurrency(bill.total)}</TableCell>
       <TableCell>
         <BillStatusBadge status={bill.status} />
@@ -39,6 +42,7 @@ export function BillTableRow({
           onEdit={onEdit}
           onPrint={onPrint}
           onDelete={onDelete}
+          isMobile={isMobile}
         />
       </TableCell>
     </TableRow>
