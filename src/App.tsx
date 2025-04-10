@@ -68,9 +68,9 @@ const AppRoutes = () => (
     {/* Admin routes */}
     <Route path="/admin/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
     
-    {/* New Report Routes */}
-    <Route path="/admin/reports/transfers" element={<AdminRoute><TransfersReportPage /></AdminRoute>} />
-    <Route path="/admin/reports/analytics" element={<AdminRoute><AnalyticsReportPage /></AdminRoute>} />
+    {/* Reports Routes - Now accessible to all users */}
+    <Route path="/admin/reports/transfers" element={<ProtectedRoute><TransfersReportPage /></ProtectedRoute>} />
+    <Route path="/admin/reports/analytics" element={<ProtectedRoute><AnalyticsReportPage /></ProtectedRoute>} />
     
     <Route path="*" element={<NotFound />} />
   </Routes>

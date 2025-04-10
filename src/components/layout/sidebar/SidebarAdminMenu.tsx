@@ -1,17 +1,14 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BarChart3, FileSpreadsheet, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { 
   SidebarGroup, 
   SidebarGroupLabel, 
   SidebarGroupContent,
   SidebarMenu, 
   SidebarMenuItem, 
-  SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton
+  SidebarMenuButton
 } from '@/components/ui/sidebar';
 
 export const SidebarAdminMenu: React.FC = () => {
@@ -32,30 +29,6 @@ export const SidebarAdminMenu: React.FC = () => {
                 <span>Usuarios</span>
               </Link>
             </SidebarMenuButton>
-          </SidebarMenuItem>
-          
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <span>Reportes</span>
-            </SidebarMenuButton>
-            <SidebarMenuSub>
-              <SidebarMenuSubItem>
-                <SidebarMenuSubButton asChild>
-                  <Link to="/admin/reports/transfers">
-                    <FileSpreadsheet size={20} />
-                    <span>Transfers</span>
-                  </Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-              <SidebarMenuSubItem>
-                <SidebarMenuSubButton asChild>
-                  <Link to="/admin/reports/analytics">
-                    <BarChart3 size={20} />
-                    <span>Análisis</span>
-                  </Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            </SidebarMenuSub>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>

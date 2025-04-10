@@ -1,11 +1,14 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BadgeEuro, Building2, Calendar, Files, Home, TruckIcon } from 'lucide-react';
+import { BadgeEuro, BarChart3, Building2, Calendar, FileSpreadsheet, Files, Home, TruckIcon } from 'lucide-react';
 import { 
   SidebarMenu, 
   SidebarMenuItem, 
-  SidebarMenuButton
+  SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton
 } from '@/components/ui/sidebar';
 
 export const SidebarMainMenu: React.FC = () => {
@@ -83,6 +86,31 @@ export const SidebarMainMenu: React.FC = () => {
             <span>Colaboradores</span>
           </Link>
         </SidebarMenuButton>
+      </SidebarMenuItem>
+
+      {/* Reports Menu - Moved from Admin menu */}
+      <SidebarMenuItem>
+        <SidebarMenuButton>
+          <span>Reportes</span>
+        </SidebarMenuButton>
+        <SidebarMenuSub>
+          <SidebarMenuSubItem>
+            <SidebarMenuSubButton asChild>
+              <Link to="/admin/reports/transfers">
+                <FileSpreadsheet size={20} />
+                <span>Transfers</span>
+              </Link>
+            </SidebarMenuSubButton>
+          </SidebarMenuSubItem>
+          <SidebarMenuSubItem>
+            <SidebarMenuSubButton asChild>
+              <Link to="/admin/reports/analytics">
+                <BarChart3 size={20} />
+                <span>Análisis</span>
+              </Link>
+            </SidebarMenuSubButton>
+          </SidebarMenuSubItem>
+        </SidebarMenuSub>
       </SidebarMenuItem>
     </SidebarMenu>
   );

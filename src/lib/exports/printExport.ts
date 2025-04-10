@@ -18,7 +18,7 @@ export function printProfitReport(
     profitMargin: number;
   }
 ): void {
-  const { dailyData, summaryData } = prepareProfitDataForExport(transfers, expenses, stats);
+  const { summaryData } = prepareProfitDataForExport(transfers, expenses, stats);
   
   // Create a new window for printing
   const printWindow = window.open('', '_blank');
@@ -27,7 +27,7 @@ export function printProfitReport(
     return;
   }
   
-  // Generate report HTML
+  // Generate report HTML - removed dailyData section
   printWindow.document.write(`
     <html>
       <head>
@@ -66,25 +66,6 @@ export function printProfitReport(
           </tr>
         </table>
         
-        <h2>Detalle Diario</h2>
-        <table>
-          <tr>
-            <th class="date">Fecha</th>
-            <th>Ingresos</th>
-            <th>Gastos</th>
-            <th>Comisiones</th>
-            <th>Beneficio</th>
-          </tr>
-          ${dailyData.map(day => `
-            <tr>
-              <td>${day.date}</td>
-              <td class="amount">${day.income.toFixed(2)}€</td>
-              <td class="amount">${day.expenses.toFixed(2)}€</td>
-              <td class="amount">${day.commissions.toFixed(2)}€</td>
-              <td class="amount">${day.profit.toFixed(2)}€</td>
-            </tr>
-          `).join('')}
-        </table>
         <button onclick="window.print();" style="margin-top: 20px; padding: 10px 20px;">
           Imprimir Informe
         </button>
