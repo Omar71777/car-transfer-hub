@@ -13,9 +13,17 @@ import { useCollaborators } from '@/hooks/useCollaborators';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+type MonthlyCollaboratorStats = {
+  month: string;
+  collaborator: string;
+  transferCount: number;
+  commissionTotal: number;
+};
+
 const CollaboratorsPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [collaboratorStats, setCollaboratorStats] = useState<any[]>([]);
+  const [monthlyStats, setMonthlyStats] = useState<MonthlyCollaboratorStats[]>([]);
   const [loading, setLoading] = useState(true);
   const { collaborators } = useCollaborators();
 
@@ -48,6 +56,9 @@ const CollaboratorsPage = () => {
         
         // Calculate collaborator stats
         calculateCollaboratorStats(processedTransfers);
+        
+        // Generate monthly stats
+        generateMonthlyStats(processedTransfers);
       } catch (error: any) {
         console.error('Error loading transfers:', error);
         toast.error(`Error al cargar los transfers: ${error.message}`);
@@ -96,6 +107,63 @@ const CollaboratorsPage = () => {
     
     setCollaboratorStats(collaboratorsData);
   };
+  
+  const generateMonthlyStats = (loadedTransfers: Transfer[]) => {
+    const monthlyData: Record<string, Record<string, MonthlyCollaboratorStats>> = {};
+    
+    loadedTransfers.forEach((transfer: Transfer) => {
+      if (!transfer.collaborator || !transfer.date) return;
+      
+      // Get month and year from date (format: YYYY-MM-DD)
+      const dateParts = transfer.date.split('-');
+      if (dateParts.length < 2) return;
+      
+      const year = dateParts[0];
+      const month = dateParts[1];
+      const monthYear = `${year}-${month}`;
+      const monthDisplay = new Date(`${year}-${month}-01`).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+      
+      // Get commission amount
+      const commissionAmount = (transfer.price * transfer.commission) / 100;
+      
+      // Initialize month data if it doesn't exist
+      if (!monthlyData[monthYear]) {
+        monthlyData[monthYear] = {};
+      }
+      
+      // Initialize collaborator data for this month if it doesn't exist
+      if (!monthlyData[monthYear][transfer.collaborator]) {
+        monthlyData[monthYear][transfer.collaborator] = {
+          month: monthDisplay,
+          collaborator: transfer.collaborator,
+          transferCount: 0,
+          commissionTotal: 0
+        };
+      }
+      
+      // Update the stats
+      monthlyData[monthYear][transfer.collaborator].transferCount += 1;
+      monthlyData[monthYear][transfer.collaborator].commissionTotal += commissionAmount;
+    });
+    
+    // Convert the nested object to an array
+    const monthlyStatsArray: MonthlyCollaboratorStats[] = [];
+    Object.keys(monthlyData).forEach(monthYear => {
+      Object.keys(monthlyData[monthYear]).forEach(collaborator => {
+        monthlyStatsArray.push(monthlyData[monthYear][collaborator]);
+      });
+    });
+    
+    // Sort by month (descending) and then by commission total (descending)
+    monthlyStatsArray.sort((a, b) => {
+      if (a.month !== b.month) {
+        return b.month.localeCompare(a.month); // Sort by month desc
+      }
+      return b.commissionTotal - a.commissionTotal; // Then by commission total desc
+    });
+    
+    setMonthlyStats(monthlyStatsArray);
+  };
 
   return (
     <MainLayout>
@@ -138,46 +206,37 @@ const CollaboratorsPage = () => {
               </div>
             </div>
 
-            {/* Detailed Table */}
+            {/* Monthly Totals Table */}
             <Card className="glass-card">
               <CardHeader>
-                <CardTitle>Detalles de Transfers por Colaborador</CardTitle>
-                <CardDescription>Listado detallado de todos los transfers asignados a colaboradores</CardDescription>
+                <CardTitle>Comisiones Mensuales por Colaborador</CardTitle>
+                <CardDescription>Resumen mensual de transfers y comisiones por colaborador</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Hora</TableHead>
+                      <TableHead>Mes</TableHead>
                       <TableHead>Colaborador</TableHead>
-                      <TableHead>Origen</TableHead>
-                      <TableHead>Destino</TableHead>
-                      <TableHead className="text-right">Precio</TableHead>
-                      <TableHead className="text-right">Comisión %</TableHead>
+                      <TableHead className="text-right">Cantidad de Transfers</TableHead>
                       <TableHead className="text-right">Total Comisión</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transfers.filter(t => !!t.collaborator).map((transfer) => {
-                      const commissionAmount = (transfer.price * transfer.commission) / 100;
-                      return (
-                        <TableRow key={transfer.id}>
-                          <TableCell>{transfer.date}</TableCell>
-                          <TableCell>{transfer.time || '-'}</TableCell>
-                          <TableCell>{transfer.collaborator}</TableCell>
-                          <TableCell>{transfer.origin}</TableCell>
-                          <TableCell>{transfer.destination}</TableCell>
-                          <TableCell className="text-right">{formatCurrency(transfer.price)}</TableCell>
-                          <TableCell className="text-right">{transfer.commission}%</TableCell>
-                          <TableCell className="text-right font-medium text-amber-500">{formatCurrency(commissionAmount)}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    {transfers.filter(t => !!t.collaborator).length === 0 && (
+                    {monthlyStats.map((stat, index) => (
+                      <TableRow key={`${stat.month}-${stat.collaborator}-${index}`}>
+                        <TableCell>{stat.month}</TableCell>
+                        <TableCell>{stat.collaborator}</TableCell>
+                        <TableCell className="text-right">{stat.transferCount}</TableCell>
+                        <TableCell className="text-right font-medium text-amber-500">
+                          {formatCurrency(stat.commissionTotal)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {monthlyStats.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                          No hay transfers asignados a colaboradores
+                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                          No hay datos mensuales disponibles
                         </TableCell>
                       </TableRow>
                     )}
