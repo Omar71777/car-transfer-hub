@@ -11,12 +11,16 @@ interface TimetableHeaderProps {
 
 export function TimetableHeader({ hours, weekDays }: TimetableHeaderProps) {
   return (
-    <TableHeader>
+    <TableHeader className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
       <TableRow>
-        <TableHead className="w-24">Hora / Día</TableHead>
+        <TableHead className="w-16 py-2 text-center font-medium">Hora</TableHead>
         {weekDays.map(day => (
-          <TableHead key={day.toString()} className="text-center p-1 whitespace-nowrap">
-            {format(day, 'EEEE, d', { locale: es })}
+          <TableHead 
+            key={day.toString()} 
+            className="text-center p-1 whitespace-nowrap bg-muted/30"
+          >
+            <div className="font-medium">{format(day, 'EEEE', { locale: es })}</div>
+            <div className="text-sm font-normal">{format(day, 'd MMM', { locale: es })}</div>
           </TableHead>
         ))}
       </TableRow>

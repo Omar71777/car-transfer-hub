@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Shift } from '@/types';
 import { ShiftCell } from './ShiftCell';
@@ -34,16 +34,33 @@ export function TimetableBody({
   isInSelectionRange,
   getShiftForTimeSlot
 }: TimetableBodyProps) {
+  // Pre-calculate all driver info for each cell to improve performance
+  const cellDriverInfo = useMemo(() => {
+    const result: Record<string, Record<number, ReturnType<typeof getShiftForTimeSlot>>> = {};
+    
+    weekDays.forEach(day => {
+      const dayStr = day.toISOString();
+      result[dayStr] = {};
+      
+      hours.forEach(hour => {
+        result[dayStr][hour] = getShiftForTimeSlot(day, hour, filteredShifts, getDriverDetails);
+      });
+    });
+    
+    return result;
+  }, [weekDays, hours, filteredShifts, getDriverDetails, getShiftForTimeSlot]);
+  
   return (
     <TableBody>
       {hours.map(hour => (
-        <TableRow key={hour}>
-          <TableCell className="font-medium whitespace-nowrap">
+        <TableRow key={hour} className={hour % 2 === 0 ? 'bg-muted/10' : ''}>
+          <TableCell className="font-medium text-center whitespace-nowrap sticky left-0 bg-background/95 border-r z-10">
             {hour}:00
           </TableCell>
           
           {weekDays.map(day => {
-            const driverInfo = getShiftForTimeSlot(day, hour, filteredShifts, getDriverDetails);
+            const dayStr = day.toISOString();
+            const driverInfo = cellDriverInfo[dayStr][hour];
             
             return (
               <ShiftCell

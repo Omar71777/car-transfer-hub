@@ -48,12 +48,23 @@ export function getShiftForTimeSlot(
 }
 
 // Function to determine style for shift based on its type
-export function getShiftStyle(shift: Shift) {
-  if (shift.isFreeDay) {
-    return 'free-day'; // CSS class for free days
-  } else if (shift.isFullDay) {
-    return 'full-day'; // CSS class for 24h shifts
+export function getShiftStyle(type: 'half' | 'full' | 'free') {
+  if (type === 'free') {
+    return 'bg-green-600 bg-opacity-90'; // Green for free days
+  } else if (type === 'full') {
+    return 'bg-purple-600 bg-opacity-90'; // Purple for 24h shifts
   } else {
-    return 'half-day'; // CSS class for 12h shifts
+    return 'bg-blue-600 bg-opacity-90'; // Blue for 12h shifts
   }
+}
+
+// Calculate shift hours for display
+export function getShiftHours(startHour: number, type: 'half' | 'full' | 'free'): string {
+  const endHour = type === 'half' ? (startHour + 12) % 24 : startHour;
+  
+  if (type === 'full' || type === 'free') {
+    return '24h';
+  }
+  
+  return `${startHour}:00 - ${endHour}:00`;
 }

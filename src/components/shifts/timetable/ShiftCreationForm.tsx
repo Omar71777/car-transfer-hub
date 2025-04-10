@@ -8,6 +8,7 @@ import { Driver } from '@/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Clock, Calendar, Clock12 } from 'lucide-react';
+import { getShiftStyle } from './ShiftUtils';
 
 interface ShiftCreationFormProps {
   day: Date;
@@ -41,18 +42,18 @@ export function ShiftCreationForm({
 
   return (
     <div className="space-y-4">
-      <div className="text-sm font-medium space-y-1">
-        <div>Asignar turno a partir de:</div>
-        <div className="flex items-center gap-2 text-primary font-bold">
+      <div className="space-y-1">
+        <div className="text-sm font-medium">Asignar turno a partir de:</div>
+        <div className="flex items-center gap-1.5 text-primary font-semibold">
           <Calendar className="h-4 w-4" />
-          {format(day, 'dd/MM/yyyy', { locale: es })}
-          <Clock className="h-4 w-4 ml-2" />
+          {format(day, 'EEEE dd/MM/yyyy', { locale: es })}
+          <Clock className="h-4 w-4 ml-1" />
           {hour}:00
         </div>
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="driver">Conductor</Label>
+        <Label htmlFor="driver" className="text-sm">Conductor</Label>
         <Select value={selectedDriver} onValueChange={setSelectedDriver}>
           <SelectTrigger className="w-full" id="driver">
             <SelectValue placeholder="Selecciona un conductor" />
@@ -68,35 +69,40 @@ export function ShiftCreationForm({
       </div>
       
       <div className="space-y-2">
-        <Label>Tipo de Turno</Label>
-        <RadioGroup value={shiftType} onValueChange={setShiftType} className="flex flex-col space-y-1">
-          <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
+        <Label className="text-sm">Tipo de Turno</Label>
+        <RadioGroup value={shiftType} onValueChange={setShiftType} className="flex flex-col space-y-1.5">
+          <div className={`flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50 ${shiftType === 'half' ? 'ring-1 ring-primary' : ''}`}>
             <RadioGroupItem value="half" id="half" />
             <Label htmlFor="half" className="flex items-center gap-2 cursor-pointer flex-1">
+              <div className={`w-3 h-3 ${getShiftStyle('half')}`}></div>
               <Clock12 className="h-4 w-4 text-blue-500" />
               <span>
                 Turno de 12 horas 
-                <span className="text-sm text-muted-foreground ml-1">
+                <span className="text-xs text-muted-foreground ml-1">
                   ({hour}:00 - {getEndHour()}:00)
                 </span>
               </span>
             </Label>
           </div>
-          <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
+          
+          <div className={`flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50 ${shiftType === 'full' ? 'ring-1 ring-primary' : ''}`}>
             <RadioGroupItem value="full" id="full" />
             <Label htmlFor="full" className="flex items-center gap-2 cursor-pointer flex-1">
+              <div className={`w-3 h-3 ${getShiftStyle('full')}`}></div>
               <Clock className="h-4 w-4 text-purple-500" />
               <span>
                 Turno de 24 horas 
-                <span className="text-sm text-muted-foreground ml-1">
+                <span className="text-xs text-muted-foreground ml-1">
                   (día completo)
                 </span>
               </span>
             </Label>
           </div>
-          <div className="flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50">
+          
+          <div className={`flex items-center space-x-2 rounded-md border p-2 hover:bg-muted/50 ${shiftType === 'free' ? 'ring-1 ring-primary' : ''}`}>
             <RadioGroupItem value="free" id="free" />
             <Label htmlFor="free" className="flex items-center gap-2 cursor-pointer flex-1">
+              <div className={`w-3 h-3 ${getShiftStyle('free')}`}></div>
               <Calendar className="h-4 w-4 text-green-500" />
               <span>Día libre (24 horas)</span>
             </Label>

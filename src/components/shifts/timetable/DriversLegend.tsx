@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Driver } from '@/types';
-import { GripHorizontal, FilterIcon } from 'lucide-react';
+import { GripHorizontal, FilterIcon, Clock12, Clock, Calendar } from 'lucide-react';
+import { getShiftStyle } from './ShiftUtils';
 
 interface DriversLegendProps {
   drivers: Driver[];
@@ -10,7 +11,7 @@ interface DriversLegendProps {
 
 export function DriversLegend({ drivers, driverColors }: DriversLegendProps) {
   return (
-    <div className="mt-4">
+    <div className="mt-4 space-y-3">
       <div className="flex flex-wrap gap-3 mb-2">
         {drivers.map(driver => (
           <div key={driver.id} className="flex items-center">
@@ -20,10 +21,28 @@ export function DriversLegend({ drivers, driverColors }: DriversLegendProps) {
         ))}
       </div>
       
-      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+      <div className="flex flex-wrap gap-3">
+        <div className="flex items-center">
+          <div className={`w-3 h-3 ${getShiftStyle('half')}`} />
+          <Clock12 className="h-3 w-3 mx-1 text-blue-500" />
+          <span className="text-xs">Turno 12h</span>
+        </div>
+        <div className="flex items-center">
+          <div className={`w-3 h-3 ${getShiftStyle('full')}`} />
+          <Clock className="h-3 w-3 mx-1 text-purple-500" />
+          <span className="text-xs">Turno 24h</span>
+        </div>
+        <div className="flex items-center">
+          <div className={`w-3 h-3 ${getShiftStyle('free')}`} />
+          <Calendar className="h-3 w-3 mx-1 text-green-500" />
+          <span className="text-xs">Día libre</span>
+        </div>
+      </div>
+      
+      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground border-t pt-2">
         <div className="flex items-center">
           <GripHorizontal className="h-3 w-3 mr-1" />
-          <span>Consejo: Arrastra para seleccionar varios turnos a la vez</span>
+          <span>Arrastra para seleccionar varios turnos a la vez</span>
         </div>
         
         <div className="flex items-center">

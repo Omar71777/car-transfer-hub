@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table } from '@/components/ui/table';
 import { Shift, Driver } from '@/types';
-import { MoveHorizontalIcon, FileTextIcon } from 'lucide-react';
+import { MoveHorizontalIcon, FileTextIcon, InfoIcon } from 'lucide-react';
 import { TimetableHeader } from './timetable/TimetableHeader';
 import { TimetableBody } from './timetable/TimetableBody';
 import { DriversLegend } from './timetable/DriversLegend';
@@ -13,6 +14,8 @@ import { getShiftForTimeSlot } from './timetable/ShiftUtils';
 import { Button } from '@/components/ui/button';
 import { downloadCSV, prepareShiftsForExport } from '@/lib/exports';
 import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ShiftTimetableProps {
   shifts: Shift[];
@@ -70,27 +73,71 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
   return (
     <Card className="glass-card">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
           <div>
-            <CardTitle>Planificador de Turnos</CardTitle>
-            <CardDescription className="flex items-center gap-2">
-              <div>Asigna y visualiza los turnos semanales - Haz clic o arrastra para asignar un turno</div>
-              <div className="flex items-center gap-1 text-xs bg-muted p-1 rounded">
-                <MoveHorizontalIcon className="h-3 w-3" /> Arrastra para seleccionar varios turnos
+            <CardTitle className="flex items-center gap-2">
+              Planificador de Turnos
+              <Badge variant="outline" className="ml-2 bg-primary/10">
+                Vista Vertical
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              <div className="flex items-center gap-1 text-sm mt-1">
+                Haz clic o arrastra para asignar un turno - Vista optimizada para móviles
               </div>
             </CardDescription>
           </div>
-          <Button 
-            className="mt-2 sm:mt-0" 
-            variant="outline" 
-            size="sm" 
-            onClick={handleExportShifts}
-          >
-            <FileTextIcon className="mr-1 h-4 w-4" /> Exportar CSV
-          </Button>
+          
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex items-center gap-1 h-8"
+                    onClick={handleExportShifts}
+                  >
+                    <FileTextIcon className="h-3.5 w-3.5" /> 
+                    <span className="hidden sm:inline">Exportar</span> CSV
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Exportar turnos a archivo CSV</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="flex items-center gap-1 h-8"
+                  >
+                    <InfoIcon className="h-3.5 w-3.5" /> 
+                    <span className="hidden sm:inline">Ayuda</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[250px]">
+                  <div className="space-y-2 text-xs">
+                    <p className="font-medium">Consejos rápidos:</p>
+                    <ul className="space-y-1">
+                      <li className="flex items-center gap-1">
+                        <MoveHorizontalIcon className="h-3 w-3" /> Arrastra para seleccionar varios turnos
+                      </li>
+                      <li>• Haz clic en un turno existente para eliminarlo</li>
+                      <li>• Usa los filtros para ver turnos específicos</li>
+                    </ul>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="overflow-auto">
+      <CardContent className="p-1 sm:p-6">
         <TimetableFilters
           drivers={drivers}
           selectedDriver={filterDriver}
@@ -101,7 +148,7 @@ export function ShiftTimetable({ shifts, drivers, onAddShift, onDeleteShift }: S
           onResetFilters={resetFilters}
         />
         
-        <div className="border rounded-md">
+        <div className="border rounded-md mt-4 overflow-auto max-h-[calc(100vh-320px)]">
           <Table>
             <TimetableHeader hours={hours} weekDays={weekDays} />
             <TimetableBody 
