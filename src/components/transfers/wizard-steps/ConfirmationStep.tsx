@@ -43,6 +43,16 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
   // Calculate total price
   const totalPrice = basePrice + totalExtraCharges - discountAmount;
   
+  // Calculate commission amount in euros
+  let commissionAmountEuros = 0;
+  if (values.collaborator && values.collaborator !== 'none' && values.commission) {
+    if (values.commissionType === 'percentage') {
+      commissionAmountEuros = totalPrice * (Number(values.commission) / 100);
+    } else {
+      commissionAmountEuros = Number(values.commission);
+    }
+  }
+  
   // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
@@ -124,6 +134,11 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
                     <p className="text-sm text-muted-foreground">Comisión</p>
                     <p>
                       {values.commission} {values.commissionType === 'percentage' ? '%' : '€'}
+                      {values.commissionType === 'percentage' && (
+                        <span className="ml-1 text-sm text-muted-foreground">
+                          ({formatCurrency(commissionAmountEuros)})
+                        </span>
+                      )}
                     </p>
                   </div>
                 </div>
