@@ -3,6 +3,7 @@
  * Print utilities for unpaid transfers report generation
  */
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // Print function for unpaid transfers
 export function printUnpaidReport(
@@ -20,7 +21,7 @@ export function printUnpaidReport(
   }
 ): void {
   // Get current date
-  const currentDate = format(new Date(), 'dd/MM/yyyy');
+  const currentDate = format(new Date(), 'dd/MM/yyyy', { locale: es });
   
   // Calculate grand total
   const grandTotal = monthlyData.reduce((sum, data) => sum + data.total, 0);

@@ -14,6 +14,7 @@ import { printUnpaidReport } from '@/lib/exports/printUnpaidReport';
 import { downloadCSV, prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from '@/lib/exports';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { useAuth } from '@/contexts/auth';
 
 const UnpaidTransfersPage = () => {
@@ -66,13 +67,13 @@ const UnpaidTransfersPage = () => {
         t => t.paymentStatus === 'pending' && t.collaborator === name
       );
       
-      // Group by month
+      // Group by month - now using Spanish locale
       const monthGroups: Record<string, Transfer[]> = {};
       
       collaboratorTransfers.forEach(transfer => {
         try {
           const date = new Date(transfer.date);
-          const monthYear = format(date, 'MMMM yyyy');
+          const monthYear = format(date, 'MMMM yyyy', { locale: es });
           
           if (!monthGroups[monthYear]) {
             monthGroups[monthYear] = [];
