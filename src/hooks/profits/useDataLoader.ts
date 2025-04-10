@@ -38,6 +38,7 @@ export const useDataLoader = (): {
             price,
             collaborator,
             commission,
+            commission_type,
             payment_status
           `)
           .order('date', { ascending: false });
@@ -66,6 +67,7 @@ export const useDataLoader = (): {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
+          commissionType: transfer.commission_type || 'percentage', // Add the missing commissionType field
           paymentStatus: transfer.payment_status || 'pending', 
           expenses: []
         }));

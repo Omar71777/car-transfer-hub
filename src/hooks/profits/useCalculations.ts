@@ -1,26 +1,33 @@
 
 import { Transfer, Expense } from '@/types';
 import { ProfitStats } from './types';
-import { format, parseISO, getMonth, getYear } from 'date-fns';
+import { format, parse, parseISO, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-// Calculate commission for a transfer
+// Calculate commission based on commission type
 export const calculateCommission = (transfer: Transfer): number => {
-  return (transfer.price * transfer.commission) / 100;
+  if (!transfer.commission) return 0;
+  
+  if (transfer.commissionType === 'percentage') {
+    return (transfer.price * transfer.commission) / 100;
+  } else {
+    return transfer.commission;
+  }
 };
 
-// Calculate statistics based on transfers and expenses
+// Calculate main stats from transfers and expenses
 export const calculateStats = (transfers: Transfer[], expenses: Expense[]): ProfitStats => {
-  const totalIncome = transfers.reduce((sum: number, transfer: Transfer) => 
-    sum + (transfer.price || 0), 0);
+  const totalIncome = transfers.reduce((sum, transfer) => sum + transfer.price, 0);
   
-  const totalCommissions = transfers.reduce((sum: number, transfer: Transfer) => 
-    sum + calculateCommission(transfer), 0);
+  // Sum commissions based on type
+  const totalCommissions = transfers.reduce((sum, transfer) => {
+    return sum + calculateCommission(transfer);
+  }, 0);
   
-  const totalExpenses = expenses.reduce((sum: number, expense: Expense) => 
-    sum + (expense.amount || 0), 0);
+  const regularExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const totalExpenses = regularExpenses + totalCommissions;
   
-  const netProfit = totalIncome - totalExpenses - totalCommissions;
+  const netProfit = totalIncome - totalExpenses;
   const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
   
   return {
@@ -32,79 +39,88 @@ export const calculateStats = (transfers: Transfer[], expenses: Expense[]): Prof
   };
 };
 
-// Generate chart data based on stats
-export const generateChartData = (stats: ProfitStats): any[] => {
+// Generate chart data for income vs expenses
+export const generateChartData = (stats: ProfitStats) => {
   return [
-    { name: 'Ingresos', value: stats.totalIncome, fill: '#3b82f6' },
-    { name: 'Gastos', value: stats.totalExpenses, fill: '#ef4444' },
-    { name: 'Comisiones', value: stats.totalCommissions, fill: '#f59e0b' },
-    { name: 'Beneficio Neto', value: stats.netProfit, fill: '#10b981' }
+    {
+      name: 'Ingresos',
+      value: stats.totalIncome
+    },
+    {
+      name: 'Comisiones',
+      value: stats.totalCommissions
+    },
+    {
+      name: 'Otros Gastos',
+      value: stats.totalExpenses - stats.totalCommissions
+    },
+    {
+      name: 'Beneficio Neto',
+      value: stats.netProfit
+    }
   ];
 };
 
-// Generate monthly data from transfers and expenses
-export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]): any[] => {
-  // Create a map to store data by month-year
-  const monthlyDataMap: Record<string, {
-    name: string;
-    ingresos: number;
-    gastos: number;
-    comisiones: number;
-    beneficio: number;
-    date: Date;
+// Generate monthly data for income and expenses
+export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]) => {
+  const monthlyData: Record<string, {
+    month: string;
+    income: number;
+    expenses: number;
+    commissions: number;
+    profit: number;
   }> = {};
-
-  // Process transfers
+  
+  // Process transfers by month
   transfers.forEach(transfer => {
-    const transferDate = parseISO(transfer.date);
-    const month = getMonth(transferDate);
-    const year = getYear(transferDate);
-    const monthYearKey = `${month}-${year}`;
-    
-    // Format the month name in Spanish
-    const monthName = format(transferDate, 'MMM', { locale: es });
-    
-    if (!monthlyDataMap[monthYearKey]) {
-      monthlyDataMap[monthYearKey] = {
-        name: monthName,
-        ingresos: 0,
-        gastos: 0,
-        comisiones: 0,
-        beneficio: 0,
-        date: transferDate
-      };
+    try {
+      const date = parseISO(transfer.date);
+      if (!isValid(date)) return;
+      
+      const monthYearKey = format(date, 'yyyy-MM');
+      const monthYearLabel = format(date, 'MMMM yyyy', { locale: es });
+      
+      if (!monthlyData[monthYearKey]) {
+        monthlyData[monthYearKey] = {
+          month: monthYearLabel,
+          income: 0,
+          expenses: 0,
+          commissions: 0,
+          profit: 0
+        };
+      }
+      
+      monthlyData[monthYearKey].income += transfer.price;
+      monthlyData[monthYearKey].commissions += calculateCommission(transfer);
+    } catch (error) {
+      console.error('Error processing transfer date:', error);
     }
-    
-    // Add transfer price to income
-    monthlyDataMap[monthYearKey].ingresos += transfer.price;
-    
-    // Calculate and add commission
-    const commission = calculateCommission(transfer);
-    monthlyDataMap[monthYearKey].comisiones += commission;
   });
   
-  // Process expenses
+  // Process expenses by month
   expenses.forEach(expense => {
-    const expenseDate = parseISO(expense.date);
-    const month = getMonth(expenseDate);
-    const year = getYear(expenseDate);
-    const monthYearKey = `${month}-${year}`;
-    
-    // Skip if there's no matching month (no transfers in this month)
-    if (!monthlyDataMap[monthYearKey]) return;
-    
-    // Add expense amount
-    monthlyDataMap[monthYearKey].gastos += expense.amount;
+    try {
+      const date = parseISO(expense.date);
+      if (!isValid(date)) return;
+      
+      const monthYearKey = format(date, 'yyyy-MM');
+      
+      if (monthlyData[monthYearKey]) {
+        monthlyData[monthYearKey].expenses += expense.amount;
+      }
+    } catch (error) {
+      console.error('Error processing expense date:', error);
+    }
   });
   
-  // Calculate profits and convert to array
-  const monthlyData = Object.values(monthlyDataMap).map(data => {
-    data.beneficio = data.ingresos - data.gastos - data.comisiones;
-    return data;
+  // Calculate profit for each month
+  Object.values(monthlyData).forEach(month => {
+    month.profit = month.income - month.expenses - month.commissions;
   });
   
-  // Sort by date
-  monthlyData.sort((a, b) => a.date.getTime() - b.date.getTime());
-  
-  return monthlyData;
+  return Object.values(monthlyData).sort((a, b) => {
+    const monthA = parse(a.month, 'MMMM yyyy', new Date(), { locale: es });
+    const monthB = parse(b.month, 'MMMM yyyy', new Date(), { locale: es });
+    return monthB.getTime() - monthA.getTime();
+  });
 };

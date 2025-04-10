@@ -32,7 +32,10 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
     return transfers
       .filter(t => t.paymentStatus === 'pending' && t.collaborator === collaboratorName)
       .reduce((sum, t) => {
-        const commissionAmount = (t.price * t.commission / 100);
+        // Consider commission type when calculating
+        const commissionAmount = t.commissionType === 'percentage' 
+          ? (t.price * t.commission / 100)
+          : t.commission;
         return sum + (t.price - commissionAmount);
       }, 0);
   };
@@ -76,7 +79,10 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
       // Calculate total for each month
       Object.entries(monthGroups).forEach(([month, monthTransfers]) => {
         const total = monthTransfers.reduce((sum, t) => {
-          const commissionAmount = (t.price * t.commission / 100);
+          // Consider commission type when calculating
+          const commissionAmount = t.commissionType === 'percentage' 
+            ? (t.price * t.commission / 100)
+            : t.commission;
           return sum + (t.price - commissionAmount);
         }, 0);
         

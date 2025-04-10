@@ -28,7 +28,7 @@ export function useDashboardData() {
         // Load transfers from Supabase
         const { data: transfers, error: transfersError } = await supabase
           .from('transfers')
-          .select('id, price, commission')
+          .select('id, price, commission, commission_type')
           .order('date', { ascending: false });
           
         if (transfersError) throw transfersError;
@@ -41,9 +41,14 @@ export function useDashboardData() {
           
         if (expensesError) throw expensesError;
         
-        // Calculate total commissions
-        const totalCommissions = transfers.reduce((sum: number, transfer: Transfer) => 
-          sum + ((Number(transfer.price) * Number(transfer.commission)) / 100 || 0), 0);
+        // Calculate total commissions considering commission type
+        const totalCommissions = transfers.reduce((sum: number, transfer: any) => {
+          // Check commission type and calculate accordingly
+          const commissionAmount = transfer.commission_type === 'percentage'
+            ? ((Number(transfer.price) * Number(transfer.commission)) / 100 || 0)
+            : (Number(transfer.commission) || 0);
+          return sum + commissionAmount;
+        }, 0);
         
         // Add regular expenses and commissions
         const expensesTotal = expenses.reduce((sum: number, expense: Expense) => 

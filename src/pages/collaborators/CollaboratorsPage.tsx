@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { CollaboratorsOverview } from '@/components/collaborators/CollaboratorsOverview';
@@ -7,6 +8,7 @@ import { Transfer } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { CollaboratorStatsSection } from '@/components/collaborators/CollaboratorStatsSection';
 import { toast } from 'sonner';
+
 const CollaboratorsPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ const CollaboratorsPage = () => {
         const {
           data,
           error
-        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, payment_status').order('date', {
+        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, commission_type, payment_status').order('date', {
           ascending: false
         });
         if (error) throw error;
@@ -34,6 +36,7 @@ const CollaboratorsPage = () => {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
+          commissionType: transfer.commission_type || 'percentage', // Add the missing commissionType field
           paymentStatus: transfer.payment_status || 'pending',
           expenses: []
         }));
@@ -47,6 +50,7 @@ const CollaboratorsPage = () => {
     };
     fetchTransfers();
   }, []);
+  
   return <MainLayout>
       <div className="py-0 px-[3px]">
         <div className="mb-6">
@@ -76,4 +80,5 @@ const CollaboratorsPage = () => {
       </div>
     </MainLayout>;
 };
+
 export default CollaboratorsPage;

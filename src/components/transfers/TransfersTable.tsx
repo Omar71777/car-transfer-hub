@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,14 @@ import { Transfer } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
 interface TransfersTableProps {
   transfers: Transfer[];
   onEdit: (transfer: Transfer) => void;
   onDelete: (id: string) => void;
   onAddExpense: (transferId: string) => void;
 }
+
 export function TransfersTable({
   transfers,
   onEdit,
@@ -19,6 +22,7 @@ export function TransfersTable({
   onAddExpense
 }: TransfersTableProps) {
   const isMobile = useIsMobile();
+  
   return <div className="rounded-md border overflow-hidden glass-card px-[7px]">
       <Table>
         <TableHeader>
@@ -46,7 +50,11 @@ export function TransfersTable({
                 <TableCell className="max-w-[100px] truncate" title={transfer.destination}>{transfer.destination}</TableCell>
                 <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
                 {!isMobile && <TableCell>{transfer.collaborator}</TableCell>}
-                {!isMobile && <TableCell className="text-right">{transfer.commission}%</TableCell>}
+                {!isMobile && <TableCell className="text-right">
+                  {transfer.commissionType === 'percentage' 
+                    ? `${transfer.commission}%` 
+                    : formatCurrency(transfer.commission)}
+                </TableCell>}
                 <TableCell className="text-center">
                   {transfer.paymentStatus === 'paid' ? <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-800">
                       <CheckCircle className="h-3 w-3 md:h-4 md:w-4" />

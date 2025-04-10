@@ -22,7 +22,12 @@ export function TransfersSummary({ transfers }: TransfersSummaryProps) {
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-sm font-medium text-gray-500">Comisiones Totales</h3>
         <p className="mt-2 text-3xl font-semibold">
-          {transfers.reduce((sum, t) => sum + (t.price * t.commission / 100), 0).toFixed(2)}€
+          {transfers.reduce((sum, t) => {
+            // Consider commission type when calculating
+            return sum + (t.commissionType === 'percentage' 
+              ? (t.price * t.commission / 100) 
+              : t.commission);
+          }, 0).toFixed(2)}€
         </p>
       </div>
       <div className="bg-gray-50 p-4 rounded-lg">
