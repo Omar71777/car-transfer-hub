@@ -33,7 +33,7 @@ export function useBilling() {
 
       if (error) throw error;
       
-      setBills(data as Bill[]);
+      setBills(data as unknown as Bill[]);
       setLoading(false);
     } catch (error: any) {
       toast.error(`Error al cargar facturas: ${error.message}`);
@@ -74,7 +74,7 @@ export function useBilling() {
       return {
         ...bill,
         items: items || []
-      } as Bill;
+      } as unknown as Bill;
     } catch (error: any) {
       toast.error(`Error al obtener factura: ${error.message}`);
       console.error('Error fetching bill:', error);
@@ -186,7 +186,8 @@ export function useBilling() {
           tax_application: billData.taxApplication,
           total: preview.total,
           notes: billData.notes,
-          status: 'draft'
+          status: 'draft',
+          user_id: (await supabase.auth.getUser()).data.user?.id
         }])
         .select()
         .single();

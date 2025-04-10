@@ -5,10 +5,11 @@ export interface Client {
   email: string;
   phone?: string;
   address?: string;
-  taxId?: string;
+  tax_id?: string; // Changed from taxId to match database column
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string; // Changed from createdAt to match database column
+  updated_at: string; // Changed from updatedAt to match database column
+  user_id: string;
 }
 
 export interface CreateClientDto {
@@ -16,7 +17,7 @@ export interface CreateClientDto {
   email: string;
   phone?: string;
   address?: string;
-  taxId?: string;
+  tax_id?: string; // Changed from taxId
   notes?: string;
 }
 

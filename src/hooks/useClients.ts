@@ -49,7 +49,10 @@ export function useClients() {
     try {
       const { data, error } = await supabase
         .from('clients')
-        .insert([clientData])
+        .insert([{
+          ...clientData,
+          user_id: (await supabase.auth.getUser()).data.user?.id
+        }])
         .select()
         .single();
 

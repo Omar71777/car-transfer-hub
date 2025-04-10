@@ -12,13 +12,13 @@ export const exportBillCsv = (bill: Bill) => {
   const rows = bill.items.map(item => [
     item.description,
     item.quantity.toString(),
-    item.unitPrice.toString(),
-    item.totalPrice.toString()
+    item.unit_price.toString(),
+    item.total_price.toString()
   ]);
   
   // Añadir filas de resumen
-  rows.push(['', '', 'Subtotal', bill.subTotal.toString()]);
-  rows.push(['', '', `IVA (${bill.taxRate}%)`, bill.taxAmount.toString()]);
+  rows.push(['', '', 'Subtotal', bill.sub_total.toString()]);
+  rows.push(['', '', `IVA (${bill.tax_rate}%)`, bill.tax_amount.toString()]);
   rows.push(['', '', 'Total', bill.total.toString()]);
   
   const fileName = `factura-${bill.number}.csv`;
@@ -84,7 +84,7 @@ export const printBill = async (bill: Bill) => {
           <div class="invoice-title">FACTURA</div>
           <div>Nº: ${bill.number}</div>
           <div>Fecha: ${bill.date}</div>
-          <div>Vencimiento: ${bill.dueDate}</div>
+          <div>Vencimiento: ${bill.due_date}</div>
         </div>
         <div>
           ${companyInfo.logo ? `<img src="${companyInfo.logo}" class="company-logo" alt="Logo" />` : ''}
@@ -119,17 +119,17 @@ export const printBill = async (bill: Bill) => {
             <tr>
               <td>${item.description}</td>
               <td>${item.quantity}</td>
-              <td class="text-right">${formatCurrency(item.unitPrice)}</td>
-              <td class="text-right">${formatCurrency(item.totalPrice)}</td>
+              <td class="text-right">${formatCurrency(item.unit_price)}</td>
+              <td class="text-right">${formatCurrency(item.total_price)}</td>
             </tr>
           `).join('')}
           <tr>
             <td colspan="3" class="text-right">Subtotal:</td>
-            <td class="text-right">${formatCurrency(bill.subTotal)}</td>
+            <td class="text-right">${formatCurrency(bill.sub_total)}</td>
           </tr>
           <tr>
-            <td colspan="3" class="text-right">IVA (${bill.taxRate}%)${bill.taxApplication === 'included' ? ' (incluido)' : ''}:</td>
-            <td class="text-right">${formatCurrency(bill.taxAmount)}</td>
+            <td colspan="3" class="text-right">IVA (${bill.tax_rate}%)${bill.tax_application === 'included' ? ' (incluido)' : ''}:</td>
+            <td class="text-right">${formatCurrency(bill.tax_amount)}</td>
           </tr>
           <tr class="total-row">
             <td colspan="3" class="text-right">Total:</td>
