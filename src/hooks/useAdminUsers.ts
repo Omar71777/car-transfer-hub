@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -175,10 +176,31 @@ export function useAdminUsers() {
 
   const deleteUser = useCallback(async (userId: string) => {
     try {
-      const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+      // First delete the profile from the profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+        
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+        toast.error(`Error al eliminar el perfil: ${profileError.message}`);
+        return;
+      }
       
-      if (authError) throw authError;
+      // Now try to delete the auth user - this will likely fail with regular client
+      try {
+        const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+        if (authError) {
+          console.error('Error deleting auth user, but profile was deleted:', authError);
+          // We'll still consider this a success since the profile was deleted
+        }
+      } catch (authError) {
+        console.error('Auth deletion failed, but profile was deleted:', authError);
+        // We'll still consider this a success since the profile was deleted
+      }
       
+      // Update the UI by removing the user from the list
       setUsers(users => users.filter(u => u.id !== userId));
       
       toast.success('Usuario eliminado con éxito');

@@ -11,6 +11,7 @@ import {
   AlertDialogTitle 
 } from '@/components/ui/alert-dialog';
 import { Database } from '@/integrations/supabase/types';
+import { Loader } from 'lucide-react';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -27,9 +28,16 @@ export function DeleteUserDialog({
   user, 
   onConfirm 
 }: DeleteUserDialogProps) {
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
   const handleConfirm = async () => {
     if (user) {
-      await onConfirm(user.id);
+      setIsDeleting(true);
+      try {
+        await onConfirm(user.id);
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -44,12 +52,20 @@ export function DeleteUserDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            disabled={isDeleting}
           >
-            Eliminar
+            {isDeleting ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                Eliminando...
+              </>
+            ) : (
+              'Eliminar'
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
