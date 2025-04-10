@@ -67,61 +67,73 @@ export const AppSidebar = () => {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            icon={<Home size={20} />}
             className={location.pathname === '/' ? 'text-primary' : undefined}
             asChild
           >
-            <Link to="/">Inicio</Link>
+            <Link to="/">
+              <Home size={20} />
+              <span>Inicio</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
         <SidebarMenuItem>
           <SidebarMenuButton
-            icon={<TruckIcon size={20} />}
             className={location.pathname.includes('/transfers') ? 'text-primary' : undefined}
             asChild
           >
-            <Link to="/transfers">Transfers</Link>
+            <Link to="/transfers">
+              <TruckIcon size={20} />
+              <span>Transfers</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
         <SidebarMenuItem>
           <SidebarMenuButton
-            icon={<Files size={20} />}
             className={location.pathname.includes('/expenses') ? 'text-primary' : undefined}
             asChild
           >
-            <Link to="/expenses">Gastos</Link>
+            <Link to="/expenses">
+              <Files size={20} />
+              <span>Gastos</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
         <SidebarMenuItem>
           <SidebarMenuButton
-            icon={<BadgeEuro size={20} />}
             className={location.pathname.includes('/profits') ? 'text-primary' : undefined}
             asChild
           >
-            <Link to="/profits">Ganancias</Link>
+            <Link to="/profits">
+              <BadgeEuro size={20} />
+              <span>Ganancias</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
         <SidebarMenuItem>
           <SidebarMenuButton
-            icon={<Calendar size={20} />}
             className={location.pathname.includes('/shifts') ? 'text-primary' : undefined}
             asChild
           >
-            <Link to="/shifts">Turnos</Link>
+            <Link to="/shifts">
+              <Calendar size={20} />
+              <span>Turnos</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
         <SidebarMenuItem>
           <SidebarMenuButton
-            icon={<Building2 size={20} />}
             className={location.pathname.includes('/collaborators') ? 'text-primary' : undefined}
             asChild
           >
-            <Link to="/collaborators">Colaboradores</Link>
+            <Link to="/collaborators">
+              <Building2 size={20} />
+              <span>Colaboradores</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
 
@@ -131,20 +143,20 @@ export const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  icon={<Settings size={20} />}
                   className={location.pathname.includes('/profile') ? 'text-primary' : undefined}
                   asChild
                 >
-                  <Link to="/profile">Mi Perfil</Link>
+                  <Link to="/profile">
+                    <Settings size={20} />
+                    <span>Mi Perfil</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  icon={<LogOut size={20} />}
-                  onClick={signOut}
-                >
-                  Cerrar Sesión
+                <SidebarMenuButton onClick={signOut}>
+                  <LogOut size={20} />
+                  <span>Cerrar Sesión</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -158,16 +170,20 @@ export const AppSidebar = () => {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    icon={<Users size={20} />}
                     className={location.pathname.includes('/admin/users') ? 'text-primary' : undefined}
                     asChild
                   >
-                    <Link to="/admin/users">Usuarios</Link>
+                    <Link to="/admin/users">
+                      <Users size={20} />
+                      <span>Usuarios</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 
                 <SidebarMenuItem>
-                  <SidebarMenuButton>Reportes</SidebarMenuButton>
+                  <SidebarMenuButton>
+                    <span>Reportes</span>
+                  </SidebarMenuButton>
                   <SidebarMenuSub>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
