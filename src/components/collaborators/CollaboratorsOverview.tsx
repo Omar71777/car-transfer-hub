@@ -4,13 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Transfer } from '@/types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
-import { Coins, UsersRound, AlertCircle } from 'lucide-react';
+import { Coins, UsersRound, AlertCircle, Loader2 } from 'lucide-react';
 
 interface CollaboratorsOverviewProps {
   transfers: Transfer[];
+  loading?: boolean;
 }
 
-export function CollaboratorsOverview({ transfers }: CollaboratorsOverviewProps) {
+export function CollaboratorsOverview({ transfers, loading = false }: CollaboratorsOverviewProps) {
   // Calculate commissions and stats
   const calculateCommissionStats = () => {
     const collaborators: Record<string, { name: string, transferCount: number, commissionTotal: number }> = {};
@@ -48,8 +49,25 @@ export function CollaboratorsOverview({ transfers }: CollaboratorsOverviewProps)
   // Random colors for pie chart
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
-  // Check if there's no data
+  // Check if there's no data or if it's loading
   const noDataAvailable = collaboratorStats.length === 0;
+
+  if (loading) {
+    return (
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-xl">Resumen de Colaboradores</CardTitle>
+          <CardDescription>Cargando datos de colaboradores...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+            <Loader2 className="h-12 w-12 mb-4 text-primary animate-spin" />
+            <p className="text-lg font-medium">Cargando datos</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="glass-card">

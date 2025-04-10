@@ -1,42 +1,80 @@
 
 import React from "react"
-import { Car, Home } from "lucide-react"
+import { Car, Home, FileText, Users, BarChart } from "lucide-react"
 
-import { SidebarItem } from "@/components/ui/sidebar/sidebar-menu-elements"
 import { SidebarMenu } from "@/components/ui/sidebar/sidebar-menu"
+import { SidebarMenuItem } from "@/components/ui/sidebar/sidebar-menu-base"
+import { SidebarMenuButton } from "@/components/ui/sidebar/sidebar-menu-button"
 
 export function SidebarMainMenu() {
   return (
     <>
-      <SidebarItem href="/" icon={Home}>
-        Dashboard
-      </SidebarItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={window.location.pathname === "/"} tooltip="Dashboard">
+          <a href="/">
+            <Home />
+            <span>Dashboard</span>
+          </a>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       
-      <SidebarMenu icon={Car} title="Transfers">
-        <SidebarItem href="/transfers">
-          Todos los Transfers
-        </SidebarItem>
-        <SidebarItem href="/transfers/new">
-          Nuevo Transfer
-        </SidebarItem>
-        <SidebarItem href="/transfers/pending">
-          Transfers A Cobrar
-        </SidebarItem>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip="Transfers">
+            <a href="/transfers">
+              <Car />
+              <span>Todos los Transfers</span>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip="Nuevo Transfer">
+            <a href="/transfers/new">
+              <FileText />
+              <span>Nuevo Transfer</span>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip="Transfers a Cobrar">
+            <a href="/transfers/pending">
+              <Car />
+              <span>Transfers A Cobrar</span>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarMenu>
       
-      <SidebarMenu icon={Car} title="Expenses">
-        <SidebarItem href="/expenses">
-          Todos los Expenses
-        </SidebarItem>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip="Expenses">
+            <a href="/expenses">
+              <FileText />
+              <span>Todos los Expenses</span>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarMenu>
 
-      <SidebarItem href="/profits" icon={Car}>
-        Profits
-      </SidebarItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild tooltip="Profits">
+          <a href="/profits">
+            <BarChart />
+            <span>Profits</span>
+          </a>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
 
-      <SidebarItem href="/collaborators" icon={Car}>
-        Collaborators
-      </SidebarItem>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild tooltip="Collaborators">
+          <a href="/collaborators">
+            <Users />
+            <span>Collaborators</span>
+          </a>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
     </>
   );
 }

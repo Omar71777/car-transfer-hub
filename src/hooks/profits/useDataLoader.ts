@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Transfer, Expense } from '@/types';
@@ -13,6 +14,7 @@ export interface DashboardStats {
 
 export const useDataLoader = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats>({
     totalRevenue: 0,
@@ -21,6 +23,8 @@ export const useDataLoader = () => {
     transferCount: 0,
     averageCommission: 0,
   });
+  const [uniqueCollaborators, setUniqueCollaborators] = useState<string[]>([]);
+  const [uniqueExpenseTypes, setUniqueExpenseTypes] = useState<string[]>([]);
 
   const fetchTransfers = useCallback(async () => {
     try {
@@ -75,6 +79,32 @@ export const useDataLoader = () => {
 
       setTransfers(transformedData);
       
+      // Extract all expense items into a flat array
+      const allExpenses = transformedData.flatMap(transfer => 
+        transfer.expenses.map(expense => ({
+          ...expense,
+          transferId: transfer.id
+        }))
+      );
+      
+      setExpenses(allExpenses);
+      
+      // Extract unique collaborators and expense types
+      const collaborators = Array.from(new Set(
+        transformedData
+          .filter(t => t.collaborator && t.collaborator.trim() !== '')
+          .map(t => t.collaborator)
+      ));
+      
+      const expenseTypes = Array.from(new Set(
+        allExpenses
+          .filter(e => e.concept && e.concept.trim() !== '')
+          .map(e => e.concept)
+      ));
+      
+      setUniqueCollaborators(collaborators);
+      setUniqueExpenseTypes(expenseTypes);
+      
     } catch (error: any) {
       console.error('Error fetching data:', error);
       toast.error(`Error al cargar los datos: ${error.message}`);
@@ -112,8 +142,12 @@ export const useDataLoader = () => {
 
   return {
     transfers,
+    expenses,
     stats,
     isLoading,
+    loading: isLoading, // Add this for backward compatibility
     fetchTransfers,
+    uniqueCollaborators,
+    uniqueExpenseTypes,
   };
 };
