@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -8,25 +7,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth';
 import { Loader, UserX } from 'lucide-react';
-
 const ProfilePage = () => {
-  const { profile, isLoading, updateUserProfile, deleteAccount } = useAuth();
+  const {
+    profile,
+    isLoading,
+    updateUserProfile,
+    deleteAccount
+  } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const navigate = useNavigate();
-
   if (isLoading) {
-    return (
-      <MainLayout>
+    return <MainLayout>
         <div className="flex items-center justify-center h-full py-12">
           <Loader className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
-      </MainLayout>
-    );
+      </MainLayout>;
   }
-
-  return (
-    <MainLayout>
-      <div className="py-6">
+  return <MainLayout>
+      <div className="py-6 px-[17px]">
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-1 text-ibiza-900">Mi Perfil</h1>
           <p className="text-muted-foreground">Gestiona tu información de perfil</p>
@@ -41,14 +39,11 @@ const ProfilePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ProfileForm 
-                defaultValues={{
-                  email: profile?.email || '',
-                  first_name: profile?.first_name || '',
-                  last_name: profile?.last_name || ''
-                }}
-                onSubmit={updateUserProfile}
-              />
+              <ProfileForm defaultValues={{
+              email: profile?.email || '',
+              first_name: profile?.first_name || '',
+              last_name: profile?.last_name || ''
+            }} onSubmit={updateUserProfile} />
             </CardContent>
           </Card>
 
@@ -60,11 +55,7 @@ const ProfilePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button 
-                variant="destructive" 
-                className="w-full"
-                onClick={() => setIsDeleteDialogOpen(true)}
-              >
+              <Button variant="destructive" className="w-full" onClick={() => setIsDeleteDialogOpen(true)}>
                 <UserX className="mr-2 h-4 w-4" />
                 Eliminar mi cuenta
               </Button>
@@ -75,19 +66,13 @@ const ProfilePage = () => {
           </Card>
         </div>
 
-        <DeleteAccountDialog
-          open={isDeleteDialogOpen}
-          onOpenChange={setIsDeleteDialogOpen}
-          onConfirm={async () => {
-            const success = await deleteAccount();
-            if (success) {
-              navigate('/auth');
-            }
-          }}
-        />
+        <DeleteAccountDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onConfirm={async () => {
+        const success = await deleteAccount();
+        if (success) {
+          navigate('/auth');
+        }
+      }} />
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 };
-
 export default ProfilePage;
