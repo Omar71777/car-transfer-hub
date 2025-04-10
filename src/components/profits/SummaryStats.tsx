@@ -33,7 +33,7 @@ export const SummaryStats = ({ stats }: SummaryStatsProps) => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Gastos Totales</p>
-              <h3 className="text-2xl font-bold text-red-500 mt-1">{(stats.totalExpenses - stats.totalCommissions).toFixed(2)}€</h3>
+              <h3 className="text-2xl font-bold text-red-500 mt-1">{stats.totalExpenses.toFixed(2)}€</h3>
             </div>
             <TrendingDown className="h-10 w-10 text-red-500/40" />
           </div>
