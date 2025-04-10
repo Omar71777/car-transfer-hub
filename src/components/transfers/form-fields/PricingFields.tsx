@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
@@ -15,6 +15,42 @@ export function PricingFields({
   form
 }: PricingFieldsProps) {
   const commissionType = form.watch('commissionType');
+  const price = form.watch('price');
+  const commission = form.watch('commission');
+  
+  // Calculate the equivalent fixed amount or percentage when values change
+  useEffect(() => {
+    if (!price || !commission) return;
+    
+    const priceNum = Number(price);
+    const commissionNum = Number(commission);
+    
+    // Don't update if we don't have valid numbers
+    if (isNaN(priceNum) || isNaN(commissionNum) || priceNum <= 0) return;
+    
+    // We don't need to update anything since both values will be saved
+    // This is just for display purposes
+  }, [price, commission, commissionType]);
+  
+  // Calculate the equivalent value based on the opposite commission type
+  const getEquivalentValue = () => {
+    if (!price || !commission) return null;
+    
+    const priceNum = Number(price);
+    const commissionNum = Number(commission);
+    
+    if (isNaN(priceNum) || isNaN(commissionNum) || priceNum <= 0) return null;
+    
+    if (commissionType === 'percentage') {
+      // Calculate the fixed amount equivalent to the percentage
+      const fixedAmount = (priceNum * commissionNum) / 100;
+      return `${fixedAmount.toFixed(2)}€`;
+    } else {
+      // Calculate the percentage equivalent to the fixed amount
+      const percentage = (commissionNum / priceNum) * 100;
+      return `${percentage.toFixed(1)}%`;
+    }
+  };
   
   return (
     <div className="space-y-4">
@@ -84,6 +120,11 @@ export function PricingFields({
                   className="mobile-input"
                 />
               </FormControl>
+              {commission && price && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Equivalente a: {getEquivalentValue()}
+                </p>
+              )}
               <FormMessage />
             </FormItem>
           )} 

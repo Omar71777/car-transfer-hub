@@ -51,7 +51,7 @@ export function useTransfers() {
         price: Number(transfer.price),
         collaborator: transfer.collaborator || '',
         commission: Number(transfer.commission),
-        commissionType: 'percentage', // Default to percentage since we don't have this in DB
+        commissionType: 'percentage' as const, // Type assertion to satisfy TypeScript
         paymentStatus: transfer.payment_status || 'pending',
         expenses: transfer.expenses.map((expense: any) => ({
           id: expense.id,
@@ -90,7 +90,7 @@ export function useTransfers() {
           price: transferData.price,
           collaborator: transferData.collaborator,
           commission: transferData.commission,
-          // We're not storing commission_type in the database yet
+          // We're not storing commission_type in the database
           payment_status: transferData.paymentStatus
         })
         .select('id')

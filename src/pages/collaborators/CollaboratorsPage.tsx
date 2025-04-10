@@ -36,7 +36,7 @@ const CollaboratorsPage = () => {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
-          commissionType: 'percentage', // Default to percentage since we don't have this in DB
+          commissionType: 'percentage' as const, // Type assertion to make TypeScript happy
           paymentStatus: transfer.payment_status || 'pending',
           expenses: []
         }));

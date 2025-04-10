@@ -62,7 +62,7 @@ export function useDashboardData() {
           netIncome: transfers.reduce((sum, transfer) => 
             sum + (Number(transfer.price) || 0), 0) - totalExpenses
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading dashboard data:', error);
         toast.error(`Error al cargar los datos del dashboard: ${error.message}`);
       } finally {

@@ -73,7 +73,7 @@ export function TransferForm({
       price: Number(values.price),
       commission: values.commission ? Number(values.commission) : 0,
       // Store the commission type along with the value
-      commissionType: values.commissionType
+      commissionType: values.commissionType as 'percentage' | 'fixed'
     };
     
     onSubmit(processedValues);

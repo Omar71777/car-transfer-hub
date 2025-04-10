@@ -23,6 +23,15 @@ export function TransfersTable({
 }: TransfersTableProps) {
   const isMobile = useIsMobile();
   
+  // Function to display commission value with appropriate format
+  const formatCommission = (transfer: Transfer) => {
+    if (transfer.commissionType === 'percentage') {
+      return `${transfer.commission}% (${formatCurrency((transfer.price * transfer.commission) / 100)})`;
+    } else {
+      return `${formatCurrency(transfer.commission)} (${((transfer.commission / transfer.price) * 100).toFixed(1)}%)`;
+    }
+  };
+  
   return <div className="rounded-md border overflow-hidden glass-card px-[7px]">
       <Table>
         <TableHeader>
@@ -51,9 +60,7 @@ export function TransfersTable({
                 <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
                 {!isMobile && <TableCell>{transfer.collaborator}</TableCell>}
                 {!isMobile && <TableCell className="text-right">
-                  {transfer.commissionType === 'percentage' 
-                    ? `${transfer.commission}%` 
-                    : formatCurrency(transfer.commission)}
+                  {formatCommission(transfer)}
                 </TableCell>}
                 <TableCell className="text-center">
                   {transfer.paymentStatus === 'paid' ? <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-800">
