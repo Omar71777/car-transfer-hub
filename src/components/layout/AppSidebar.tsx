@@ -40,7 +40,7 @@ export const AppSidebar = () => {
   ];
 
   return (
-    <Sidebar defaultCollapsed={isMobile}>
+    <Sidebar>
       <SidebarHeader className="px-6 py-4">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
