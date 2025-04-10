@@ -31,3 +31,11 @@ export interface Shift {
   driverId: string;
   isFullDay: boolean; // true para 24h, false para 12h
 }
+
+export interface UserProfile {
+  id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  role: 'admin' | 'user';
+}
