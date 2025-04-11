@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Bill } from '@/types/billing';
 import { Card, CardContent } from '@/components/ui/card';
@@ -36,9 +37,9 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
   const calculateDiscount = (item: any): number => {
     if (item.is_extra_charge) return 0;
     
+    // Calculate discount as the difference between full price and actual price
     const fullPrice = item.unit_price * item.quantity;
-    const actualPrice = item.total_price;
-    const discount = fullPrice - actualPrice;
+    const discount = fullPrice - item.total_price;
     
     return discount > 0 ? discount : 0;
   };
@@ -49,7 +50,11 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
     itemsDetails: bill.items?.map(item => ({
       id: item.id, 
       description: item.description,
-      is_extra_charge: item.is_extra_charge
+      is_extra_charge: item.is_extra_charge,
+      unit_price: item.unit_price,
+      quantity: item.quantity,
+      total_price: item.total_price,
+      calculated_discount: (item.unit_price * item.quantity) - item.total_price
     }))
   });
 

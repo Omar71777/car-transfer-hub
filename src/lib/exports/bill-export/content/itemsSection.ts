@@ -1,3 +1,4 @@
+
 import { Bill } from '@/types/billing';
 import { formatCurrency } from '../utils/formatters';
 
@@ -31,10 +32,11 @@ const formatItemDescription = (item: any): string => {
 const calculateDiscount = (item: any): number => {
   if (item.is_extra_charge) return 0;
   
-  // Calculate discount as difference between (unit_price × quantity) and total_price
+  // For regular items, unit_price is the original price before discount
+  // and total_price is the final price after discount (quantity * unit_price - discount)
+  // So discount = (unit_price * quantity) - total_price
   const fullPrice = item.unit_price * item.quantity;
-  const actualPrice = item.total_price;
-  const discount = fullPrice - actualPrice;
+  const discount = fullPrice - item.total_price;
   
   return discount > 0 ? discount : 0;
 };
