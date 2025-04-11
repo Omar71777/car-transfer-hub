@@ -15,10 +15,10 @@ export const AppSidebar = () => {
   const { openMobile, setOpenMobile } = useSidebar();
 
   return (
-    <Sidebar className="border-r border-border/40 bg-soft-beige/50 dark:bg-charcoal/90 backdrop-blur-sm">
+    <Sidebar className="border-r border-aqua/20 bg-foam/80 dark:bg-electric-dark/90 backdrop-blur-md">
       <div className="py-6 px-3">
         <SidebarUserProfile profile={profile} />
-        <Separator className="bg-border/40 my-4" />
+        <Separator className="bg-aqua/20 my-4" />
       </div>
 
       <SidebarMainMenu />
@@ -26,9 +26,9 @@ export const AppSidebar = () => {
       
       {isAdmin && <SidebarAdminMenu />}
       
-      <SidebarFooter className="mt-auto border-t border-border/30 py-4">
+      <SidebarFooter className="mt-auto border-t border-aqua/20 py-4">
         <div className="px-4 py-2 text-xs text-muted-foreground">
-          Car Transfer Hub © {new Date().getFullYear()}
+          Ibiza Transfer Hub © {new Date().getFullYear()}
         </div>
       </SidebarFooter>
     </Sidebar>

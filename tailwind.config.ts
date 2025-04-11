@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -81,13 +80,42 @@ export default {
 					800: '#002299',
 					900: '#000080',
 				},
-				// New colors for modern UI
+				electric: {
+					DEFAULT: '#023E8A',
+					light: '#045CB4',
+					dark: '#012C61',
+				},
+				aqua: {
+					DEFAULT: '#48CAE4',
+					light: '#ADE8F4',
+					dark: '#0096C7',
+				},
+				sand: {
+					DEFAULT: '#F6BD60',
+					light: '#FAD193',
+					dark: '#E09F3E',
+				},
+				vibrant: {
+					DEFAULT: '#FF6B6B',
+					light: '#FF9E9E',
+					dark: '#E63946',
+				},
+				foam: {
+					DEFAULT: '#F7FFF7',
+					light: '#FFFFFF',
+					dark: '#E6F7E6',
+				},
+				pine: {
+					DEFAULT: '#006D77',
+					light: '#0A9396',
+					dark: '#004F55',
+				},
 				soft: {
 					beige: '#F5F2ED',
 					gray: '#F1F0FB',
 					peach: '#FDE1D3',
 					pink: '#FFDEE2',
-					blue: '#D3E4FD',
+					blue: '#ADE8F4',
 					green: '#F2FCE2',
 				},
 				charcoal: {
@@ -96,9 +124,9 @@ export default {
 					light: '#5A5862',
 				},
 				warm: {
-					DEFAULT: '#E6B980',
-					light: '#EACDA3',
-					dark: '#D99E60',
+					DEFAULT: '#F6BD60',
+					light: '#FAD193',
+					dark: '#E09F3E',
 				}
 			},
 			borderRadius: {
@@ -138,6 +166,10 @@ export default {
 				'pulse-soft': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.7' }
+				},
+				'shine': {
+					'0%': { transform: 'translateX(-100%) rotate(30deg)' },
+					'100%': { transform: 'translateX(200%) rotate(30deg)' }
 				}
 			},
 			animation: {
@@ -146,7 +178,8 @@ export default {
 				'fade-in': 'fade-in 0.3s ease-out',
 				'scale-in': 'scale-in 0.2s ease-out',
 				'theme-transition': 'theme-transition 0.5s ease-out',
-				'pulse-soft': 'pulse-soft 2s ease-in-out infinite'
+				'pulse-soft': 'pulse-soft 2s ease-in-out infinite',
+				'shine': 'shine 6s infinite linear'
 			},
 			transitionProperty: {
 				'theme': 'background-color, color, border-color, text-decoration-color, fill, stroke'
@@ -158,9 +191,10 @@ export default {
 				'button': '0 2px 6px rgba(0, 0, 0, 0.04)',
 			},
 			backgroundImage: {
-				'gradient-soft': 'linear-gradient(to right, #e6b980, #eacda3)',
-				'gradient-warm': 'linear-gradient(to right, #ffc3a0, #ffafbd)',
-				'gradient-cool': 'linear-gradient(to right, #e6e9f0, #eef1f5)',
+				'gradient-soft': 'linear-gradient(to right, #F6BD60, #FAD193)',
+				'gradient-aqua': 'linear-gradient(to right, #48CAE4, #ADE8F4)',
+				'gradient-electric': 'linear-gradient(to right, #023E8A, #045CB4)',
+				'gradient-foam': 'linear-gradient(to right, #F7FFF7, #FFFFFF)',
 			}
 		}
 	},

@@ -31,4 +31,17 @@
   .sidebar-menu-button.active {
     @apply bg-sidebar-selected text-sidebar-foreground font-medium;
   }
+
+  /* New Ibiza-inspired sidebar styles */
+  .sidebar-icon {
+    @apply text-electric;
+  }
+
+  .sidebar-highlight {
+    @apply bg-aqua-light/40;
+  }
+
+  .sidebar-active-indicator {
+    @apply w-1 h-8 bg-electric absolute left-0 rounded-r-md transition-all duration-200;
+  }
 }

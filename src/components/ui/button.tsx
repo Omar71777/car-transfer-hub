@@ -10,17 +10,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-electric text-foam hover:bg-electric-light",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-vibrant text-foam-light hover:bg-vibrant-dark",
         outline:
-          "border border-input bg-background hover:bg-accent/10 hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-aqua/10 hover:text-electric",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent/10 hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline shadow-none",
-        warm: "bg-warm text-white hover:bg-warm/90",
-        soft: "bg-soft-beige text-charcoal hover:bg-soft-beige/90 dark:bg-charcoal dark:text-soft-beige dark:hover:bg-charcoal/90",
+          "bg-aqua text-electric hover:bg-aqua-light",
+        ghost: "hover:bg-aqua/10 hover:text-electric",
+        link: "text-electric underline-offset-4 hover:underline shadow-none",
+        warm: "bg-sand text-electric hover:bg-sand-light",
+        soft: "bg-foam text-electric hover:bg-foam-dark dark:bg-pine dark:text-foam dark:hover:bg-pine-light",
       },
       size: {
         default: "h-11 px-5 py-2.5",

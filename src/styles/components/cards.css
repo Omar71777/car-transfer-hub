@@ -1,7 +1,7 @@
 
 /* Enhanced component styles */
 .glass-card {
-  @apply bg-white/95 backdrop-blur-sm border border-soft-beige shadow-card rounded-xl transition-all hover:shadow-hover;
+  @apply bg-foam-light/95 backdrop-blur-sm border border-aqua/20 shadow-card rounded-xl transition-all hover:shadow-hover;
 }
 
 .shine-effect {
@@ -33,7 +33,7 @@
 
 /* Driver card styles */
 .driver-card {
-  @apply relative overflow-hidden rounded-xl border p-5 transition-all hover:shadow-hover bg-white;
+  @apply relative overflow-hidden rounded-xl border border-aqua/20 p-5 transition-all hover:shadow-hover bg-foam-light;
 }
 
 .driver-card-header {
@@ -54,11 +54,11 @@
 }
 
 .feature-card-icon {
-  @apply w-12 h-12 flex items-center justify-center bg-soft-beige rounded-full text-charcoal mb-2;
+  @apply w-12 h-12 flex items-center justify-center bg-aqua-light rounded-full text-electric mb-2;
 }
 
 .feature-card-title {
-  @apply text-lg font-medium;
+  @apply text-lg font-medium text-electric;
 }
 
 .feature-card-description {
@@ -67,24 +67,25 @@
 
 /* Gradient cards */
 .gradient-card {
-  @apply rounded-xl p-6 text-white relative overflow-hidden transition-all hover:shadow-hover;
+  @apply rounded-xl p-6 text-electric relative overflow-hidden transition-all hover:shadow-hover;
   background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
 }
 
 .gradient-card.warm {
-  --gradient-start: #E6B980;
-  --gradient-end: #EACDA3;
+  --gradient-start: #F6BD60;
+  --gradient-end: #FAD193;
 }
 
 .gradient-card.cool {
-  --gradient-start: #D3E4FD;
-  --gradient-end: #F1F0FB;
-  @apply text-charcoal;
+  --gradient-start: #ADE8F4;
+  --gradient-end: #F7FFF7;
+  @apply text-electric;
 }
 
 .gradient-card.peach {
-  --gradient-start: #FFC3A0;
-  --gradient-end: #FFAFBD;
+  --gradient-start: #FF6B6B;
+  --gradient-end: #FF9E9E;
+  @apply text-foam-light;
 }
 
 /* Card overlays */
