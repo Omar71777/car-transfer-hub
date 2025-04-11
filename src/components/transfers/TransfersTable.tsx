@@ -70,8 +70,8 @@ export function TransfersTable({
           </Button>
         </div>
       )}
-      <div className="w-full border rounded-md">
-        <div className="w-full">
+      <div className="table-container">
+        <div className="table-full-width">
           <Table className={isMobile ? "mobile-table w-full table-fixed" : "w-full table-fixed"}>
             <TransferTableHeader 
               onSelectAll={handleSelectAll} 

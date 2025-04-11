@@ -8,7 +8,7 @@ interface TruncatedCellProps {
 
 export function TruncatedCell({ text, maxWidth = "100px" }: TruncatedCellProps) {
   return (
-    <div className="truncate" style={{ maxWidth }} title={text}>
+    <div className="truncate-cell" title={text}>
       {text || 'N/A'}
     </div>
   );

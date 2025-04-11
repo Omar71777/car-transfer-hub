@@ -172,4 +172,13 @@
   .table-actions-compact button {
     @apply h-7 w-7;
   }
+  
+  /* Table spacing and visibility improvements */
+  .truncate-cell {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
 }

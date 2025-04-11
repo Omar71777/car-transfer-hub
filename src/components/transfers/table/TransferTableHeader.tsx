@@ -32,17 +32,17 @@ export function TransferTableHeader({
             />
           )}
         </TableHead>
-        <TableHead className="w-[80px]">Fecha</TableHead>
-        {!isMobile && <TableHead className="w-[70px]">Hora</TableHead>}
-        <TableHead className="w-[80px]">Tipo</TableHead>
-        <TableHead className="w-[100px]">Origen</TableHead>
-        <TableHead className="w-[100px]">Destino</TableHead>
-        <TableHead className="text-right w-[80px]">Precio</TableHead>
-        {!isMobile && <TableHead className="w-[100px]">Cliente</TableHead>}
-        {!isMobile && <TableHead className="w-[100px]">Colaborador</TableHead>}
-        {!isMobile && <TableHead className="text-right w-[100px]">Comisión</TableHead>}
-        <TableHead className="text-center w-[80px]">Estado</TableHead>
-        <TableHead className="text-right w-[70px]">Acciones</TableHead>
+        <TableHead className="col-date">Fecha</TableHead>
+        {!isMobile && <TableHead className="col-time">Hora</TableHead>}
+        <TableHead className="col-type">Tipo</TableHead>
+        <TableHead className="col-location">Origen</TableHead>
+        <TableHead className="col-location">Destino</TableHead>
+        <TableHead className="col-price text-right">Precio</TableHead>
+        {!isMobile && <TableHead className="col-client">Cliente</TableHead>}
+        {!isMobile && <TableHead className="col-collaborator">Colaborador</TableHead>}
+        {!isMobile && <TableHead className="col-commission text-right">Comisión</TableHead>}
+        <TableHead className="col-status text-center">Estado</TableHead>
+        <TableHead className="col-actions text-right">Acciones</TableHead>
       </TableRow>
     </TableHeader>
   );

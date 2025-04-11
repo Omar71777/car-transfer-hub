@@ -55,8 +55,8 @@ export function TransferTableRow({
           aria-label="Select row"
         />
       </TableCell>
-      <TableCell className="text-xs">{transfer.date || 'N/A'}</TableCell>
-      {!isMobile && <TableCell className="text-xs">{transfer.time || 'N/A'}</TableCell>}
+      <TableCell className="text-xs truncate-cell">{transfer.date || 'N/A'}</TableCell>
+      {!isMobile && <TableCell className="text-xs truncate-cell">{transfer.time || 'N/A'}</TableCell>}
       <TableCell>
         <ServiceTypeBadge serviceType={transfer.serviceType} hours={transfer.hours} />
       </TableCell>
@@ -87,7 +87,7 @@ export function TransferTableRow({
       <TableCell className="text-center p-1">
         <PaymentStatusCell paymentStatus={transfer.paymentStatus} />
       </TableCell>
-      <TableCell className="py-0 px-1">
+      <TableCell className="py-0 px-1 table-actions">
         <TransferRowActions
           transferId={transfer.id}
           isMobile={isMobile}
