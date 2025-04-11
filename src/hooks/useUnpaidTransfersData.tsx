@@ -9,15 +9,24 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
   
   // Filter transfers for unpaid ones
   useEffect(() => {
+    console.log('Filtering unpaid transfers from', transfers.length, 'total transfers');
+    
+    // Log all unique payment statuses to help with debugging
+    const uniqueStatuses = [...new Set(transfers.map(t => t.paymentStatus))];
+    console.log('Available payment statuses:', uniqueStatuses);
+    
     const filtered = transfers.filter(t => t.paymentStatus === 'pending');
+    console.log('Filtered pending transfers:', filtered.length);
     
     if (selectedCollaborator === 'all') {
       setUnpaidTransfers(filtered);
     } else {
       // Case-insensitive comparison for collaborator filtering
-      setUnpaidTransfers(filtered.filter(t => 
+      const collaboratorFiltered = filtered.filter(t => 
         t.collaborator && t.collaborator.toLowerCase() === selectedCollaborator.toLowerCase()
-      ));
+      );
+      console.log('Filtered by collaborator:', collaboratorFiltered.length);
+      setUnpaidTransfers(collaboratorFiltered);
     }
   }, [transfers, selectedCollaborator]);
   
@@ -61,6 +70,8 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
   const getMonthlyUnpaidData = () => {
     // Get normalized unique collaborator names with original casing preserved
     const collaboratorNames = getUnpaidCollaborators();
+    console.log('Unpaid collaborators found:', collaboratorNames);
+    
     const monthlyData: {
       collaborator: string;
       month: string;
@@ -117,6 +128,7 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
       });
     });
     
+    console.log('Generated monthly data:', monthlyData.length, 'entries');
     return monthlyData;
   };
   
