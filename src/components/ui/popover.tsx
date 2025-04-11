@@ -26,6 +26,13 @@ const PopoverContent = React.forwardRef<
           isMobile ? "w-[calc(100vw-24px)] max-w-[calc(100vw-24px)]" : "w-72",
           className
         )}
+        // Making sure we handle Escape key properly
+        onEscapeKeyDown={(e) => {
+          // Allow the default behavior to continue
+          props.onEscapeKeyDown?.(e);
+        }}
+        // Adding forcemount to ensure proper cleanup of components  
+        forceMount
         {...props}
       />
     </PopoverPrimitive.Portal>

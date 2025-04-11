@@ -70,6 +70,13 @@ const SheetContent = React.forwardRef<
           isMobile ? "p-4" : "",
           className
         )}
+        // Adding forcemount to ensure proper cleanup of components
+        forceMount
+        // Making sure we handle Escape key properly
+        onEscapeKeyDown={(e) => {
+          // Allow the default behavior to continue
+          props.onEscapeKeyDown?.(e);
+        }}
         {...props}
       >
         {children}

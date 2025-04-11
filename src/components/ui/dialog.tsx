@@ -47,6 +47,14 @@ const DialogContent = React.forwardRef<
             : "max-w-lg p-6",
           className
         )}
+        // Adding onCloseAutoFocus to prevent focus issues
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          // Allow the default behavior to continue
+          props.onEscapeKeyDown?.(e);
+        }}
+        // Adding forcemount to ensure proper cleanup of components
+        forceMount
         {...props}
       >
         {children}

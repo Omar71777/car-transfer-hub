@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -106,8 +107,12 @@ const TransfersPage = () => {
   };
 
   const handleCloseSummary = () => {
+    // We need to properly clean up state to prevent ghost overlays
     setIsSummaryDialogOpen(false);
-    setSummaryTransferId(null);
+    // Only clear the transfer ID after dialog is fully closed
+    setTimeout(() => {
+      setSummaryTransferId(null);
+    }, 300); // Match animation duration
   };
 
   const handlePrint = () => {
@@ -162,11 +167,13 @@ const TransfersPage = () => {
           onEditSubmit={handleEditSubmit}
         />
 
-        <TransferSummaryDialog
-          isOpen={isSummaryDialogOpen}
-          onClose={handleCloseSummary}
-          transferId={summaryTransferId}
-        />
+        {(isSummaryDialogOpen || summaryTransferId) && (
+          <TransferSummaryDialog
+            isOpen={isSummaryDialogOpen}
+            onClose={handleCloseSummary}
+            transferId={summaryTransferId}
+          />
+        )}
       </div>
     </MainLayout>
   );

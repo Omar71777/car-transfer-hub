@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2, Printer } from 'lucide-react';
@@ -27,6 +28,18 @@ export function TransferSummaryDialog({
 }: TransferSummaryDialogProps) {
   const [transfer, setTransfer] = useState<Transfer | null>(null);
   const [loading, setLoading] = useState(false);
+  // Track internal state for animation purposes
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  useEffect(() => {
+    // Update internal state when isOpen changes
+    if (isOpen) {
+      setInternalOpen(true);
+    } else {
+      // We'll handle the closing in onOpenChange
+      setTransfer(null);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     async function fetchTransferDetails() {
@@ -58,10 +71,20 @@ export function TransferSummaryDialog({
     }
   };
 
-  if (!isOpen) return null;
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // This ensures we first let the dialog close animation finish
+      setInternalOpen(false);
+      
+      // Delay the actual state change to parent to allow animations to complete
+      setTimeout(() => {
+        onClose();
+      }, 300); // Animation duration from Tailwind config
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={internalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh] glass-card">
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">

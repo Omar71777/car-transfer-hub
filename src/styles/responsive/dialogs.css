@@ -26,3 +26,15 @@
     max-height: 70vh;
   }
 }
+
+/* Fix for ghost overlays */
+[data-state="closed"] {
+  pointer-events: none !important; 
+  animation-fill-mode: forwards !important;
+}
+
+/* Ensure dialogs cleanup properly after animations */
+[role="dialog"][data-state="closed"],
+[role="alertdialog"][data-state="closed"] {
+  animation-fill-mode: forwards !important;
+}
