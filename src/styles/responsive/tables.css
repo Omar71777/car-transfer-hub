@@ -15,7 +15,7 @@
 }
 
 .table-container {
-  @apply rounded-md border overflow-hidden w-full;
+  @apply rounded-md border w-full;
 }
 
 /* Make sure badges are compact in tables */
@@ -46,8 +46,8 @@
 
   /* Better table display on mobile */
   .table-container {
-    @apply w-full overflow-visible;
-    max-width: 100vw;
+    @apply w-full;
+    max-width: 100%;
   }
   
   /* Tables should use full width */
@@ -101,6 +101,13 @@
 
 /* Table column widths for better space usage */
 @media (min-width: 769px) {
+  /* Remove overflow settings that might cause horizontal scroll */
+  .table-container, 
+  .overflow-x-auto,
+  .overflow-hidden {
+    overflow: visible;
+  }
+  
   /* Desktop-specific column sizing */
   .col-date {
     width: 80px;

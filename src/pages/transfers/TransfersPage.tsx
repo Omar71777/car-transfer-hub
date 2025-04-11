@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -43,7 +42,6 @@ const TransfersPage = () => {
     handleAddExpense
   } = useTransferDialogs();
 
-  // Add state for summary dialog
   const [isSummaryDialogOpen, setIsSummaryDialogOpen] = useState(false);
   const [summaryTransferId, setSummaryTransferId] = useState<string | null>(null);
   
@@ -102,7 +100,6 @@ const TransfersPage = () => {
     }
   };
 
-  // Add handler for viewing transfer summary
   const handleViewSummary = (transferId: string) => {
     setSummaryTransferId(transferId);
     setIsSummaryDialogOpen(true);
@@ -116,7 +113,6 @@ const TransfersPage = () => {
   const handlePrint = () => {
     const stats = generateReportStats(transfers, expenses);
     
-    // Pass user information and ALL expenses
     printProfitReport('Informe de Transfers', transfers, expenses, stats, {
       name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
       email: profile?.email || ''
@@ -125,14 +121,14 @@ const TransfersPage = () => {
   
   return (
     <MainLayout>
-      <div className="py-4 md:py-6">
+      <div className="py-4 md:py-6 w-full">
         <Tabs defaultValue="manage" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full sm:w-auto mb-4">
             <TabsTrigger value="manage" className="flex-1 sm:flex-initial">Gestión de Transfers</TabsTrigger>
             <TabsTrigger value="report" className="flex-1 sm:flex-initial">Informes y Análisis</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="manage" className="w-full overflow-hidden">
+          <TabsContent value="manage" className="w-full">
             <TransferManagementTab 
               transfers={transfers}
               loading={loading}
@@ -144,7 +140,7 @@ const TransfersPage = () => {
             />
           </TabsContent>
           
-          <TabsContent value="report" className="w-full overflow-hidden">
+          <TabsContent value="report" className="w-full">
             <TransferReportsTab
               transfers={transfers}
               expenses={expenses}

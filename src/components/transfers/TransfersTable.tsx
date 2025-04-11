@@ -53,7 +53,7 @@ export function TransfersTable({
   };
   
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       {selectedRows.length > 0 && (
         <div className="flex justify-between items-center p-2 bg-muted rounded-md">
           <span className="text-sm font-medium">
@@ -70,8 +70,8 @@ export function TransfersTable({
           </Button>
         </div>
       )}
-      <div className="w-full overflow-hidden border rounded-md">
-        <div className="overflow-x-auto">
+      <div className="w-full border rounded-md">
+        <div className="w-full">
           <Table className={isMobile ? "mobile-table w-full table-fixed" : "w-full table-fixed"}>
             <TransferTableHeader 
               onSelectAll={handleSelectAll} 
