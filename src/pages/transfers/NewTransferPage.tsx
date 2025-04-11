@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { useTransfers } from '@/hooks/useTransfers';
 import { useClients } from '@/hooks/useClients';
 import { ConversationalTransferForm } from '@/components/transfers/ConversationalTransferForm';
 import { useAuth } from '@/contexts/auth';
+import { CreateClientDto } from '@/types/client';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
@@ -41,15 +43,19 @@ const NewTransferPage = () => {
         const clientEmail = values.clientEmail || `${values.clientName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
         
         console.log('Creating new client:', { name: values.clientName, email: clientEmail });
-        const clientId = await createClient({
+        
+        // Create client data that conforms to CreateClientDto
+        const newClientData: CreateClientDto = {
           name: values.clientName,
           email: clientEmail,
-        });
+        };
         
-        if (clientId) {
+        const newClient = await createClient(newClientData);
+        
+        if (newClient) {
           // Update the clientId with the newly created client ID
-          values.clientId = clientId;
-          console.log('Client created successfully with ID:', clientId);
+          values.clientId = newClient.id;
+          console.log('Client created successfully with ID:', newClient.id);
           toast.success('Cliente creado exitosamente');
         } else {
           console.error('Failed to create client');

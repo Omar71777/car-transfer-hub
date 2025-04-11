@@ -19,6 +19,7 @@ export interface CreateClientDto {
   address?: string;
   tax_id?: string; // Changed from taxId
   notes?: string;
+  // No user_id here as it should be handled internally
 }
 
 export interface UpdateClientDto extends Partial<CreateClientDto> {}

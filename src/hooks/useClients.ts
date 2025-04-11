@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Client } from '@/types/client';
+import { Client, CreateClientDto } from '@/types/client';
 import { toast } from 'sonner';
 
 export function useClients() {
@@ -60,17 +60,21 @@ export function useClients() {
     }
   }, [clients]);
 
-  const createClient = useCallback(async (clientData: Omit<Client, 'id' | 'created_at' | 'updated_at'>) => {
+  const createClient = useCallback(async (clientData: CreateClientDto) => {
     try {
-      // Ensure we have all the required fields with the user_id from auth
-      const client = {
-        ...clientData,
-        user_id: (await supabase.auth.getUser()).data.user?.id
-      };
+      // Get the current user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('User must be authenticated to create a client');
+      }
 
       const { data, error } = await supabase
         .from('clients')
-        .insert(client)
+        .insert({
+          ...clientData,
+          user_id: user.id
+        })
         .select()
         .single();
 
