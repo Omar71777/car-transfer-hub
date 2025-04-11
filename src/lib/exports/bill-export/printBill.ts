@@ -4,8 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { CompanyInfo } from './types';
 import { generateBillHtml } from './printBillContent';
 import { toast } from 'sonner';
-import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf'; // Updated import syntax
 
 /**
  * Prints a bill by creating a new window with the bill content
