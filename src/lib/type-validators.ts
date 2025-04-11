@@ -14,7 +14,7 @@ import { toast } from 'sonner';
  * @param objectName Name of the object (for error messages)
  * @returns Boolean indicating if validation passed
  */
-export function validateRequiredProps<T>(
+export function validateRequiredProps<T extends object>(
   obj: Partial<T>, 
   requiredProps: Array<keyof T>, 
   objectName: string = 'object'
@@ -39,7 +39,7 @@ export function validateRequiredProps<T>(
  * @param defaults Default values for missing properties
  * @returns Complete object with defaults applied where needed
  */
-export function ensureCompleteObject<T>(data: Partial<T>, defaults: Partial<T>): T {
+export function ensureCompleteObject<T extends object>(data: Partial<T>, defaults: Partial<T>): T {
   return {
     ...defaults,
     ...data
@@ -53,7 +53,7 @@ export function ensureCompleteObject<T>(data: Partial<T>, defaults: Partial<T>):
  * @param keys Keys to pick from the object
  * @returns New object with only the specified keys
  */
-export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   return keys.reduce((result, key) => {
     if (key in obj) {
       result[key] = obj[key];
@@ -69,7 +69,7 @@ export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
  * @param keys Keys to omit from the object
  * @returns New object without the specified keys
  */
-export function omit<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   const result = { ...obj };
   keys.forEach(key => {
     delete result[key];
