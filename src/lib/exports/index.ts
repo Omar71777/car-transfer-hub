@@ -12,14 +12,15 @@ export { prepareProfitDataForExport } from './profitExport';
 
 // Print exports
 export { printProfitReport } from './printExport';
-export { printUnpaidReport } from './printUnpaidReport';
+// Removing reference to printUnpaidReport since it's no longer needed
+// export { printUnpaidReport } from './printUnpaidReport';
 export { printTransferSummary } from './transfer-summary'; // Already updated to use refactored module
 
 // Shifts exports
 export { prepareShiftsForExport } from './shiftsExport';
 
-// Unpaid transfers exports
-export { prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from './unpaidExport';
+// Removing unpaid transfers exports since the feature is deleted
+// export { prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from './unpaidExport';
 
 // Billing exports
 export { printBill, exportBillCsv } from './billExport';
