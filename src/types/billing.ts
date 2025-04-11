@@ -18,7 +18,7 @@ export interface BillItem {
   quantity: number;
   unit_price: number;
   total_price: number;
-  is_extra_charge?: boolean;
+  is_extra_charge: boolean;
   extra_charge_id?: string;
   parent_item_id?: string | null;
   extra_charges?: ExtraChargeBillItem[]; // For displaying related extra charges
