@@ -6,6 +6,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MobileNavigation } from './MobileNavigation';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ const MobileSidebarToggle = () => {
     <Button 
       variant="ghost" 
       size="icon" 
-      className="md:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm shadow-soft"
+      className="md:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm shadow-soft rounded-full"
       onClick={() => setOpenMobile(!openMobile)}
       aria-label="Toggle menu"
     >
@@ -37,11 +38,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <SidebarProvider defaultOpen={!isMobile}>
         <div className="min-h-screen flex w-full bg-background transition-all duration-300">
           <AppSidebar />
-          <main className="flex-1 p-0 md:p-5 lg:p-6 overflow-auto max-w-full transition-all">
+          <main className="flex-1 p-0 md:p-5 lg:p-6 overflow-auto max-w-full transition-all pb-16 md:pb-0">
             <MobileSidebarToggle />
             <div className="container mx-auto max-w-7xl pt-12 px-3 md:pt-2 md:px-4 animate-fade-in">
               {children}
             </div>
+            <MobileNavigation />
           </main>
         </div>
       </SidebarProvider>

@@ -4,10 +4,6 @@
   @apply bg-white/95 backdrop-blur-sm border border-soft-beige shadow-card rounded-xl transition-all hover:shadow-hover;
 }
 
-.dark .glass-card {
-  @apply bg-charcoal-dark/90 backdrop-blur-sm border border-charcoal shadow-lg transition-all hover:shadow-xl;
-}
-
 .shine-effect {
   position: relative;
   overflow: hidden;
@@ -30,15 +26,6 @@
   animation: shine 6s infinite linear;
 }
 
-.dark .shine-effect::after {
-  background: linear-gradient(
-    to bottom right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.03) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-}
-
 .stat-card {
   @apply glass-card shine-effect p-6 rounded-xl flex flex-col justify-between;
   min-height: 160px;
@@ -46,7 +33,7 @@
 
 /* Driver card styles */
 .driver-card {
-  @apply relative overflow-hidden rounded-xl border p-5 transition-all hover:shadow-hover bg-white dark:bg-charcoal-dark;
+  @apply relative overflow-hidden rounded-xl border p-5 transition-all hover:shadow-hover bg-white;
 }
 
 .driver-card-header {
@@ -67,7 +54,7 @@
 }
 
 .feature-card-icon {
-  @apply w-12 h-12 flex items-center justify-center bg-soft-beige dark:bg-charcoal rounded-full text-charcoal dark:text-soft-beige mb-2;
+  @apply w-12 h-12 flex items-center justify-center bg-soft-beige rounded-full text-charcoal mb-2;
 }
 
 .feature-card-title {

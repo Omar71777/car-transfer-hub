@@ -61,59 +61,35 @@
     --item-hover: 33 70% 75%;
   }
 
+  /* Forced light mode - only one theme */
   .dark {
-    --background: 222 14% 12%;
-    --foreground: 36 20% 92%;
+    --background: 36 33% 97%;
+    --foreground: 222 14% 16%;
 
-    --card: 222 14% 14%;
-    --card-foreground: 36 20% 92%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 14% 16%;
 
-    --popover: 222 14% 14%;
-    --popover-foreground: 36 20% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 14% 16%;
 
-    --primary: 33 80% 70%;
-    --primary-foreground: 222 14% 14%;
+    --primary: 210 100% 50%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 222 14% 18%;
-    --secondary-foreground: 36 20% 92%;
+    --secondary: 36 33% 92%;
+    --secondary-foreground: 222 14% 20%;
 
-    --muted: 222 14% 20%;
-    --muted-foreground: 36 20% 75%;
+    --muted: 36 20% 96%;
+    --muted-foreground: 220 8% 56%;
 
-    --accent: 33 70% 60%;
-    --accent-foreground: 36 20% 92%;
+    --accent: 33 80% 70%;
+    --accent-foreground: 222 14% 20%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 36 20% 92%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 222 14% 20%;
-    --input: 222 14% 20%;
+    --border: 36 20% 90%;
+    --input: 36 20% 90%;
     --ring: 33 80% 70%;
-    
-    /* Updated Sidebar states for dark mode */
-    --sidebar-background: 222 14% 14%;
-    --sidebar-foreground: 36 20% 92%;
-    --sidebar-primary: 33 80% 70%;
-    --sidebar-primary-foreground: 222 14% 14%;
-    --sidebar-accent: 33 70% 60%;
-    --sidebar-accent-foreground: 36 20% 92%;
-    --sidebar-hover: 222 14% 16%;
-    --sidebar-selected: 222 14% 18%;
-    --sidebar-border: 222 14% 20%;
-    --sidebar-ring: 33 80% 70%;
-    
-    /* Shift colors - dark mode with better contrast */
-    --shift-24h: 250 60% 60%;
-    --shift-24h-light: 250 50% 25%;
-    --shift-12h: 200 70% 55%;
-    --shift-12h-light: 200 60% 25%;
-    --shift-free: 142 70% 50%;
-    --shift-free-light: 142 60% 25%;
-    
-    /* Visual state colors for dark mode */
-    --item-unselected: 36 10% 55%;
-    --item-selected: 33 80% 70%;
-    --item-hover: 33 70% 60%;
   }
 }
 
@@ -125,15 +101,7 @@
   body {
     @apply bg-background text-foreground font-sans;
     @apply animate-theme-transition;
-  }
-  
-  body:not(.dark) {
     background-image: linear-gradient(to bottom right, rgba(245, 242, 237, 0.8), rgba(255, 250, 245, 0.8));
-    background-attachment: fixed;
-  }
-  
-  body.dark {
-    background-image: linear-gradient(to bottom right, rgba(34, 31, 38, 0.8), rgba(40, 38, 44, 0.8));
     background-attachment: fixed;
   }
 

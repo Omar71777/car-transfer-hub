@@ -101,6 +101,7 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
   const calculateTotals = () => {
     const totalIncome = transfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
     const totalCommissions = transfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
+    // Gastos are only regular expenses (without commissions)
     const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
     const totalProfit = totalIncome - totalExpense - totalCommissions;
     

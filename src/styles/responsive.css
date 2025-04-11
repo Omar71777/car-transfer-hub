@@ -58,6 +58,28 @@
   input, select, textarea {
     @apply max-w-full;
   }
+  
+  /* Prevent horizontal overflow on mobile */
+  .overflow-x-hidden-mobile {
+    @apply overflow-x-hidden;
+  }
+  
+  /* Make horizontal scroll containers more visible */
+  .mobile-scroll {
+    @apply rounded-xl border border-border/30 p-2 shadow-sm;
+  }
+  
+  /* Ensure horizontal scroll works properly on mobile */
+  .mobile-scroll table {
+    min-width: max-content;
+  }
+  
+  /* Dialog fits better on mobile screens */
+  .dialog-content {
+    max-width: min(800px, 92vw);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
 }
 
 /* Touch-friendly tap targets */
@@ -98,48 +120,6 @@
   /* Smaller spacing in form elements on mobile */
   .space-y-4.mobile-spacing {
     @apply space-y-3;
-  }
-  
-  /* Prevent horizontal overflow on mobile */
-  .overflow-x-hidden-mobile {
-    @apply overflow-x-hidden;
-  }
-  
-  /* Make horizontal scroll containers more visible */
-  .mobile-scroll {
-    @apply rounded-xl border border-border/30 p-2 shadow-sm;
-  }
-  
-  /* Ensure horizontal scroll works properly on mobile */
-  .mobile-scroll table {
-    min-width: max-content;
-  }
-  
-  /* Dialog fits better on mobile screens */
-  .dialog-content {
-    max-width: min(800px, 92vw);
-    max-height: 85vh;
-    overflow-y: auto;
-  }
-  
-  /* Dialog content padding for mobile */
-  .dialog-content {
-    padding: 1.25rem !important;
-  }
-  
-  /* Better table display on mobile */
-  .mobile-scroll .table-container {
-    width: 100%;
-    overflow-x: auto;
-  }
-  
-  /* Limit text overflow in table cells */
-  .mobile-table td, 
-  .mobile-table th {
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 }
 
