@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CollaboratorTableProps {
   collaborators: Collaborator[];
@@ -33,8 +34,8 @@ export function CollaboratorTable({ collaborators, onEdit, onDelete }: Collabora
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
-  return (
-    <Table>
+  const TableContent = () => (
+    <Table className={isMobile ? "mobile-table" : ""}>
       <TableHeader>
         <TableRow>
           <TableHead>Nombre</TableHead>
@@ -130,5 +131,21 @@ export function CollaboratorTable({ collaborators, onEdit, onDelete }: Collabora
         )}
       </TableBody>
     </Table>
+  );
+
+  return (
+    <div className="table-container">
+      {isMobile ? (
+        <div className="overflow-x-auto px-1 w-full">
+          <TableContent />
+        </div>
+      ) : (
+        <ScrollArea className="w-full">
+          <div className="table-scroll-container">
+            <TableContent />
+          </div>
+        </ScrollArea>
+      )}
+    </div>
   );
 }

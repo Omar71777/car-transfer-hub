@@ -132,7 +132,7 @@ const TransfersPage = () => {
             <TabsTrigger value="report" className="flex-1 sm:flex-initial">Informes y Análisis</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="manage">
+          <TabsContent value="manage" className="w-full overflow-hidden">
             <TransferManagementTab 
               transfers={transfers}
               loading={loading}
@@ -144,7 +144,7 @@ const TransfersPage = () => {
             />
           </TabsContent>
           
-          <TabsContent value="report">
+          <TabsContent value="report" className="w-full overflow-hidden">
             <TransferReportsTab
               transfers={transfers}
               expenses={expenses}

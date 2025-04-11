@@ -28,7 +28,7 @@ export function BillTableRow({
   return (
     <TableRow key={bill.id}>
       <TableCell className="font-medium">{bill.number}</TableCell>
-      <TableCell>{bill.client?.name || '-'}</TableCell>
+      <TableCell className="truncate-cell">{bill.client?.name || '-'}</TableCell>
       <TableCell>{bill.date}</TableCell>
       {!isMobile && <TableCell>{bill.due_date}</TableCell>}
       <TableCell>{formatCurrency(bill.total)}</TableCell>

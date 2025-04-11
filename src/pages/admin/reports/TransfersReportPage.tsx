@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useTransfers } from '@/hooks/useTransfers';
@@ -9,6 +10,8 @@ import { useAuth } from '@/contexts/auth';
 import { TransfersPageHeader } from '@/components/reports/transfers/TransfersPageHeader';
 import { TransfersReportTable } from '@/components/reports/transfers/TransfersReportTable';
 import { TransfersSummary } from '@/components/reports/transfers/TransfersSummary';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TransfersReportPage = () => {
   const {
@@ -21,6 +24,7 @@ const TransfersReportPage = () => {
   const {
     profile
   } = useAuth();
+  const isMobile = useIsMobile();
 
   const handleExportCSV = () => {
     const data = transfers.map(transfer => ({
@@ -55,7 +59,22 @@ const TransfersReportPage = () => {
     });
   };
 
-  return <MainLayout>
+  const TableWrapper = ({ children }: { children: React.ReactNode }) => {
+    return isMobile ? (
+      <div className="overflow-x-auto -mx-4 px-4 mobile-scroll">
+        {children}
+      </div>
+    ) : (
+      <ScrollArea className="w-full">
+        <div className="table-scroll-container">
+          {children}
+        </div>
+      </ScrollArea>
+    );
+  };
+
+  return (
+    <MainLayout>
       <div className="py-6">
         <TransfersPageHeader onExportCSV={handleExportCSV} onPrint={handlePrint} />
 
@@ -70,8 +89,10 @@ const TransfersReportPage = () => {
               <CardHeader>
                 <CardTitle>Todos los Transfers</CardTitle>
               </CardHeader>
-              <CardContent className="px-0 sm:px-6">
-                <TransfersReportTable transfers={transfers} loading={loading} />
+              <CardContent className={isMobile ? "px-0" : "px-6"}>
+                <TableWrapper>
+                  <TransfersReportTable transfers={transfers} loading={loading} />
+                </TableWrapper>
               </CardContent>
             </Card>
           </TabsContent>
@@ -88,7 +109,8 @@ const TransfersReportPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>;
+    </MainLayout>
+  );
 };
 
 export default TransfersReportPage;

@@ -8,6 +8,7 @@ import { EmptyTransfersRow } from './table/EmptyTransfersRow';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface TransfersTableProps {
   transfers: Transfer[];
@@ -70,34 +71,66 @@ export function TransfersTable({
           </Button>
         </div>
       )}
-      <div className="rounded-md border overflow-hidden shadow-sm">
-        <div className={isMobile ? "overflow-x-auto w-full" : ""}>
-          <Table>
-            <TransferTableHeader 
-              onSelectAll={handleSelectAll} 
-              allSelected={selectedRows.length === transfers.length && transfers.length > 0}
-              someSelected={selectedRows.length > 0 && selectedRows.length < transfers.length}
-            />
-            <TableBody>
-              {transfers.length === 0 ? (
-                <EmptyTransfersRow />
-              ) : (
-                transfers.map(transfer => (
-                  <TransferTableRow
-                    key={transfer.id}
-                    transfer={transfer}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                    onAddExpense={onAddExpense}
-                    onViewSummary={onViewSummary}
-                    selected={selectedRows.includes(transfer.id)}
-                    onSelectRow={handleSelectRow}
-                  />
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+      <div className="table-container">
+        {isMobile ? (
+          <div className="overflow-x-auto px-1 w-full">
+            <Table className="mobile-table">
+              <TransferTableHeader 
+                onSelectAll={handleSelectAll} 
+                allSelected={selectedRows.length === transfers.length && transfers.length > 0}
+                someSelected={selectedRows.length > 0 && selectedRows.length < transfers.length}
+              />
+              <TableBody>
+                {transfers.length === 0 ? (
+                  <EmptyTransfersRow />
+                ) : (
+                  transfers.map(transfer => (
+                    <TransferTableRow
+                      key={transfer.id}
+                      transfer={transfer}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                      onAddExpense={onAddExpense}
+                      onViewSummary={onViewSummary}
+                      selected={selectedRows.includes(transfer.id)}
+                      onSelectRow={handleSelectRow}
+                    />
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <ScrollArea className="w-full">
+            <div className="min-w-full table-scroll-container">
+              <Table>
+                <TransferTableHeader 
+                  onSelectAll={handleSelectAll} 
+                  allSelected={selectedRows.length === transfers.length && transfers.length > 0}
+                  someSelected={selectedRows.length > 0 && selectedRows.length < transfers.length}
+                />
+                <TableBody>
+                  {transfers.length === 0 ? (
+                    <EmptyTransfersRow />
+                  ) : (
+                    transfers.map(transfer => (
+                      <TransferTableRow
+                        key={transfer.id}
+                        transfer={transfer}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        onAddExpense={onAddExpense}
+                        onViewSummary={onViewSummary}
+                        selected={selectedRows.includes(transfer.id)}
+                        onSelectRow={handleSelectRow}
+                      />
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );

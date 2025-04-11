@@ -4,12 +4,18 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Transfer } from '@/types';
-import { Edit2, Trash2, Receipt, Tag, FileText } from 'lucide-react';
+import { Edit2, Trash2, Receipt, Tag, FileText, MoreVertical } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -80,10 +86,10 @@ export function TransferTableRow({
           {serviceTypeDisplay()}
         </Badge>
       </TableCell>
-      <TableCell className="max-w-[120px] truncate" title={transfer.origin}>
+      <TableCell className="truncate-cell" title={transfer.origin}>
         {transfer.origin || 'N/A'}
       </TableCell>
-      <TableCell className="max-w-[120px] truncate" title={transfer.destination}>
+      <TableCell className="truncate-cell" title={transfer.destination}>
         {transfer.destination || 'N/A'}
       </TableCell>
       <TableCell className="text-right font-medium">
@@ -104,7 +110,7 @@ export function TransferTableRow({
         )}
       </TableCell>
       {!isMobile && (
-        <TableCell className="max-w-[120px] truncate" title={transfer.client?.name}>
+        <TableCell className="truncate-cell" title={transfer.client?.name}>
           {transfer.client?.name || 'N/A'}
         </TableCell>
       )}
@@ -119,48 +125,78 @@ export function TransferTableRow({
         </Badge>
       </TableCell>
       <TableCell>
-        <div className="flex items-center justify-end space-x-1">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onViewSummary(transfer.id)}
-            className="h-8 w-8"
-            title="Ver resumen"
-          >
-            <FileText className="h-4 w-4" />
-            <span className="sr-only">Ver resumen</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onAddExpense(transfer.id)}
-            className="h-8 w-8"
-            title="Añadir gasto"
-          >
-            <Receipt className="h-4 w-4" />
-            <span className="sr-only">Añadir gasto</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onEdit(transfer)}
-            className="h-8 w-8"
-            title="Editar"
-          >
-            <Edit2 className="h-4 w-4" />
-            <span className="sr-only">Editar</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onDelete(transfer.id)}
-            className="h-8 w-8 text-destructive hover:text-destructive"
-            title="Eliminar"
-          >
-            <Trash2 className="h-4 w-4" />
-            <span className="sr-only">Eliminar</span>
-          </Button>
-        </div>
+        {isMobile ? (
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onViewSummary(transfer.id)}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Ver resumen
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddExpense(transfer.id)}>
+                  <Receipt className="h-4 w-4 mr-2" />
+                  Añadir gasto
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEdit(transfer)}>
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onDelete(transfer.id)} className="text-destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Eliminar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <div className="flex items-center justify-end space-x-1">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onViewSummary(transfer.id)}
+              className="h-8 w-8"
+              title="Ver resumen"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="sr-only">Ver resumen</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onAddExpense(transfer.id)}
+              className="h-8 w-8"
+              title="Añadir gasto"
+            >
+              <Receipt className="h-4 w-4" />
+              <span className="sr-only">Añadir gasto</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onEdit(transfer)}
+              className="h-8 w-8"
+              title="Editar"
+            >
+              <Edit2 className="h-4 w-4" />
+              <span className="sr-only">Editar</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onDelete(transfer.id)}
+              className="h-8 w-8 text-destructive hover:text-destructive"
+              title="Eliminar"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Eliminar</span>
+            </Button>
+          </div>
+        )}
       </TableCell>
     </TableRow>
   );
