@@ -2,7 +2,7 @@
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Transfer } from '@/types';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
@@ -40,8 +40,44 @@ export function TransferTableRow({
     }
   };
   
-  // Date formatting to show only day and month abbreviation
-  const formattedDate = format(new Date(transfer.date), 'dd MMM', { locale: es });
+  // Safely format the date with validation
+  const getFormattedDate = () => {
+    try {
+      const dateObj = new Date(transfer.date);
+      return isValid(dateObj) 
+        ? format(dateObj, 'dd MMM', { locale: es }) 
+        : 'Fecha inválida';
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Fecha inválida';
+    }
+  };
+  
+  // Safely format the time with validation
+  const getFormattedTime = () => {
+    try {
+      // If time is a string in HH:mm format, we need to create a valid date object
+      if (typeof transfer.time === 'string' && transfer.time.includes(':')) {
+        const [hours, minutes] = transfer.time.split(':').map(Number);
+        // Use today's date for the time part only
+        const timeDate = new Date();
+        timeDate.setHours(hours, minutes, 0, 0);
+        
+        return isValid(timeDate)
+          ? format(timeDate, 'HH:mm')
+          : 'Hora inválida';
+      } else {
+        // Try to parse as a date string
+        const timeDate = new Date(transfer.time);
+        return isValid(timeDate)
+          ? format(timeDate, 'HH:mm')
+          : 'Hora inválida';
+      }
+    } catch (error) {
+      console.error('Error formatting time:', error, transfer.time);
+      return 'Hora inválida';
+    }
+  };
   
   // Determine row background color based on service type
   const rowClass = cn(
@@ -51,6 +87,10 @@ export function TransferTableRow({
   
   // Use "Propio" if no collaborator is assigned
   const collaboratorName = transfer.collaborator || "Propio";
+  
+  // Get the formatted date and time
+  const formattedDate = getFormattedDate();
+  const formattedTime = getFormattedTime();
   
   return (
     <TableRow className={rowClass}>
@@ -64,7 +104,7 @@ export function TransferTableRow({
         )}
       </TableCell>
       <TableCell className="font-medium">{formattedDate}</TableCell>
-      <TableCell>{format(new Date(transfer.time), 'HH:mm')}</TableCell>
+      <TableCell>{formattedTime}</TableCell>
       <TableCell>
         <ServiceTypeBadge serviceType={transfer.serviceType} />
       </TableCell>
