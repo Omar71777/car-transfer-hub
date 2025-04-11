@@ -17,60 +17,72 @@ interface SummaryStatsProps {
 export const SummaryStats = ({ stats }: SummaryStatsProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="relative overflow-hidden rounded-xl border-l-4 border-l-blue-500 group bg-gradient-to-r from-blue-50 to-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-100/0 via-blue-100/30 to-blue-100/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
-        <CardContent className="p-6">
+      <Card className="relative overflow-hidden rounded-xl border-b border-white/10 bg-gradient-to-br from-blue-600 to-blue-500 text-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shine"></div>
+        <CardContent className="p-5">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Ingresos Totales</p>
-              <h3 className="text-2xl font-bold text-blue-500 mt-1">{formatCurrency(stats.totalIncome)}</h3>
+              <p className="text-sm font-medium text-white/80">Ingresos Totales</p>
+              <h3 className="text-2xl font-bold mt-1">{formatCurrency(stats.totalIncome)}</h3>
             </div>
-            <TrendingUp className="h-10 w-10 text-blue-500/40" />
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-white" />
+            </div>
           </div>
         </CardContent>
-        <div className="h-1 w-full bg-gradient-to-r from-blue-500/20 via-blue-500/80 to-blue-500/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-blue-300/20 via-blue-300/80 to-blue-300/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
       
-      <Card className="relative overflow-hidden rounded-xl border-l-4 border-l-red-500 group bg-gradient-to-r from-red-50 to-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-100/0 via-red-100/30 to-red-100/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
-        <CardContent className="p-6">
+      <Card className="relative overflow-hidden rounded-xl border-b border-white/10 bg-gradient-to-br from-red-600 to-red-500 text-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shine"></div>
+        <CardContent className="p-5">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Gastos Totales</p>
-              <h3 className="text-2xl font-bold text-red-500 mt-1">{formatCurrency(stats.totalExpenses)}</h3>
+              <p className="text-sm font-medium text-white/80">Gastos Totales</p>
+              <h3 className="text-2xl font-bold mt-1">{formatCurrency(stats.totalExpenses)}</h3>
             </div>
-            <TrendingDown className="h-10 w-10 text-red-500/40" />
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <TrendingDown className="h-5 w-5 text-white" />
+            </div>
           </div>
         </CardContent>
-        <div className="h-1 w-full bg-gradient-to-r from-red-500/20 via-red-500/80 to-red-500/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-red-300/20 via-red-300/80 to-red-300/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
       
-      <Card className="relative overflow-hidden rounded-xl border-l-4 border-l-amber-500 group bg-gradient-to-r from-amber-50 to-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-100/0 via-amber-100/30 to-amber-100/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
-        <CardContent className="p-6">
+      <Card className="relative overflow-hidden rounded-xl border-b border-white/10 bg-gradient-to-br from-amber-600 to-amber-500 text-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shine"></div>
+        <CardContent className="p-5">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Comisiones</p>
-              <h3 className="text-2xl font-bold text-amber-500 mt-1">{formatCurrency(stats.totalCommissions)}</h3>
+              <p className="text-sm font-medium text-white/80">Comisiones</p>
+              <h3 className="text-2xl font-bold mt-1">{formatCurrency(stats.totalCommissions)}</h3>
             </div>
-            <CreditCard className="h-10 w-10 text-amber-500/40" />
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <CreditCard className="h-5 w-5 text-white" />
+            </div>
           </div>
         </CardContent>
-        <div className="h-1 w-full bg-gradient-to-r from-amber-500/20 via-amber-500/80 to-amber-500/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-amber-300/20 via-amber-300/80 to-amber-300/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
       
-      <Card className="relative overflow-hidden rounded-xl border-l-4 border-l-green-500 group bg-gradient-to-r from-green-50 to-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-green-100/0 via-green-100/30 to-green-100/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
-        <CardContent className="p-6">
+      <Card className="relative overflow-hidden rounded-xl border-b border-white/10 bg-gradient-to-br from-green-600 to-green-500 text-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shine"></div>
+        <CardContent className="p-5">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Beneficio Neto</p>
-              <h3 className="text-2xl font-bold text-green-500 mt-1">{formatCurrency(stats.netProfit)}</h3>
+              <p className="text-sm font-medium text-white/80">Beneficio Neto</p>
+              <h3 className="text-2xl font-bold mt-1">{formatCurrency(stats.netProfit)}</h3>
             </div>
-            <DollarSign className="h-10 w-10 text-green-500/40" />
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-white" />
+            </div>
           </div>
         </CardContent>
-        <div className="h-1 w-full bg-gradient-to-r from-green-500/20 via-green-500/80 to-green-500/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-green-300/20 via-green-300/80 to-green-300/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
     </div>
   );

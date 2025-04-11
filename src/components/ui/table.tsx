@@ -87,7 +87,7 @@ const TableHead = React.forwardRef<
       className={cn(
         isMobile 
           ? "h-8 px-1 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 text-xs"
-          : "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 md:px-4 lg:h-12",
+          : "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 md:px-3 lg:h-12",
         className
       )}
       {...props}
@@ -108,7 +108,7 @@ const TableCell = React.forwardRef<
       className={cn(
         isMobile 
           ? "p-1 align-middle [&:has([role=checkbox])]:pr-0 text-xs"
-          : "p-2 align-middle [&:has([role=checkbox])]:pr-0 md:p-4",
+          : "p-2 align-middle [&:has([role=checkbox])]:pr-0 md:p-3",
         className
       )}
       {...props}

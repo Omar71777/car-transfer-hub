@@ -9,13 +9,13 @@ export const QuickAccessCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Tarjeta de acceso rápido a Nuevos Transfers */}
-      <Card className="relative overflow-hidden group border border-primary/10 bg-gradient-to-br from-electric/5 to-white">
-        {/* Animated highlight effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-electric/0 via-electric/5 to-electric/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
+      <Card className="relative overflow-hidden border border-primary/10 bg-gradient-to-br from-blue-100 to-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-100/0 via-blue-100/20 to-blue-100/0 animate-shine"></div>
         
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <PlusCircle className="h-5 w-5 text-electric" />
+            <PlusCircle className="h-5 w-5 text-blue-600" />
             <span>Nuevo Transfer</span>
           </CardTitle>
           <CardDescription>Registra un nuevo servicio</CardDescription>
@@ -29,17 +29,17 @@ export const QuickAccessCards = () => {
           </Button>
         </CardContent>
         
-        <div className="h-1 w-full bg-gradient-to-r from-electric/20 via-electric/60 to-electric/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-blue-400/20 via-blue-400/60 to-blue-400/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
 
       {/* Tarjeta de acceso rápido a Transfers */}
-      <Card className="relative overflow-hidden group border border-primary/10 bg-gradient-to-br from-aqua/5 to-white">
-        {/* Animated highlight effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-aqua/0 via-aqua/5 to-aqua/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
+      <Card className="relative overflow-hidden border border-primary/10 bg-gradient-to-br from-cyan-100 to-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-100/0 via-cyan-100/20 to-cyan-100/0 animate-shine"></div>
         
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-aqua-dark" />
+            <Calendar className="h-5 w-5 text-cyan-600" />
             <span>Transfers</span>
           </CardTitle>
           <CardDescription>Gestiona tus servicios</CardDescription>
@@ -53,17 +53,17 @@ export const QuickAccessCards = () => {
           </Button>
         </CardContent>
         
-        <div className="h-1 w-full bg-gradient-to-r from-aqua/20 via-aqua/60 to-aqua/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-cyan-400/20 via-cyan-400/60 to-cyan-400/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
 
       {/* Tarjeta de acceso rápido a Gastos */}
-      <Card className="relative overflow-hidden group border border-primary/10 bg-gradient-to-br from-pine/5 to-white">
-        {/* Animated highlight effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-pine/0 via-pine/5 to-pine/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
+      <Card className="relative overflow-hidden border border-primary/10 bg-gradient-to-br from-green-100 to-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-green-100/0 via-green-100/20 to-green-100/0 animate-shine"></div>
         
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-pine-dark" />
+            <CreditCard className="h-5 w-5 text-green-600" />
             <span>Gastos</span>
           </CardTitle>
           <CardDescription>Controla tus gastos</CardDescription>
@@ -77,17 +77,17 @@ export const QuickAccessCards = () => {
           </Button>
         </CardContent>
         
-        <div className="h-1 w-full bg-gradient-to-r from-pine/20 via-pine/60 to-pine/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-green-400/20 via-green-400/60 to-green-400/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
 
       {/* Tarjeta de acceso rápido a Ganancias */}
-      <Card className="relative overflow-hidden group border border-primary/10 bg-gradient-to-br from-vibrant/5 to-white">
-        {/* Animated highlight effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-vibrant/0 via-vibrant/5 to-vibrant/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
+      <Card className="relative overflow-hidden border border-primary/10 bg-gradient-to-br from-purple-100 to-white">
+        {/* Always visible shine effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-100/0 via-purple-100/20 to-purple-100/0 animate-shine"></div>
         
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <BarChart2 className="h-5 w-5 text-vibrant" />
+            <BarChart2 className="h-5 w-5 text-purple-600" />
             <span>Ganancias</span>
           </CardTitle>
           <CardDescription>Analiza tus resultados</CardDescription>
@@ -101,7 +101,7 @@ export const QuickAccessCards = () => {
           </Button>
         </CardContent>
         
-        <div className="h-1 w-full bg-gradient-to-r from-vibrant/20 via-vibrant/60 to-vibrant/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
+        <div className="h-2 w-full bg-gradient-to-r from-purple-400/20 via-purple-400/60 to-purple-400/20 absolute bottom-0 transition-all ease-in-out"></div>
       </Card>
     </div>
   );

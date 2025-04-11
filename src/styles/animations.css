@@ -8,6 +8,10 @@
   }
 }
 
+.animate-shine {
+  animation: shine 4s infinite linear;
+}
+
 .animated-gradient {
   background: linear-gradient(270deg, var(--tw-gradient-stops));
   background-size: 200% 200%;
@@ -18,6 +22,33 @@
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+@keyframes scale-subtle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.animate-scale-subtle {
+  animation: scale-subtle 3s ease-in-out infinite;
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(59, 130, 246, 0.2); }
+  50% { border-color: rgba(59, 130, 246, 0.6); }
+}
+
+.animate-border-glow {
+  animation: border-glow 3s ease-in-out infinite;
 }
 
 @keyframes logo-spin {

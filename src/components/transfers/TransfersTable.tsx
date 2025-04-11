@@ -70,8 +70,8 @@ export function TransfersTable({
           </Button>
         </div>
       )}
-      <div className="rounded-md border overflow-hidden glass-card">
-        <div className={isMobile ? "overflow-x-auto -mx-4 px-4 mobile-scroll" : ""}>
+      <div className="rounded-md border overflow-hidden shadow-sm">
+        <div className={isMobile ? "overflow-x-auto w-full" : ""}>
           <Table>
             <TransferTableHeader 
               onSelectAll={handleSelectAll} 
