@@ -22,7 +22,7 @@ export function useBillingActions() {
     updateBillTransfers
   } = useBilling();
 
-  // Dialog state management
+  // Centralized dialog state management
   const {
     activeTab,
     setActiveTab,
@@ -34,46 +34,95 @@ export function useBillingActions() {
     setIsEditDialogOpen,
     isDeleteDialogOpen,
     setIsDeleteDialogOpen,
-    selectedBill: dialogSelectedBill,
-    setSelectedBill: setDialogSelectedBill,
-    viewBill: dialogViewBill,
-    setViewBill: setDialogViewBill,
-    isCreating: dialogIsCreating,
-    setIsCreating: setDialogIsCreating
-  } = useBillingDialogState();
-
-  // Create handlers
-  const {
-    isCreating,
-    handleAddBill,
-    handleFormSubmit
-  } = useBillCreateHandler(createBill, fetchBills, setActiveTab, setIsFormDialogOpen);
-
-  // View handlers
-  const {
+    selectedBill,
+    setSelectedBill,
     viewBill,
     setViewBill,
+    isCreating,
+    setIsCreating,
+    isLoading,
+    setIsLoading,
+    resetDialogStates
+  } = useBillingDialogState();
+
+  // Create handlers - pass dialog state from central dialog state
+  const {
+    handleAddBill,
+    handleFormSubmit
+  } = useBillCreateHandler(
+    createBill, 
+    fetchBills, 
+    setActiveTab, 
+    setIsFormDialogOpen,
+    isCreating,
+    setIsCreating
+  );
+
+  // View handlers - pass dialog state from central dialog state
+  const {
     handleViewBill,
     handlePrintBill,
     handleDownloadBill,
     handleStatusChange: baseHandleStatusChange
-  } = useBillViewHandlers(getBill, printBill, exportBillCsv);
+  } = useBillViewHandlers(
+    getBill, 
+    printBill, 
+    exportBillCsv
+  );
 
-  // Edit handlers
+  // Set up synchronized bill viewing
+  const handleSynchronizedViewBill = async (bill: Bill) => {
+    setIsLoading(true);
+    try {
+      await handleViewBill(bill);
+      setViewBill(bill);
+      setIsViewDialogOpen(true);
+    } catch (error) {
+      console.error('Error viewing bill:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Edit handlers - pass dialog state from central dialog state
   const {
-    selectedBill,
-    setSelectedBill,
-    handleEditBill,
+    handleEditBill: baseHandleEditBill,
     handleEditSubmit: baseHandleEditSubmit
-  } = useBillEditHandlers(getBill, updateBill, updateBillTransfers, fetchBills);
+  } = useBillEditHandlers(
+    getBill, 
+    updateBill, 
+    updateBillTransfers, 
+    fetchBills
+  );
 
-  // Delete handlers
+  // Set up synchronized bill editing
+  const handleSynchronizedEditBill = async (bill: Bill) => {
+    setIsLoading(true);
+    try {
+      const fullBill = await getBill(bill.id);
+      if (fullBill) {
+        setSelectedBill(fullBill);
+        setIsEditDialogOpen(true);
+      }
+    } catch (error) {
+      console.error('Error editing bill:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Delete handlers - pass dialog state from central dialog state
   const {
     handleDeleteBill,
     handleConfirmDelete
-  } = useBillDeleteHandler(deleteBill, fetchBills);
+  } = useBillDeleteHandler(
+    deleteBill, 
+    fetchBills,
+    setIsDeleteDialogOpen,
+    setSelectedBill
+  );
 
-  // Wrapper handlers that integrate the specialized hooks
+  // Wrapper handlers that integrate the specialized hooks with centralized state
   const wrappedHandleStatusChange = async (status: Bill['status']) => {
     await baseHandleStatusChange(status, viewBill, updateBillStatus, getBill, fetchBills);
   };
@@ -85,12 +134,14 @@ export function useBillingActions() {
     removedTransferIds: string[] = []
   ) => {
     await baseHandleEditSubmit(id, data, addedTransferIds, removedTransferIds, viewBill, setViewBill);
+    setIsEditDialogOpen(false);
+    await fetchBills();
   };
 
   return {
     // State
     bills,
-    loading,
+    loading: loading || isLoading,
     activeTab,
     setActiveTab,
     isFormDialogOpen,
@@ -107,11 +158,12 @@ export function useBillingActions() {
     
     // Operations
     fetchBills,
+    resetDialogStates,
     
     // Handlers
     handleAddBill,
-    handleViewBill,
-    handleEditBill,
+    handleViewBill: handleSynchronizedViewBill,
+    handleEditBill: handleSynchronizedEditBill,
     handleDeleteBill,
     handlePrintBill,
     handleDownloadBill,

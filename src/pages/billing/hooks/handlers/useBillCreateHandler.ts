@@ -7,9 +7,16 @@ export function useBillCreateHandler(
   createBill: (values: CreateBillDto) => Promise<string | null>,
   fetchBills: () => Promise<void>,
   setActiveTab: (tab: string) => void,
-  setIsFormDialogOpen: (open: boolean) => void
+  setIsFormDialogOpen: (open: boolean) => void,
+  externalIsCreating?: boolean,
+  setExternalIsCreating?: (creating: boolean) => void
 ) {
-  const [isCreating, setIsCreating] = useState(false);
+  // Use provided state setter or create local one if not provided
+  const [internalIsCreating, setInternalIsCreating] = useState(false);
+  
+  // Use external or internal state
+  const isCreating = externalIsCreating !== undefined ? externalIsCreating : internalIsCreating;
+  const setIsCreating = setExternalIsCreating || setInternalIsCreating;
 
   const handleAddBill = () => {
     setIsFormDialogOpen(true);
@@ -26,7 +33,7 @@ export function useBillCreateHandler(
       
       // Always close the dialog and refresh the bills list
       setIsFormDialogOpen(false);
-      fetchBills();
+      await fetchBills();
       setActiveTab('bills');
       
       if (billId) {

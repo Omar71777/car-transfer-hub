@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface BillsTableProps {
   bills: Bill[];
+  loading?: boolean;
   onAdd: () => void;
   onView: (bill: Bill) => void;
   onEdit: (bill: Bill) => void;
@@ -22,13 +23,21 @@ interface BillsTableProps {
   onDelete: (bill: Bill) => void;
 }
 
-export function BillsTable({ bills, onAdd, onView, onEdit, onPrint, onDelete }: BillsTableProps) {
+export function BillsTable({ 
+  bills, 
+  loading = false, 
+  onAdd, 
+  onView, 
+  onEdit, 
+  onPrint, 
+  onDelete 
+}: BillsTableProps) {
   const isMobile = useIsMobile();
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
 
-  if (bills.length === 0) {
+  if (bills.length === 0 && !loading) {
     return <EmptyBillsState onAdd={onAdd} />;
   }
 

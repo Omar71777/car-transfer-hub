@@ -9,6 +9,7 @@ interface BillsTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   bills: Bill[];
+  loading?: boolean;
   handleAddBill: () => void;
   handleViewBill: (bill: Bill) => void;
   handleEditBill: (bill: Bill) => void;
@@ -21,6 +22,7 @@ export function BillsTabs({
   activeTab,
   setActiveTab,
   bills,
+  loading = false,
   handleAddBill,
   handleViewBill,
   handleEditBill,
@@ -38,6 +40,7 @@ export function BillsTabs({
       <TabsContent value="bills">
         <BillsTable
           bills={bills}
+          loading={loading}
           onAdd={handleAddBill}
           onView={handleViewBill}
           onEdit={handleEditBill}

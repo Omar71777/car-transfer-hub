@@ -9,6 +9,7 @@ import { useBillingActions } from './hooks/useBillingActions';
 const BillingPage = () => {
   const {
     bills,
+    loading,
     activeTab,
     setActiveTab,
     isFormDialogOpen,
@@ -31,12 +32,18 @@ const BillingPage = () => {
     handleFormSubmit,
     handleEditSubmit,
     handleConfirmDelete,
-    handleStatusChange
+    handleStatusChange,
+    resetDialogStates
   } = useBillingActions();
 
   useEffect(() => {
     fetchBills();
-  }, [fetchBills]);
+    
+    // Cleanup function to reset dialog states when component unmounts
+    return () => {
+      resetDialogStates();
+    };
+  }, [fetchBills, resetDialogStates]);
 
   return (
     <MainLayout>
@@ -47,6 +54,7 @@ const BillingPage = () => {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           bills={bills}
+          loading={loading}
           handleAddBill={handleAddBill}
           handleViewBill={handleViewBill}
           handleEditBill={handleEditBill}
