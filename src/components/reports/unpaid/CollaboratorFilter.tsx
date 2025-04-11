@@ -31,7 +31,7 @@ export function CollaboratorFilter({
               <SelectContent>
                 <SelectItem value="all">Todos los colaboradores</SelectItem>
                 {collaborators.map((collab) => (
-                  <SelectItem key={collab.id} value={collab.name}>
+                  <SelectItem key={collab.id} value={collab.name || `collab-${collab.id}`}>
                     {collab.name}
                   </SelectItem>
                 ))}

@@ -88,12 +88,12 @@ export function CollaboratorStep({ clients, collaborators, formState }: Collabor
                   <SelectItem value="none">Sin colaborador</SelectItem>
                   {collaborators && collaborators.length > 0 ? (
                     collaborators.map((collaborator) => (
-                      <SelectItem key={collaborator.id} value={collaborator.name}>
+                      <SelectItem key={collaborator.id} value={collaborator.name || `collaborator-${collaborator.id}`}>
                         {collaborator.name}
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="" disabled>
+                    <SelectItem value="no-collaborators" disabled>
                       No hay colaboradores disponibles
                     </SelectItem>
                   )}
