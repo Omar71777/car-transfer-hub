@@ -10,6 +10,7 @@ import {
   Legend, 
   ResponsiveContainer
 } from 'recharts';
+import { formatCurrency } from '@/lib/utils';
 
 interface MonthlyEvolutionChartProps {
   data: Array<{
@@ -31,6 +32,14 @@ export function MonthlyEvolutionChart({ data, loading }: MonthlyEvolutionChartPr
     );
   }
 
+  if (data.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-80">
+        <p>No hay datos disponibles</p>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={400}>
       <BarChart
@@ -40,7 +49,7 @@ export function MonthlyEvolutionChart({ data, loading }: MonthlyEvolutionChartPr
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip formatter={(value) => `${value}€`} />
+        <Tooltip formatter={(value) => formatCurrency(Number(value))} />
         <Legend />
         <Bar dataKey="ingresos" name="Ingresos" fill="#3b82f6" />
         <Bar dataKey="gastos" name="Gastos" fill="#ef4444" />

@@ -6,7 +6,9 @@ import {
   Cell,
   Tooltip, 
   ResponsiveContainer,
+  Legend
 } from 'recharts';
+import { formatCurrency } from '@/lib/utils';
 
 interface CollaboratorDistributionChartProps {
   data: Array<{
@@ -52,7 +54,8 @@ export function CollaboratorDistributionChart({ data, loading }: CollaboratorDis
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value) => `${value}€`} />
+        <Legend />
+        <Tooltip formatter={(value) => formatCurrency(Number(value))} />
       </PieChart>
     </ResponsiveContainer>
   );

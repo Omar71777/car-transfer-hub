@@ -2,6 +2,8 @@
 import { useTransfers } from '@/hooks/useTransfers';
 import { useExpenses } from '@/hooks/useExpenses';
 import { useClients } from '@/hooks/useClients';
+import { parseISO, format, isValid } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export interface MonthlyData {
   name: string;
@@ -33,32 +35,52 @@ export function useAnalyticsData() {
     
     // Process transfers
     transfers.forEach(transfer => {
-      const date = new Date(transfer.date);
-      const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`;
-      const monthName = date.toLocaleString('es-ES', { month: 'short' });
-      
-      if (!months[monthYear]) {
-        months[monthYear] = {
-          name: monthName,
-          ingresos: 0,
-          gastos: 0,
-          comisiones: 0,
-          beneficio: 0
-        };
+      try {
+        const date = parseISO(transfer.date);
+        if (!isValid(date)) {
+          console.warn(`Invalid date format in transfer: ${transfer.date}`);
+          return;
+        }
+        
+        const monthYear = format(date, 'yyyy-MM', { locale: es });
+        const monthName = format(date, 'MMMM', { locale: es });
+        // Capitalize first letter of month name
+        const monthNameCapitalized = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+        
+        if (!months[monthYear]) {
+          months[monthYear] = {
+            name: monthNameCapitalized,
+            ingresos: 0,
+            gastos: 0,
+            comisiones: 0,
+            beneficio: 0
+          };
+        }
+        
+        months[monthYear].ingresos += transfer.price;
+        const commission = (transfer.price * transfer.commission) / 100;
+        months[monthYear].comisiones += commission;
+      } catch (error) {
+        console.error('Error processing transfer date:', error);
       }
-      
-      months[monthYear].ingresos += transfer.price;
-      const commission = (transfer.price * transfer.commission) / 100;
-      months[monthYear].comisiones += commission;
     });
     
     // Process expenses
     expenses.forEach(expense => {
-      const date = new Date(expense.date);
-      const monthYear = `${date.getMonth() + 1}-${date.getFullYear()}`;
-      
-      if (months[monthYear]) {
-        months[monthYear].gastos += expense.amount;
+      try {
+        const date = parseISO(expense.date);
+        if (!isValid(date)) {
+          console.warn(`Invalid date format in expense: ${expense.date}`);
+          return;
+        }
+        
+        const monthYear = format(date, 'yyyy-MM', { locale: es });
+        
+        if (months[monthYear]) {
+          months[monthYear].gastos += expense.amount;
+        }
+      } catch (error) {
+        console.error('Error processing expense date:', error);
       }
     });
     
@@ -67,7 +89,10 @@ export function useAnalyticsData() {
       month.beneficio = month.ingresos - (month.gastos + month.comisiones);
     });
     
-    return Object.values(months);
+    // Convert to array and sort by date (newest first)
+    return Object.entries(months)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([_, data]) => data);
   };
   
   // Generate data for collaborator distribution
@@ -87,7 +112,9 @@ export function useAnalyticsData() {
       collaborators[collaborator] += transfer.price;
     });
     
-    return Object.entries(collaborators).map(([name, value]) => ({ name, value }));
+    return Object.entries(collaborators)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
   };
   
   // Generate data for client distribution
