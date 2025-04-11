@@ -19,7 +19,6 @@ export interface CreateClientDto {
   address?: string;
   tax_id?: string; // Changed from taxId
   notes?: string;
-  // No user_id here as it will be handled by the hook
 }
 
 export interface UpdateClientDto extends Partial<CreateClientDto> {}
