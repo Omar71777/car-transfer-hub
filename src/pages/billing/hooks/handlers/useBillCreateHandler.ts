@@ -8,23 +8,13 @@ export function useBillCreateHandler(
   fetchBills: () => Promise<void>,
   setActiveTab: (tab: string) => void,
   setIsFormDialogOpen: (open: boolean) => void,
-  externalIsCreating?: boolean,
-  setExternalIsCreating?: (creating: boolean) => void
+  setIsCreating: (creating: boolean) => void
 ) {
-  // Use provided state setter or create local one if not provided
-  const [internalIsCreating, setInternalIsCreating] = useState(false);
-  
-  // Use external or internal state
-  const isCreating = externalIsCreating !== undefined ? externalIsCreating : internalIsCreating;
-  const setIsCreating = setExternalIsCreating || setInternalIsCreating;
-
   const handleAddBill = () => {
     setIsFormDialogOpen(true);
   };
 
   const handleFormSubmit = async (values: CreateBillDto) => {
-    if (isCreating) return; // Prevent multiple submissions
-    
     setIsCreating(true);
     try {
       console.log('Creating bill with values:', values);
@@ -52,7 +42,6 @@ export function useBillCreateHandler(
   };
 
   return {
-    isCreating,
     handleAddBill,
     handleFormSubmit
   };

@@ -45,22 +45,9 @@ export function useBillingActions() {
     resetDialogStates
   } = useBillingDialogState();
 
-  // Create handlers - pass dialog state from central dialog state
+  // Get handlers but don't use their internal state
   const {
-    handleAddBill,
-    handleFormSubmit
-  } = useBillCreateHandler(
-    createBill, 
-    fetchBills, 
-    setActiveTab, 
-    setIsFormDialogOpen,
-    isCreating,
-    setIsCreating
-  );
-
-  // View handlers - pass dialog state from central dialog state
-  const {
-    handleViewBill,
+    handleViewBill: baseHandleViewBill,
     handlePrintBill,
     handleDownloadBill,
     handleStatusChange: baseHandleStatusChange
@@ -70,21 +57,6 @@ export function useBillingActions() {
     exportBillCsv
   );
 
-  // Set up synchronized bill viewing
-  const handleSynchronizedViewBill = async (bill: Bill) => {
-    setIsLoading(true);
-    try {
-      await handleViewBill(bill);
-      setViewBill(bill);
-      setIsViewDialogOpen(true);
-    } catch (error) {
-      console.error('Error viewing bill:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Edit handlers - pass dialog state from central dialog state
   const {
     handleEditBill: baseHandleEditBill,
     handleEditSubmit: baseHandleEditSubmit
@@ -95,47 +67,102 @@ export function useBillingActions() {
     fetchBills
   );
 
-  // Set up synchronized bill editing
-  const handleSynchronizedEditBill = async (bill: Bill) => {
-    setIsLoading(true);
-    try {
-      const fullBill = await getBill(bill.id);
-      if (fullBill) {
-        setSelectedBill(fullBill);
-        setIsEditDialogOpen(true);
-      }
-    } catch (error) {
-      console.error('Error editing bill:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Delete handlers - pass dialog state from central dialog state
   const {
-    handleDeleteBill,
-    handleConfirmDelete
+    handleDeleteBill: baseHandleDeleteBill,
+    handleConfirmDelete: baseHandleConfirmDelete
   } = useBillDeleteHandler(
     deleteBill, 
-    fetchBills,
-    setIsDeleteDialogOpen,
-    setSelectedBill
+    fetchBills
   );
 
-  // Wrapper handlers that integrate the specialized hooks with centralized state
-  const wrappedHandleStatusChange = async (status: Bill['status']) => {
-    await baseHandleStatusChange(status, viewBill, updateBillStatus, getBill, fetchBills);
+  const {
+    handleAddBill,
+    handleFormSubmit: baseHandleFormSubmit
+  } = useBillCreateHandler(
+    createBill, 
+    fetchBills, 
+    setActiveTab, 
+    setIsFormDialogOpen,
+    setIsCreating
+  );
+
+  // Integrated handlers that work with the central state
+  const handleViewBill = async (bill: Bill) => {
+    // Close any open dialogs first
+    resetDialogStates();
+    
+    // Now open the requested dialog
+    await baseHandleViewBill(
+      bill,
+      setViewBill,
+      setIsViewDialogOpen,
+      setIsLoading
+    );
   };
 
-  const wrappedHandleEditSubmit = async (
+  const handleEditBill = async (bill: Bill) => {
+    // Close any open dialogs first
+    resetDialogStates();
+    
+    // Now open the requested dialog
+    await baseHandleEditBill(
+      bill,
+      setSelectedBill,
+      setIsEditDialogOpen,
+      setIsLoading
+    );
+  };
+
+  const handleDeleteBill = (bill: Bill) => {
+    // Close any open dialogs first
+    resetDialogStates();
+    
+    // Now open the requested dialog
+    baseHandleDeleteBill(
+      bill,
+      setSelectedBill,
+      setIsDeleteDialogOpen
+    );
+  };
+
+  const handleFormSubmit = async (values: CreateBillDto) => {
+    await baseHandleFormSubmit(values);
+  };
+
+  const handleEditSubmit = async (
     id: string,
     data: Partial<Bill>,
     addedTransferIds: string[] = [],
     removedTransferIds: string[] = []
   ) => {
-    await baseHandleEditSubmit(id, data, addedTransferIds, removedTransferIds, viewBill, setViewBill);
-    setIsEditDialogOpen(false);
-    await fetchBills();
+    await baseHandleEditSubmit(
+      id, 
+      data, 
+      addedTransferIds, 
+      removedTransferIds, 
+      viewBill, 
+      setViewBill,
+      setIsEditDialogOpen
+    );
+  };
+
+  const handleConfirmDelete = async () => {
+    await baseHandleConfirmDelete(
+      selectedBill,
+      setIsDeleteDialogOpen,
+      setSelectedBill
+    );
+  };
+
+  const handleStatusChange = async (status: Bill['status']) => {
+    await baseHandleStatusChange(
+      status, 
+      viewBill, 
+      updateBillStatus, 
+      getBill, 
+      setViewBill, 
+      fetchBills
+    );
   };
 
   return {
@@ -162,14 +189,14 @@ export function useBillingActions() {
     
     // Handlers
     handleAddBill,
-    handleViewBill: handleSynchronizedViewBill,
-    handleEditBill: handleSynchronizedEditBill,
+    handleViewBill,
+    handleEditBill,
     handleDeleteBill,
     handlePrintBill,
     handleDownloadBill,
     handleFormSubmit,
-    handleEditSubmit: wrappedHandleEditSubmit,
+    handleEditSubmit,
     handleConfirmDelete,
-    handleStatusChange: wrappedHandleStatusChange
+    handleStatusChange
   };
 }

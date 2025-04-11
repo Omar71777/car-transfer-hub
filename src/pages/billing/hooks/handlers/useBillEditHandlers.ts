@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { Bill } from '@/types/billing';
 import { toast } from 'sonner';
 
@@ -9,11 +8,14 @@ export function useBillEditHandlers(
   updateBillTransfers: (billId: string, addedTransferIds: string[], removedTransferIds: string[]) => Promise<boolean>,
   fetchBills: () => Promise<void>
 ) {
-  const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
-  const handleEditBill = async (bill: Bill) => {
+  const handleEditBill = async (
+    bill: Bill,
+    setSelectedBill: (bill: Bill | null) => void,
+    setIsEditDialogOpen: (isOpen: boolean) => void,
+    setIsLoading: (isLoading: boolean) => void
+  ) => {
     try {
+      setIsLoading(true);
       const fullBill = await getBill(bill.id);
       if (fullBill) {
         setSelectedBill(fullBill);
@@ -22,6 +24,8 @@ export function useBillEditHandlers(
     } catch (error) {
       console.error('Error editing bill:', error);
       toast.error('Error al cargar la factura para editar');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -31,7 +35,8 @@ export function useBillEditHandlers(
     addedTransferIds: string[] = [], 
     removedTransferIds: string[] = [],
     viewBill: Bill | null,
-    setViewBill: (bill: Bill | null) => void
+    setViewBill: (bill: Bill | null) => void,
+    setIsEditDialogOpen: (isOpen: boolean) => void
   ) => {
     try {
       // If there are transfers to add or remove, update them first
@@ -47,7 +52,7 @@ export function useBillEditHandlers(
       if (success) {
         toast.success('Factura actualizada con éxito');
         setIsEditDialogOpen(false);
-        fetchBills();
+        await fetchBills();
         
         // Si la factura está siendo visualizada, actualizar la vista
         if (viewBill && viewBill.id === id) {
@@ -66,10 +71,6 @@ export function useBillEditHandlers(
   };
 
   return {
-    selectedBill,
-    setSelectedBill,
-    isEditDialogOpen,
-    setIsEditDialogOpen,
     handleEditBill,
     handleEditSubmit
   };

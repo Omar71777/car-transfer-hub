@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { Bill } from '@/types/billing';
 import { toast } from 'sonner';
 
@@ -8,11 +7,14 @@ export function useBillViewHandlers(
   printBill: (id: string) => Promise<boolean>,
   exportBillCsv: (id: string) => Promise<boolean>
 ) {
-  const [viewBill, setViewBill] = useState<Bill | null>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-
-  const handleViewBill = async (bill: Bill) => {
+  const handleViewBill = async (
+    bill: Bill,
+    setViewBill: (bill: Bill | null) => void,
+    setIsViewDialogOpen: (isOpen: boolean) => void,
+    setIsLoading: (isLoading: boolean) => void
+  ) => {
     try {
+      setIsLoading(true);
       // Fetch the complete bill with items
       const fullBill = await getBill(bill.id);
       if (fullBill) {
@@ -23,6 +25,8 @@ export function useBillViewHandlers(
     } catch (error) {
       console.error('Error viewing bill:', error);
       toast.error('Error al cargar la factura');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,6 +53,7 @@ export function useBillViewHandlers(
     viewBill: Bill | null,
     updateBillStatus: (id: string, status: Bill['status']) => Promise<boolean>,
     getBill: (id: string) => Promise<Bill | null>,
+    setViewBill: (bill: Bill | null) => void,
     fetchBills: () => Promise<void>
   ) => {
     if (!viewBill) return;
@@ -80,10 +85,6 @@ export function useBillViewHandlers(
   };
 
   return {
-    viewBill,
-    setViewBill,
-    isViewDialogOpen,
-    setIsViewDialogOpen,
     handleViewBill,
     handlePrintBill,
     handleDownloadBill,

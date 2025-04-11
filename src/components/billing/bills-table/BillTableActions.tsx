@@ -29,11 +29,17 @@ export function BillTableActions({
 }: BillTableActionsProps) {
   const [open, setOpen] = useState(false);
   
-  // Ensure event propagation stops and proper handling of each action
+  // Enhanced event handling - ensure independent action execution
   const handleAction = (e: React.MouseEvent, actionFn: (bill: Bill) => void) => {
+    e.preventDefault();  // Prevent default behavior
     e.stopPropagation(); // Prevent event from bubbling up
+    
     setOpen(false);      // Close dropdown if open
-    actionFn(bill);      // Call the action with the bill
+    
+    // Small delay to ensure dialog state is reset
+    setTimeout(() => {
+      actionFn(bill);      // Call the action with the bill
+    }, 10);
   };
 
   if (isMobile) {
@@ -56,19 +62,31 @@ export function BillTableActions({
             className="bg-popover border border-border shadow-md"
             onClick={e => e.stopPropagation()}
           >
-            <DropdownMenuItem onClick={(e) => handleAction(e, onView)}>
+            <DropdownMenuItem onSelect={(e) => {
+              e.preventDefault();
+              handleAction(e as unknown as React.MouseEvent, onView);
+            }}>
               <Eye className="mr-2 h-4 w-4" />
               <span>Ver</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => handleAction(e, onEdit)}>
+            <DropdownMenuItem onSelect={(e) => {
+              e.preventDefault();
+              handleAction(e as unknown as React.MouseEvent, onEdit);
+            }}>
               <Edit className="mr-2 h-4 w-4" />
               <span>Editar</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => handleAction(e, onPrint)}>
+            <DropdownMenuItem onSelect={(e) => {
+              e.preventDefault();
+              handleAction(e as unknown as React.MouseEvent, onPrint);
+            }}>
               <Printer className="mr-2 h-4 w-4" />
               <span>Imprimir</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => handleAction(e, onDelete)}>
+            <DropdownMenuItem onSelect={(e) => {
+              e.preventDefault();
+              handleAction(e as unknown as React.MouseEvent, onDelete);
+            }}>
               <Trash2 className="mr-2 h-4 w-4" />
               <span>Eliminar</span>
             </DropdownMenuItem>
@@ -84,6 +102,7 @@ export function BillTableActions({
         variant="ghost" 
         size="icon" 
         onClick={(e) => handleAction(e, onView)}
+        className="h-8 w-8"
       >
         <span className="sr-only">Ver factura</span>
         <Eye className="h-4 w-4" />
@@ -92,6 +111,7 @@ export function BillTableActions({
         variant="ghost" 
         size="icon" 
         onClick={(e) => handleAction(e, onEdit)}
+        className="h-8 w-8"
       >
         <span className="sr-only">Editar factura</span>
         <Edit className="h-4 w-4" />
@@ -100,6 +120,7 @@ export function BillTableActions({
         variant="ghost" 
         size="icon" 
         onClick={(e) => handleAction(e, onPrint)}
+        className="h-8 w-8"
       >
         <span className="sr-only">Imprimir factura</span>
         <Printer className="h-4 w-4" />
@@ -108,6 +129,7 @@ export function BillTableActions({
         variant="ghost" 
         size="icon" 
         onClick={(e) => handleAction(e, onDelete)}
+        className="h-8 w-8"
       >
         <span className="sr-only">Eliminar factura</span>
         <Trash2 className="h-4 w-4" />
