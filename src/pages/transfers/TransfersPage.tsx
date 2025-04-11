@@ -108,10 +108,7 @@ const TransfersPage = () => {
 
   const handleCloseSummary = () => {
     setIsSummaryDialogOpen(false);
-    setTimeout(() => {
-      // Small delay to ensure the dialog is fully closed before clearing the ID
-      setSummaryTransferId(null);
-    }, 100);
+    setSummaryTransferId(null);
   };
 
   const handlePrint = () => {
@@ -166,6 +163,7 @@ const TransfersPage = () => {
           onEditSubmit={handleEditSubmit}
         />
 
+        {/* Only mount the summary dialog when needed */}
         {summaryTransferId && (
           <TransferSummaryDialog
             isOpen={isSummaryDialogOpen}

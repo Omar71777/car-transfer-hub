@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
@@ -48,11 +49,6 @@ const AlertDialogContent = React.forwardRef<
           e.preventDefault();
           props.onCloseAutoFocus?.(e);
         }}
-        onEscapeKeyDown={(e) => {
-          props.onEscapeKeyDown?.(e);
-        }}
-        // Use forceMount to maintain consistent state handling
-        forceMount
         {...props}
       />
     </AlertDialogPortal>

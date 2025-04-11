@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -49,15 +50,6 @@ const DialogContent = React.forwardRef<
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           props.onCloseAutoFocus?.(e);
-        }}
-        onEscapeKeyDown={(e) => {
-          props.onEscapeKeyDown?.(e);
-        }}
-        onPointerDownOutside={(e) => {
-          props.onPointerDownOutside?.(e);
-        }}
-        onInteractOutside={(e) => {
-          props.onInteractOutside?.(e);
         }}
         {...props}
       >

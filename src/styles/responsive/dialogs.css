@@ -34,6 +34,7 @@
   pointer-events: none !important;
   animation-fill-mode: forwards !important;
   visibility: hidden !important;
+  opacity: 0 !important;
 }
 
 /* Remove overlays completely when closed */
@@ -42,23 +43,36 @@
   display: none !important;
   pointer-events: none !important;
   visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Set proper z-index for dialog components */
+[role="dialog"],
+[role="alertdialog"] {
+  z-index: 50;
+}
+
+/* Ensure the dialog overlay is behind the content but above everything else */
+[role="dialog"] .fixed.inset-0,
+[role="alertdialog"] .fixed.inset-0 {
+  z-index: 49;
 }
 
 /* Fix for dropdowns - ensure proper z-index stacking */
 [data-radix-dropdown-menu-content][data-state="open"] {
   visibility: visible !important;
   pointer-events: all !important;
-  z-index: 50;
+  z-index: 60;
 }
 
 /* Ensure dropdown menus have proper styling */
 [data-radix-dropdown-menu-content] {
-  z-index: 50;
+  z-index: 60;
   background-color: var(--background);
   border: 1px solid var(--border);
 }
 
 /* Ensure dropdown menu contents appear above dialogs when needed */
 .radix-dropdown-content {
-  z-index: 100;
+  z-index: 60;
 }
