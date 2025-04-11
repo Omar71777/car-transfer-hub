@@ -14,12 +14,36 @@ export const exportHtmlToPdf = async (
   try {
     if (loadingCallback) loadingCallback(true);
     
+    // Apply temporary styles to force white background
+    const originalBg = document.body.style.backgroundColor;
+    document.body.style.backgroundColor = 'white';
+    
+    // Apply white background to the element
+    const elementsToFix = contentElement.querySelectorAll('*');
+    const originalStyles: Map<Element, { bg: string, color: string }> = new Map();
+    
+    // Store original styles and apply white background
+    elementsToFix.forEach(el => {
+      const style = window.getComputedStyle(el);
+      originalStyles.set(el, {
+        bg: style.backgroundColor,
+        color: style.color
+      });
+      
+      if (style.backgroundColor === 'rgba(0, 0, 0, 0)' || 
+          style.backgroundColor === 'transparent' ||
+          style.backgroundColor.includes('rgba(0, 0, 0, 0.')) {
+        (el as HTMLElement).style.backgroundColor = 'white';
+      }
+    });
+    
     // Convert to canvas
     const canvas = await html2canvas(contentElement, {
       scale: 2,
       logging: false,
       useCORS: true,
-      allowTaint: true
+      allowTaint: true,
+      backgroundColor: 'white'
     });
     
     // Calculate dimensions
@@ -87,6 +111,15 @@ export const exportHtmlToPdf = async (
     
     // Save PDF
     pdf.save(fileName);
+    
+    // Restore original styles
+    document.body.style.backgroundColor = originalBg;
+    elementsToFix.forEach(el => {
+      const original = originalStyles.get(el);
+      if (original) {
+        (el as HTMLElement).style.backgroundColor = '';
+      }
+    });
     
     if (loadingCallback) loadingCallback(false);
     return true;

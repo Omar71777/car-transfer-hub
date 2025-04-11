@@ -13,7 +13,7 @@ export const generateItemsHtml = (bill: Bill): string => {
     // Main item row
     let html = `
       <tr${isExtraCharge ? ' class="extra-charge-row"' : ''}>
-        <td${isExtraCharge ? ' style="padding-left: 20px; font-style: italic; color: #666;"' : ''}>${item.description}</td>
+        <td${isExtraCharge ? ' style="padding-left: 20px; font-style: italic; color: #666;"' : ''}>${item.description || 'Sin descripción'}</td>
         <td>${item.quantity}</td>
         <td class="text-right">${formatCurrency(item.unit_price)}</td>
         <td class="text-right">${formatCurrency(item.total_price)}</td>

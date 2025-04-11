@@ -37,6 +37,11 @@ export const setupPrintWindowEvents = (printWindow: Window, bill: Bill): void =>
   // Wait for the window to fully load before enabling actions
   printWindow.onload = () => {
     setupImageLoading(printWindow);
+    
+    // Force light mode on the document
+    const htmlElement = printWindow.document.documentElement;
+    htmlElement.style.colorScheme = 'light';
+    printWindow.document.body.style.backgroundColor = 'white';
   };
 };
 
@@ -62,7 +67,12 @@ const handlePdfExport = async (printWindow: Window, billNumber: string): Promise
     // Export to PDF
     const success = await exportHtmlToPdf(
       contentDiv, 
-      `Factura_${billNumber.replace(/\//g, '-')}.pdf`
+      `Factura_${billNumber.replace(/\//g, '-')}.pdf`,
+      isLoading => {
+        if (!isLoading && loadingElement && loadingElement.parentNode) {
+          loadingElement.parentNode.removeChild(loadingElement);
+        }
+      }
     );
     
     if (!success) {
@@ -85,13 +95,13 @@ const createLoadingIndicator = (window: Window): HTMLDivElement => {
   const loadingElement = window.document.createElement('div');
   loadingElement.innerHTML = `
     <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-                background: rgba(255,255,255,0.8); display: flex; 
+                background: rgba(255,255,255,0.9); display: flex; 
                 justify-content: center; align-items: center; z-index: 9999">
-      <div style="text-align: center;">
+      <div style="text-align: center; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; 
                     border-radius: 50%; width: 40px; height: 40px; 
                     animation: spin 2s linear infinite; margin: 0 auto;"></div>
-        <p style="margin-top: 10px;">Generating PDF...</p>
+        <p style="margin-top: 10px; font-family: sans-serif;">Generating PDF...</p>
       </div>
     </div>
     <style>

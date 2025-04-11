@@ -1,4 +1,3 @@
-
 /**
  * Generates the CSS styles for the bill document
  */
@@ -14,23 +13,17 @@ export const generateStyles = (): string => {
         --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       }
       
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --primary-color: #38bdf8;
-          --border-color: #334155;
-          --bg-color: #0f172a;
-          --text-color: #f8fafc;
-          --muted-color: #94a3b8;
-          --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-        }
+      html, body {
+        background-color: white !important;
+        color-scheme: light !important;
       }
       
-      body {
+      body { 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         margin: 0;
         padding: 20px;
         color: var(--text-color);
-        background-color: var(--bg-color);
+        background-color: white !important;
       }
       
       .print-container {
@@ -39,7 +32,7 @@ export const generateStyles = (): string => {
         padding: 20px;
         border-radius: 8px;
         box-shadow: var(--card-shadow);
-        background-color: var(--bg-color);
+        background-color: white !important;
       }
       
       .document-header {
@@ -239,17 +232,31 @@ export const generateStyles = (): string => {
       
       /* Print styles */
       @media print {
+        @page {
+          size: portrait;
+          margin: 10mm;
+        }
+        
+        html, body { 
+          background-color: white !important;
+          color-scheme: light !important;
+        }
+        
         body { 
-          background-color: white;
+          background-color: white !important;
           padding: 0;
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
+          color-adjust: exact !important;
         }
+        
         .print-container {
           box-shadow: none;
           max-width: 100%;
           padding: 0;
+          background-color: white !important;
         }
+        
         .print-actions {
           display: none !important;
         }
