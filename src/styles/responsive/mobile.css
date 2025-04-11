@@ -19,21 +19,6 @@
     @apply rounded-xl border border-border/30 p-1.5 shadow-sm;
   }
   
-  /* Input sizing for mobile */
-  .mobile-input {
-    @apply h-9 px-2 py-1.5 text-xs;
-  }
-  
-  /* Space for form fields on mobile */
-  form .grid {
-    @apply gap-y-3;
-  }
-  
-  /* Make sure inputs are properly sized on mobile */
-  input, select, textarea {
-    @apply max-w-full;
-  }
-  
   /* Prevent horizontal overflow on mobile */
   .overflow-x-hidden-mobile {
     @apply overflow-x-hidden;
