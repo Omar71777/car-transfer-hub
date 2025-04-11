@@ -26,25 +26,36 @@ export function useBillingActions() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
   const [viewBill, setViewBill] = useState<Bill | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleAddBill = () => {
     setIsFormDialogOpen(true);
   };
 
   const handleViewBill = async (bill: Bill) => {
-    // Fetch the complete bill with items
-    const fullBill = await getBill(bill.id);
-    if (fullBill) {
-      setViewBill(fullBill);
-      setIsViewDialogOpen(true);
+    try {
+      // Fetch the complete bill with items
+      const fullBill = await getBill(bill.id);
+      if (fullBill) {
+        setViewBill(fullBill);
+        setIsViewDialogOpen(true);
+      }
+    } catch (error) {
+      console.error('Error viewing bill:', error);
+      toast.error('Error al cargar la factura');
     }
   };
 
   const handleEditBill = async (bill: Bill) => {
-    const fullBill = await getBill(bill.id);
-    if (fullBill) {
-      setSelectedBill(fullBill);
-      setIsEditDialogOpen(true);
+    try {
+      const fullBill = await getBill(bill.id);
+      if (fullBill) {
+        setSelectedBill(fullBill);
+        setIsEditDialogOpen(true);
+      }
+    } catch (error) {
+      console.error('Error editing bill:', error);
+      toast.error('Error al cargar la factura para editar');
     }
   };
 
@@ -54,81 +65,115 @@ export function useBillingActions() {
   };
 
   const handlePrintBill = async (bill: Bill) => {
-    await printBill(bill.id);
+    try {
+      await printBill(bill.id);
+    } catch (error) {
+      console.error('Error printing bill:', error);
+      toast.error('Error al imprimir la factura');
+    }
   };
 
   const handleDownloadBill = async (bill: Bill) => {
-    await exportBillCsv(bill.id);
+    try {
+      await exportBillCsv(bill.id);
+    } catch (error) {
+      console.error('Error downloading bill:', error);
+      toast.error('Error al exportar la factura');
+    }
   };
 
   const handleFormSubmit = async (values: CreateBillDto) => {
-    const billId = await createBill(values);
-    if (billId) {
-      toast.success('Factura creada con éxito');
-      setIsFormDialogOpen(false);
-      fetchBills();
-      setActiveTab('bills');
+    if (isCreating) return; // Prevent multiple submissions
+    
+    setIsCreating(true);
+    try {
+      const billId = await createBill(values);
+      if (billId) {
+        setIsFormDialogOpen(false);
+        fetchBills();
+        setActiveTab('bills');
+      }
+    } catch (error) {
+      console.error('Error creating bill:', error);
+      toast.error('Error al crear la factura');
+    } finally {
+      setIsCreating(false);
     }
   };
 
   const handleEditSubmit = async (id: string, data: Partial<Bill>, addedTransferIds: string[] = [], removedTransferIds: string[] = []) => {
-    // If there are transfers to add or remove, update them first
-    if (addedTransferIds.length > 0 || removedTransferIds.length > 0) {
-      const transfersUpdated = await updateBillTransfers(id, addedTransferIds, removedTransferIds);
-      if (!transfersUpdated) {
-        return;
-      }
-    }
-    
-    // Then update the bill data
-    const success = await updateBill(id, data);
-    if (success) {
-      toast.success('Factura actualizada con éxito');
-      setIsEditDialogOpen(false);
-      fetchBills();
-      
-      // Si la factura está siendo visualizada, actualizar la vista
-      if (viewBill && viewBill.id === id) {
-        const updatedBill = await getBill(id);
-        if (updatedBill) {
-          setViewBill(updatedBill);
+    try {
+      // If there are transfers to add or remove, update them first
+      if (addedTransferIds.length > 0 || removedTransferIds.length > 0) {
+        const transfersUpdated = await updateBillTransfers(id, addedTransferIds, removedTransferIds);
+        if (!transfersUpdated) {
+          return;
         }
       }
+      
+      // Then update the bill data
+      const success = await updateBill(id, data);
+      if (success) {
+        toast.success('Factura actualizada con éxito');
+        setIsEditDialogOpen(false);
+        fetchBills();
+        
+        // Si la factura está siendo visualizada, actualizar la vista
+        if (viewBill && viewBill.id === id) {
+          const updatedBill = await getBill(id);
+          if (updatedBill) {
+            setViewBill(updatedBill);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error updating bill:', error);
+      toast.error('Error al actualizar la factura');
     }
   };
 
   const handleConfirmDelete = async () => {
     if (!selectedBill) return;
 
-    const success = await deleteBill(selectedBill.id);
-    if (success) {
-      toast.success('Factura eliminada con éxito');
-      setIsDeleteDialogOpen(false);
-      fetchBills();
+    try {
+      const success = await deleteBill(selectedBill.id);
+      if (success) {
+        toast.success('Factura eliminada con éxito');
+        setIsDeleteDialogOpen(false);
+        fetchBills();
+      }
+    } catch (error) {
+      console.error('Error deleting bill:', error);
+      toast.error('Error al eliminar la factura');
     }
   };
 
   const handleStatusChange = async (status: Bill['status']) => {
     if (!viewBill) return;
 
-    const success = await updateBillStatus(viewBill.id, status);
-    if (success) {
-      const statusMessages = {
-        draft: 'borrador',
-        sent: 'enviada',
-        paid: 'pagada',
-        cancelled: 'cancelada'
-      };
-      
-      toast.success(`Factura marcada como ${statusMessages[status]}`);
-      
-      // Actualizar la factura en la vista
-      const updatedBill = await getBill(viewBill.id);
-      if (updatedBill) {
-        setViewBill(updatedBill);
+    try {
+      const success = await updateBillStatus(viewBill.id, status);
+      if (success) {
+        const statusMessages = {
+          draft: 'borrador',
+          sent: 'enviada',
+          paid: 'pagada',
+          cancelled: 'cancelada'
+        };
+        
+        toast.success(`Factura marcada como ${statusMessages[status]}`);
+        
+        // Actualizar la factura en la vista
+        const updatedBill = await getBill(viewBill.id);
+        if (updatedBill) {
+          setViewBill(updatedBill);
+        }
+        
+        fetchBills();
       }
-      
-      fetchBills();
+    } catch (error) {
+      console.error('Error changing bill status:', error);
+      toast.error('Error al cambiar el estado de la factura');
     }
   };
 
@@ -157,6 +202,7 @@ export function useBillingActions() {
     handleFormSubmit,
     handleEditSubmit,
     handleConfirmDelete,
-    handleStatusChange
+    handleStatusChange,
+    isCreating
   };
 }

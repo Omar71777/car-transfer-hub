@@ -11,6 +11,8 @@ import { useClients } from '@/hooks/useClients';
 import { useTransfers } from '@/hooks/useTransfers';
 import { CreateBillDto, TaxApplicationType } from '@/types/billing';
 import { Client } from '@/types/client';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Import our new component parts
 import { BillClientSection } from './BillClientSection';
@@ -34,12 +36,13 @@ const billSchema = z.object({
 });
 
 interface BillFormProps {
-  onSubmit: (values: CreateBillDto) => void;
+  onSubmit: (values: CreateBillDto) => Promise<void>;
 }
 
 export function BillForm({ onSubmit }: BillFormProps) {
   const { clients, loading: loadingClients, fetchClients } = useClients();
   const { transfers, fetchTransfers } = useTransfers();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
@@ -103,7 +106,7 @@ export function BillForm({ onSubmit }: BillFormProps) {
     form.setValue('clientId', clientId);
   };
 
-  const handleSubmit = (values: z.infer<typeof billSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof billSchema>) => {
     if (selectedTransfers.length === 0) {
       form.setError('root', { 
         message: 'Debe seleccionar al menos un transfer para facturar' 
@@ -122,7 +125,18 @@ export function BillForm({ onSubmit }: BillFormProps) {
       notes: values.notes
     };
 
-    onSubmit(billData);
+    setIsSubmitting(true);
+    
+    try {
+      await onSubmit(billData);
+      toast.success("Factura creada con éxito");
+      // Form will be closed by the parent component after success
+    } catch (error) {
+      console.error('Error creating bill:', error);
+      toast.error("Error al crear la factura");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -170,9 +184,14 @@ export function BillForm({ onSubmit }: BillFormProps) {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={loadingClients || isCalculating || selectedTransfers.length === 0}
+              disabled={loadingClients || isCalculating || selectedTransfers.length === 0 || isSubmitting}
             >
-              {isCalculating ? 'Calculando...' : 'Crear Factura'}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creando...
+                </>
+              ) : isCalculating ? 'Calculando...' : 'Crear Factura'}
             </Button>
           </form>
         </Form>
