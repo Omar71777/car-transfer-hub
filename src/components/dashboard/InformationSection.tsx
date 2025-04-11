@@ -7,7 +7,8 @@ import { ArrowRight, InfoIcon, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function InformationSection() {
-  return <div className="space-y-6">
+  return (
+    <div className="space-y-6">
       <h2 className="text-xl font-semibold text-primary">Información y Recursos</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -43,5 +44,6 @@ export function InformationSection() {
           Recuerda mantener actualizada la información de transfers y gastos para obtener informes precisos.
         </AlertDescription>
       </Alert>
-    </div>;
+    </div>
+  );
 }

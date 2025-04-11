@@ -50,12 +50,3 @@
 .animate-border-glow {
   animation: border-glow 3s ease-in-out infinite;
 }
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
