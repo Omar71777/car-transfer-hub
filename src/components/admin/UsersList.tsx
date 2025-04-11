@@ -2,7 +2,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Shield, UserCircle, Edit, Key, Trash } from 'lucide-react';
+import { Shield, UserCircle, Edit, Key, Trash, MoreVertical } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { 
@@ -16,6 +16,12 @@ import {
   AlertDialogTitle, 
   AlertDialogTrigger 
 } from '@/components/ui/alert-dialog';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import { Database } from '@/integrations/supabase/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -45,9 +51,9 @@ export function UsersList({
         <TableRow>
           <TableHead>Email</TableHead>
           <TableHead>Nombre</TableHead>
-          <TableHead>Rol</TableHead>
+          <TableHead className="w-[80px] text-center">Rol</TableHead>
           <TableHead>Fecha de registro</TableHead>
-          <TableHead className="text-right">Acciones</TableHead>
+          <TableHead className="w-[60px] text-right">Acciones</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -72,91 +78,56 @@ export function UsersList({
                   ? `${profile.first_name} ${profile.last_name}`
                   : 'No completado'}
               </TableCell>
-              <TableCell>
-                <span className="flex items-center gap-1">
-                  {profile.role === 'admin' ? (
-                    <>
-                      <Shield className="h-4 w-4 text-primary" />
-                      Administrador
-                    </>
-                  ) : (
-                    <>
-                      <UserCircle className="h-4 w-4 text-muted-foreground" />
-                      Usuario
-                    </>
-                  )}
-                </span>
+              <TableCell className="text-center">
+                {profile.role === 'admin' ? (
+                  <Shield className="h-5 w-5 text-primary mx-auto" title="Administrador" />
+                ) : (
+                  <UserCircle className="h-5 w-5 text-muted-foreground mx-auto" title="Usuario" />
+                )}
               </TableCell>
               <TableCell>
                 {format(new Date(profile.created_at), 'PPP', { locale: es })}
               </TableCell>
               <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => onEditUser(profile)}
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    Editar
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => onResetPassword(profile)}
-                  >
-                    <Key className="h-4 w-4 mr-1" />
-                    Contraseña
-                  </Button>
-                  
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        disabled={profile.id === currentUserId}
-                      >
-                        {profile.role === 'admin' ? 'Quitar admin' : 'Hacer admin'}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {profile.role === 'admin' 
-                            ? '¿Quitar permisos de administrador?' 
-                            : '¿Convertir en administrador?'
-                          }
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {profile.role === 'admin'
-                            ? 'Este usuario perderá todos los permisos de administración.'
-                            : 'Este usuario tendrá acceso completo a todas las funciones de administración.'
-                          }
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => onToggleRole(profile.id, profile.role)}
-                        >
-                          Confirmar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                  
-                  {profile.id !== currentUserId && (
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => onDeleteUser(profile)}
-                    >
-                      <Trash className="h-4 w-4 mr-1" />
-                      Eliminar
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreVertical className="h-4 w-4" />
+                      <span className="sr-only">Abrir menú</span>
                     </Button>
-                  )}
-                </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEditUser(profile)}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Editar
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuItem onClick={() => onResetPassword(profile)}>
+                      <Key className="h-4 w-4 mr-2" />
+                      Resetear contraseña
+                    </DropdownMenuItem>
+                    
+                    {profile.id !== currentUserId && (
+                      <>
+                        <DropdownMenuItem 
+                          onClick={() => onToggleRole(profile.id, profile.role)}
+                          disabled={profile.id === currentUserId}
+                        >
+                          <Shield className="h-4 w-4 mr-2" />
+                          {profile.role === 'admin' ? 'Quitar admin' : 'Hacer admin'}
+                        </DropdownMenuItem>
+                        
+                        <DropdownMenuItem 
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => onDeleteUser(profile)}
+                        >
+                          <Trash className="h-4 w-4 mr-2" />
+                          Eliminar
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))
