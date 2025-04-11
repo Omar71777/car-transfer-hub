@@ -4,7 +4,7 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Transfer } from '@/types';
-import { Edit2, Trash2, Receipt, Tag } from 'lucide-react';
+import { Edit2, Trash2, Receipt, Tag, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -16,6 +16,7 @@ interface TransferTableRowProps {
   onEdit: (transfer: Transfer) => void;
   onDelete: (id: string) => void;
   onAddExpense: (transferId: string) => void;
+  onViewSummary: (transferId: string) => void;
   selected: boolean;
   onSelectRow: (id: string, selected: boolean) => void;
 }
@@ -25,6 +26,7 @@ export function TransferTableRow({
   onEdit,
   onDelete,
   onAddExpense,
+  onViewSummary,
   selected,
   onSelectRow
 }: TransferTableRowProps) {
@@ -121,8 +123,19 @@ export function TransferTableRow({
           <Button
             variant="outline"
             size="icon"
+            onClick={() => onViewSummary(transfer.id)}
+            className="h-8 w-8"
+            title="Ver resumen"
+          >
+            <FileText className="h-4 w-4" />
+            <span className="sr-only">Ver resumen</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => onAddExpense(transfer.id)}
             className="h-8 w-8"
+            title="Añadir gasto"
           >
             <Receipt className="h-4 w-4" />
             <span className="sr-only">Añadir gasto</span>
@@ -132,6 +145,7 @@ export function TransferTableRow({
             size="icon"
             onClick={() => onEdit(transfer)}
             className="h-8 w-8"
+            title="Editar"
           >
             <Edit2 className="h-4 w-4" />
             <span className="sr-only">Editar</span>
@@ -141,6 +155,7 @@ export function TransferTableRow({
             size="icon"
             onClick={() => onDelete(transfer.id)}
             className="h-8 w-8 text-destructive hover:text-destructive"
+            title="Eliminar"
           >
             <Trash2 className="h-4 w-4" />
             <span className="sr-only">Eliminar</span>

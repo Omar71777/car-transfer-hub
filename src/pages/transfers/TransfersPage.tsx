@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -12,6 +12,7 @@ import { TransferReportsTab } from './components/TransferReportsTab';
 import { TransferDialogs } from './components/TransferDialogs';
 import { handleExportCSV, generateReportStats } from './helpers/reportHelpers';
 import { printProfitReport } from '@/lib/exports';
+import { TransferSummaryDialog } from '@/components/transfers/TransferSummaryDialog';
 
 const TransfersPage = () => {
   const {
@@ -41,6 +42,10 @@ const TransfersPage = () => {
     handleEditTransfer,
     handleAddExpense
   } = useTransferDialogs();
+
+  // Add state for summary dialog
+  const [isSummaryDialogOpen, setIsSummaryDialogOpen] = useState(false);
+  const [summaryTransferId, setSummaryTransferId] = useState<string | null>(null);
   
   useEffect(() => {
     fetchTransfers();
@@ -97,6 +102,17 @@ const TransfersPage = () => {
     }
   };
 
+  // Add handler for viewing transfer summary
+  const handleViewSummary = (transferId: string) => {
+    setSummaryTransferId(transferId);
+    setIsSummaryDialogOpen(true);
+  };
+
+  const handleCloseSummary = () => {
+    setIsSummaryDialogOpen(false);
+    setSummaryTransferId(null);
+  };
+
   const handlePrint = () => {
     const stats = generateReportStats(transfers, expenses);
     
@@ -123,6 +139,7 @@ const TransfersPage = () => {
               onEdit={handleEditTransfer}
               onDelete={handleDeleteTransfer}
               onAddExpense={handleAddExpense}
+              onViewSummary={handleViewSummary}
               onDeleteMultiple={handleDeleteMultipleTransfers}
             />
           </TabsContent>
@@ -147,6 +164,12 @@ const TransfersPage = () => {
           editingTransfer={editingTransfer}
           onExpenseSubmit={handleExpenseSubmit}
           onEditSubmit={handleEditSubmit}
+        />
+
+        <TransferSummaryDialog
+          isOpen={isSummaryDialogOpen}
+          onClose={handleCloseSummary}
+          transferId={summaryTransferId}
         />
       </div>
     </MainLayout>

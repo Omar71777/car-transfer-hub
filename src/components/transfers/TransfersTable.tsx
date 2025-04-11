@@ -14,6 +14,7 @@ interface TransfersTableProps {
   onEdit: (transfer: Transfer) => void;
   onDelete: (id: string) => void;
   onAddExpense: (transferId: string) => void;
+  onViewSummary: (transferId: string) => void;
   onDeleteMultiple?: (ids: string[]) => void;
 }
 
@@ -22,6 +23,7 @@ export function TransfersTable({
   onEdit,
   onDelete,
   onAddExpense,
+  onViewSummary,
   onDeleteMultiple = (ids) => ids.forEach(onDelete)
 }: TransfersTableProps) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -87,6 +89,7 @@ export function TransfersTable({
                     onEdit={onEdit}
                     onDelete={onDelete}
                     onAddExpense={onAddExpense}
+                    onViewSummary={onViewSummary}
                     selected={selectedRows.includes(transfer.id)}
                     onSelectRow={handleSelectRow}
                   />
