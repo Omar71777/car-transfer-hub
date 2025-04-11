@@ -42,7 +42,6 @@ export function useDashboardData() {
             hours, 
             origin, 
             destination, 
-            extra_charges,
             discount_type, 
             discount_value
           `)
@@ -50,8 +49,21 @@ export function useDashboardData() {
           
         if (transfersError) throw transfersError;
         
+        // Fetch extra charges separately for each transfer
+        const extraChargesPromises = transfers.map(async (transfer) => {
+          const { data: extraCharges, error: extraChargesError } = await supabase
+            .from('extra_charges')
+            .select('*')
+            .eq('transfer_id', transfer.id);
+            
+          if (extraChargesError) throw extraChargesError;
+          return extraCharges || [];
+        });
+        
+        const allExtraCharges = await Promise.all(extraChargesPromises);
+        
         // Format transfers to match the MinimalTransfer interface
-        const formattedTransfers: MinimalTransfer[] = transfers.map(transfer => ({
+        const formattedTransfers: MinimalTransfer[] = transfers.map((transfer, index) => ({
           serviceType: transfer.service_type || 'transfer',
           price: Number(transfer.price),
           commission: Number(transfer.commission) || 0,
@@ -61,7 +73,7 @@ export function useDashboardData() {
           discountValue: Number(transfer.discount_value) || 0,
           origin: transfer.origin,
           destination: transfer.destination,
-          extraCharges: transfer.extra_charges || [],
+          extraCharges: allExtraCharges[index] || [],
         }));
         
         // Load expenses from Supabase
