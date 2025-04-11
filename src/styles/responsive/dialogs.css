@@ -12,7 +12,7 @@
   .dialog-content {
     max-width: min(800px, 92vw);
     max-height: 85vh;
-    overflow-y-auto;
+    overflow-y: auto;
   }
   
   /* Fix for mobile dialogs */
@@ -82,4 +82,3 @@ body:not(:has([role="dialog"][data-state="open"])):not(:has([role="alertdialog"]
   background-color: var(--background);
   border: 1px solid var(--border);
 }
-
