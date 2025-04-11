@@ -16,13 +16,16 @@ export function ExtraChargesSection({
   
   return (
     <div className="space-y-2">
+      {/* 4. Extra Charges */}
       {validExtraCharges.map((charge: any, index: number) => (
         <div key={index} className="flex justify-between">
           <p className="text-sm">{charge.name}</p>
           <p>{formatCurrency(Number(charge.price) || 0)}</p>
         </div>
       ))}
-      <div className="flex justify-between font-medium pt-1">
+      
+      {/* 5. Subtotal extra charges */}
+      <div className="flex justify-between font-medium">
         <p className="text-sm">Subtotal cargos extra</p>
         <p>{formatCurrency(totalExtraCharges)}</p>
       </div>
