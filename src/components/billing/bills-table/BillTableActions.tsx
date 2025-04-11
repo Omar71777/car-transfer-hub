@@ -32,12 +32,12 @@ export function BillTableActions({
       <div className="flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0 relative z-10">
               <span className="sr-only">Abrir menú</span>
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="z-50 bg-popover border border-border shadow-md">
             <DropdownMenuItem onClick={() => onView(bill)}>
               <Eye className="mr-2 h-4 w-4" />
               <span>Ver</span>
