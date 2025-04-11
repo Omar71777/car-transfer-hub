@@ -97,7 +97,15 @@ export function useTransfersPage() {
   
   const handleEditSubmit = async (values: any) => {
     if (!editingTransfer) return;
-    const success = await updateTransfer(editingTransfer.id, values);
+    
+    // Convert string values to numbers for the API call
+    const processedValues = {
+      ...values,
+      price: Number(values.price),
+      commission: values.commission && values.commission !== '' ? Number(values.commission) : undefined,
+    };
+    
+    const success = await updateTransfer(editingTransfer.id, processedValues);
     if (success) {
       setIsEditDialogOpen(false);
       toast.success("Transfer actualizado");

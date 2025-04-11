@@ -57,13 +57,8 @@ export function TransferEditDialog({
   });
 
   const handleSubmit = (values: EditFormValues) => {
-    // Convert string values to numbers for submission
-    const processedValues = {
-      ...values,
-      price: Number(values.price),
-      commission: values.commission ? Number(values.commission) : undefined,
-    };
-    onSubmit(processedValues);
+    // Pass the string values directly to onSubmit (no conversion to numbers)
+    onSubmit(values);
   };
 
   const paymentStatus = form.watch('paymentStatus');
