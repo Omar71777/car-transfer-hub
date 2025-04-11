@@ -60,7 +60,7 @@ export function useClients() {
     }
   }, [clients]);
 
-  const createClient = useCallback(async (clientData: Omit<Client, 'id' | 'created_at' | 'updated_at'>) => {
+  const createClient = useCallback(async (clientData: Omit<Client, 'id' | 'created_at' | 'updated_at'> | CreateClientDto) => {
     try {
       // Ensure we have all the required fields with the user_id from auth
       const client = {
