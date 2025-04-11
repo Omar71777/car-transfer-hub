@@ -8,7 +8,7 @@ import { Edit2, Trash2, Receipt, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { calculateTotalPrice } from '@/lib/calculations';
+import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransferTableRowProps {
@@ -50,9 +50,17 @@ export function TransferTableRow({
   // Get price including extras and discounts
   const totalPrice = calculateTotalPrice(transfer);
   
-  // Format commission amount
-  const commissionAmount = transfer.price * (transfer.commission / 100);
+  // Calculate commission amount based on the correct formula for each service type
+  const commissionAmount = calculateCommissionAmount(transfer);
   const formattedCommission = `${transfer.commission}% (${formatCurrency(commissionAmount)})`;
+
+  // Format service type display
+  const serviceTypeDisplay = () => {
+    if (transfer.serviceType === 'dispo') {
+      return `Dispo ${transfer.hours || 0}h`;
+    }
+    return 'Transfer';
+  };
 
   return (
     <TableRow className={selected ? 'bg-accent/20' : undefined}>
@@ -65,6 +73,11 @@ export function TransferTableRow({
       </TableCell>
       <TableCell>{transfer.date || 'N/A'}</TableCell>
       {!isMobile && <TableCell>{transfer.time || 'N/A'}</TableCell>}
+      <TableCell>
+        <Badge variant="outline" className="font-normal">
+          {serviceTypeDisplay()}
+        </Badge>
+      </TableCell>
       <TableCell className="max-w-[120px] truncate" title={transfer.origin}>
         {transfer.origin || 'N/A'}
       </TableCell>

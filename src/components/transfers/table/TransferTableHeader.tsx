@@ -34,6 +34,7 @@ export function TransferTableHeader({
         </TableHead>
         <TableHead>Fecha</TableHead>
         {!isMobile && <TableHead>Hora</TableHead>}
+        <TableHead>Tipo</TableHead>
         <TableHead>Origen</TableHead>
         <TableHead>Destino</TableHead>
         <TableHead className="text-right">Precio</TableHead>
