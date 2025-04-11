@@ -37,8 +37,7 @@ export function TransferTableHeader({
         <TableHead className="col-price text-right text-xs font-bold">Precio</TableHead>
         {!isMobile && <TableHead className="col-client text-center text-xs font-bold">Cliente</TableHead>}
         {!isMobile && <TableHead className="col-collaborator text-center text-xs font-bold">Colaborador</TableHead>}
-        {!isMobile && <TableHead className="col-commission text-right text-xs font-bold">Comisión</TableHead>}
-        {!isMobile && <TableHead className="col-total text-right text-xs font-bold">Total</TableHead>}
+        {!isMobile && <TableHead className="col-total text-right text-xs font-bold">Beneficio</TableHead>}
         <TableHead className="col-status text-center text-xs font-bold">Estado</TableHead>
         <TableHead className="col-actions text-center text-xs font-bold">Acciones</TableHead>
       </TableRow>
