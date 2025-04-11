@@ -44,10 +44,14 @@ export function AddUserDialog({ open, onOpenChange, onSubmit }: AddUserDialogPro
   const handleSubmit = form.handleSubmit(async (values) => {
     try {
       await onSubmit(values);
+      onOpenChange(false); // Ensure dialog closes after successful submission
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   });
+
+  // Only render the Dialog when open is true to ensure complete unmounting
+  if (!open) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

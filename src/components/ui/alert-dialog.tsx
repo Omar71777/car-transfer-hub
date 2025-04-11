@@ -34,7 +34,7 @@ const AlertDialogContent = React.forwardRef<
   const isMobile = useIsMobile()
   
   return (
-    <AlertDialogPortal>
+    <AlertDialogPortal forceMount={false}>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         ref={ref}
@@ -48,6 +48,11 @@ const AlertDialogContent = React.forwardRef<
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           props.onCloseAutoFocus?.(e);
+        }}
+        onEscapeKeyDown={(e) => {
+          if (props.onEscapeKeyDown) {
+            props.onEscapeKeyDown(e);
+          }
         }}
         {...props}
       />

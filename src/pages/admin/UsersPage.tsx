@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -12,6 +13,7 @@ import { AddUserDialog } from '@/components/admin/AddUserDialog';
 import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
 import { UsersList } from '@/components/admin/UsersList';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
+
 export default function UsersPage() {
   const {
     users,
@@ -36,24 +38,31 @@ export default function UsersPage() {
     openEditDialog,
     openPasswordDialog
   } = useAdminUsers();
+  
   const {
     user,
     isAdmin
   } = useAuth();
+  
   const navigate = useNavigate();
+  
   useEffect(() => {
     if (!isAdmin) {
       navigate('/');
       toast.error('No tienes permisos para acceder a esta página');
     }
   }, [isAdmin, navigate]);
+  
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers, isAdmin]);
+  
   if (!isAdmin) {
     return null;
   }
-  return <MainLayout>
+  
+  return (
+    <MainLayout>
       <div className="py-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="font-bold text-left text-ibiza-900 text-xs mx-[11px]">Administración de Usuarios</h1>
@@ -77,17 +86,54 @@ export default function UsersPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <UsersList users={users} currentUserId={user?.id} onEditUser={openEditDialog} onResetPassword={openPasswordDialog} onToggleRole={toggleUserRole} onDeleteUser={confirmDeleteUser} loading={loading} />
+            <UsersList 
+              users={users} 
+              currentUserId={user?.id} 
+              onEditUser={openEditDialog} 
+              onResetPassword={openPasswordDialog} 
+              onToggleRole={toggleUserRole} 
+              onDeleteUser={confirmDeleteUser} 
+              loading={loading} 
+            />
           </CardContent>
         </Card>
       </div>
 
-      <UserFormDialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} user={editingUser} onSubmit={updateUser} />
+      {/* Only render dialogs when they're open to ensure proper cleanup */}
+      {isEditDialogOpen && editingUser && (
+        <UserFormDialog 
+          open={isEditDialogOpen} 
+          onOpenChange={setIsEditDialogOpen} 
+          user={editingUser} 
+          onSubmit={updateUser} 
+        />
+      )}
 
-      <PasswordResetDialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen} user={editingUser} onSubmit={resetPassword} />
+      {isPasswordDialogOpen && editingUser && (
+        <PasswordResetDialog 
+          open={isPasswordDialogOpen} 
+          onOpenChange={setIsPasswordDialogOpen} 
+          user={editingUser} 
+          onSubmit={resetPassword} 
+        />
+      )}
 
-      <AddUserDialog open={addUserDialogOpen} onOpenChange={setAddUserDialogOpen} onSubmit={createUser} />
+      {addUserDialogOpen && (
+        <AddUserDialog 
+          open={addUserDialogOpen} 
+          onOpenChange={setAddUserDialogOpen} 
+          onSubmit={createUser} 
+        />
+      )}
 
-      <DeleteUserDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen} user={userToDelete} onConfirm={deleteUser} />
-    </MainLayout>;
+      {deleteConfirmOpen && userToDelete && (
+        <DeleteUserDialog 
+          open={deleteConfirmOpen} 
+          onOpenChange={setDeleteConfirmOpen} 
+          user={userToDelete} 
+          onConfirm={deleteUser} 
+        />
+      )}
+    </MainLayout>
+  );
 }

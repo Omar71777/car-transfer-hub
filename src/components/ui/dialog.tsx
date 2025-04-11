@@ -36,7 +36,7 @@ const DialogContent = React.forwardRef<
   const isMobile = useIsMobile()
   
   return (
-    <DialogPortal>
+    <DialogPortal forceMount={false}>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
@@ -50,6 +50,11 @@ const DialogContent = React.forwardRef<
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           props.onCloseAutoFocus?.(e);
+        }}
+        onEscapeKeyDown={(e) => {
+          if (props.onEscapeKeyDown) {
+            props.onEscapeKeyDown(e);
+          }
         }}
         {...props}
       >

@@ -35,6 +35,7 @@
   animation-fill-mode: forwards !important;
   visibility: hidden !important;
   opacity: 0 !important;
+  z-index: -1 !important; /* Move fully off the stacking context */
 }
 
 /* Remove overlays completely when closed */
@@ -44,6 +45,7 @@
   pointer-events: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
+  z-index: -1 !important; /* Move fully off the stacking context */
 }
 
 /* Set proper z-index for dialog components */

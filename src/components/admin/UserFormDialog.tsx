@@ -49,7 +49,11 @@ export function UserFormDialog({ open, onOpenChange, user, onSubmit }: UserFormD
 
   const handleSubmit = form.handleSubmit(async (values) => {
     await onSubmit(values);
+    onOpenChange(false); // Ensure dialog closes after submission
   });
+
+  // Only render the Dialog when open is true to ensure complete unmounting
+  if (!open) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

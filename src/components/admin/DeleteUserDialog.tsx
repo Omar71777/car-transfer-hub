@@ -37,9 +37,13 @@ export function DeleteUserDialog({
         await onConfirm(user.id);
       } finally {
         setIsDeleting(false);
+        onOpenChange(false); // Ensure the dialog closes after confirmation
       }
     }
   };
+
+  // Only render the AlertDialog when open is true to ensure complete unmounting
+  if (!open) return null;
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
