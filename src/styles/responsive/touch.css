@@ -1,0 +1,12 @@
+
+/* Touch-friendly styles for mobile devices */
+
+@media (max-width: 768px) {
+  /* Touch-friendly tap targets */
+  button, 
+  .button, 
+  a[role="button"],
+  .clickable {
+    @apply min-h-9 min-w-9;
+  }
+}

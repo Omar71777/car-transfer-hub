@@ -1,0 +1,28 @@
+
+/* Dialog responsive styles */
+
+@media (max-width: 768px) {
+  /* Better dialog sizing for mobile */
+  [role="dialog"] .dialog-content, 
+  [role="alertdialog"] .dialog-content {
+    @apply max-w-[92vw] max-h-[85vh] overflow-y-auto p-3;
+  }
+  
+  /* Dialog fits better on mobile screens */
+  .dialog-content {
+    max-width: min(800px, 92vw);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  
+  /* Fix for mobile dialogs */
+  [role="dialog"] {
+    @apply p-2;
+  }
+  
+  /* Improve dialog sizing and scrolling */
+  [role="dialog"] .overflow-y-auto,
+  [role="alertdialog"] .overflow-y-auto {
+    max-height: 70vh;
+  }
+}

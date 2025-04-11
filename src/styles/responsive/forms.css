@@ -1,0 +1,24 @@
+
+/* Form responsive styles */
+
+@media (max-width: 768px) {
+  /* Mobile-friendly forms */
+  .form-row {
+    @apply flex-col;
+  }
+  
+  /* Input sizing for mobile */
+  .mobile-input {
+    @apply h-9 px-2 py-1.5 text-xs;
+  }
+  
+  /* Space for form fields on mobile */
+  form .grid {
+    @apply gap-y-3;
+  }
+  
+  /* Make sure inputs are properly sized on mobile */
+  input, select, textarea {
+    @apply max-w-full;
+  }
+}
