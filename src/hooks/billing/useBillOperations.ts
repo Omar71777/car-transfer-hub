@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Bill, ExtraChargeBillItem } from '@/types/billing';
@@ -34,7 +35,10 @@ export function useBillOperations() {
       const transferIds = [...new Set(items.map(item => item.transfer_id))];
       
       const itemsWithExtraCharges = await Promise.all(items.map(async (item) => {
-        if (!item.is_extra_charge) {
+        // We need to check if the is_extra_charge field exists, if not, default to false
+        const isExtraCharge = 'is_extra_charge' in item ? item.is_extra_charge : false;
+        
+        if (!isExtraCharge) {
           const { data: extraCharges } = await supabase
             .from('extra_charges')
             .select('*')
@@ -48,11 +52,16 @@ export function useBillOperations() {
           
           return {
             ...item,
+            is_extra_charge: false,
             extra_charges: formattedExtraCharges
           };
         }
         
-        return item;
+        return {
+          ...item,
+          is_extra_charge: isExtraCharge,
+          extra_charges: []
+        };
       }));
       
       return {
