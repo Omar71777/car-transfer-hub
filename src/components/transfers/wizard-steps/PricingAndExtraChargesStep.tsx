@@ -5,7 +5,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/comp
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { BanknoteIcon, PackagePlus, Percent } from 'lucide-react';
+import { BanknoteIcon, Percent } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExtraChargesForm } from '../form-fields/ExtraChargesForm';
 import { useExtraCharges } from '../hooks/useExtraCharges';

@@ -52,7 +52,7 @@ export const useTransferFormNavigation = (
         return ['date']; // time is optional
       case 'location':
         // For location, we need different validations based on service type
-        if (serviceType === 'transfer' || serviceType === 'shuttle') {
+        if (serviceType === 'transfer') {
           return ['serviceType', 'origin', 'destination'];
         }
         return ['serviceType', 'origin', 'hours'];
@@ -109,8 +109,8 @@ export const useTransferFormNavigation = (
             if (!data.destination || data.destination.trim() === '') {
               data.destination = 'N/A';
             }
-          } else if (data.serviceType === 'transfer' || data.serviceType === 'shuttle') {
-            // For transfers and shuttles, we need origin and destination
+          } else if (data.serviceType === 'transfer') {
+            // For transfers, we need origin and destination
             if (!data.origin || data.origin.trim() === '') {
               toast.error('El origen es requerido para transfers');
               return;

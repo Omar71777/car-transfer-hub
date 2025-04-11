@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
@@ -90,8 +89,8 @@ const NewTransferPage = () => {
         if (values.hours && typeof values.hours === 'string') {
           values.hours = values.hours.trim();
         }
-      } else if (values.serviceType === 'transfer' || values.serviceType === 'shuttle') {
-        // For transfers and shuttles, hours is optional
+      } else if (values.serviceType === 'transfer') {
+        // For transfers, hours is optional
         if (!values.hours || values.hours.trim() === '') {
           values.hours = null;
         }

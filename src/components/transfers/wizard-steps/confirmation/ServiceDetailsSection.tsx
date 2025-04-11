@@ -6,10 +6,9 @@ interface ServiceDetailsSectionProps {
 }
 
 export function ServiceDetailsSection({ values }: ServiceDetailsSectionProps) {
-  const isPointToPoint = values.serviceType === 'transfer' || values.serviceType === 'shuttle';
+  const isPointToPoint = values.serviceType === 'transfer';
   const serviceTypeLabel = 
-    values.serviceType === 'transfer' ? 'Transfer' : 
-    values.serviceType === 'dispo' ? 'Disposición' : 'Shuttle';
+    values.serviceType === 'transfer' ? 'Transfer' : 'Disposición';
 
   return (
     <div>

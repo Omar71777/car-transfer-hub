@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { MapPin, Clock, Home, Users } from 'lucide-react';
+import { MapPin, Clock, Home } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 
@@ -21,7 +21,7 @@ export function LocationStep({ clients, collaborators, formState }: LocationStep
   useEffect(() => {
     console.log('Service type changed to:', serviceType);
     // Clear fields that are not relevant for the current service type
-    if (serviceType === 'transfer' || serviceType === 'shuttle') {
+    if (serviceType === 'transfer') {
       setValue('hours', '');
     } else if (serviceType === 'dispo') {
       setValue('destination', '');
@@ -71,13 +71,6 @@ export function LocationStep({ clients, collaborators, formState }: LocationStep
                     Disposición (Por horas)
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="shuttle" id="shuttle" />
-                  <Label htmlFor="shuttle" className="flex items-center">
-                    <Users className="h-4 w-4 mr-2" />
-                    Shuttle (Compartido)
-                  </Label>
-                </div>
               </RadioGroup>
             </FormControl>
             <FormMessage />
@@ -85,7 +78,7 @@ export function LocationStep({ clients, collaborators, formState }: LocationStep
         )}
       />
 
-      {(serviceType === 'transfer' || serviceType === 'shuttle') && (
+      {serviceType === 'transfer' && (
         <div className="space-y-4">
           <FormField
             control={control}

@@ -3,7 +3,7 @@ export interface Transfer {
   id: string;
   date: string;
   time: string;
-  serviceType: 'transfer' | 'dispo' | 'shuttle';
+  serviceType: 'transfer' | 'dispo';
   origin: string;
   destination?: string;
   hours?: number | string;  // Update to accept either number or string

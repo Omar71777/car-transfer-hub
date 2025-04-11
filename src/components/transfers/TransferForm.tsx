@@ -39,7 +39,7 @@ export function TransferForm({
     fetchClients
   } = useClients();
 
-  const [serviceType, setServiceType] = useState<'transfer' | 'dispo' | 'shuttle'>(
+  const [serviceType, setServiceType] = useState<'transfer' | 'dispo'>(
     initialValues?.serviceType || 'transfer'
   );
   
