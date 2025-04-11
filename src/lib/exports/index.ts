@@ -14,9 +14,6 @@ export { prepareProfitDataForExport } from './profitExport';
 export { printProfitReport } from './printExport';
 export { printTransferSummary } from './transfer-summary'; 
 
-// Shifts exports
-export { prepareShiftsForExport } from './shiftsExport';
-
 // Billing exports
 export { printBill, exportBillCsv } from './billExport';
 

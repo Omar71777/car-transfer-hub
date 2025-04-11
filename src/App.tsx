@@ -6,7 +6,6 @@ import Index from './pages/Index';
 import TransfersPage from './pages/transfers/TransfersPage';
 import NewTransferPage from './pages/transfers/NewTransferPage';
 import ExpensesPage from './pages/expenses/ExpensesPage';
-import ShiftsPage from './pages/shifts/ShiftsPage';
 import UsersPage from './pages/admin/UsersPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import ProfitsPage from './pages/profits/ProfitsPage';
@@ -28,7 +27,6 @@ function App() {
             <Route path="/transfers" element={<TransfersPage />} />
             <Route path="/transfers/new" element={<NewTransferPage />} />
             <Route path="/expenses" element={<ExpensesPage />} />
-            <Route path="/shifts" element={<ShiftsPage />} />
             <Route path="/admin/users" element={<UsersPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profits" element={<ProfitsPage />} />
