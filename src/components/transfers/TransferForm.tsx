@@ -7,7 +7,6 @@ import { Form } from '@/components/ui/form';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Transfer } from '@/types';
-import { useCollaborators } from '@/hooks/useCollaborators';
 import { useClients } from '@/hooks/useClients';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,12 +26,6 @@ export function TransferForm({
   initialValues,
   isEditing = false
 }: TransferFormProps) {
-  const {
-    collaborators,
-    loading: loadingCollaborators,
-    fetchCollaborators
-  } = useCollaborators();
-  
   const {
     clients,
     loading: loadingClients,
@@ -60,9 +53,8 @@ export function TransferForm({
   );
 
   useEffect(() => {
-    fetchCollaborators();
     fetchClients();
-  }, [fetchCollaborators, fetchClients]);
+  }, [fetchClients]);
 
   const getDefaultValues = () => {
     if (initialValues) {
@@ -155,8 +147,7 @@ export function TransferForm({
                   form={form} 
                   serviceType={serviceType} 
                   setServiceType={setServiceType} 
-                  clients={clients} 
-                  collaborators={collaborators} 
+                  clients={clients}
                 />
               </TabsContent>
               

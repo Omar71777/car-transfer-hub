@@ -34,6 +34,11 @@ export function CurrentTransfersSection({
               <div className="flex-1">
                 <p className="text-sm font-medium">{transfer.origin} → {transfer.destination}</p>
                 <p className="text-xs text-muted-foreground">Fecha: {transfer.date} • Precio: {formatCurrency(transfer.price)}</p>
+                {transfer.discountType && transfer.discountValue > 0 && (
+                  <p className="text-xs text-emerald-600">
+                    Descuento: {transfer.discountType === 'percentage' ? `${transfer.discountValue}%` : formatCurrency(Number(transfer.discountValue))}
+                  </p>
+                )}
               </div>
               <Button 
                 type="button" 

@@ -11,43 +11,38 @@ export type Collaborator = {
   email?: string;
 };
 
-// Default collaborators to populate if none exist
-const defaultCollaborators: Omit<Collaborator, 'id'>[] = [
-  { name: 'Juan Pérez', phone: '612345678', email: 'juan@example.com' },
-  { name: 'María García', phone: '623456789', email: 'maria@example.com' },
-  { name: 'Carlos Rodríguez', phone: '634567890', email: 'carlos@example.com' }
-];
-
 export function useCollaborators() {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
-  // Load collaborators from Supabase or localStorage as fallback
+  // Fetch collaborators from Supabase
   const fetchCollaborators = useCallback(async () => {
     setLoading(true);
     try {
-      // Try to get from localStorage first as fallback
-      const stored = localStorage.getItem('collaborators');
-      let storedCollaborators = stored ? JSON.parse(stored) : [];
-      
-      // If no collaborators exist yet, add default ones
-      if (storedCollaborators.length === 0) {
-        storedCollaborators = defaultCollaborators.map(collaborator => ({
-          ...collaborator,
-          id: crypto.randomUUID()
-        }));
-        localStorage.setItem('collaborators', JSON.stringify(storedCollaborators));
+      if (!user) {
+        setCollaborators([]);
+        return;
       }
-      
-      if (user) {
-        // If user is logged in, try to get from Supabase in future implementation
-        // For now, we're still using localStorage as the source
-        setCollaborators(storedCollaborators);
-      } else {
-        // Fallback to localStorage if not logged in
-        setCollaborators(storedCollaborators);
+
+      const { data, error } = await supabase
+        .from('collaborators')
+        .select('*')
+        .order('name');
+
+      if (error) {
+        throw error;
       }
+
+      // Transform data to match our Collaborator type
+      const formattedCollaborators: Collaborator[] = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        phone: item.phone,
+        email: item.email
+      }));
+
+      setCollaborators(formattedCollaborators);
     } catch (error) {
       console.error('Error loading collaborators:', error);
       toast.error('Error al cargar colaboradores');
@@ -56,27 +51,38 @@ export function useCollaborators() {
     }
   }, [user]);
 
-  // Save collaborators to localStorage
-  const saveCollaborators = useCallback((updatedCollaborators: Collaborator[]) => {
+  // Add a new collaborator to Supabase
+  const addCollaborator = useCallback(async (collaborator: Omit<Collaborator, 'id'>) => {
     try {
-      localStorage.setItem('collaborators', JSON.stringify(updatedCollaborators));
-    } catch (error) {
-      console.error('Error saving collaborators:', error);
-      toast.error('Error al guardar colaboradores');
-    }
-  }, []);
-
-  // Add a new collaborator
-  const addCollaborator = useCallback((collaborator: Omit<Collaborator, 'id'>) => {
-    try {
-      const newCollaborator = {
-        ...collaborator,
-        id: crypto.randomUUID()
+      if (!user) {
+        toast.error('Usuario no autenticado');
+        return false;
+      }
+      
+      const { data, error } = await supabase
+        .from('collaborators')
+        .insert({
+          name: collaborator.name,
+          phone: collaborator.phone,
+          email: collaborator.email,
+          user_id: user.id
+        })
+        .select('*')
+        .single();
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Add the new collaborator to the local state
+      const newCollaborator: Collaborator = {
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        email: data.email
       };
       
-      const updatedCollaborators = [...collaborators, newCollaborator];
-      setCollaborators(updatedCollaborators);
-      saveCollaborators(updatedCollaborators);
+      setCollaborators(prev => [...prev, newCollaborator]);
       toast.success('Colaborador añadido con éxito');
       return true;
     } catch (error) {
@@ -84,17 +90,35 @@ export function useCollaborators() {
       toast.error('Error al añadir colaborador');
       return false;
     }
-  }, [collaborators, saveCollaborators]);
+  }, [user]);
 
-  // Update an existing collaborator
-  const updateCollaborator = useCallback((id: string, collaborator: Partial<Collaborator>) => {
+  // Update an existing collaborator in Supabase
+  const updateCollaborator = useCallback(async (id: string, collaborator: Partial<Collaborator>) => {
     try {
-      const updatedCollaborators = collaborators.map(c => 
-        c.id === id ? { ...c, ...collaborator } : c
+      if (!user) {
+        toast.error('Usuario no autenticado');
+        return false;
+      }
+      
+      const { error } = await supabase
+        .from('collaborators')
+        .update({
+          name: collaborator.name,
+          phone: collaborator.phone,
+          email: collaborator.email,
+          updated_at: new Date()
+        })
+        .eq('id', id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Update the collaborator in the local state
+      setCollaborators(prev => 
+        prev.map(c => c.id === id ? { ...c, ...collaborator } : c)
       );
       
-      setCollaborators(updatedCollaborators);
-      saveCollaborators(updatedCollaborators);
       toast.success('Colaborador actualizado con éxito');
       return true;
     } catch (error) {
@@ -102,14 +126,27 @@ export function useCollaborators() {
       toast.error('Error al actualizar colaborador');
       return false;
     }
-  }, [collaborators, saveCollaborators]);
+  }, [user]);
 
-  // Delete a collaborator
-  const deleteCollaborator = useCallback((id: string) => {
+  // Delete a collaborator from Supabase
+  const deleteCollaborator = useCallback(async (id: string) => {
     try {
-      const updatedCollaborators = collaborators.filter(c => c.id !== id);
-      setCollaborators(updatedCollaborators);
-      saveCollaborators(updatedCollaborators);
+      if (!user) {
+        toast.error('Usuario no autenticado');
+        return false;
+      }
+      
+      const { error } = await supabase
+        .from('collaborators')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Remove the collaborator from the local state
+      setCollaborators(prev => prev.filter(c => c.id !== id));
       toast.success('Colaborador eliminado con éxito');
       return true;
     } catch (error) {
@@ -117,7 +154,7 @@ export function useCollaborators() {
       toast.error('Error al eliminar colaborador');
       return false;
     }
-  }, [collaborators, saveCollaborators]);
+  }, [user]);
 
   // Load collaborators on mount
   useEffect(() => {

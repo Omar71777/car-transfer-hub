@@ -1,23 +1,25 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Collaborator } from '@/hooks/useCollaborators';
-import { Users } from 'lucide-react';
-import { calculateCommissionAmount } from '@/lib/calculations';
+import { useCollaborators } from '@/hooks/useCollaborators';
+import { Users, PlusCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { CollaboratorForm } from '@/components/collaborators/CollaboratorForm';
 
 interface CollaboratorStepProps {
-  clients: any;
-  collaborators: Collaborator[];
   formState: any;
 }
 
-export function CollaboratorStep({ clients, collaborators, formState }: CollaboratorStepProps) {
+export function CollaboratorStep({ formState }: CollaboratorStepProps) {
   const { control, watch, setValue } = useFormContext();
+  const { collaborators, addCollaborator } = useCollaborators();
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
   const commissionType = watch('commissionType');
   const price = watch('price');
@@ -36,6 +38,14 @@ export function CollaboratorStep({ clients, collaborators, formState }: Collabor
       setValue('collaborator', 'none');
     }
   }, [collaborators, setValue, watch]);
+  
+  const handleAddCollaborator = async (values: any) => {
+    const success = await addCollaborator(values);
+    if (success) {
+      setValue('collaborator', values.name);
+      setIsAddDialogOpen(false);
+    }
+  };
   
   // Calculate the equivalent value based on the opposite commission type
   const getEquivalentValue = () => {
@@ -73,7 +83,18 @@ export function CollaboratorStep({ clients, collaborators, formState }: Collabor
           name="collaborator"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Colaborador *</FormLabel>
+              <div className="flex justify-between items-center">
+                <FormLabel>Colaborador *</FormLabel>
+                <Button 
+                  type="button" 
+                  variant="link" 
+                  onClick={() => setIsAddDialogOpen(true)} 
+                  className="p-0 h-auto text-xs"
+                >
+                  <PlusCircle className="h-3.5 w-3.5 mr-1" />
+                  Nuevo
+                </Button>
+              </div>
               <Select 
                 onValueChange={field.onChange} 
                 defaultValue={field.value}
@@ -160,6 +181,15 @@ export function CollaboratorStep({ clients, collaborators, formState }: Collabor
           />
         </div>
       </div>
+
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Nuevo Colaborador</DialogTitle>
+          </DialogHeader>
+          <CollaboratorForm onSubmit={handleAddCollaborator} initialValues={null} isEditing={false} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

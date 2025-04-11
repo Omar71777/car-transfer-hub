@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Save } from 'lucide-react';
 import { useTransfers } from '@/hooks/useTransfers';
-import { Transfer } from '@/types';
 
 // Import our new component parts
 import { BillDetailsSection } from './BillDetailsSection';

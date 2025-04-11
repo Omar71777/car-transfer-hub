@@ -9,7 +9,6 @@ import { DateTimeFields } from '../form-fields/DateTimeFields';
 import { ClientField } from '../form-fields/ClientField';
 import { CollaboratorField } from '../form-fields/CollaboratorField';
 import { Client } from '@/types/client';
-import { Collaborator } from '@/hooks/useCollaborators';
 import { TransferFormValues } from '../schema/transferSchema';
 
 interface BasicInfoTabProps {
@@ -17,15 +16,13 @@ interface BasicInfoTabProps {
   serviceType: 'transfer' | 'dispo';
   setServiceType: (type: 'transfer' | 'dispo') => void;
   clients: Client[];
-  collaborators: Collaborator[];
 }
 
 export function BasicInfoTab({ 
   form, 
   serviceType, 
   setServiceType, 
-  clients, 
-  collaborators 
+  clients
 }: BasicInfoTabProps) {
   return (
     <div className="space-y-4">
@@ -126,7 +123,7 @@ export function BasicInfoTab({
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ClientField form={form} clients={clients} />
-        <CollaboratorField form={form} collaborators={collaborators} />
+        <CollaboratorField form={form} />
       </div>
     </div>
   );

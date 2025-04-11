@@ -13,7 +13,7 @@
     @apply bg-sidebar-selected text-white font-medium;
   }
   
-  /* Add new styling improvements for sidebar */
+  /* Standardized sidebar styling */
   .sidebar-header {
     @apply border-b border-sidebar-border/40 pb-2;
   }
@@ -32,7 +32,7 @@
     @apply bg-sidebar-selected text-white font-medium;
   }
 
-  /* New vibrant sidebar styles */
+  /* Consistent styling for all sidebar buttons */
   .sidebar-icon {
     @apply text-aqua;
   }
