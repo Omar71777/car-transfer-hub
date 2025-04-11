@@ -65,24 +65,27 @@ function formatDateForDisplay(dateString: string): string {
  * Generates description for a transfer item based on service type and discount
  */
 function generateItemDescription(transfer: any, discountAmount: number): string {
-  // Create the base description
-  let description = transfer.description;
+  // Format the date
+  const formattedDate = formatDateForDisplay(transfer.date);
   
-  if (!description) {
-    // If no description provided, generate one based on service type
-    if (transfer.serviceType === 'dispo') {
-      description = `${formatDateForDisplay(transfer.date)}, Servicio de disposición por horas`;
-    } else {
-      description = `${formatDateForDisplay(transfer.date)}, Traslado: ${transfer.origin} → ${transfer.destination}`;
-    }
-  }
+  // Determine service type
+  const serviceType = transfer.serviceType === 'dispo' ? 'Disposición' : 'Traslado';
+  
+  // Start with date - service format
+  let description = `${formattedDate} - ${serviceType}`;
   
   // Add discount information if applicable
-  if (discountAmount > 0 && !description.includes('Descuento')) {
-    const discountInfo = transfer.discountType === 'percentage' 
-      ? `Descuento: ${transfer.discountValue}%` 
-      : `Descuento: ${transfer.discountValue}€`;
-    description += ` (${discountInfo})`;
+  if (discountAmount > 0) {
+    let discountInfo;
+    
+    if (transfer.discountType === 'percentage') {
+      discountInfo = `${transfer.discountValue}%`;
+    } else {
+      discountInfo = `${transfer.discountValue}€`;
+    }
+    
+    // Add discount to description
+    description += ` - Descuento: ${discountInfo}`;
   }
   
   return description;
@@ -125,7 +128,7 @@ function createBillItemsForTransfer(billId: string, item: any) {
   const basePrice = calculateBasePrice(item.transfer);
   const discountAmount = calculateDiscountAmount(item.transfer);
   
-  // Generate description
+  // Generate description in the required format: date - service - discount
   const description = generateItemDescription(item.transfer, discountAmount);
   
   // Calculate pricing details (quantity, unit price, total price)

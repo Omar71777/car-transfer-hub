@@ -53,15 +53,22 @@ export function useBillPreview(
           // Final transfer base price after discount
           const finalBasePrice = basePrice - discountAmount;
 
-          // Create description based on service type
-          let description = generateTransferDescription(transfer);
+          // Format the date
+          const formattedDate = transfer.date ? transfer.date.split('-').reverse().join('/') : '';
+          
+          // Determine service type
+          const serviceType = transfer.serviceType === 'dispo' ? 'Disposición' : 'Traslado';
+          
+          // Start with date - service format
+          let description = `${formattedDate} - ${serviceType}`;
           
           // Add discount information to the description if there is a discount
           if (discountAmount > 0) {
             const discountInfo = transfer.discountType === 'percentage' 
-              ? `Descuento: ${transfer.discountValue}%` 
-              : `Descuento: ${transfer.discountValue}€`;
-            description += ` (${discountInfo})`;
+              ? `${transfer.discountValue}%` 
+              : `${transfer.discountValue}€`;
+            
+            description += ` - Descuento: ${discountInfo}`;
           }
 
           // For dispo services, quantity is hours and unit price is hourly rate

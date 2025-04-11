@@ -11,19 +11,33 @@ const formatItemDescription = (item: any): string => {
     return item.description;
   }
   
-  // Try to extract date and service type
-  const transferMatch = item.description.match(/Traslado: (.+)/i);
-  const dispoMatch = item.description.match(/Disposición: (.+)/i);
+  // Extract date, service type, and discount info
   const dateMatch = item.description.match(/(\d{2}\/\d{2}\/\d{4})/);
+  const transferMatch = item.description.match(/Traslado/i);
+  const dispoMatch = item.description.match(/Disposición/i);
+  const discountMatch = item.description.match(/Descuento: (.+?)(\)|$)/);
   
-  if (transferMatch || dispoMatch) {
-    const serviceType = transferMatch ? "Traslado" : "Disposición";
-    const date = dateMatch ? dateMatch[0] : "";
-    
-    return `${serviceType} - ${date}`;
+  // Format components
+  const date = dateMatch ? dateMatch[0] : "";
+  const serviceType = transferMatch ? "Traslado" : dispoMatch ? "Disposición" : "";
+  
+  // Create formatted description: date - service - discount
+  let formattedDescription = "";
+  
+  if (date) {
+    formattedDescription += date;
   }
   
-  return item.description;
+  if (serviceType) {
+    formattedDescription += formattedDescription ? ` - ${serviceType}` : serviceType;
+  }
+  
+  if (discountMatch) {
+    const discountInfo = discountMatch[1];
+    formattedDescription += formattedDescription ? ` - ${discountInfo}` : discountInfo;
+  }
+  
+  return formattedDescription || item.description;
 };
 
 /**

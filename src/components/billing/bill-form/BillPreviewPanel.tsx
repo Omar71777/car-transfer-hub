@@ -21,6 +21,31 @@ export function BillPreviewPanel({ billPreview, formatCurrency }: BillPreviewPan
     return match ? match[1] : '';
   };
   
+  // Format the description to show date - service - discount
+  const formatItemDescription = (description: string) => {
+    // Extract components
+    const dateMatch = description.match(/(\d{2}\/\d{2}\/\d{4})/);
+    const transferMatch = description.match(/Traslado/i);
+    const dispoMatch = description.match(/Disposición/i);
+    
+    // Format components
+    const date = dateMatch ? dateMatch[0] : "";
+    const serviceType = transferMatch ? "Traslado" : dispoMatch ? "Disposición" : "";
+    
+    // Create formatted description in the order: date - service
+    let formattedDescription = "";
+    
+    if (date) {
+      formattedDescription += date;
+    }
+    
+    if (serviceType) {
+      formattedDescription += formattedDescription ? ` - ${serviceType}` : serviceType;
+    }
+    
+    return formattedDescription || description;
+  };
+  
   return (
     <div className="mt-4 border rounded-md p-3 space-y-3">
       <h3 className="font-medium">Resumen de factura</h3>
@@ -32,8 +57,8 @@ export function BillPreviewPanel({ billPreview, formatCurrency }: BillPreviewPan
             <div className="flex justify-between">
               <span className="truncate max-w-[250px]">
                 {hasDiscount(item.description) ? 
-                  item.description.replace(/\s*\(Descuento:.*?\)/, '') : 
-                  item.description}
+                  formatItemDescription(item.description.replace(/\s*\(Descuento:.*?\)/, '')) : 
+                  formatItemDescription(item.description)}
               </span>
               <span>{formatCurrency(item.unitPrice)}</span>
             </div>
