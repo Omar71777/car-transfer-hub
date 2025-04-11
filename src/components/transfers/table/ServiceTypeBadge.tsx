@@ -9,8 +9,8 @@ interface ServiceTypeBadgeProps {
 export function ServiceTypeBadge({ serviceType }: ServiceTypeBadgeProps) {
   return (
     <Badge 
-      variant="outline" 
-      className="font-normal whitespace-nowrap text-xs"
+      variant={serviceType === 'dispo' ? 'outline' : 'secondary'} 
+      className="font-normal text-xs px-2 py-1"
     >
       {serviceType === 'dispo' ? 'Dispo' : 'Transfer'}
     </Badge>

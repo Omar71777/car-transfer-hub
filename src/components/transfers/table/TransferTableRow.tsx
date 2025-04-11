@@ -53,32 +53,6 @@ export function TransferTableRow({
     }
   };
   
-  // Safely format the time with validation
-  const getFormattedTime = () => {
-    try {
-      // If time is a string in HH:mm format, we need to create a valid date object
-      if (typeof transfer.time === 'string' && transfer.time.includes(':')) {
-        const [hours, minutes] = transfer.time.split(':').map(Number);
-        // Use today's date for the time part only
-        const timeDate = new Date();
-        timeDate.setHours(hours, minutes, 0, 0);
-        
-        return isValid(timeDate)
-          ? format(timeDate, 'HH:mm')
-          : 'Hora inválida';
-      } else {
-        // Try to parse as a date string
-        const timeDate = new Date(transfer.time);
-        return isValid(timeDate)
-          ? format(timeDate, 'HH:mm')
-          : 'Hora inválida';
-      }
-    } catch (error) {
-      console.error('Error formatting time:', error, transfer.time);
-      return 'Hora inválida';
-    }
-  };
-  
   // Determine row background color based on service type
   const rowClass = cn(
     transfer.serviceType === 'dispo' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-pink-50 hover:bg-pink-100',
@@ -88,9 +62,14 @@ export function TransferTableRow({
   // Use "Propio" if no collaborator is assigned
   const collaboratorName = transfer.collaborator || "Propio";
   
-  // Get the formatted date and time
+  // Get the formatted date
   const formattedDate = getFormattedDate();
-  const formattedTime = getFormattedTime();
+  
+  // Calculate commission if available
+  const commission = transfer.commission || 0;
+  
+  // Calculate total (price minus commission)
+  const total = transfer.price - commission;
   
   return (
     <TableRow className={rowClass}>
@@ -104,26 +83,33 @@ export function TransferTableRow({
         )}
       </TableCell>
       <TableCell className="font-medium">{formattedDate}</TableCell>
-      <TableCell>{formattedTime}</TableCell>
       <TableCell>
         <ServiceTypeBadge serviceType={transfer.serviceType} />
       </TableCell>
-      <TableCell>
-        <TruncatedCell text={transfer.origin} maxWidth="max-w-[150px]" />
-      </TableCell>
-      <TableCell>
-        <TruncatedCell text={transfer.destination || ''} maxWidth="max-w-[150px]" />
-      </TableCell>
-      <TableCell>
-        <TruncatedCell text={transfer.client?.name || ''} maxWidth="max-w-[100px]" />
-      </TableCell>
-      <TableCell>
-        <TruncatedCell text={collaboratorName} maxWidth="max-w-[100px]" />
-      </TableCell>
-      <TableCell>
+      <TableCell className="text-right">
         <PriceDisplay price={transfer.price} />
       </TableCell>
-      <TableCell>
+      {!isMobile && (
+        <TableCell>
+          <TruncatedCell text={transfer.client?.name || ''} maxWidth="max-w-[100px]" />
+        </TableCell>
+      )}
+      {!isMobile && (
+        <TableCell>
+          <TruncatedCell text={collaboratorName} maxWidth="max-w-[100px]" />
+        </TableCell>
+      )}
+      {!isMobile && (
+        <TableCell className="text-right">
+          <span className="text-xs font-medium">{commission.toFixed(2)}€</span>
+        </TableCell>
+      )}
+      {!isMobile && (
+        <TableCell className="text-right">
+          <span className="text-xs font-medium">{total.toFixed(2)}€</span>
+        </TableCell>
+      )}
+      <TableCell className="text-center">
         <PaymentStatusCell paymentStatus={transfer.paymentStatus || 'pending'} />
       </TableCell>
       <TableCell>
