@@ -20,7 +20,7 @@ export function TransferTableHeader({
   return (
     <TableHeader>
       <TableRow>
-        <TableHead className="w-[50px]">
+        <TableHead className="w-[36px] px-1">
           {onSelectAll && (
             <Checkbox 
               id="select-all"
@@ -32,17 +32,17 @@ export function TransferTableHeader({
             />
           )}
         </TableHead>
-        <TableHead>Fecha</TableHead>
-        {!isMobile && <TableHead>Hora</TableHead>}
-        <TableHead>Tipo</TableHead>
+        <TableHead className="w-[90px]">Fecha</TableHead>
+        {!isMobile && <TableHead className="w-[80px]">Hora</TableHead>}
+        <TableHead className="w-[90px]">Tipo</TableHead>
         <TableHead>Origen</TableHead>
         <TableHead>Destino</TableHead>
-        <TableHead className="text-right">Precio</TableHead>
+        <TableHead className="text-right w-[100px]">Precio</TableHead>
         {!isMobile && <TableHead>Cliente</TableHead>}
         {!isMobile && <TableHead>Colaborador</TableHead>}
-        {!isMobile && <TableHead className="text-right">Comisión</TableHead>}
-        <TableHead className="text-center">Estado</TableHead>
-        <TableHead className="text-right">Acciones</TableHead>
+        {!isMobile && <TableHead className="text-right w-[110px]">Comisión</TableHead>}
+        <TableHead className="text-center w-[90px]">Estado</TableHead>
+        <TableHead className="text-right w-[80px]">Acciones</TableHead>
       </TableRow>
     </TableHeader>
   );

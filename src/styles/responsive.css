@@ -92,15 +92,17 @@
     max-width: 70px !important;
   }
   
+  /* Ensure proper truncation for table cells */
+  .truncate, .max-w-[150px] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
   /* Make horizontal scroll containers more visible */
   .mobile-scroll {
     @apply rounded-xl border border-border/30 p-1.5 shadow-sm;
-  }
-  
-  /* Ensure horizontal scroll works properly on mobile */
-  .mobile-scroll table {
-    table-layout: auto;
-    @apply min-w-max;
   }
   
   /* Dialog fits better on mobile screens */
@@ -133,6 +135,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: block;
+  }
+  
+  /* Compact action buttons for tables */
+  .table-actions button {
+    @apply h-7 w-7 p-0;
+  }
+  
+  .table-actions button svg {
+    @apply h-3.5 w-3.5;
   }
 }
 
@@ -199,10 +211,6 @@
   @apply rounded-md border overflow-hidden w-full;
 }
 
-.table-scroll-container {
-  @apply w-full overflow-visible;
-}
-
 /* Table cell truncation for all screen sizes */
 .truncate {
   white-space: nowrap;
@@ -211,10 +219,6 @@
 }
 
 @media (min-width: 769px) {
-  .table-scroll-container {
-    max-width: calc(100vw - 320px);
-  }
-  
   /* Desktop-specific column sizing */
   .col-date {
     width: 110px;
@@ -231,5 +235,15 @@
     width: 100px;
     min-width: 100px;
     text-align: right;
+  }
+  
+  /* Optimized width for action buttons on desktop */
+  .table-actions-compact {
+    display: flex;
+    gap: 2px;
+  }
+  
+  .table-actions-compact button {
+    @apply h-7 w-7;
   }
 }

@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -10,7 +9,7 @@ const Table = React.forwardRef<
   const isMobile = useIsMobile();
   
   return (
-    <div className="relative w-full overflow-auto">
+    <div className="w-full overflow-auto">
       <table
         ref={ref}
         className={cn(
