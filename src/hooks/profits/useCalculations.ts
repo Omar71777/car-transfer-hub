@@ -1,3 +1,4 @@
+
 import { Transfer, Expense } from '@/types';
 import { ProfitStats } from './types';
 import { format, parse, parseISO, isValid } from 'date-fns';
@@ -13,10 +14,9 @@ export const calculateCommission = (transfer: Transfer): number => {
 export const calculateStats = (transfers: Transfer[], expenses: Expense[]): ProfitStats => {
   const totalIncome = transfers.reduce((sum, transfer) => sum + calculateTotalPrice(transfer), 0);
   
-  // Sum commissions based on type
-  const totalCommissions = transfers.reduce((sum, transfer) => {
-    return sum + calculateCommissionAmount(transfer);
-  }, 0);
+  // Sum commissions using the correct calculation function
+  const totalCommissions = transfers.reduce((sum, transfer) => 
+    sum + calculateCommissionAmount(transfer), 0);
   
   const regularExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const totalExpenses = regularExpenses + totalCommissions;
@@ -38,19 +38,23 @@ export const generateChartData = (stats: ProfitStats) => {
   return [
     {
       name: 'Ingresos',
-      value: stats.totalIncome
+      value: stats.totalIncome,
+      fill: '#3b82f6'
     },
     {
       name: 'Comisiones',
-      value: stats.totalCommissions
+      value: stats.totalCommissions,
+      fill: '#f59e0b'
     },
     {
       name: 'Otros Gastos',
-      value: stats.totalExpenses - stats.totalCommissions
+      value: stats.totalExpenses - stats.totalCommissions,
+      fill: '#ef4444'
     },
     {
       name: 'Beneficio Neto',
-      value: stats.netProfit
+      value: stats.netProfit,
+      fill: '#10b981'
     }
   ];
 };
@@ -58,11 +62,11 @@ export const generateChartData = (stats: ProfitStats) => {
 // Generate monthly data for income and expenses
 export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]) => {
   const monthlyData: Record<string, {
-    month: string;
-    income: number;
-    expenses: number;
-    commissions: number;
-    profit: number;
+    name: string;
+    ingresos: number;
+    gastos: number;
+    comisiones: number;
+    beneficio: number;
   }> = {};
   
   // Process transfers by month
@@ -72,21 +76,22 @@ export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]) 
       if (!isValid(date)) return;
       
       const monthYearKey = format(date, 'yyyy-MM');
-      const monthYearLabel = format(date, 'MMMM yyyy', { locale: es });
+      const monthName = format(date, 'MMMM', { locale: es });
+      const monthNameCapitalized = monthName.charAt(0).toUpperCase() + monthName.slice(1);
       
       if (!monthlyData[monthYearKey]) {
         monthlyData[monthYearKey] = {
-          month: monthYearLabel,
-          income: 0,
-          expenses: 0,
-          commissions: 0,
-          profit: 0
+          name: monthNameCapitalized,
+          ingresos: 0,
+          gastos: 0,
+          comisiones: 0,
+          beneficio: 0
         };
       }
       
       // Use the correct total price calculation
-      monthlyData[monthYearKey].income += calculateTotalPrice(transfer);
-      monthlyData[monthYearKey].commissions += calculateCommissionAmount(transfer);
+      monthlyData[monthYearKey].ingresos += calculateTotalPrice(transfer);
+      monthlyData[monthYearKey].comisiones += calculateCommissionAmount(transfer);
     } catch (error) {
       console.error('Error processing transfer date:', error);
     }
@@ -101,7 +106,7 @@ export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]) 
       const monthYearKey = format(date, 'yyyy-MM');
       
       if (monthlyData[monthYearKey]) {
-        monthlyData[monthYearKey].expenses += expense.amount;
+        monthlyData[monthYearKey].gastos += expense.amount;
       }
     } catch (error) {
       console.error('Error processing expense date:', error);
@@ -110,12 +115,11 @@ export const generateMonthlyData = (transfers: Transfer[], expenses: Expense[]) 
   
   // Calculate profit for each month
   Object.values(monthlyData).forEach(month => {
-    month.profit = month.income - month.expenses - month.commissions;
+    month.beneficio = month.ingresos - (month.gastos + month.comisiones);
   });
   
-  return Object.values(monthlyData).sort((a, b) => {
-    const monthA = parse(a.month, 'MMMM yyyy', new Date(), { locale: es });
-    const monthB = parse(b.month, 'MMMM yyyy', new Date(), { locale: es });
-    return monthB.getTime() - monthA.getTime();
-  });
+  // Sort by date
+  return Object.entries(monthlyData)
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([_, data]) => data);
 };

@@ -3,11 +3,9 @@ import { useState, useEffect } from 'react';
 import { Expense } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { capitalizeFirstLetter } from '@/lib/utils';
 import { 
-  calculateBasePrice, 
+  calculateTotalPrice, 
   calculateCommissionAmount, 
-  calculateTotalPrice,
   MinimalTransfer 
 } from '@/lib/calculations';
 
@@ -35,7 +33,19 @@ export function useDashboardData() {
         // Load transfers from Supabase
         const { data: transfers, error: transfersError } = await supabase
           .from('transfers')
-          .select('id, price, commission, commission_type, service_type, hours, origin, destination, collaborator, discount_type, discount_value')
+          .select(`
+            id, 
+            price, 
+            commission, 
+            commission_type, 
+            service_type, 
+            hours, 
+            origin, 
+            destination, 
+            extra_charges,
+            discount_type, 
+            discount_value
+          `)
           .order('date', { ascending: false });
           
         if (transfersError) throw transfersError;
@@ -49,9 +59,9 @@ export function useDashboardData() {
           hours: transfer.hours || undefined,
           discountType: transfer.discount_type as 'percentage' | 'fixed' | null,
           discountValue: Number(transfer.discount_value) || 0,
-          origin: capitalizeFirstLetter(transfer.origin),
-          destination: capitalizeFirstLetter(transfer.destination),
-          extraCharges: [],
+          origin: transfer.origin,
+          destination: transfer.destination,
+          extraCharges: transfer.extra_charges || [],
         }));
         
         // Load expenses from Supabase
@@ -62,13 +72,13 @@ export function useDashboardData() {
           
         if (expensesError) throw expensesError;
         
-        // Calculate total commissions with the correct method
-        const totalCommissions = formattedTransfers.reduce((sum, transfer) => 
-          sum + calculateCommissionAmount(transfer), 0);
-        
         // Calculate total income with the correct price calculation
         const totalIncome = formattedTransfers.reduce((sum, transfer) => 
           sum + calculateTotalPrice(transfer), 0);
+        
+        // Calculate total commissions with the correct method
+        const totalCommissions = formattedTransfers.reduce((sum, transfer) => 
+          sum + calculateCommissionAmount(transfer), 0);
         
         // Add regular expenses and commissions
         const expensesTotal = expenses.reduce((sum, expense) => 
@@ -84,7 +94,7 @@ export function useDashboardData() {
         });
       } catch (error: any) {
         console.error('Error loading dashboard data:', error);
-        toast.error(`${capitalizeFirstLetter('error al cargar los datos del dashboard')}: ${error.message}`);
+        toast.error(`Error al cargar los datos del dashboard: ${error.message}`);
       } finally {
         setLoading(false);
       }
