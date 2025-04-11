@@ -1,4 +1,3 @@
-
 import { calculateBasePrice, calculateDiscountAmount } from '@/lib/calculations';
 import { BillPreview } from '@/types/billing';
 
@@ -38,13 +37,13 @@ function createExtraChargeItem(
   return {
     bill_id: billId,
     transfer_id: transferId,
-    description: chargeName,
+    description: `Cargos extra: ${chargeName}`,
     quantity: 1,
     unit_price: chargePrice,
-    total_price: chargePrice, // For extra charges, no discount applies
+    total_price: chargePrice,
     is_extra_charge: true,
     extra_charge_id: chargeId,
-    parent_item_id: null // Will be set after main item is inserted
+    parent_item_id: null
   };
 }
 
@@ -65,27 +64,27 @@ function formatDateForDisplay(dateString: string): string {
  * Generates description for a transfer item based on service type and discount
  */
 function generateItemDescription(transfer: any, discountAmount: number): string {
-  // Format the date
-  const formattedDate = formatDateForDisplay(transfer.date);
+  // Format the date to DD-MM-YYYY
+  const formattedDate = formatDateForDisplay(transfer.date).split('/').reverse().join('-');
   
   // Determine service type
-  const serviceType = transfer.serviceType === 'dispo' ? 'Disposición' : 'Traslado';
+  const serviceType = transfer.serviceType === 'dispo' ? 'Disposición' : 'Translado';
   
-  // Start with date - service format
-  let description = `${formattedDate} - ${serviceType}`;
+  // Start with date | service format
+  let description = `${formattedDate} | ${serviceType}`;
   
   // Add discount information if applicable
   if (discountAmount > 0) {
     let discountInfo;
     
     if (transfer.discountType === 'percentage') {
-      discountInfo = `${transfer.discountValue}%`;
+      discountInfo = `descuento de ${transfer.discountValue}%`;
     } else {
-      discountInfo = `${transfer.discountValue}€`;
+      discountInfo = `descuento de ${transfer.discountValue}€`;
     }
     
     // Add discount to description
-    description += ` - Descuento: ${discountInfo}`;
+    description += ` - ${discountInfo}`;
   }
   
   return description;

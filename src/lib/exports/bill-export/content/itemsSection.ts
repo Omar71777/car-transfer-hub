@@ -2,13 +2,10 @@
 import { Bill } from '@/types/billing';
 import { formatCurrency } from '../utils/formatters';
 
-/**
- * Formats an item description for the bill 
- */
 const formatItemDescription = (item: any): string => {
-  // If it's an extra charge, keep the original description
+  // If it's an extra charge, format differently
   if (item.is_extra_charge) {
-    return item.description;
+    return `Cargos extra: ${item.description}`;
   }
   
   // Extract date, service type, and discount info
@@ -17,24 +14,30 @@ const formatItemDescription = (item: any): string => {
   const dispoMatch = item.description.match(/Disposición/i);
   const discountMatch = item.description.match(/Descuento: (.+?)(\)|$)/);
   
-  // Format components
-  const date = dateMatch ? dateMatch[0] : "";
-  const serviceType = transferMatch ? "Traslado" : dispoMatch ? "Disposición" : "";
+  // Format date to DD-MM-YYYY
+  const formattedDate = dateMatch 
+    ? dateMatch[0].split('/').reverse().join('-') 
+    : "";
   
-  // Create formatted description: date - service - discount
-  let formattedDescription = "";
+  // Determine service type
+  const serviceType = transferMatch ? "Translado" : dispoMatch ? "Disposición" : "";
   
-  if (date) {
-    formattedDescription += date;
-  }
+  // Format discount
+  const discountInfo = discountMatch 
+    ? `descuento de ${discountMatch[1]}` 
+    : "";
+  
+  // Create formatted description
+  let formattedDescription = formattedDate;
   
   if (serviceType) {
-    formattedDescription += formattedDescription ? ` - ${serviceType}` : serviceType;
+    formattedDescription += formattedDescription 
+      ? ` | ${serviceType}` 
+      : serviceType;
   }
   
-  if (discountMatch) {
-    const discountInfo = discountMatch[1];
-    formattedDescription += formattedDescription ? ` - ${discountInfo}` : discountInfo;
+  if (discountInfo) {
+    formattedDescription += discountInfo ? ` - ${discountInfo}` : "";
   }
   
   return formattedDescription || item.description;
@@ -73,8 +76,8 @@ export const generateItemsHtml = (bill: Bill): string => {
   return bill.items.map(item => {
     // Determine if this is a main item or an extra charge
     const isExtraCharge = item.is_extra_charge;
-    const discount = calculateDiscount(item);
-    const description = isExtraCharge ? item.description : formatItemDescription(item);
+    const discount = isExtraCharge ? 0 : calculateDiscount(item);
+    const description = formatItemDescription(item);
     
     // Main item row with updated styling
     return `
@@ -90,3 +93,15 @@ export const generateItemsHtml = (bill: Bill): string => {
     `;
   }).join('');
 };
+
+export function calculateDiscount(item: any): number {
+  if (item.is_extra_charge) return 0;
+  
+  // For regular items, unit_price is the original price before discount
+  // and total_price is the final price after discount (quantity * unit_price - discount)
+  // So discount = (unit_price * quantity) - total_price
+  const fullPrice = item.unit_price * item.quantity;
+  const discount = fullPrice - item.total_price;
+  
+  return discount > 0 ? discount : 0;
+}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Bill } from '@/types/billing';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,36 +13,35 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
   };
 
   const formatItemDescription = (item: any) => {
-    let description = item.description;
-    
     if (item.is_extra_charge) {
-      return item.description;
+      return `Cargos extra: ${item.description}`;
     }
     
-    // Extract date, service type, and discount info
     const dateMatch = item.description.match(/(\d{2}\/\d{2}\/\d{4})/);
     const transferMatch = item.description.match(/Traslado/i);
     const dispoMatch = item.description.match(/Disposición/i);
     const discountMatch = item.description.match(/Descuento: (.+?)(\)|$)/);
     
-    // Format components
-    const date = dateMatch ? dateMatch[0] : "";
-    const serviceType = transferMatch ? "Traslado" : dispoMatch ? "Disposición" : "";
+    const formattedDate = dateMatch 
+      ? dateMatch[0].split('/').reverse().join('-') 
+      : "";
     
-    // Create formatted description in the order: date - service - discount
-    let formattedDescription = "";
+    const serviceType = transferMatch ? "Translado" : dispoMatch ? "Disposición" : "";
     
-    if (date) {
-      formattedDescription += date;
-    }
+    const discountInfo = discountMatch 
+      ? `descuento de ${discountMatch[1]}` 
+      : "";
+    
+    let formattedDescription = formattedDate;
     
     if (serviceType) {
-      formattedDescription += formattedDescription ? ` - ${serviceType}` : serviceType;
+      formattedDescription += formattedDescription 
+        ? ` | ${serviceType}` 
+        : serviceType;
     }
     
-    if (discountMatch) {
-      const discountInfo = discountMatch[1];
-      formattedDescription += formattedDescription ? ` - ${discountInfo}` : discountInfo;
+    if (discountInfo) {
+      formattedDescription += discountInfo ? ` - ${discountInfo}` : "";
     }
     
     return formattedDescription || item.description;
@@ -52,7 +50,6 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
   const calculateDiscount = (item: any): number => {
     if (item.is_extra_charge) return 0;
     
-    // Calculate discount as the difference between full price and actual price
     const fullPrice = item.unit_price * item.quantity;
     const discount = fullPrice - item.total_price;
     
@@ -106,7 +103,7 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                   return (
                     <tr key={item.id} className={item.is_extra_charge ? "bg-muted/10" : ""}>
                       <td className={`px-3 py-2 text-sm ${item.is_extra_charge ? "pl-6 text-muted-foreground italic" : "font-medium"}`}>
-                        {item.is_extra_charge ? item.description : formatItemDescription(item)}
+                        {formatItemDescription(item)}
                       </td>
                       <td className="px-3 py-2 text-sm text-center">
                         {item.quantity}

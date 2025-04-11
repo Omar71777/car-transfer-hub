@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BillPreview } from '@/types/billing';
 
@@ -10,40 +9,45 @@ interface BillPreviewPanelProps {
 export function BillPreviewPanel({ billPreview, formatCurrency }: BillPreviewPanelProps) {
   if (!billPreview) return null;
   
-  // Function to check if a description contains discount information
-  const hasDiscount = (description: string) => {
-    return description.includes('Descuento:');
-  };
-  
-  // Extract discount from description
-  const extractDiscountInfo = (description: string) => {
-    const match = description.match(/Descuento: (.+?)(\)|$)/);
-    return match ? match[1] : '';
-  };
-  
-  // Format the description to show date - service - discount
-  const formatItemDescription = (description: string) => {
-    // Extract components
-    const dateMatch = description.match(/(\d{2}\/\d{2}\/\d{4})/);
-    const transferMatch = description.match(/Traslado/i);
-    const dispoMatch = description.match(/Disposición/i);
-    
-    // Format components
-    const date = dateMatch ? dateMatch[0] : "";
-    const serviceType = transferMatch ? "Traslado" : dispoMatch ? "Disposición" : "";
-    
-    // Create formatted description in the order: date - service
-    let formattedDescription = "";
-    
-    if (date) {
-      formattedDescription += date;
+  const formatItemDescription = (item: any) => {
+    // If it's an extra charge, format differently
+    if (item.extraCharges || item.is_extra_charge) {
+      return `Cargos extra: ${item.description}`;
     }
+    
+    // Extract date, service type, and discount info
+    const dateMatch = item.description.match(/(\d{2}\/\d{2}\/\d{4})/);
+    const transferMatch = item.description.match(/Traslado/i);
+    const dispoMatch = item.description.match(/Disposición/i);
+    const discountMatch = item.description.match(/Descuento: (.+?)(\)|$)/);
+    
+    // Format date to DD-MM-YYYY
+    const formattedDate = dateMatch 
+      ? dateMatch[0].split('/').reverse().join('-') 
+      : "";
+    
+    // Determine service type
+    const serviceType = transferMatch ? "Translado" : dispoMatch ? "Disposición" : "";
+    
+    // Format discount
+    const discountInfo = discountMatch 
+      ? `descuento de ${discountMatch[1]}` 
+      : "";
+    
+    // Create formatted description
+    let formattedDescription = formattedDate;
     
     if (serviceType) {
-      formattedDescription += formattedDescription ? ` - ${serviceType}` : serviceType;
+      formattedDescription += formattedDescription 
+        ? ` | ${serviceType}` 
+        : serviceType;
     }
     
-    return formattedDescription || description;
+    if (discountInfo) {
+      formattedDescription += discountInfo ? ` - ${discountInfo}` : "";
+    }
+    
+    return formattedDescription || item.description;
   };
   
   return (
@@ -56,26 +60,17 @@ export function BillPreviewPanel({ billPreview, formatCurrency }: BillPreviewPan
           <div key={index} className="space-y-1">
             <div className="flex justify-between">
               <span className="truncate max-w-[250px]">
-                {hasDiscount(item.description) ? 
-                  formatItemDescription(item.description.replace(/\s*\(Descuento:.*?\)/, '')) : 
-                  formatItemDescription(item.description)}
+                {formatItemDescription(item)}
               </span>
               <span>{formatCurrency(item.unitPrice)}</span>
             </div>
-            
-            {/* Show discount if present in description */}
-            {hasDiscount(item.description) && (
-              <div className="pl-3 text-xs text-green-600 flex justify-between">
-                <span>Descuento: {extractDiscountInfo(item.description)}</span>
-              </div>
-            )}
             
             {/* Extra charges for this item */}
             {item.extraCharges && item.extraCharges.length > 0 && (
               <div className="pl-3 space-y-1 text-xs text-muted-foreground">
                 {item.extraCharges.map((charge, chargeIndex) => (
                   <div key={chargeIndex} className="flex justify-between">
-                    <span>{charge.name}</span>
+                    <span>Cargos extra: {charge.name}</span>
                     <span>{formatCurrency(charge.price)}</span>
                   </div>
                 ))}
