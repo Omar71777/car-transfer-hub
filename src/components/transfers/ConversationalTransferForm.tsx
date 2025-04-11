@@ -76,10 +76,8 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
     mode: 'onTouched'
   });
 
-  // If we don't need the collaborator step, remove it from the flow
-  const activeSteps = showCollaboratorStep 
-    ? steps 
-    : steps.filter(step => step.id !== 'collaborator');
+  // Always include the collaborator step
+  const activeSteps = steps;
 
   return (
     <TransferFormProvider 

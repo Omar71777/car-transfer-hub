@@ -27,10 +27,10 @@ export const useTransferFormNavigation = (
   const collaboratorValue = watch('collaborator');
   const serviceType = watch('serviceType');
   
-  // Update showCollaboratorStep based on the collaborator value
+  // Update showCollaboratorStep - ALWAYS show the collaborator step now
   useEffect(() => {
-    // If collaborator is 'none', we should skip the collaborator step
-    setShowCollaboratorStep(collaboratorValue !== 'none');
+    // Always show collaborator step regardless of value
+    setShowCollaboratorStep(true);
   }, [collaboratorValue, setShowCollaboratorStep]);
   
   // Fill in default values for destination when service type is 'dispo'
@@ -59,8 +59,8 @@ export const useTransferFormNavigation = (
       case 'pricing':
         return ['price', 'paymentStatus']; // Validate both price and payment status for combined step
       case 'collaborator':
-        // Collaborator is required if it's a collaborator service
-        return collaboratorValue !== 'none' ? ['collaborator'] : [];
+        // Commission is optional, collaborator can be 'none'
+        return [];
       case 'confirmation':
         return []; // No specific fields to validate in confirmation step
       default:
@@ -68,14 +68,10 @@ export const useTransferFormNavigation = (
     }
   };
 
-  // Find the next step index, skipping collaborator if needed
+  // Find the next step index, never skip collaborator
   const getNextStepIndex = useCallback(() => {
-    // If current step + 1 would be collaborator step but we should skip it
-    if (activeSteps[currentStep + 1]?.id === 'collaborator' && collaboratorValue === 'none') {
-      return currentStep + 2; // Skip to the step after collaborator
-    }
-    return currentStep + 1; // Otherwise go to the next step
-  }, [currentStep, activeSteps, collaboratorValue]);
+    return currentStep + 1;
+  }, [currentStep]);
 
   // Handle next step
   const handleNext = useCallback(async () => {
@@ -166,15 +162,10 @@ export const useTransferFormNavigation = (
   // Handle previous step
   const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
-      // If we're on the step after collaborator and collaborator is skipped
-      if (activeSteps[currentStep - 1]?.id === 'collaborator' && collaboratorValue === 'none') {
-        setCurrentStep(currentStep - 2); // Go back two steps to skip collaborator
-      } else {
-        setCurrentStep(currentStep - 1); // Go back one step normally
-      }
+      setCurrentStep(currentStep - 1);
       window.scrollTo(0, 0);
     }
-  }, [currentStep, setCurrentStep, activeSteps, collaboratorValue]);
+  }, [currentStep, setCurrentStep]);
 
   return {
     handleNext,

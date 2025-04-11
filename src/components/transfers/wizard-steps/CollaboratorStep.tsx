@@ -25,16 +25,11 @@ export function CollaboratorStep({ formState }: CollaboratorStepProps) {
   const price = watch('price');
   const commission = watch('commission');
   
-  // If we arrived at this step, ensure a collaborator is set, but only if collaborators exist
+  // If no collaborator is set, default to 'none'
   useEffect(() => {
     const currentCollaborator = watch('collaborator');
     
-    // Only set a default collaborator if there are collaborators and none is selected
-    if ((!currentCollaborator || currentCollaborator === 'none') && 
-        collaborators && collaborators.length > 0) {
-      setValue('collaborator', collaborators[0].name);
-    } else if ((!currentCollaborator || currentCollaborator === '') && 
-              (!collaborators || collaborators.length === 0)) {
+    if (!currentCollaborator || currentCollaborator === '') {
       setValue('collaborator', 'none');
     }
   }, [collaborators, setValue, watch]);
@@ -84,7 +79,7 @@ export function CollaboratorStep({ formState }: CollaboratorStepProps) {
           render={({ field }) => (
             <FormItem>
               <div className="flex justify-between items-center">
-                <FormLabel>Colaborador *</FormLabel>
+                <FormLabel>Colaborador</FormLabel>
                 <Button 
                   type="button" 
                   variant="link" 
