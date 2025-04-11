@@ -2,63 +2,55 @@
 /* Mobile-specific table styles */
 
 @media (max-width: 768px) {
-  /* Table cells */
-  .timetable-cell {
-    @apply p-0.5;
+  /* Reduce padding in table cells */
+  th, td {
+    @apply py-1.5 px-2;
   }
   
   /* Scrollable containers */
-  .timetable-scroll {
-    max-height: calc(100vh - 280px);
-  }
-
-  /* Smaller font and spacing for mobile tables */
-  .mobile-table {
-    @apply text-xs;
+  .table-scroll-container {
+    @apply overflow-x-auto rounded-lg border mx-auto max-w-full;
   }
   
-  .mobile-table th, 
-  .mobile-table td {
-    @apply py-0.5 px-0.5 md:py-1 md:px-1;
+  /* Prevent horizontal scrolling on mobile when possible */
+  .table-container {
+    @apply w-full max-w-full;
+    overflow-x: visible;
   }
 
   /* Better table display on mobile */
-  .table-container {
-    @apply w-full;
-    max-width: 100%;
-  }
-  
-  /* Tables should use full width */
   table {
     width: 100%;
     table-layout: fixed;
+    font-size: 0.875rem;
   }
   
-  /* Table columns for mobile */
+  /* Optimize column sizes for mobile */
   .mobile-col-small {
-    width: 50px !important;
-    max-width: 50px !important;
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
   }
   
   .mobile-col-medium {
-    width: 70px !important;
-    max-width: 70px !important;  
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;  
+  }
+  
+  .mobile-col-large {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
   }
   
   .mobile-col-action {
     width: 60px !important;
+    min-width: 60px !important;
     max-width: 60px !important;
   }
   
-  /* Ensure proper truncation for table cells */
-  .truncate, .max-w-[150px], .max-w-[100px] {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-  }
-  
-  /* Table cell truncation */
+  /* Enhanced truncation for mobile */
   .truncate-cell {
     @apply max-w-[80px] truncate;
     white-space: nowrap;
@@ -74,5 +66,22 @@
   
   .table-actions button svg {
     @apply h-3.5 w-3.5;
+  }
+  
+  /* Card-style tables for mobile as an alternative to horizontal scrolling */
+  .mobile-card-table .table-row {
+    @apply block border rounded-lg p-3 mb-3;
+  }
+  
+  .mobile-card-table .table-cell {
+    @apply block py-1.5;
+  }
+  
+  .mobile-card-table .table-cell-label {
+    @apply font-medium text-xs text-muted-foreground;
+  }
+  
+  .mobile-card-table .table-cell-value {
+    @apply block;
   }
 }

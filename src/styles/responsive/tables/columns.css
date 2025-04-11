@@ -3,51 +3,108 @@
 
 /* Desktop-specific column sizing */
 @media (min-width: 769px) {
+  /* Date and time columns */
   .col-date {
-    width: 80px;
-    min-width: 80px;
-  }
-  
-  .col-time {
-    width: 70px;
-    min-width: 70px;
-  }
-  
-  .col-type {
-    width: 80px;
-    min-width: 80px;
-  }
-  
-  .col-location {
     width: 100px;
     min-width: 100px;
   }
   
-  .col-client {
-    width: 120px;
-    min-width: 120px;
+  .col-time {
+    width: 80px;
+    min-width: 80px;
   }
   
-  .col-collaborator {
-    width: 120px;
-    min-width: 120px;
-  }
-  
-  .col-total {
+  /* Type and status columns */
+  .col-type {
     width: 90px;
     min-width: 90px;
-    text-align: right;
   }
   
   .col-status {
+    width: 100px;
+    min-width: 100px;
+    text-align: center;
+  }
+  
+  /* Location columns */
+  .col-location {
+    width: 160px;
+    min-width: 160px;
+  }
+  
+  /* People columns */
+  .col-client, .col-person {
+    width: 140px;
+    min-width: 140px;
+  }
+  
+  .col-collaborator {
+    width: 140px;
+    min-width: 140px;
+  }
+  
+  /* Money columns */
+  .col-total, .col-price, .col-amount {
+    width: 110px;
+    min-width: 110px;
+    text-align: right;
+  }
+  
+  .col-actions {
     width: 80px;
     min-width: 80px;
     text-align: center;
   }
   
-  .col-actions {
-    width: 50px;
-    min-width: 50px;
-    text-align: center;
+  /* Column visibility classes */
+  .col-hide-sm {
+    display: none;
+  }
+  
+  @media (min-width: 640px) {
+    .col-hide-sm {
+      display: table-cell;
+    }
+  }
+  
+  .col-hide-md {
+    display: none;
+  }
+  
+  @media (min-width: 768px) {
+    .col-hide-md {
+      display: table-cell;
+    }
+  }
+  
+  .col-hide-lg {
+    display: none;
+  }
+  
+  @media (min-width: 1024px) {
+    .col-hide-lg {
+      display: table-cell;
+    }
+  }
+}
+
+/* Mobile column sizing */
+@media (max-width: 768px) {
+  .col-mobile-small {
+    width: 70px;
+    min-width: 70px;
+    max-width: 70px;
+  }
+  
+  .col-mobile-medium {
+    width: 90px;
+    min-width: 90px;
+    max-width: 90px;
+  }
+  
+  .col-mobile-large {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
   }
 }

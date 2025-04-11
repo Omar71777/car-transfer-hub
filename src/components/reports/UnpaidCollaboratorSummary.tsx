@@ -11,6 +11,8 @@ import {
 import { formatCurrency } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { Transfer } from '@/types';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface MonthlyData {
   collaborator: string;
@@ -31,6 +33,8 @@ export function UnpaidCollaboratorSummary({
   loading = false,
   selectedCollaborator
 }: UnpaidCollaboratorSummaryProps) {
+  const isMobile = useIsMobile();
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -48,15 +52,62 @@ export function UnpaidCollaboratorSummary({
   // Calculate total for all filtered data
   const grandTotal = filteredData.reduce((sum, data) => sum + data.total, 0);
 
+  if (isMobile) {
+    // Card-based layout for mobile
+    return (
+      <div className="space-y-3 mobile-card-table">
+        {filteredData.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            No hay pagos pendientes para mostrar
+          </div>
+        ) : (
+          <>
+            {filteredData.map((data, index) => (
+              <Card key={`${data.collaborator}-${data.month}-${index}`} className="table-row">
+                <CardContent className="p-3">
+                  <div className="table-cell">
+                    <span className="table-cell-label">Colaborador:</span>
+                    <span className="table-cell-value font-medium">{data.collaborator}</span>
+                  </div>
+                  <div className="table-cell">
+                    <span className="table-cell-label">Mes:</span>
+                    <span className="table-cell-value">{data.month}</span>
+                  </div>
+                  <div className="table-cell">
+                    <span className="table-cell-label">Nº Transfers:</span>
+                    <span className="table-cell-value">{data.transferCount}</span>
+                  </div>
+                  <div className="table-cell">
+                    <span className="table-cell-label">Total a Pagar:</span>
+                    <span className="table-cell-value font-medium">{formatCurrency(data.total)}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            
+            <Card className="bg-muted/50">
+              <CardContent className="p-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">Total general:</span>
+                  <span className="font-semibold">{formatCurrency(grandTotal)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-md border overflow-hidden">
-      <Table>
+    <div className="table-container table-centered">
+      <Table stickyHeader>
         <TableHeader>
           <TableRow>
-            <TableHead>Colaborador</TableHead>
-            <TableHead>Mes</TableHead>
-            <TableHead className="text-right">Nº Transfers</TableHead>
-            <TableHead className="text-right">Total a Pagar</TableHead>
+            <TableHead className="col-collaborator">Colaborador</TableHead>
+            <TableHead className="col-date">Mes</TableHead>
+            <TableHead className="text-right col-type">Nº Transfers</TableHead>
+            <TableHead className="text-right col-total">Total a Pagar</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

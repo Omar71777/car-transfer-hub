@@ -74,7 +74,7 @@ const UnpaidTransfersPage = () => {
   
   return (
     <MainLayout>
-      <div className="container max-w-full px-2 sm:px-4 py-4 sm:py-6">
+      <div className="container max-w-5xl mx-auto px-4 py-6">
         <UnpaidPageHeader onExportCSV={handleExportCSV} onPrint={handlePrint} />
         
         <CollaboratorFilter 
@@ -83,29 +83,29 @@ const UnpaidTransfersPage = () => {
           onCollaboratorChange={setSelectedCollaborator} 
         />
         
-        <Tabs defaultValue="table" onValueChange={setActiveTab}>
-          <TabsList className="w-full md:w-auto">
+        <Tabs defaultValue="table" onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full md:w-auto mb-6">
             <TabsTrigger value="table" className="flex-1 md:flex-none">Transfers Pendientes</TabsTrigger>
             <TabsTrigger value="summary" className="flex-1 md:flex-none">Resumen por Colaborador</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="table" className="mt-4 sm:mt-6">
-            <Card className="overflow-hidden">
-              <CardHeader className="py-4">
+          <TabsContent value="table" className="mt-0">
+            <Card className="bg-card/70 backdrop-blur-sm">
+              <CardHeader className="py-4 border-b border-border/30">
                 <CardTitle className="text-lg sm:text-xl">Transfers Pendientes de Pago</CardTitle>
               </CardHeader>
-              <CardContent className="p-0 sm:p-2">
+              <CardContent className="p-0 sm:p-4">
                 <UnpaidTransfersTable transfers={unpaidTransfers} loading={loading} />
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="summary" className="mt-4 sm:mt-6">
-            <Card>
-              <CardHeader className="py-4">
+          <TabsContent value="summary" className="mt-0">
+            <Card className="bg-card/70 backdrop-blur-sm">
+              <CardHeader className="py-4 border-b border-border/30">
                 <CardTitle className="text-lg sm:text-xl">Resumen por Colaborador y Mes</CardTitle>
               </CardHeader>
-              <CardContent className="p-0 sm:p-2">
+              <CardContent className="p-0 sm:p-4">
                 <UnpaidCollaboratorSummary 
                   monthlyData={getMonthlyUnpaidData()} 
                   loading={loading} 

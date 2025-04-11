@@ -5,8 +5,8 @@ import { useIsMobile } from "@/hooks/use-mobile"
 
 const Table = React.forwardRef<
   HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => {
+  React.HTMLAttributes<HTMLTableElement> & { stickyHeader?: boolean }
+>(({ className, stickyHeader, ...props }, ref) => {
   const isMobile = useIsMobile();
   
   return (
@@ -15,6 +15,7 @@ const Table = React.forwardRef<
       className={cn(
         "w-full caption-bottom table-fixed", 
         isMobile ? "text-xs mobile-table" : "text-sm",
+        stickyHeader && "table-sticky-header",
         className
       )}
       {...props}
@@ -27,7 +28,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  <thead ref={ref} className={cn("[&_tr]:border-b bg-muted/30", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -65,7 +66,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b transition-colors data-[state=selected]:bg-muted",
+      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
       className
     )}
     {...props}
@@ -84,8 +85,8 @@ const TableHead = React.forwardRef<
       ref={ref}
       className={cn(
         isMobile 
-          ? "h-7 px-1 align-middle font-medium text-xs [&:has([role=checkbox])]:pr-0"
-          : "h-9 px-2 align-middle font-medium md:px-2 lg:h-10",
+          ? "h-8 px-2 align-middle font-medium text-xs [&:has([role=checkbox])]:pr-0"
+          : "h-10 px-3 align-middle font-medium md:px-3 lg:h-11",
         className
       )}
       {...props}
@@ -105,8 +106,8 @@ const TableCell = React.forwardRef<
       ref={ref}
       className={cn(
         isMobile 
-          ? "p-1 align-middle [&:has([role=checkbox])]:pr-0 text-xs"
-          : "p-1.5 align-middle [&:has([role=checkbox])]:pr-0 md:px-2 text-xs",
+          ? "p-1.5 align-middle [&:has([role=checkbox])]:pr-0 text-xs"
+          : "p-2 align-middle [&:has([role=checkbox])]:pr-0 md:px-3 text-sm",
         className
       )}
       {...props}

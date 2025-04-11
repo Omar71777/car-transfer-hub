@@ -3,33 +3,58 @@
 
 /* Action buttons for tables */
 .table-actions {
-  @apply flex justify-end gap-1;
+  @apply flex items-center gap-1 justify-end;
 }
 
 /* Optimized width for action buttons on desktop */
 @media (min-width: 769px) {
+  .table-actions {
+    @apply justify-center;
+  }
+  
   .table-actions-compact {
-    display: flex;
-    gap: 2px;
+    @apply flex gap-1;
   }
   
   .table-actions-compact button {
-    @apply h-7 w-7;
+    @apply h-8 w-8;
   }
   
-  /* Remove overflow settings that might cause horizontal scroll */
-  .table-container, 
-  .overflow-x-auto,
-  .overflow-hidden {
-    overflow: visible;
+  /* Improved action buttons styling */
+  .table-action-btn {
+    @apply h-8 w-8 rounded-full p-0 flex items-center justify-center;
   }
   
-  /* Table spacing and visibility improvements */
-  .truncate-cell {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
+  .table-action-btn svg {
+    @apply h-4 w-4;
   }
+}
+
+/* Mobile-specific action buttons */
+@media (max-width: 768px) {
+  .table-actions {
+    @apply justify-end;
+  }
+  
+  .table-action-btn {
+    @apply h-7 w-7 rounded-full p-0 flex items-center justify-center;
+  }
+  
+  .table-action-btn svg {
+    @apply h-3.5 w-3.5;
+  }
+}
+
+/* Table cell truncation */
+.truncate-cell {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Improved hover for action buttons */
+.table-action-btn:hover {
+  @apply bg-primary/10;
 }

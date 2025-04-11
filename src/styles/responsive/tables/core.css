@@ -6,6 +6,7 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
+  margin: 0 auto;
 }
 
 th, td {
@@ -17,21 +18,30 @@ th, td {
 th {
   font-weight: 600;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  @apply text-muted-foreground text-xs;
 }
 
 tr:last-child td {
   border-bottom: none;
 }
 
+/* Zebra striping for better readability */
+tbody tr:nth-child(odd) {
+  @apply bg-background/70;
+}
+
+tbody tr:nth-child(even) {
+  @apply bg-muted/30;
+}
+
 /* Row hover effect */
 tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  @apply bg-muted/50;
 }
 
 /* Table container */
 .table-container {
-  @apply rounded-md border w-full overflow-hidden;
-  margin: 0 auto;
+  @apply rounded-lg border w-full overflow-hidden mx-auto;
   max-width: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -39,6 +49,12 @@ tbody tr:hover {
 .table-full-width {
   width: 100%;
   max-width: 100%;
+}
+
+/* Center tables */
+.table-centered {
+  @apply mx-auto;
+  max-width: 1200px;
 }
 
 /* Table cell truncation for all screen sizes */
@@ -49,9 +65,20 @@ tbody tr:hover {
 }
 
 .truncate-cell {
-  @apply max-w-[80px] truncate;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+}
+
+/* Add space between rows */
+tbody tr td {
+  @apply py-2.5;
+}
+
+/* Sticky header for tables */
+.table-sticky-header th {
+  position: sticky;
+  top: 0;
+  @apply bg-background z-10;
 }
