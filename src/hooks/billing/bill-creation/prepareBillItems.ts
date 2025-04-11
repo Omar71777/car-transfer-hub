@@ -1,7 +1,112 @@
 
 import { calculateBasePrice, calculateDiscountAmount } from '@/lib/calculations';
-import { generateTransferDescription, generateExtraChargeDescription } from '@/lib/billing/calculationUtils';
 import { BillPreview } from '@/types/billing';
+
+/**
+ * Creates a main transfer item for the bill
+ */
+function createMainTransferItem(
+  billId: string,
+  transferId: string,
+  description: string,
+  quantity: number,
+  unitPrice: number,
+  totalPrice: number
+) {
+  return {
+    bill_id: billId,
+    transfer_id: transferId,
+    description: description,
+    quantity: quantity,
+    unit_price: unitPrice,
+    total_price: totalPrice,
+    is_extra_charge: false,
+    parent_item_id: null
+  };
+}
+
+/**
+ * Creates an extra charge item for the bill
+ */
+function createExtraChargeItem(
+  billId: string,
+  transferId: string,
+  chargeName: string,
+  chargePrice: number,
+  chargeId?: string
+) {
+  return {
+    bill_id: billId,
+    transfer_id: transferId,
+    description: chargeName,
+    quantity: 1,
+    unit_price: chargePrice,
+    total_price: chargePrice, // For extra charges, no discount applies
+    is_extra_charge: true,
+    extra_charge_id: chargeId,
+    parent_item_id: null // Will be set after main item is inserted
+  };
+}
+
+/**
+ * Generates description for a transfer item
+ */
+function generateItemDescription(transfer: any, discountAmount: number): string {
+  // Create the base description
+  let description = transfer.description;
+  if (!description) {
+    // If no description provided, generate one based on service type
+    if (transfer.serviceType === 'dispo') {
+      description = `${formatDateForDisplay(transfer.date)}, Servicio de disposición por horas`;
+    } else {
+      description = `${formatDateForDisplay(transfer.date)}, Traslado: ${transfer.origin} → ${transfer.destination}`;
+    }
+  }
+  
+  // Add discount information if applicable
+  if (discountAmount > 0 && !description.includes('Descuento')) {
+    const discountInfo = transfer.discountType === 'percentage' 
+      ? `Descuento: ${transfer.discountValue}%` 
+      : `Descuento: ${transfer.discountValue}€`;
+    description += ` (${discountInfo})`;
+  }
+  
+  return description;
+}
+
+/**
+ * Format date from YYYY-MM-DD to DD/MM/YYYY
+ */
+function formatDateForDisplay(dateString: string): string {
+  try {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  } catch (e) {
+    // Return original if formatting fails
+    return dateString;
+  }
+}
+
+/**
+ * Calculates quantity and prices for transfer items
+ */
+function calculateItemPricing(transfer: any, basePrice: number, discountAmount: number) {
+  // For dispo services, quantity is the number of hours and unit price is the hourly rate
+  let quantity = 1;
+  let unitPrice = basePrice; // Store the original price before discount
+  let totalPrice = basePrice - discountAmount; // Store the final price after discount
+
+  if (transfer.serviceType === 'dispo' && transfer.hours) {
+    quantity = Number(transfer.hours);
+    unitPrice = Number(transfer.price); // The hourly rate
+    
+    // Calculate total price: hours * hourly rate - discount
+    const fullPrice = unitPrice * quantity;
+    totalPrice = fullPrice - discountAmount;
+  }
+  
+  return { quantity, unitPrice, totalPrice };
+}
 
 /**
  * Prepares bill items array for database insertion
@@ -18,74 +123,52 @@ export function prepareBillItems(billId: string, preview: BillPreview) {
       continue;
     }
     
-    // Calculate the original base price (before any discounts)
+    // Calculate pricing components
     const basePrice = calculateBasePrice(item.transfer);
-    // Calculate the discount amount separately
     const discountAmount = calculateDiscountAmount(item.transfer);
-    // Calculate the final price after discounts
-    const finalPrice = basePrice - discountAmount;
     
-    // Create the main transfer item
-    let description = item.description || generateTransferDescription(item.transfer);
+    // Generate description
+    const description = generateItemDescription(item.transfer, discountAmount);
     
-    // Add discount information to the description if there is a discount
-    if (discountAmount > 0 && !description.includes('Descuento')) {
-      const discountInfo = item.transfer.discountType === 'percentage' 
-        ? `Descuento: ${item.transfer.discountValue}%` 
-        : `Descuento: ${item.transfer.discountValue}€`;
-      description += ` (${discountInfo})`;
-    }
+    // Calculate pricing details (quantity, unit price, total price)
+    const { quantity, unitPrice, totalPrice } = calculateItemPricing(
+      item.transfer, 
+      basePrice, 
+      discountAmount
+    );
     
-    // For dispo services, quantity is the number of hours and unit price is the hourly rate
-    let quantity = 1;
-    let unitPrice = basePrice; // Store the original price before discount
-    let totalPrice = finalPrice; // Store the final price after discount
+    // Create and add the main transfer item
+    const mainItem = createMainTransferItem(
+      billId,
+      item.transfer.id,
+      description,
+      quantity,
+      unitPrice,
+      totalPrice
+    );
     
-    if (item.transfer.serviceType === 'dispo' && item.transfer.hours) {
-      quantity = Number(item.transfer.hours);
-      unitPrice = Number(item.transfer.price); // The hourly rate
-      
-      // Calculate total price: hours * hourly rate - discount
-      const fullPrice = unitPrice * quantity;
-      totalPrice = fullPrice - discountAmount;
-    }
-    
-    const mainItem = {
-      bill_id: billId,
-      transfer_id: item.transfer.id,
-      description: description,
-      quantity: quantity,
-      unit_price: unitPrice, // Original price before discount
-      total_price: totalPrice, // Final price after discount
-      is_extra_charge: false,
-      parent_item_id: null
-    };
-    
-    // Add the main transfer item
     billItems.push(mainItem);
     
-    // Create and add extra charges as separate items
+    // Add extra charges if they exist
     if (item.extraCharges && item.extraCharges.length > 0) {
       console.log(`Adding ${item.extraCharges.length} extra charges for transfer ${item.transfer.id}`);
       
-      // Add the extra charges as separate rows
+      // Add each extra charge as a separate item
       for (const charge of item.extraCharges) {
         if (!charge.name || !charge.price) {
           console.error('Invalid extra charge:', charge);
           continue;
         }
         
-        billItems.push({
-          bill_id: billId,
-          transfer_id: item.transfer.id,
-          description: charge.name,
-          quantity: 1,
-          unit_price: charge.price,
-          total_price: charge.price, // For extra charges, no discount applies
-          is_extra_charge: true,
-          extra_charge_id: charge.id,
-          parent_item_id: null // Will be set after main item is inserted
-        });
+        const extraChargeItem = createExtraChargeItem(
+          billId,
+          item.transfer.id,
+          charge.name,
+          charge.price,
+          charge.id
+        );
+        
+        billItems.push(extraChargeItem);
       }
     }
   }
