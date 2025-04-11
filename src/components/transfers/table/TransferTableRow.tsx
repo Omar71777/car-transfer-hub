@@ -12,6 +12,7 @@ import { TransferRowActions } from './TransferRowActions';
 import { TruncatedCell } from './TruncatedCell';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { calculateBasePrice } from '@/lib/calculations';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -65,11 +66,11 @@ export function TransferTableRow({
   // Get the formatted date
   const formattedDate = getFormattedDate();
   
-  // Calculate commission if available
-  const commission = transfer.commission || 0;
+  // Calculate base price (taking into account dispo hours)
+  const basePrice = calculateBasePrice(transfer);
   
-  // Calculate total (price minus commission)
-  const total = transfer.price - commission;
+  // Calculate commission
+  const commission = transfer.commission || 0;
   
   return (
     <TableRow className={rowClass}>
@@ -88,7 +89,7 @@ export function TransferTableRow({
         <ServiceTypeBadge serviceType={transfer.serviceType} />
       </TableCell>
       <TableCell className="text-right">
-        <PriceDisplay price={transfer.price} />
+        <PriceDisplay transfer={transfer} />
       </TableCell>
       {!isMobile && (
         <TableCell className="text-center">
@@ -107,7 +108,7 @@ export function TransferTableRow({
       )}
       {!isMobile && (
         <TableCell className="text-right">
-          <span className="text-xs font-medium">{total.toFixed(2)}€</span>
+          <span className="text-xs font-medium">{(basePrice - commission).toFixed(2)}€</span>
         </TableCell>
       )}
       <TableCell className="text-center">
