@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Expense } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -26,132 +26,119 @@ export function useDashboardData() {
   });
   const [loading, setLoading] = useState(true);
 
-  const fetchDashboardData = useCallback(async () => {
-    setLoading(true);
-    
-    try {
-      console.log('Loading dashboard data...');
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      setLoading(true);
       
-      // Load transfers from Supabase
-      const { data: transfers, error: transfersError } = await supabase
-        .from('transfers')
-        .select(`
-          id, 
-          price, 
-          commission, 
-          commission_type, 
-          service_type, 
-          hours, 
-          origin, 
-          destination, 
-          discount_type, 
-          discount_value,
-          date
-        `)
-        .order('date', { ascending: false });
+      try {
+        console.log('Loading dashboard data...');
         
-      if (transfersError) throw transfersError;
-      
-      // Fetch extra charges separately for each transfer
-      const extraChargesPromises = transfers.map(async (transfer) => {
-        const { data: extraCharges, error: extraChargesError } = await supabase
-          .from('extra_charges')
-          .select('*')
-          .eq('transfer_id', transfer.id);
+        // Load transfers from Supabase
+        const { data: transfers, error: transfersError } = await supabase
+          .from('transfers')
+          .select(`
+            id, 
+            price, 
+            commission, 
+            commission_type, 
+            service_type, 
+            hours, 
+            origin, 
+            destination, 
+            discount_type, 
+            discount_value,
+            date
+          `)
+          .order('date', { ascending: false });
           
-        if (extraChargesError) throw extraChargesError;
-        return adaptExtraCharges(extraCharges || []);
-      });
-      
-      const allExtraCharges = await Promise.all(extraChargesPromises);
-      
-      // Format transfers to match the MinimalTransfer interface
-      const formattedTransfers: MinimalTransfer[] = transfers.map((transfer, index) => ({
-        serviceType: transfer.service_type || 'transfer',
-        price: Number(transfer.price),
-        commission: Number(transfer.commission) || 0,
-        commissionType: (transfer.commission_type || 'percentage') as 'percentage' | 'fixed',
-        hours: transfer.hours || undefined,
-        discountType: transfer.discount_type as 'percentage' | 'fixed' | null,
-        discountValue: Number(transfer.discount_value) || 0,
-        origin: transfer.origin,
-        destination: transfer.destination,
-        extraCharges: allExtraCharges[index] || [],
-        date: transfer.date
-      }));
-      
-      // Load expenses from Supabase
-      const { data: expenses, error: expensesError } = await supabase
-        .from('expenses')
-        .select('amount, concept, date')
-        .order('date', { ascending: false });
+        if (transfersError) throw transfersError;
         
-      if (expensesError) throw expensesError;
-      
-      // Calculate total income with the correct price calculation
-      const totalIncome = formattedTransfers.reduce((sum, transfer) => 
-        sum + calculateTotalPrice(transfer), 0);
-      
-      // Calculate total commissions with the correct method
-      const totalCommissions = formattedTransfers.reduce((sum, transfer) => 
-        sum + calculateCommissionAmount(transfer), 0);
-      
-      // Add regular expenses and commissions
-      const expensesTotal = expenses.reduce((sum, expense) => 
-        sum + (Number(expense.amount) || 0), 0);
-      const totalExpenses = expensesTotal + totalCommissions;
-      
-      // Log sample data for debugging
-      console.log('Dashboard data calculation:', {
-        transfers: formattedTransfers.length,
-        totalIncome,
-        totalExpenses,
-        totalCommissions,
-        expensesTotal,
-        netIncome: totalIncome - totalExpenses,
-        sampleTransfer: formattedTransfers.length > 0 ? {
-          price: formattedTransfers[0].price,
-          serviceType: formattedTransfers[0].serviceType,
-          hours: formattedTransfers[0].hours,
-          totalPrice: calculateTotalPrice(formattedTransfers[0]),
-          commission: calculateCommissionAmount(formattedTransfers[0])
-        } : 'No transfers'
-      });
-      
-      // Calculate stats
-      setStats({
-        totalTransfers: formattedTransfers.length,
-        totalIncome: totalIncome,
-        totalExpenses: totalExpenses,
-        netIncome: totalIncome - totalExpenses
-      });
-      
-      return {
-        transfers: formattedTransfers,
-        expenses,
-        stats: {
-          totalTransfers: formattedTransfers.length,
+        // Fetch extra charges separately for each transfer
+        const extraChargesPromises = transfers.map(async (transfer) => {
+          const { data: extraCharges, error: extraChargesError } = await supabase
+            .from('extra_charges')
+            .select('*')
+            .eq('transfer_id', transfer.id);
+            
+          if (extraChargesError) throw extraChargesError;
+          return adaptExtraCharges(extraCharges || []);
+        });
+        
+        const allExtraCharges = await Promise.all(extraChargesPromises);
+        
+        // Format transfers to match the MinimalTransfer interface
+        const formattedTransfers: MinimalTransfer[] = transfers.map((transfer, index) => ({
+          serviceType: transfer.service_type || 'transfer',
+          price: Number(transfer.price),
+          commission: Number(transfer.commission) || 0,
+          commissionType: (transfer.commission_type || 'percentage') as 'percentage' | 'fixed',
+          hours: transfer.hours || undefined,
+          discountType: transfer.discount_type as 'percentage' | 'fixed' | null,
+          discountValue: Number(transfer.discount_value) || 0,
+          origin: transfer.origin,
+          destination: transfer.destination,
+          extraCharges: allExtraCharges[index] || [],
+          date: transfer.date
+        }));
+        
+        // Load expenses from Supabase
+        const { data: expenses, error: expensesError } = await supabase
+          .from('expenses')
+          .select('amount, concept, date')
+          .order('date', { ascending: false });
+          
+        if (expensesError) throw expensesError;
+        
+        // Calculate total income with the correct price calculation
+        const totalIncome = formattedTransfers.reduce((sum, transfer) => 
+          sum + calculateTotalPrice(transfer), 0);
+        
+        // Calculate total commissions with the correct method
+        const totalCommissions = formattedTransfers.reduce((sum, transfer) => 
+          sum + calculateCommissionAmount(transfer), 0);
+        
+        // Add regular expenses and commissions
+        const expensesTotal = expenses.reduce((sum, expense) => 
+          sum + (Number(expense.amount) || 0), 0);
+        const totalExpenses = expensesTotal + totalCommissions;
+        
+        // Log sample data for debugging
+        console.log('Dashboard data calculation:', {
+          transfers: formattedTransfers.length,
           totalIncome,
           totalExpenses,
+          totalCommissions,
+          expensesTotal,
+          netIncome: totalIncome - totalExpenses,
+          sampleTransfer: formattedTransfers.length > 0 ? {
+            price: formattedTransfers[0].price,
+            serviceType: formattedTransfers[0].serviceType,
+            hours: formattedTransfers[0].hours,
+            totalPrice: calculateTotalPrice(formattedTransfers[0]),
+            commission: calculateCommissionAmount(formattedTransfers[0])
+          } : 'No transfers'
+        });
+        
+        // Calculate stats
+        setStats({
+          totalTransfers: formattedTransfers.length,
+          totalIncome: totalIncome,
+          totalExpenses: totalExpenses,
           netIncome: totalIncome - totalExpenses
-        }
-      };
-    } catch (error: any) {
-      console.error('Error loading dashboard data:', error);
-      toast.error(`Error al cargar los datos del dashboard: ${error.message}`);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        });
+      } catch (error: any) {
+        console.error('Error loading dashboard data:', error);
+        toast.error(`Error al cargar los datos del dashboard: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    loadDashboardData();
+  }, []);
 
   return {
     stats,
-    loading,
-    fetchDashboardData
+    loading
   };
 }
