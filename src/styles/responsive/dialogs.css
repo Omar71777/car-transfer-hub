@@ -27,14 +27,38 @@
   }
 }
 
-/* Fix for ghost overlays */
+/* Fix for ghost overlays - this is a critical fix */
 [data-state="closed"] {
   pointer-events: none !important; 
   animation-fill-mode: forwards !important;
+  visibility: hidden !important;
+}
+
+/* Remove from DOM after animation completes */
+[data-state="closed"][data-removed="true"] {
+  display: none !important;
 }
 
 /* Ensure dialogs cleanup properly after animations */
 [role="dialog"][data-state="closed"],
 [role="alertdialog"][data-state="closed"] {
   animation-fill-mode: forwards !important;
+  pointer-events: none !important;
+}
+
+/* Additional fix for popover and sheet components */
+[data-radix-popper-content-wrapper][data-state="closed"],
+.radix-sheet[data-state="closed"] {
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* Prevent clicks through overlays when animating out */
+[data-state="closed"].fixed.inset-0 {
+  pointer-events: none !important;
+}
+
+/* Force immediate removal for fully closed dialogs */
+body:not(:has([data-state="open"])) [data-state="closed"] {
+  display: none !important;
 }

@@ -26,12 +26,14 @@ const PopoverContent = React.forwardRef<
           isMobile ? "w-[calc(100vw-24px)] max-w-[calc(100vw-24px)]" : "w-72",
           className
         )}
-        // Making sure we handle Escape key properly
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          props.onCloseAutoFocus?.(e);
+        }}
         onEscapeKeyDown={(e) => {
-          // Allow the default behavior to continue
           props.onEscapeKeyDown?.(e);
         }}
-        // Adding forcemount to ensure proper cleanup of components  
+        // Use forceMount for consistent behavior
         forceMount
         {...props}
       />

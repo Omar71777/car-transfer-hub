@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -47,13 +46,19 @@ const DialogContent = React.forwardRef<
             : "max-w-lg p-6",
           className
         )}
-        // Adding onCloseAutoFocus to prevent focus issues
-        onEscapeKeyDown={(e) => {
+        onCloseAutoFocus={(e) => {
           e.preventDefault();
-          // Allow the default behavior to continue
+          props.onCloseAutoFocus?.(e);
+        }}
+        onEscapeKeyDown={(e) => {
           props.onEscapeKeyDown?.(e);
         }}
-        // Adding forcemount to ensure proper cleanup of components
+        onPointerDownOutside={(e) => {
+          props.onPointerDownOutside?.(e);
+        }}
+        onInteractOutside={(e) => {
+          props.onInteractOutside?.(e);
+        }}
         forceMount
         {...props}
       >

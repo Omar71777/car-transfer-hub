@@ -1,4 +1,3 @@
-
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
@@ -70,13 +69,14 @@ const SheetContent = React.forwardRef<
           isMobile ? "p-4" : "",
           className
         )}
-        // Adding forcemount to ensure proper cleanup of components
-        forceMount
-        // Making sure we handle Escape key properly
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          props.onCloseAutoFocus?.(e);
+        }}
         onEscapeKeyDown={(e) => {
-          // Allow the default behavior to continue
           props.onEscapeKeyDown?.(e);
         }}
+        forceMount
         {...props}
       >
         {children}

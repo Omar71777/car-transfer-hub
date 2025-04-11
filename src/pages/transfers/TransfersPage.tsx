@@ -107,12 +107,8 @@ const TransfersPage = () => {
   };
 
   const handleCloseSummary = () => {
-    // We need to properly clean up state to prevent ghost overlays
     setIsSummaryDialogOpen(false);
-    // Only clear the transfer ID after dialog is fully closed
-    setTimeout(() => {
-      setSummaryTransferId(null);
-    }, 300); // Match animation duration
+    setSummaryTransferId(null);
   };
 
   const handlePrint = () => {
@@ -167,7 +163,7 @@ const TransfersPage = () => {
           onEditSubmit={handleEditSubmit}
         />
 
-        {(isSummaryDialogOpen || summaryTransferId) && (
+        {summaryTransferId && (
           <TransferSummaryDialog
             isOpen={isSummaryDialogOpen}
             onClose={handleCloseSummary}

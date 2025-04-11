@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
@@ -45,13 +44,15 @@ const AlertDialogContent = React.forwardRef<
             : "max-w-lg p-6",
           className
         )}
-        // Adding forcemount to ensure proper cleanup of components
-        forceMount
-        // Making sure we handle Escape key properly
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          props.onCloseAutoFocus?.(e);
+        }}
         onEscapeKeyDown={(e) => {
-          // Allow the default behavior to continue
           props.onEscapeKeyDown?.(e);
         }}
+        // Use forceMount to maintain consistent state handling
+        forceMount
         {...props}
       />
     </AlertDialogPortal>
