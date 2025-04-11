@@ -51,16 +51,7 @@ export function BillDialogs({
   
   return (
     <>
-      <Dialog 
-        open={isFormDialogOpen} 
-        onOpenChange={(open) => {
-          if (!open) {
-            // Only allow closing via the explicit close button
-            // or by clicking outside
-            setIsFormDialogOpen(false);
-          }
-        }}
-      >
+      <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
         <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Crear Nueva Factura</DialogTitle>
@@ -74,13 +65,7 @@ export function BillDialogs({
 
       <Dialog 
         open={isViewDialogOpen} 
-        onOpenChange={(open) => {
-          if (!open) {
-            // Only allow closing via the explicit close button
-            // or by clicking outside
-            setIsViewDialogOpen(false);
-          }
-        }}
+        onOpenChange={setIsViewDialogOpen}
       >
         <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
@@ -94,11 +79,7 @@ export function BillDialogs({
               bill={viewBill}
               onEdit={() => {
                 setIsViewDialogOpen(false);
-                setTimeout(() => {
-                  if (viewBill) {
-                    handleEditBill(viewBill);
-                  }
-                }, 100);
+                handleEditBill(viewBill);
               }}
               onPrint={handlePrintBill}
               onDownload={() => handleDownloadBill(viewBill)}
@@ -110,13 +91,7 @@ export function BillDialogs({
 
       <Dialog 
         open={isEditDialogOpen} 
-        onOpenChange={(open) => {
-          if (!open) {
-            // Only allow closing via the explicit close button
-            // or by clicking outside
-            setIsEditDialogOpen(false);
-          }
-        }}
+        onOpenChange={setIsEditDialogOpen}
       >
         <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
@@ -136,16 +111,7 @@ export function BillDialogs({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog 
-        open={isDeleteDialogOpen} 
-        onOpenChange={(open) => {
-          if (!open) {
-            // Only allow closing via the explicit close button
-            // or cancel button
-            setIsDeleteDialogOpen(false);
-          }
-        }}
-      >
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="max-w-[min(450px,90vw)]">
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>

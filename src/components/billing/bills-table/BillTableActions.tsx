@@ -29,13 +29,17 @@ export function BillTableActions({
 }: BillTableActionsProps) {
   const [open, setOpen] = useState(false);
   
-  // Improved event handling - prevent propagation and remove setTimeout
+  // Enhanced event handling - ensure independent action execution
   const handleAction = (e: React.MouseEvent, actionFn: (bill: Bill) => void) => {
     e.preventDefault();  // Prevent default behavior
     e.stopPropagation(); // Prevent event from bubbling up
     
     setOpen(false);      // Close dropdown if open
-    actionFn(bill);      // Call the action with the bill directly
+    
+    // Small delay to ensure dialog state is reset
+    setTimeout(() => {
+      actionFn(bill);      // Call the action with the bill
+    }, 10);
   };
 
   if (isMobile) {

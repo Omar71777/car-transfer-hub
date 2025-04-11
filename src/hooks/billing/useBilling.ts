@@ -14,7 +14,7 @@ export function useBilling(): UseBillingResult {
   const { getClient } = useClients();
   
   // Use the specialized hooks
-  const { bills, loading, error, fetchBills } = useFetchBills();
+  const { bills, loading, fetchBills } = useFetchBills();
   const { getBill, updateBill, updateBillStatus, deleteBill } = useBillOperations();
   const { calculateBillPreview, createBill } = useBillGeneration(getClient, getTransfer, updateTransfer);
   const { updateBillTransfers } = useBillTransfers(getBill, getTransfer, updateTransfer);
@@ -24,7 +24,6 @@ export function useBilling(): UseBillingResult {
   return {
     bills,
     loading,
-    error,
     fetchBills,
     getBill,
     calculateBillPreview,

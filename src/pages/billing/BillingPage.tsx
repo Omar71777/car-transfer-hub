@@ -5,13 +5,8 @@ import { BillingHeader } from './components/BillingHeader';
 import { BillsTabs } from './components/BillsTabs';
 import { BillDialogs } from './components/BillDialogs';
 import { useBillingActions } from './hooks/useBillingActions';
-import { useAuth } from '@/contexts/auth';
-import { Navigate } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const BillingPage = () => {
-  const { session, isLoading: authLoading } = useAuth();
   const {
     bills,
     loading,
@@ -38,57 +33,22 @@ const BillingPage = () => {
     handleEditSubmit,
     handleConfirmDelete,
     handleStatusChange,
-    resetDialogStates,
-    error
+    resetDialogStates
   } = useBillingActions();
 
   useEffect(() => {
-    // Only fetch bills if the user is authenticated
-    if (session) {
-      fetchBills();
-    }
+    fetchBills();
     
     // Cleanup function to reset dialog states when component unmounts
     return () => {
       resetDialogStates();
     };
-  }, [fetchBills, resetDialogStates, session]);
-
-  // If auth is still loading, show loading state
-  if (authLoading) {
-    return (
-      <MainLayout>
-        <div className="py-4 md:py-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Cargando...</p>
-            </div>
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
-
-  // If user is not authenticated, redirect to auth page
-  if (!authLoading && !session) {
-    return <Navigate to="/auth" />;
-  }
+  }, [fetchBills, resetDialogStates]);
 
   return (
     <MainLayout>
       <div className="py-4 md:py-6">
         <BillingHeader />
-        
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              {error}. Por favor, intenta de nuevo o contacta con soporte si el problema persiste.
-            </AlertDescription>
-          </Alert>
-        )}
         
         <BillsTabs
           activeTab={activeTab}
