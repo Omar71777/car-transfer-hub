@@ -1,21 +1,9 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Shield, UserCircle, Edit, Key, Trash, MoreVertical } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle, 
-  AlertDialogTrigger 
-} from '@/components/ui/alert-dialog';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -80,9 +68,15 @@ export function UsersList({
               </TableCell>
               <TableCell className="text-center">
                 {profile.role === 'admin' ? (
-                  <Shield className="h-5 w-5 text-primary mx-auto" title="Administrador" />
+                  <>
+                    <Shield className="h-5 w-5 text-primary mx-auto" />
+                    <span className="sr-only">Administrador</span>
+                  </>
                 ) : (
-                  <UserCircle className="h-5 w-5 text-muted-foreground mx-auto" title="Usuario" />
+                  <>
+                    <UserCircle className="h-5 w-5 text-muted-foreground mx-auto" />
+                    <span className="sr-only">Usuario</span>
+                  </>
                 )}
               </TableCell>
               <TableCell>
