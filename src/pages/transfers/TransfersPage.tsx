@@ -13,6 +13,7 @@ import { TransferDialogs } from './components/TransferDialogs';
 import { handleExportCSV, generateReportStats } from './helpers/reportHelpers';
 import { printProfitReport } from '@/lib/exports';
 import { TransferSummaryDialog } from '@/components/transfers/TransferSummaryDialog';
+import { Transfer } from '@/types';
 
 const TransfersPage = () => {
   const {
@@ -109,10 +110,6 @@ const TransfersPage = () => {
 
   const handleCloseSummary = () => {
     setIsSummaryDialogOpen(false);
-    // Wait for animation to complete before clearing state
-    setTimeout(() => {
-      setSummaryTransferId(null);
-    }, 300);
   };
 
   const handlePrint = () => {
@@ -167,7 +164,6 @@ const TransfersPage = () => {
           onEditSubmit={handleEditSubmit}
         />
 
-        {/* Only render the dialog component when needed */}
         {summaryTransferId && (
           <TransferSummaryDialog
             isOpen={isSummaryDialogOpen}

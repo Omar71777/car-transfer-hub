@@ -51,18 +51,6 @@ export function TransferSummaryDialog({
     }
   }, [transferId, isOpen]);
 
-  const handleClose = () => {
-    onClose();
-    // Wait for animation to complete before clearing state
-    setTimeout(() => {
-      setTransfer(null);
-    }, 300);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
-  };
-
   const handlePrint = () => {
     if (transfer) {
       printTransferSummary(transfer);
@@ -73,8 +61,8 @@ export function TransferSummaryDialog({
   if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh] glass-card">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">
             <span className="text-xl font-semibold">Detalles del Transfer</span>
@@ -99,12 +87,14 @@ export function TransferSummaryDialog({
           </div>
         ) : transfer ? (
           <div className="space-y-6 py-2 animate-fade-in">
+            {/* Client Info */}
             {transfer.client && (
               <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                 <ClientInfoSection client={transfer.client} />
               </div>
             )}
             
+            {/* Service Details */}
             <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
               <ServiceDetailsSection values={{
                 serviceType: transfer.serviceType,
@@ -117,6 +107,7 @@ export function TransferSummaryDialog({
               }} />
             </div>
             
+            {/* Collaborator Info */}
             {transfer.collaborator && (
               <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                 <CollaboratorInfoSection 
@@ -126,18 +117,20 @@ export function TransferSummaryDialog({
                     commissionType: transfer.commissionType
                   }} 
                   commissionAmountEuros={calculateCommissionAmount(transfer)} 
-                  formatCurrency={formatCurrency} 
+                  formatCurrency={(amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)} 
                 />
               </div>
             )}
             
+            {/* Expenses */}
             {transfer.expenses && transfer.expenses.length > 0 && (
               <ExpensesSection 
                 expenses={transfer.expenses} 
-                formatCurrency={formatCurrency} 
+                formatCurrency={(amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)} 
               />
             )}
             
+            {/* Pricing Details */}
             {(() => {
               const basePrice = transfer.serviceType === 'dispo'
                 ? Number(transfer.price) * Number(transfer.hours || 1)
@@ -183,7 +176,7 @@ export function TransferSummaryDialog({
                     subtotalAfterDiscount={subtotalAfterDiscount}
                     commissionAmountEuros={commissionAmountEuros}
                     totalPrice={totalPrice}
-                    formatCurrency={formatCurrency}
+                    formatCurrency={(amount) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)}
                   />
                 </div>
               );

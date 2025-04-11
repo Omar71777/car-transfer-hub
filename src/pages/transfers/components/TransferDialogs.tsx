@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { Transfer } from '@/types';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransferDialogsProps {
   isExpenseDialogOpen: boolean;
@@ -27,14 +26,11 @@ export function TransferDialogs({
   onExpenseSubmit,
   onEditSubmit
 }: TransferDialogsProps) {
-  const isMobile = useIsMobile();
-  
-  // Only mount the dialogs when they are needed
   return (
     <>
       {isExpenseDialogOpen && (
         <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
-          <DialogContent className="dialog-content">
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
             </DialogHeader>
@@ -45,7 +41,7 @@ export function TransferDialogs({
 
       {isEditDialogOpen && editingTransfer && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="dialog-content max-w-[min(800px,90vw)]">
+          <DialogContent className="max-w-[min(800px,90vw)]">
             <DialogHeader>
               <DialogTitle>Editar Transfer</DialogTitle>
             </DialogHeader>

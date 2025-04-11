@@ -5,7 +5,10 @@
   /* Better dialog sizing for mobile */
   [role="dialog"] .dialog-content, 
   [role="alertdialog"] .dialog-content {
-    @apply max-w-[92vw] max-h-[85vh] overflow-y-auto p-3;
+    max-width: 92vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 0.75rem;
   }
   
   /* Dialog fits better on mobile screens */
@@ -17,7 +20,7 @@
   
   /* Fix for mobile dialogs */
   [role="dialog"] {
-    @apply p-2;
+    padding: 0.5rem;
   }
   
   /* Improve dialog sizing and scrolling */
@@ -25,13 +28,6 @@
   [role="alertdialog"] .overflow-y-auto {
     max-height: 70vh;
   }
-}
-
-/* Properly remove overlays when closed */
-[data-state="closed"] {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
 }
 
 /* Set proper z-index for dialog components */
@@ -58,6 +54,4 @@
 .radix-dropdown-content,
 [data-radix-dropdown-menu-content] {
   z-index: 60;
-  background-color: var(--background);
-  border: 1px solid var(--border);
 }

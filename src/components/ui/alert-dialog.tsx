@@ -6,13 +6,11 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-const AlertDialog = ({ open, onOpenChange, ...props }: AlertDialogPrimitive.AlertDialogProps) => (
-  <AlertDialogPrimitive.Root open={open} onOpenChange={onOpenChange} {...props}>
-    {props.children}
-  </AlertDialogPrimitive.Root>
-)
+const AlertDialog = AlertDialogPrimitive.Root
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger
+
+const AlertDialogPortal = AlertDialogPrimitive.Portal
 
 const AlertDialogOverlay = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Overlay>,
@@ -21,7 +19,7 @@ const AlertDialogOverlay = React.forwardRef<
   <AlertDialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -36,7 +34,7 @@ const AlertDialogContent = React.forwardRef<
   const isMobile = useIsMobile()
   
   return (
-    <AlertDialogPrimitive.Portal>
+    <AlertDialogPortal>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         ref={ref}
@@ -47,18 +45,9 @@ const AlertDialogContent = React.forwardRef<
             : "max-w-lg p-6",
           className
         )}
-        onCloseAutoFocus={(e) => {
-          e.preventDefault();
-          props.onCloseAutoFocus?.(e);
-        }}
-        onEscapeKeyDown={(e) => {
-          if (props.onEscapeKeyDown) {
-            props.onEscapeKeyDown(e);
-          }
-        }}
         {...props}
       />
-    </AlertDialogPrimitive.Portal>
+    </AlertDialogPortal>
   )
 })
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
@@ -146,6 +135,8 @@ AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName
 
 export {
   AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,

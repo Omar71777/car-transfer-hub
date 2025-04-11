@@ -6,15 +6,13 @@ import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-const Dialog = ({ open, onOpenChange, children, ...props }: DialogPrimitive.DialogProps) => (
-  <DialogPrimitive.Root open={open} onOpenChange={onOpenChange} {...props}>
-    {children}
-  </DialogPrimitive.Root>
-)
+const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
 
 const DialogClose = DialogPrimitive.Close
+
+const DialogPortal = DialogPrimitive.Portal
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -23,7 +21,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:duration-100",
+      "fixed inset-0 z-40 bg-black/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -38,7 +36,7 @@ const DialogContent = React.forwardRef<
   const isMobile = useIsMobile()
   
   return (
-    <DialogPrimitive.Portal>
+    <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
@@ -49,15 +47,6 @@ const DialogContent = React.forwardRef<
             : "max-w-lg p-6",
           className
         )}
-        onCloseAutoFocus={(e) => {
-          e.preventDefault();
-          props.onCloseAutoFocus?.(e);
-        }}
-        onEscapeKeyDown={(e) => {
-          if (props.onEscapeKeyDown) {
-            props.onEscapeKeyDown(e);
-          }
-        }}
         {...props}
       >
         {children}
@@ -66,7 +55,7 @@ const DialogContent = React.forwardRef<
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
-    </DialogPrimitive.Portal>
+    </DialogPortal>
   )
 })
 DialogContent.displayName = DialogPrimitive.Content.displayName
@@ -128,6 +117,8 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName
 
 export {
   Dialog,
+  DialogPortal,
+  DialogOverlay,
   DialogClose,
   DialogTrigger,
   DialogContent,

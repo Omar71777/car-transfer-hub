@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Receipt, FileText, MoreVertical } from 'lucide-react';
 import {
@@ -26,39 +26,32 @@ export function TransferRowActions({
   onAddExpense,
   onViewSummary
 }: TransferRowActionsProps) {
-  const [open, setOpen] = useState(false);
-  
-  const handleAction = (actionFn: () => void) => {
-    setOpen(false);
-    actionFn();
-  };
-
   return (
     <div className={`flex ${isMobile ? 'justify-end' : 'justify-center'}`}>
-      <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`${isMobile ? 'h-8 w-8' : 'h-8 w-8'} focus-visible:ring-0`}
+            className="h-8 w-8 focus-visible:ring-0"
           >
-            <MoreVertical className={`${isMobile ? 'h-4 w-4' : 'h-4 w-4'}`} />
+            <MoreVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleAction(onViewSummary)}>
+          <DropdownMenuItem onClick={onViewSummary}>
             <FileText className="h-4 w-4 mr-2" />
             Ver resumen
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleAction(onAddExpense)}>
+          <DropdownMenuItem onClick={onAddExpense}>
             <Receipt className="h-4 w-4 mr-2" />
             Añadir gasto
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleAction(onEdit)}>
+          <DropdownMenuItem onClick={onEdit}>
             <Edit2 className="h-4 w-4 mr-2" />
             Editar
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleAction(onDelete)} className="text-destructive">
+          <DropdownMenuItem onClick={onDelete} className="text-destructive">
             <Trash2 className="h-4 w-4 mr-2" />
             Eliminar
           </DropdownMenuItem>
