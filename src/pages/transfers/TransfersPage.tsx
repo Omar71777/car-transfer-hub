@@ -94,6 +94,7 @@ const TransfersPage = () => {
       concept: values.concept,
       amount: parseFloat(values.amount)
     });
+    
     if (expenseId) {
       setIsExpenseDialogOpen(false);
       toast.success("Gasto añadido al transfer");
@@ -108,7 +109,10 @@ const TransfersPage = () => {
 
   const handleCloseSummary = () => {
     setIsSummaryDialogOpen(false);
-    setSummaryTransferId(null);
+    // Wait for animation to complete before clearing state
+    setTimeout(() => {
+      setSummaryTransferId(null);
+    }, 300);
   };
 
   const handlePrint = () => {
@@ -163,7 +167,7 @@ const TransfersPage = () => {
           onEditSubmit={handleEditSubmit}
         />
 
-        {/* Only mount the summary dialog when needed */}
+        {/* Only render the dialog component when needed */}
         {summaryTransferId && (
           <TransferSummaryDialog
             isOpen={isSummaryDialogOpen}

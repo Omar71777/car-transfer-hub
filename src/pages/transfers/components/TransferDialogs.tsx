@@ -29,31 +29,34 @@ export function TransferDialogs({
 }: TransferDialogsProps) {
   const isMobile = useIsMobile();
   
+  // Only mount the dialogs when they are needed
   return (
     <>
-      <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
-        <DialogContent className="dialog-content">
-          <DialogHeader>
-            <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
-          </DialogHeader>
-          <ExpenseForm onSubmit={onExpenseSubmit} transferId={selectedTransferId || ''} />
-        </DialogContent>
-      </Dialog>
+      {isExpenseDialogOpen && (
+        <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
+          <DialogContent className="dialog-content">
+            <DialogHeader>
+              <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
+            </DialogHeader>
+            <ExpenseForm onSubmit={onExpenseSubmit} transferId={selectedTransferId || ''} />
+          </DialogContent>
+        </Dialog>
+      )}
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="dialog-content max-w-[min(800px,90vw)]">
-          <DialogHeader>
-            <DialogTitle>Editar Transfer</DialogTitle>
-          </DialogHeader>
-          {editingTransfer && (
+      {isEditDialogOpen && editingTransfer && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="dialog-content max-w-[min(800px,90vw)]">
+            <DialogHeader>
+              <DialogTitle>Editar Transfer</DialogTitle>
+            </DialogHeader>
             <TransferForm 
               onSubmit={onEditSubmit} 
               initialValues={editingTransfer} 
               isEditing={true} 
             />
-          )}
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

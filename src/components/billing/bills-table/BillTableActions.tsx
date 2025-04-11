@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Eye, Printer, Edit, Trash2, MoreVertical } from 'lucide-react';
 import { Bill } from '@/types/billing';
@@ -27,10 +27,17 @@ export function BillTableActions({
   onDelete,
   isMobile = false
 }: BillTableActionsProps) {
+  const [open, setOpen] = useState(false);
+  
+  const handleAction = (actionFn: (bill: Bill) => void) => {
+    setOpen(false);
+    actionFn(bill);
+  };
+
   if (isMobile) {
     return (
       <div className="flex justify-end">
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8 p-0 relative">
               <span className="sr-only">Abrir menú</span>
@@ -38,19 +45,19 @@ export function BillTableActions({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-popover border border-border shadow-md">
-            <DropdownMenuItem onClick={() => onView(bill)}>
+            <DropdownMenuItem onClick={() => handleAction(onView)}>
               <Eye className="mr-2 h-4 w-4" />
               <span>Ver</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEdit(bill)}>
+            <DropdownMenuItem onClick={() => handleAction(onEdit)}>
               <Edit className="mr-2 h-4 w-4" />
               <span>Editar</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onPrint(bill)}>
+            <DropdownMenuItem onClick={() => handleAction(onPrint)}>
               <Printer className="mr-2 h-4 w-4" />
               <span>Imprimir</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onDelete(bill)}>
+            <DropdownMenuItem onClick={() => handleAction(onDelete)}>
               <Trash2 className="mr-2 h-4 w-4" />
               <span>Eliminar</span>
             </DropdownMenuItem>

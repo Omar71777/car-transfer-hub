@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -5,11 +6,13 @@ import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-const Dialog = DialogPrimitive.Root
+const Dialog = ({ open, onOpenChange, children, ...props }: DialogPrimitive.DialogProps) => (
+  <DialogPrimitive.Root open={open} onOpenChange={onOpenChange} {...props}>
+    {children}
+  </DialogPrimitive.Root>
+)
 
 const DialogTrigger = DialogPrimitive.Trigger
-
-const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
@@ -35,7 +38,7 @@ const DialogContent = React.forwardRef<
   const isMobile = useIsMobile()
   
   return (
-    <DialogPortal>
+    <DialogPrimitive.Portal>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
@@ -63,7 +66,7 @@ const DialogContent = React.forwardRef<
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
-    </DialogPortal>
+    </DialogPrimitive.Portal>
   )
 })
 DialogContent.displayName = DialogPrimitive.Content.displayName
@@ -125,8 +128,6 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName
 
 export {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
   DialogClose,
   DialogTrigger,
   DialogContent,

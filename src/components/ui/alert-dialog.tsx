@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
@@ -5,11 +6,13 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-const AlertDialog = AlertDialogPrimitive.Root
+const AlertDialog = ({ open, onOpenChange, ...props }: AlertDialogPrimitive.AlertDialogProps) => (
+  <AlertDialogPrimitive.Root open={open} onOpenChange={onOpenChange} {...props}>
+    {props.children}
+  </AlertDialogPrimitive.Root>
+)
 
 const AlertDialogTrigger = AlertDialogPrimitive.Trigger
-
-const AlertDialogPortal = AlertDialogPrimitive.Portal
 
 const AlertDialogOverlay = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Overlay>,
@@ -33,7 +36,7 @@ const AlertDialogContent = React.forwardRef<
   const isMobile = useIsMobile()
   
   return (
-    <AlertDialogPortal>
+    <AlertDialogPrimitive.Portal>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
         ref={ref}
@@ -55,7 +58,7 @@ const AlertDialogContent = React.forwardRef<
         }}
         {...props}
       />
-    </AlertDialogPortal>
+    </AlertDialogPrimitive.Portal>
   )
 })
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
@@ -143,8 +146,6 @@ AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName
 
 export {
   AlertDialog,
-  AlertDialogPortal,
-  AlertDialogOverlay,
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,

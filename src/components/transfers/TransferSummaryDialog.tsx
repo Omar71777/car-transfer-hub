@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2, Printer } from 'lucide-react';
@@ -45,13 +46,18 @@ export function TransferSummaryDialog({
       }
     }
 
-    if (isOpen) {
+    if (isOpen && transferId) {
       fetchTransferDetails();
-    } else {
-      // Reset state when dialog closes
-      setTransfer(null);
     }
   }, [transferId, isOpen]);
+
+  const handleClose = () => {
+    onClose();
+    // Wait for animation to complete before clearing state
+    setTimeout(() => {
+      setTransfer(null);
+    }, 300);
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
@@ -63,15 +69,11 @@ export function TransferSummaryDialog({
     }
   };
 
+  // Only render when needed
+  if (!isOpen) return null;
+
   return (
-    <Dialog 
-      open={isOpen} 
-      onOpenChange={(open) => {
-        if (!open) {
-          onClose();
-        }
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh] glass-card">
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">
