@@ -67,11 +67,14 @@ export async function fetchTransferById(id: string) {
       console.error('Error fetching extra charges:', extraChargesError);
     }
 
+    // Ensure the service_type is properly typed as 'transfer' | 'dispo'
+    const serviceType = transfer.service_type === 'dispo' ? 'dispo' : 'transfer';
+
     return {
       id: transfer.id,
       date: transfer.date,
       time: transfer.time || '',
-      serviceType: transfer.service_type || 'transfer',
+      serviceType: serviceType as 'transfer' | 'dispo',
       origin: capitalizeFirstLetter(transfer.origin),
       destination: transfer.destination ? capitalizeFirstLetter(transfer.destination) : undefined,
       price: Number(transfer.price),

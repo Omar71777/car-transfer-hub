@@ -33,7 +33,14 @@ export function TransferSummaryDialog({
       setLoading(true);
       try {
         const transferData = await getTransfer(transferId);
-        setTransfer(transferData);
+        if (transferData) {
+          // Ensure serviceType is properly typed as "transfer" | "dispo"
+          const validatedTransfer: Transfer = {
+            ...transferData,
+            serviceType: (transferData.serviceType === 'dispo' ? 'dispo' : 'transfer') as 'transfer' | 'dispo'
+          };
+          setTransfer(validatedTransfer);
+        }
       } catch (error) {
         console.error('Error fetching transfer details:', error);
       } finally {
