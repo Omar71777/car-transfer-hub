@@ -74,7 +74,7 @@ const UnpaidTransfersPage = () => {
   
   return (
     <MainLayout>
-      <div className="container py-6 px-4 md:px-6">
+      <div className="container max-w-full px-2 sm:px-4 py-4 sm:py-6">
         <UnpaidPageHeader onExportCSV={handleExportCSV} onPrint={handlePrint} />
         
         <CollaboratorFilter 
@@ -89,23 +89,23 @@ const UnpaidTransfersPage = () => {
             <TabsTrigger value="summary" className="flex-1 md:flex-none">Resumen por Colaborador</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="table" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Transfers Pendientes de Pago</CardTitle>
+          <TabsContent value="table" className="mt-4 sm:mt-6">
+            <Card className="overflow-hidden">
+              <CardHeader className="py-4">
+                <CardTitle className="text-lg sm:text-xl">Transfers Pendientes de Pago</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0 sm:p-2">
                 <UnpaidTransfersTable transfers={unpaidTransfers} loading={loading} />
               </CardContent>
             </Card>
           </TabsContent>
           
-          <TabsContent value="summary" className="mt-6">
+          <TabsContent value="summary" className="mt-4 sm:mt-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Resumen por Colaborador y Mes</CardTitle>
+              <CardHeader className="py-4">
+                <CardTitle className="text-lg sm:text-xl">Resumen por Colaborador y Mes</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0 sm:p-2">
                 <UnpaidCollaboratorSummary 
                   monthlyData={getMonthlyUnpaidData()} 
                   loading={loading} 

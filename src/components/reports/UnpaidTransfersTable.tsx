@@ -5,6 +5,7 @@ import { Transfer } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface UnpaidTransfersTableProps {
   transfers: Transfer[];
@@ -27,24 +28,22 @@ export function UnpaidTransfersTable({
   }
   
   return (
-    <div className="w-full overflow-hidden">
-      <div className={isMobile ? "overflow-x-auto w-full" : "w-full"}>
-        <Table className={isMobile ? "min-w-[600px]" : "w-full"}>
+    <div className="w-full">
+      {isMobile ? (
+        // Mobile view - simplified table with fewer columns and no horizontal scroll
+        <Table className="w-full">
           <TableHeader>
             <TableRow>
-              <TableHead>Fecha</TableHead>
-              {!isMobile && <TableHead>Colaborador</TableHead>}
-              <TableHead className="max-w-[120px] truncate">Origen</TableHead>
-              <TableHead className="max-w-[120px] truncate">Destino</TableHead>
-              <TableHead className="text-right">Precio</TableHead>
-              {!isMobile && <TableHead className="text-right">Comisión</TableHead>}
-              <TableHead className="text-right">Importe</TableHead>
+              <TableHead className="w-[90px]">Fecha</TableHead>
+              <TableHead className="w-[100px] truncate-cell">Origen</TableHead>
+              <TableHead className="w-[100px] truncate-cell">Destino</TableHead>
+              <TableHead className="text-right w-[80px]">Importe</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transfers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={isMobile ? 5 : 7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
                   No hay transfers pendientes de pago
                 </TableCell>
               </TableRow>
@@ -54,17 +53,14 @@ export function UnpaidTransfersTable({
                 const amountToPay = transfer.price - commissionAmount;
                 return (
                   <TableRow key={transfer.id}>
-                    <TableCell>{transfer.date}</TableCell>
-                    {!isMobile && <TableCell>{transfer.collaborator || 'N/A'}</TableCell>}
-                    <TableCell className="max-w-[120px] truncate" title={transfer.origin}>
+                    <TableCell className="py-2">{transfer.date}</TableCell>
+                    <TableCell className="truncate-cell py-2" title={transfer.origin}>
                       {transfer.origin}
                     </TableCell>
-                    <TableCell className="max-w-[120px] truncate" title={transfer.destination}>
+                    <TableCell className="truncate-cell py-2" title={transfer.destination}>
                       {transfer.destination}
                     </TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
-                    {!isMobile && <TableCell className="text-right">{transfer.commission}%</TableCell>}
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="text-right font-medium py-2">
                       {formatCurrency(amountToPay)}
                     </TableCell>
                   </TableRow>
@@ -73,8 +69,8 @@ export function UnpaidTransfersTable({
             )}
             {transfers.length > 0 && (
               <TableRow className="bg-muted/50">
-                <TableCell colSpan={isMobile ? 4 : 6} className="text-right font-semibold">Total a cobrar:</TableCell>
-                <TableCell className="text-right font-semibold">
+                <TableCell colSpan={3} className="text-right font-semibold py-2">Total:</TableCell>
+                <TableCell className="text-right font-semibold py-2">
                   {formatCurrency(transfers.reduce((sum, transfer) => {
                     const commissionAmount = transfer.price * transfer.commission / 100;
                     return sum + (transfer.price - commissionAmount);
@@ -84,7 +80,66 @@ export function UnpaidTransfersTable({
             )}
           </TableBody>
         </Table>
-      </div>
+      ) : (
+        // Desktop view - full table with more columns and better space usage
+        <ScrollArea className="w-full">
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[110px]">Fecha</TableHead>
+                <TableHead className="w-[170px]">Colaborador</TableHead>
+                <TableHead className="w-[170px] truncate">Origen</TableHead>
+                <TableHead className="w-[170px] truncate">Destino</TableHead>
+                <TableHead className="text-right w-[100px]">Precio</TableHead>
+                <TableHead className="text-right w-[100px]">Comisión</TableHead>
+                <TableHead className="text-right w-[110px]">Importe</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {transfers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    No hay transfers pendientes de pago
+                  </TableCell>
+                </TableRow>
+              ) : (
+                transfers.map(transfer => {
+                  const commissionAmount = transfer.price * transfer.commission / 100;
+                  const amountToPay = transfer.price - commissionAmount;
+                  return (
+                    <TableRow key={transfer.id}>
+                      <TableCell>{transfer.date}</TableCell>
+                      <TableCell>{transfer.collaborator || 'N/A'}</TableCell>
+                      <TableCell className="truncate" title={transfer.origin}>
+                        {transfer.origin}
+                      </TableCell>
+                      <TableCell className="truncate" title={transfer.destination}>
+                        {transfer.destination}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">{formatCurrency(transfer.price)}</TableCell>
+                      <TableCell className="text-right">{transfer.commission}%</TableCell>
+                      <TableCell className="text-right font-medium">
+                        {formatCurrency(amountToPay)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+              {transfers.length > 0 && (
+                <TableRow className="bg-muted/50">
+                  <TableCell colSpan={6} className="text-right font-semibold">Total a cobrar:</TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {formatCurrency(transfers.reduce((sum, transfer) => {
+                      const commissionAmount = transfer.price * transfer.commission / 100;
+                      return sum + (transfer.price - commissionAmount);
+                    }, 0))}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </ScrollArea>
+      )}
     </div>
   );
 }

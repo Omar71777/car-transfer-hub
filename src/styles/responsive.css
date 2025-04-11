@@ -130,6 +130,9 @@
   /* Table cell truncation */
   .truncate-cell {
     @apply max-w-[80px] truncate;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -200,8 +203,33 @@
   @apply w-full overflow-visible;
 }
 
+/* Table cell truncation for all screen sizes */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @media (min-width: 769px) {
   .table-scroll-container {
     max-width: calc(100vw - 320px);
+  }
+  
+  /* Desktop-specific column sizing */
+  .col-date {
+    width: 110px;
+    min-width: 110px;
+  }
+  
+  .col-price {
+    width: 100px;
+    min-width: 100px;
+    text-align: right;
+  }
+  
+  .col-actions {
+    width: 100px;
+    min-width: 100px;
+    text-align: right;
   }
 }
