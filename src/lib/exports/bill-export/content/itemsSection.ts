@@ -22,15 +22,13 @@ export const generateItemsHtml = (bill: Bill): string => {
     const isExtraCharge = item.is_extra_charge;
     
     // Main item row
-    let html = `
-      <tr${isExtraCharge ? ' class="extra-charge-row"' : ''}>
-        <td${isExtraCharge ? ' style="padding-left: 20px; font-style: italic; color: #666;"' : ''}>${item.description || 'Sin descripción'}</td>
+    return `
+      <tr class="${isExtraCharge ? 'extra-charge-row' : ''}">
+        <td class="${isExtraCharge ? 'pl-6 text-muted-foreground italic' : 'font-medium'}">${item.description || 'Sin descripción'}</td>
         <td>${item.quantity}</td>
         <td class="text-right">${formatCurrency(item.unit_price)}</td>
         <td class="text-right">${formatCurrency(item.total_price)}</td>
       </tr>
     `;
-    
-    return html;
   }).join('');
 };

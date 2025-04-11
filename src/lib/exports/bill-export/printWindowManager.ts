@@ -42,52 +42,19 @@ export const createPrintWindow = (bill: Bill, companyInfo: CompanyInfo): Window 
  * Sets up event listeners and loading handlers for the print window
  */
 export const setupPrintWindowEvents = (printWindow: Window, bill: Bill): void => {
-  // Add pdf export functionality
-  printWindow.document.getElementById('export-pdf-btn')?.addEventListener('click', () => {
-    handlePdfExport(printWindow, bill.number);
-  });
-  
   // Wait for the window to fully load before enabling actions
   printWindow.onload = () => {
     setupImageLoading(printWindow);
     
-    // Force light mode on the document
-    const htmlElement = printWindow.document.documentElement;
-    htmlElement.style.colorScheme = 'light';
-    printWindow.document.body.style.backgroundColor = 'white';
+    // Make print content visible
+    const printContent = printWindow.document.getElementById('print-content');
+    if (printContent) {
+      printContent.style.opacity = '1';
+    }
     
-    // Ensure all extra charge rows are properly styled
-    const extraChargeRows = printWindow.document.querySelectorAll('.extra-charge-row');
-    extraChargeRows.forEach(row => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length > 0) {
-        // Ensure the first cell has the correct indentation styling
-        cells[0].style.paddingLeft = '20px';
-        cells[0].style.fontStyle = 'italic';
-        cells[0].style.color = '#666';
-      }
-    });
-    
-    // Make sure all elements have proper color
-    const allElements = printWindow.document.querySelectorAll('*');
-    allElements.forEach(el => {
-      const element = el as HTMLElement;
-      const style = window.getComputedStyle(element);
-      
-      // Fix invisible text
-      if (style.color === 'rgb(255, 255, 255)' || 
-          style.color.includes('rgba(255, 255, 255')) {
-        element.style.color = '#1e293b';
-      }
-      
-      // Fix transparent backgrounds
-      if (style.backgroundColor === 'rgba(0, 0, 0, 0)' || 
-          style.backgroundColor === 'transparent') {
-        if (element.classList.contains('detail-card') || 
-            element.classList.contains('notes-section')) {
-          element.style.backgroundColor = 'rgba(14, 165, 233, 0.05)';
-        }
-      }
+    // Add pdf export functionality
+    printWindow.document.getElementById('export-pdf-btn')?.addEventListener('click', () => {
+      handlePdfExport(printWindow, bill.number);
     });
   };
 };

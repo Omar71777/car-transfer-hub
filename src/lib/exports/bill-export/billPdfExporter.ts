@@ -14,55 +14,11 @@ export const exportHtmlToPdf = async (
   try {
     if (loadingCallback) loadingCallback(true);
     
-    // Force white background on the document
-    const htmlElement = contentElement.ownerDocument.documentElement;
-    htmlElement.style.colorScheme = 'light';
-    
-    // Apply temporary styles to force white background
-    const originalBg = document.body.style.backgroundColor;
-    document.body.style.backgroundColor = 'white';
-    
-    // Create a clone of the content to modify without affecting the original
-    const contentClone = contentElement.cloneNode(true) as HTMLElement;
-    document.body.appendChild(contentClone);
-    
-    // Apply white background to the element and all its children
-    contentClone.style.backgroundColor = 'white';
-    contentClone.style.color = '#1e293b';
-    
-    // Preserve table styling and ensure extra charge rows maintain their styling
-    const extraChargeRows = contentClone.querySelectorAll('.extra-charge-row');
-    extraChargeRows.forEach(row => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length > 0) {
-        // Ensure the first cell has the correct indentation styling
-        cells[0].style.paddingLeft = '20px';
-        cells[0].style.fontStyle = 'italic';
-        cells[0].style.color = '#666';
-      }
-    });
-    
-    const elementsToFix = contentClone.querySelectorAll('*');
-    elementsToFix.forEach(el => {
-      const htmlEl = el as HTMLElement;
-      
-      // Force backgrounds to white
-      const computedStyle = window.getComputedStyle(htmlEl);
-      if (computedStyle.backgroundColor === 'rgba(0, 0, 0, 0)' || 
-          computedStyle.backgroundColor === 'transparent' ||
-          computedStyle.backgroundColor.includes('rgba(0, 0, 0, 0.')) {
-        htmlEl.style.backgroundColor = 'white';
-      }
-      
-      // Force text color to be visible
-      if (computedStyle.color.includes('rgba(255, 255, 255') || 
-          computedStyle.color === 'rgb(255, 255, 255)') {
-        htmlEl.style.color = '#1e293b';
-      }
-    });
+    // Use the same content as the print view - don't clone or modify the DOM
+    // This ensures styling consistency between print and PDF
     
     // Convert to canvas with better quality settings
-    const canvas = await html2canvas(contentClone, {
+    const canvas = await html2canvas(contentElement, {
       scale: 2,
       logging: false,
       useCORS: true,
@@ -139,12 +95,6 @@ export const exportHtmlToPdf = async (
     
     // Save PDF
     pdf.save(fileName);
-    
-    // Clean up
-    document.body.style.backgroundColor = originalBg;
-    if (contentClone.parentNode) {
-      contentClone.parentNode.removeChild(contentClone);
-    }
     
     if (loadingCallback) loadingCallback(false);
     return true;
