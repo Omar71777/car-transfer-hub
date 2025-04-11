@@ -61,13 +61,22 @@ export function useCreateBill(
         // Create the main transfer item
         const description = generateTransferDescription(item.transfer);
         
+        // For dispo services, quantity is the number of hours and unit price is the hourly rate
+        let quantity = 1;
+        let unitPrice = finalBasePrice;
+        
+        if (item.transfer.serviceType === 'dispo' && item.transfer.hours) {
+          quantity = Number(item.transfer.hours);
+          unitPrice = Number(item.transfer.price);
+        }
+        
         const mainItem = {
           bill_id: bill.id,
           transfer_id: item.transfer.id,
           description: description,
-          quantity: 1,
-          unit_price: finalBasePrice,
-          total_price: finalBasePrice,
+          quantity: quantity,
+          unit_price: unitPrice,
+          total_price: quantity * unitPrice,
           is_extra_charge: false,
           parent_item_id: null
         };

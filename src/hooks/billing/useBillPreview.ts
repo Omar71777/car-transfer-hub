@@ -56,17 +56,29 @@ export function useBillPreview(
           // Create description based on service type
           const description = generateTransferDescription(transfer);
 
+          // For dispo services, quantity is hours and unit price is hourly rate
+          let unitPrice = finalBasePrice;
+          if (transfer.serviceType === 'dispo' && transfer.hours) {
+            unitPrice = Number(transfer.price || 0);
+          }
+
           // Create the main transfer item
           const transferItem = {
             transfer,
             description,
-            unitPrice: finalBasePrice,
+            unitPrice,
             extraCharges: []
           };
           
           // Add the main transfer item
           items.push(transferItem);
-          subTotal += finalBasePrice;
+          
+          // Add to subtotal (for dispo, it's hours * price)
+          if (transfer.serviceType === 'dispo' && transfer.hours) {
+            subTotal += unitPrice * Number(transfer.hours);
+          } else {
+            subTotal += unitPrice;
+          }
           
           // Add extra charges as separate items in the preview
           if (extraCharges && extraCharges.length > 0) {

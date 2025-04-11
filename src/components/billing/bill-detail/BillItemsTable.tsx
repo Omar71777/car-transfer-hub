@@ -2,6 +2,7 @@
 import React from 'react';
 import { Bill } from '@/types/billing';
 import { Card, CardContent } from '@/components/ui/card';
+import { formatDateForBill } from '@/lib/billing/calculationUtils';
 
 interface BillItemsTableProps {
   bill: Bill;
@@ -35,11 +36,11 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {bill.items && bill.items.map((item) => (
+              {bill.items && bill.items.map((item, index) => (
                 <React.Fragment key={item.id}>
-                  {/* Main transfer item */}
-                  <tr>
-                    <td className="px-3 py-2 text-sm font-medium">
+                  {/* Main transfer item or extra charge */}
+                  <tr className={item.is_extra_charge ? "bg-muted/10" : ""}>
+                    <td className={`px-3 py-2 text-sm ${item.is_extra_charge ? "pl-6 text-muted-foreground" : "font-medium"}`}>
                       {item.description}
                     </td>
                     <td className="px-3 py-2 text-sm text-right">
@@ -53,8 +54,8 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                     </td>
                   </tr>
                   
-                  {/* Extra charges for this item */}
-                  {item.extra_charges && item.extra_charges.map((charge) => (
+                  {/* Extra charges for this item - now displayed inline without separation */}
+                  {!item.is_extra_charge && item.extra_charges && item.extra_charges.map((charge) => (
                     <tr key={charge.id} className="bg-muted/10">
                       <td className="px-3 py-1 text-sm pl-6">
                         <span className="text-muted-foreground">{charge.name}</span>

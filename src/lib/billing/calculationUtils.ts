@@ -10,14 +10,30 @@ import { MinimalTransfer } from '@/lib/calculations';
 export function generateTransferDescription(transfer: Transfer, extraCharges?: any[]): string {
   let description = '';
   
+  // Format date properly (DD/MM/YYYY)
+  const formattedDate = formatDateForBill(transfer.date);
+  
   // Base description depends on service type
   if (transfer.serviceType === 'dispo') {
-    description = `Servicio de disposición (${transfer.hours} horas) - ${transfer.origin} el ${transfer.date}`;
+    description = `${formattedDate}, Servicio de disposición por horas`;
   } else {
-    description = `Traslado: ${transfer.origin} → ${transfer.destination} el ${transfer.date}`;
+    description = `${formattedDate}, Traslado: ${transfer.origin} → ${transfer.destination}`;
   }
   
   return description;
+}
+
+/**
+ * Formats date as DD/MM/YYYY for bill display
+ */
+export function formatDateForBill(dateString: string): string {
+  try {
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
+  } catch (e) {
+    // Return original if formatting fails
+    return dateString;
+  }
 }
 
 /**

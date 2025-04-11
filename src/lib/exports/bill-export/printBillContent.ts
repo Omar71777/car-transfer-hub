@@ -1,6 +1,7 @@
 
 import { Bill } from '@/types/billing';
 import { CompanyInfo } from './types';
+import { formatDateForBill } from '@/lib/billing/calculationUtils';
 
 /**
  * Formats currency values
@@ -14,18 +15,21 @@ export const formatCurrency = (amount: number) => {
  */
 export const generateItemsHtml = (bill: Bill): string => {
   return bill.items.map(item => {
+    // Determine if this is a main item or an extra charge
+    const isExtraCharge = item.is_extra_charge;
+    
     // Main item row
     let html = `
-      <tr>
-        <td>${item.description}</td>
+      <tr${isExtraCharge ? ' class="extra-charge-row"' : ''}>
+        <td${isExtraCharge ? ' style="padding-left: 20px; font-style: italic; color: #666;"' : ''}>${item.description}</td>
         <td>${item.quantity}</td>
         <td class="text-right">${formatCurrency(item.unit_price)}</td>
         <td class="text-right">${formatCurrency(item.total_price)}</td>
       </tr>
     `;
     
-    // Add extra charges if they exist
-    if (item.extra_charges && item.extra_charges.length > 0) {
+    // Add extra charges if they exist and this is not already an extra charge
+    if (!isExtraCharge && item.extra_charges && item.extra_charges.length > 0) {
       item.extra_charges.forEach(charge => {
         html += `
           <tr class="extra-charge-row">
@@ -80,8 +84,8 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
         <div>
           <div class="invoice-title">FACTURA</div>
           <div>Nº: ${bill.number}</div>
-          <div>Fecha: ${bill.date}</div>
-          <div>Vencimiento: ${bill.due_date}</div>
+          <div>Fecha: ${formatDateForBill(bill.date)}</div>
+          <div>Vencimiento: ${formatDateForBill(bill.due_date)}</div>
         </div>
         <div>
           ${companyInfo.logo ? `<img src="${companyInfo.logo}" class="company-logo" alt="Logo" />` : ''}
