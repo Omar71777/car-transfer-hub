@@ -1,53 +1,57 @@
 
-/* Status indicators and visual elements for tables */
+/* Status indicators and badges */
 
-/* Service type specific colors */
-.bg-dispo {
-  @apply bg-green-800 text-white;
-}
-
-.bg-transfer {
-  @apply bg-green-400;
-}
-
-/* Dark header styles */
-.table-header-dark {
-  @apply bg-gray-800 text-white;
-}
-
-/* Add soft background colors */
-.bg-soft-green {
-  @apply bg-green-100;
-}
-
-.bg-soft-blue {
-  @apply bg-blue-100;
-}
-
-/* Icon styles for status indicators */
-.status-icon {
-  @apply w-3.5 h-3.5 inline-flex align-middle;
-}
-
+/* Status badges */
 .status-badge {
-  @apply rounded-full px-2 py-1 inline-flex items-center gap-1;
+  @apply inline-flex items-center justify-center rounded-full px-2 py-1 text-xs;
 }
 
-.status-paid {
-  @apply bg-green-100 text-green-700;
+.status-badge-success {
+  @apply bg-green-100 text-green-800;
 }
 
-.status-pending {
-  @apply bg-amber-100 text-amber-700;
+.status-badge-warning {
+  @apply bg-amber-100 text-amber-800;
 }
 
-/* Make sure badges are compact in tables */
-.table-badge {
-  @apply px-1.5 py-0 text-xs;
+.status-badge-error {
+  @apply bg-red-100 text-red-800;
 }
 
-/* Center text in table headers and cells */
-.text-center-all th,
-.text-center-all td {
-  @apply text-center;
+.status-badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* Status dots */
+.status-dot {
+  @apply inline-block h-2 w-2 rounded-full;
+}
+
+.status-dot-success {
+  @apply bg-green-500;
+}
+
+.status-dot-warning {
+  @apply bg-amber-500;
+}
+
+.status-dot-error {
+  @apply bg-red-500;
+}
+
+.status-dot-info {
+  @apply bg-blue-500;
+}
+
+/* Payment status indicators */
+.payment-paid {
+  @apply text-green-600 font-medium;
+}
+
+.payment-pending {
+  @apply text-amber-600 font-medium;
+}
+
+.payment-overdue {
+  @apply text-red-600 font-medium;
 }
