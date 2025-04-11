@@ -164,9 +164,9 @@
   }
   
   .col-actions {
-    width: 70px;
-    min-width: 70px;
-    text-align: right;
+    width: 50px;
+    min-width: 50px;
+    text-align: center;
   }
   
   /* Optimized width for action buttons on desktop */
