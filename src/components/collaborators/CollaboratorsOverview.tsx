@@ -5,6 +5,7 @@ import { Transfer } from '@/types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
 import { Coins, UsersRound, AlertCircle, Loader2 } from 'lucide-react';
+import { calculateCommissionAmount } from '@/lib/calculations';
 
 interface CollaboratorsOverviewProps {
   transfers: Transfer[];
@@ -18,13 +19,14 @@ export function CollaboratorsOverview({ transfers, loading = false }: Collaborat
     
     // Filter out transfers without collaborators first
     const transfersWithCollaborators = transfers.filter(transfer => 
-      transfer.collaborator && transfer.collaborator.trim() !== ''
+      transfer.collaborator && transfer.collaborator.trim() !== '' && transfer.collaborator !== 'none'
     );
     
     transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
-      const commissionAmount = (transfer.price * transfer.commission) / 100;
+      // Use the correct commission calculation function
+      const commissionAmount = calculateCommissionAmount(transfer);
       
       if (!collaborators[transfer.collaborator]) {
         collaborators[transfer.collaborator] = {

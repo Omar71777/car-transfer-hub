@@ -22,7 +22,7 @@ export function CollaboratorField({ form, collaborators }: CollaboratorFieldProp
           <Select 
             onValueChange={field.onChange} 
             defaultValue={field.value}
-            value={field.value || undefined}
+            value={field.value || "none"}
           >
             <FormControl>
               <SelectTrigger>

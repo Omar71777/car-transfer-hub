@@ -21,9 +21,24 @@ const CollaboratorsPage = () => {
         const {
           data,
           error
-        } = await supabase.from('transfers').select('id, date, time, origin, destination, price, collaborator, commission, payment_status, service_type, client_id').order('date', {
-          ascending: false
-        });
+        } = await supabase
+          .from('transfers')
+          .select(`
+            id, 
+            date, 
+            time, 
+            origin, 
+            destination, 
+            price, 
+            collaborator, 
+            commission, 
+            commission_type,
+            payment_status, 
+            service_type, 
+            client_id
+          `)
+          .order('date', { ascending: false });
+          
         if (error) throw error;
 
         // Transform data to match our Transfer type
@@ -36,13 +51,14 @@ const CollaboratorsPage = () => {
           price: Number(transfer.price),
           collaborator: transfer.collaborator || '',
           commission: Number(transfer.commission),
-          commissionType: 'percentage' as const, 
+          commissionType: transfer.commission_type || 'percentage', 
           paymentStatus: transfer.payment_status || 'pending',
           clientId: transfer.client_id || '',
           serviceType: transfer.service_type || 'transfer',
           expenses: [],
           extraCharges: []
         }));
+        
         setTransfers(processedTransfers);
       } catch (error: any) {
         console.error('Error fetching transfers:', error);

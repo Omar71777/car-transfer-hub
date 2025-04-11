@@ -4,6 +4,7 @@ import { CollaboratorCard } from './CollaboratorCard';
 import { CollaboratorStat } from './types';
 import { Transfer } from '@/types';
 import { Loader2 } from 'lucide-react';
+import { calculateCommissionAmount } from '@/lib/calculations';
 
 interface CollaboratorStatsSectionProps {
   transfers: Transfer[];
@@ -17,13 +18,14 @@ export function CollaboratorStatsSection({ transfers, loading = false }: Collabo
     
     // Filter out transfers without collaborators first
     const transfersWithCollaborators = transfers.filter(transfer => 
-      transfer.collaborator && transfer.collaborator.trim() !== ''
+      transfer.collaborator && transfer.collaborator.trim() !== '' && transfer.collaborator !== 'none'
     );
     
     transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
-      const commissionAmount = (transfer.price * transfer.commission) / 100;
+      // Use the correct commission calculation function
+      const commissionAmount = calculateCommissionAmount(transfer);
       
       if (!collaboratorStats[transfer.collaborator]) {
         collaboratorStats[transfer.collaborator] = {
@@ -38,9 +40,7 @@ export function CollaboratorStatsSection({ transfers, loading = false }: Collabo
       collaboratorStats[transfer.collaborator].transferCount += 1;
       collaboratorStats[transfer.collaborator].commissionTotal += commissionAmount;
       collaboratorStats[transfer.collaborator].transfers = 
-        collaboratorStats[transfer.collaborator].transfers 
-          ? [...collaboratorStats[transfer.collaborator].transfers, transfer] 
-          : [transfer];
+        [...(collaboratorStats[transfer.collaborator].transfers || []), transfer];
     });
     
     // Calculate average commission

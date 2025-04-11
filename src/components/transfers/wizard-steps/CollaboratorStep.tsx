@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Collaborator } from '@/hooks/useCollaborators';
 import { Users } from 'lucide-react';
+import { calculateCommissionAmount } from '@/lib/calculations';
 
 interface CollaboratorStepProps {
   clients: any;
@@ -76,7 +77,7 @@ export function CollaboratorStep({ clients, collaborators, formState }: Collabor
               <Select 
                 onValueChange={field.onChange} 
                 defaultValue={field.value}
-                value={field.value || undefined}
+                value={field.value || "none"}
               >
                 <FormControl>
                   <SelectTrigger>
