@@ -4,7 +4,6 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { truncate } from '@/lib/utils';
 import { Transfer } from '@/types';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
 import { PaymentStatusCell } from './PaymentStatusCell';
@@ -12,6 +11,7 @@ import { PriceDisplay } from './PriceDisplay';
 import { TransferRowActions } from './TransferRowActions';
 import { TruncatedCell } from './TruncatedCell';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -32,6 +32,8 @@ export function TransferTableRow({
   selected = false,
   onSelectRow
 }: TransferTableRowProps) {
+  const isMobile = useIsMobile();
+  
   const handleSelect = (checked: boolean) => {
     if (onSelectRow) {
       onSelectRow(transfer.id, checked);
@@ -43,12 +45,12 @@ export function TransferTableRow({
   
   // Determine row background color based on service type
   const rowClass = cn(
-    transfer.service_type === 'dispo' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-pink-50 hover:bg-pink-100',
+    transfer.serviceType === 'dispo' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-pink-50 hover:bg-pink-100',
     selected && 'bg-primary/10'
   );
   
   // Use "Propio" if no collaborator is assigned
-  const collaboratorName = transfer.collaborator_name || "Propio";
+  const collaboratorName = transfer.collaborator || "Propio";
   
   return (
     <TableRow className={rowClass}>
@@ -64,29 +66,30 @@ export function TransferTableRow({
       <TableCell className="font-medium">{formattedDate}</TableCell>
       <TableCell>{format(new Date(transfer.time), 'HH:mm')}</TableCell>
       <TableCell>
-        <ServiceTypeBadge serviceType={transfer.service_type} />
+        <ServiceTypeBadge serviceType={transfer.serviceType} />
       </TableCell>
       <TableCell>
-        <TruncatedCell value={transfer.pickup_location} maxWidth="max-w-[150px]" />
+        <TruncatedCell text={transfer.origin} maxWidth="max-w-[150px]" />
       </TableCell>
       <TableCell>
-        <TruncatedCell value={transfer.dropoff_location} maxWidth="max-w-[150px]" />
+        <TruncatedCell text={transfer.destination || ''} maxWidth="max-w-[150px]" />
       </TableCell>
       <TableCell>
-        <TruncatedCell value={transfer.client_name} maxWidth="max-w-[100px]" />
+        <TruncatedCell text={transfer.client?.name || ''} maxWidth="max-w-[100px]" />
       </TableCell>
       <TableCell>
-        <TruncatedCell value={collaboratorName} maxWidth="max-w-[100px]" />
+        <TruncatedCell text={collaboratorName} maxWidth="max-w-[100px]" />
       </TableCell>
       <TableCell>
-        <PriceDisplay amount={transfer.price} />
+        <PriceDisplay price={transfer.price} />
       </TableCell>
       <TableCell>
-        <PaymentStatusCell paymentStatus={transfer.payment_status || 'pending'} />
+        <PaymentStatusCell paymentStatus={transfer.paymentStatus || 'pending'} />
       </TableCell>
       <TableCell>
         <TransferRowActions 
           transferId={transfer.id} 
+          isMobile={isMobile}
           onEdit={() => onEdit(transfer)} 
           onDelete={() => onDelete(transfer.id)}
           onAddExpense={() => onAddExpense(transfer.id)}

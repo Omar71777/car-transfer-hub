@@ -18,8 +18,8 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
   const [searchTerm, setSearchTerm] = useState('');
   
   // Extract unique values for filter dropdowns
-  const uniqueCollaborators = [...new Set(transfers.map(t => t.collaborator_name || "Propio"))];
-  const uniqueClients = [...new Set(transfers.map(t => t.client_name))];
+  const uniqueCollaborators = [...new Set(transfers.map(t => t.collaborator || "Propio"))];
+  const uniqueClients = [...new Set(transfers.map(t => t.client?.name).filter(Boolean))];
   
   // Current year and month
   const currentYear = new Date().getFullYear();
@@ -73,23 +73,23 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
     if (collaboratorFilter !== 'all') {
       filtered = filtered.filter(transfer => {
         if (collaboratorFilter === 'Propio') {
-          return !transfer.collaborator_name;
+          return !transfer.collaborator;
         }
-        return transfer.collaborator_name === collaboratorFilter;
+        return transfer.collaborator === collaboratorFilter;
       });
     }
     
     // Client filter
     if (clientFilter !== 'all') {
-      filtered = filtered.filter(transfer => transfer.client_name === clientFilter);
+      filtered = filtered.filter(transfer => transfer.client?.name === clientFilter);
     }
     
     // Search term (for location search)
     if (searchTerm.trim() !== '') {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(transfer => 
-        transfer.pickup_location.toLowerCase().includes(term) || 
-        transfer.dropoff_location.toLowerCase().includes(term)
+        transfer.origin.toLowerCase().includes(term) || 
+        (transfer.destination && transfer.destination.toLowerCase().includes(term))
       );
     }
     
