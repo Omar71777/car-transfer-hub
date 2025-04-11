@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, DollarSign, CreditCard } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 interface SummaryStatsProps {
   stats: {
@@ -21,7 +22,7 @@ export const SummaryStats = ({ stats }: SummaryStatsProps) => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Ingresos Totales</p>
-              <h3 className="text-2xl font-bold text-blue-500 mt-1">{stats.totalIncome.toFixed(2)}€</h3>
+              <h3 className="text-2xl font-bold text-blue-500 mt-1">{formatCurrency(stats.totalIncome)}</h3>
             </div>
             <TrendingUp className="h-10 w-10 text-blue-500/40" />
           </div>
@@ -33,7 +34,7 @@ export const SummaryStats = ({ stats }: SummaryStatsProps) => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Gastos Totales</p>
-              <h3 className="text-2xl font-bold text-red-500 mt-1">{stats.totalExpenses.toFixed(2)}€</h3>
+              <h3 className="text-2xl font-bold text-red-500 mt-1">{formatCurrency(stats.totalExpenses)}</h3>
             </div>
             <TrendingDown className="h-10 w-10 text-red-500/40" />
           </div>
@@ -45,7 +46,7 @@ export const SummaryStats = ({ stats }: SummaryStatsProps) => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Comisiones</p>
-              <h3 className="text-2xl font-bold text-amber-500 mt-1">{stats.totalCommissions.toFixed(2)}€</h3>
+              <h3 className="text-2xl font-bold text-amber-500 mt-1">{formatCurrency(stats.totalCommissions)}</h3>
             </div>
             <CreditCard className="h-10 w-10 text-amber-500/40" />
           </div>
@@ -57,7 +58,7 @@ export const SummaryStats = ({ stats }: SummaryStatsProps) => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Beneficio Neto</p>
-              <h3 className="text-2xl font-bold text-green-500 mt-1">{stats.netProfit.toFixed(2)}€</h3>
+              <h3 className="text-2xl font-bold text-green-500 mt-1">{formatCurrency(stats.netProfit)}</h3>
             </div>
             <DollarSign className="h-10 w-10 text-green-500/40" />
           </div>

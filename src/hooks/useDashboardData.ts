@@ -44,7 +44,8 @@ export function useDashboardData() {
             origin, 
             destination, 
             discount_type, 
-            discount_value
+            discount_value,
+            date
           `)
           .order('date', { ascending: false });
           
@@ -75,12 +76,13 @@ export function useDashboardData() {
           origin: transfer.origin,
           destination: transfer.destination,
           extraCharges: allExtraCharges[index] || [],
+          date: transfer.date
         }));
         
         // Load expenses from Supabase
         const { data: expenses, error: expensesError } = await supabase
           .from('expenses')
-          .select('amount, concept')
+          .select('amount, concept, date')
           .order('date', { ascending: false });
           
         if (expensesError) throw expensesError;
@@ -97,6 +99,15 @@ export function useDashboardData() {
         const expensesTotal = expenses.reduce((sum, expense) => 
           sum + (Number(expense.amount) || 0), 0);
         const totalExpenses = expensesTotal + totalCommissions;
+        
+        console.log('Dashboard data calculation:', {
+          transfers: formattedTransfers.length,
+          totalIncome,
+          totalExpenses,
+          totalCommissions,
+          expensesTotal,
+          netIncome: totalIncome - totalExpenses
+        });
         
         // Calculate stats
         setStats({

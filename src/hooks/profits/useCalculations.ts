@@ -12,17 +12,33 @@ export const calculateCommission = (transfer: Transfer): number => {
 
 // Calculate main stats from transfers and expenses
 export const calculateStats = (transfers: Transfer[], expenses: Expense[]): ProfitStats => {
+  // Calculate total income using the shared calculation function
   const totalIncome = transfers.reduce((sum, transfer) => sum + calculateTotalPrice(transfer), 0);
   
-  // Sum commissions using the correct calculation function
+  // Sum commissions using the shared calculation function
   const totalCommissions = transfers.reduce((sum, transfer) => 
     sum + calculateCommissionAmount(transfer), 0);
   
+  // Sum all regular expenses (not including commissions)
   const regularExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  
+  // Total expenses is regular expenses plus commissions
   const totalExpenses = regularExpenses + totalCommissions;
   
+  // Net profit is income minus total expenses
   const netProfit = totalIncome - totalExpenses;
+  
+  // Profit margin as a percentage (avoid division by zero)
   const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
+  
+  console.log('Profit stats calculation:', {
+    totalIncome,
+    totalExpenses,
+    totalCommissions,
+    regularExpenses,
+    netProfit,
+    profitMargin
+  });
   
   return {
     totalIncome,
