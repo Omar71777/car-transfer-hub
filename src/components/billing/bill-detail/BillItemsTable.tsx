@@ -13,6 +13,17 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
 
+  // Log bill items for debugging
+  console.log('Rendering BillItemsTable with:', {
+    billId: bill.id,
+    itemsCount: bill.items?.length || 0,
+    itemsDetails: bill.items?.map(item => ({
+      id: item.id, 
+      description: item.description,
+      is_extra_charge: item.is_extra_charge
+    }))
+  });
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -36,11 +47,10 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {bill.items && bill.items.map((item, index) => (
-                <React.Fragment key={item.id}>
-                  {/* Main transfer item or extra charge */}
-                  <tr className={item.is_extra_charge ? "bg-muted/10" : ""}>
-                    <td className={`px-3 py-2 text-sm ${item.is_extra_charge ? "pl-6 text-muted-foreground" : "font-medium"}`}>
+              {bill.items && bill.items.length > 0 ? (
+                bill.items.map((item, index) => (
+                  <tr key={item.id} className={item.is_extra_charge ? "bg-muted/10" : ""}>
+                    <td className={`px-3 py-2 text-sm ${item.is_extra_charge ? "pl-6 text-muted-foreground italic" : "font-medium"}`}>
                       {item.description}
                     </td>
                     <td className="px-3 py-2 text-sm text-right">
@@ -53,26 +63,14 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                       {formatCurrency(item.total_price)}
                     </td>
                   </tr>
-                  
-                  {/* Extra charges for this item - now displayed inline without separation */}
-                  {!item.is_extra_charge && item.extra_charges && item.extra_charges.map((charge) => (
-                    <tr key={charge.id} className="bg-muted/10">
-                      <td className="px-3 py-1 text-sm pl-6">
-                        <span className="text-muted-foreground">{charge.name}</span>
-                      </td>
-                      <td className="px-3 py-1 text-sm text-right">
-                        1
-                      </td>
-                      <td className="px-3 py-1 text-sm text-right">
-                        {formatCurrency(charge.price)}
-                      </td>
-                      <td className="px-3 py-1 text-sm text-right">
-                        {formatCurrency(charge.price)}
-                      </td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="px-3 py-4 text-center text-sm text-muted-foreground">
+                    No hay elementos en esta factura
+                  </td>
+                </tr>
+              )}
             </tbody>
             <tfoot>
               <tr>

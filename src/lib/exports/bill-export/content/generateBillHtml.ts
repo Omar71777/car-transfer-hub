@@ -20,7 +20,12 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
   console.log('Generating bill HTML with:', { 
     billId: bill.id, 
     itemsCount: bill.items?.length || 0,
-    hasClient: !!bill.client
+    hasClient: !!bill.client,
+    itemsDetails: bill.items?.map(i => ({ 
+      id: i.id,
+      description: i.description,
+      is_extra_charge: i.is_extra_charge
+    }))
   });
   
   const itemsHTML = generateItemsHtml(bill);
@@ -137,6 +142,9 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
         // Force light mode for the document
         document.documentElement.style.colorScheme = 'light';
         document.body.style.backgroundColor = 'white';
+        
+        // Log details about the bill items for debugging
+        console.log('Bill items in HTML:', ${JSON.stringify(bill.items?.length || 0)});
       </script>
     </body>
     </html>

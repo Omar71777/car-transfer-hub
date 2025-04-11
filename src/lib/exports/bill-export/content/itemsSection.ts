@@ -14,6 +14,9 @@ export const generateItemsHtml = (bill: Bill): string => {
     `;
   }
 
+  // Debug the items being rendered
+  console.log('Generating HTML for bill items:', bill.items.length, 'items');
+
   return bill.items.map(item => {
     // Determine if this is a main item or an extra charge
     const isExtraCharge = item.is_extra_charge;

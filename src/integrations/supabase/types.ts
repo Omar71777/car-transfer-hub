@@ -14,7 +14,10 @@ export type Database = {
           bill_id: string
           created_at: string
           description: string
+          extra_charge_id: string | null
           id: string
+          is_extra_charge: boolean | null
+          parent_item_id: string | null
           quantity: number
           total_price: number
           transfer_id: string
@@ -24,7 +27,10 @@ export type Database = {
           bill_id: string
           created_at?: string
           description: string
+          extra_charge_id?: string | null
           id?: string
+          is_extra_charge?: boolean | null
+          parent_item_id?: string | null
           quantity?: number
           total_price: number
           transfer_id: string
@@ -34,7 +40,10 @@ export type Database = {
           bill_id?: string
           created_at?: string
           description?: string
+          extra_charge_id?: string | null
           id?: string
+          is_extra_charge?: boolean | null
+          parent_item_id?: string | null
           quantity?: number
           total_price?: number
           transfer_id?: string
@@ -46,6 +55,20 @@ export type Database = {
             columns: ["bill_id"]
             isOneToOne: false
             referencedRelation: "bills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bill_items_extra_charge_id_fkey"
+            columns: ["extra_charge_id"]
+            isOneToOne: false
+            referencedRelation: "extra_charges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bill_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "bill_items"
             referencedColumns: ["id"]
           },
           {

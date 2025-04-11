@@ -18,6 +18,19 @@ export function useCreateBill(
 
   const createBill = useCallback(async (billData: CreateBillDto) => {
     try {
+      console.log('Starting bill creation with', {
+        client: billData.clientId,
+        transfersCount: billData.transferIds.length,
+        taxRate: billData.taxRate,
+        taxApp: billData.taxApplication,
+      });
+
+      // Validate required data
+      if (!billData.clientId || !billData.transferIds.length) {
+        console.error('Missing required bill data', billData);
+        throw new Error('Datos incompletos para crear factura');
+      }
+
       const preview = await calculateBillPreview(
         billData.clientId,
         billData.transferIds,
@@ -34,7 +47,12 @@ export function useCreateBill(
         clientId: billData.clientId,
         taxRate: billData.taxRate,
         taxApplication: billData.taxApplication,
-        itemsCount: preview.items.length
+        itemsCount: preview.items.length,
+        previewItems: preview.items.map(item => ({
+          transfer_id: item.transfer.id,
+          description: item.description,
+          extraCharges: item.extraCharges?.length || 0
+        }))
       });
       
       const billNumber = await generateBillNumber();
@@ -113,6 +131,8 @@ export function useCreateBill(
         
         // Create and add extra charges as separate items
         if (item.extraCharges && item.extraCharges.length > 0) {
+          console.log(`Adding ${item.extraCharges.length} extra charges for transfer ${item.transfer.id}`);
+          
           // Add the extra charges as separate rows
           for (const charge of item.extraCharges) {
             if (!charge.name || !charge.price) {
@@ -146,20 +166,27 @@ export function useCreateBill(
         throw new Error('No se pudieron crear elementos de factura');
       }
       
-      console.log(`Inserting ${billItems.length} bill items`);
+      console.log(`Inserting ${billItems.length} bill items:`, billItems);
       
-      // Insert all bill items
-      const { data: insertedItems, error: itemsError } = await supabase
-        .from('bill_items')
-        .insert(billItems)
-        .select();
+      // Insert all bill items with explicit error handling
+      try {
+        const { data: insertedItems, error: itemsError } = await supabase
+          .from('bill_items')
+          .insert(billItems)
+          .select();
 
-      if (itemsError) {
-        console.error('Error inserting bill items:', itemsError);
-        throw itemsError;
+        if (itemsError) {
+          console.error('Error inserting bill items:', itemsError);
+          // Don't throw here - we want to return the bill ID even if items fail
+          toast.error('La factura se creó, pero hubo un problema con los elementos');
+        } else {
+          console.log(`Successfully inserted ${insertedItems?.length || 0} bill items`);
+        }
+      } catch (itemInsertError) {
+        console.error('Exception inserting bill items:', itemInsertError);
+        // Don't throw here - return the bill ID even if items fail
+        toast.error('La factura se creó, pero hubo un problema con los elementos');
       }
-      
-      console.log(`Successfully inserted ${insertedItems?.length || 0} bill items`);
       
       toast.success('Factura creada con éxito');
       return bill.id;

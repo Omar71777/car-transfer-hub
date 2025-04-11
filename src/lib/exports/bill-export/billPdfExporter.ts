@@ -30,6 +30,18 @@ export const exportHtmlToPdf = async (
     contentClone.style.backgroundColor = 'white';
     contentClone.style.color = '#1e293b';
     
+    // Preserve table styling and ensure extra charge rows maintain their styling
+    const extraChargeRows = contentClone.querySelectorAll('.extra-charge-row');
+    extraChargeRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length > 0) {
+        // Ensure the first cell has the correct indentation styling
+        cells[0].style.paddingLeft = '20px';
+        cells[0].style.fontStyle = 'italic';
+        cells[0].style.color = '#666';
+      }
+    });
+    
     const elementsToFix = contentClone.querySelectorAll('*');
     elementsToFix.forEach(el => {
       const htmlEl = el as HTMLElement;

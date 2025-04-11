@@ -21,7 +21,12 @@ export const createPrintWindow = (bill: Bill, companyInfo: CompanyInfo): Window 
     id: bill.id,
     number: bill.number,
     itemsCount: bill.items?.length || 0,
-    hasClient: !!bill.client
+    hasClient: !!bill.client,
+    items: bill.items?.map(item => ({
+      id: item.id,
+      description: item.description,
+      is_extra_charge: item.is_extra_charge
+    }))
   });
 
   // Generate and write the bill HTML content
@@ -50,6 +55,18 @@ export const setupPrintWindowEvents = (printWindow: Window, bill: Bill): void =>
     const htmlElement = printWindow.document.documentElement;
     htmlElement.style.colorScheme = 'light';
     printWindow.document.body.style.backgroundColor = 'white';
+    
+    // Ensure all extra charge rows are properly styled
+    const extraChargeRows = printWindow.document.querySelectorAll('.extra-charge-row');
+    extraChargeRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length > 0) {
+        // Ensure the first cell has the correct indentation styling
+        cells[0].style.paddingLeft = '20px';
+        cells[0].style.fontStyle = 'italic';
+        cells[0].style.color = '#666';
+      }
+    });
     
     // Make sure all elements have proper color
     const allElements = printWindow.document.querySelectorAll('*');

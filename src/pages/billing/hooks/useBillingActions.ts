@@ -37,6 +37,7 @@ export function useBillingActions() {
       // Fetch the complete bill with items
       const fullBill = await getBill(bill.id);
       if (fullBill) {
+        console.log('Viewing bill with items:', fullBill.items);
         setViewBill(fullBill);
         setIsViewDialogOpen(true);
       }
@@ -87,15 +88,25 @@ export function useBillingActions() {
     
     setIsCreating(true);
     try {
+      console.log('Creating bill with values:', values);
       const billId = await createBill(values);
+      console.log('Bill creation result billId:', billId);
+      
+      // Always close the dialog and refresh the bills list
+      setIsFormDialogOpen(false);
+      fetchBills();
+      setActiveTab('bills');
+      
       if (billId) {
-        setIsFormDialogOpen(false);
-        fetchBills();
-        setActiveTab('bills');
+        toast.success('Factura creada con éxito');
+      } else {
+        toast.error('Hubo un problema al crear la factura. Se creó sin items.');
       }
     } catch (error) {
       console.error('Error creating bill:', error);
       toast.error('Error al crear la factura');
+      // Still close the dialog even on error
+      setIsFormDialogOpen(false);
     } finally {
       setIsCreating(false);
     }
@@ -129,6 +140,8 @@ export function useBillingActions() {
     } catch (error) {
       console.error('Error updating bill:', error);
       toast.error('Error al actualizar la factura');
+      // Close dialog even on error
+      setIsEditDialogOpen(false);
     }
   };
 
@@ -145,6 +158,8 @@ export function useBillingActions() {
     } catch (error) {
       console.error('Error deleting bill:', error);
       toast.error('Error al eliminar la factura');
+      // Close dialog even on error
+      setIsDeleteDialogOpen(false);
     }
   };
 
