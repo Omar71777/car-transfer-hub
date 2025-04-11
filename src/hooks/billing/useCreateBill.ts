@@ -1,12 +1,13 @@
 
 import { useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { CreateBillDto } from '@/types/billing';
 import { toast } from 'sonner';
+import { CreateBillDto } from '@/types/billing';
 import { useBillPreview } from './useBillPreview';
 import { useBillNumber } from './useBillNumber';
-import { calculateBasePrice, calculateDiscountAmount } from '@/lib/calculations';
-import { generateTransferDescription, generateExtraChargeDescription } from '@/lib/billing/calculationUtils';
+import { createBillRecord } from './bill-creation/createBillRecord';
+import { prepareBillItems } from './bill-creation/prepareBillItems';
+import { saveBillItems } from './bill-creation/saveBillItems';
+import { markTransfersBilled } from './bill-creation/markTransfersBilled';
 
 export function useCreateBill(
   getClient: (id: string) => Promise<any>,
@@ -31,6 +32,7 @@ export function useCreateBill(
         throw new Error('Datos incompletos para crear factura');
       }
 
+      // Calculate bill preview
       const preview = await calculateBillPreview(
         billData.clientId,
         billData.transferIds,
@@ -43,165 +45,30 @@ export function useCreateBill(
         throw new Error('No se pudo calcular la vista previa de la factura');
       }
       
-      console.log('Creating bill with preview:', {
-        clientId: billData.clientId,
-        taxRate: billData.taxRate,
-        taxApplication: billData.taxApplication,
-        itemsCount: preview.items.length,
-        previewItems: preview.items.map(item => ({
-          transfer_id: item.transfer.id,
-          description: item.description,
-          extraCharges: item.extraCharges?.length || 0
-        }))
-      });
-      
+      // Generate bill number
       const billNumber = await generateBillNumber();
       
-      // Create the bill
-      const { data: bill, error: billError } = await supabase
-        .from('bills')
-        .insert([{
-          client_id: billData.clientId,
-          number: billNumber,
-          date: billData.date,
-          due_date: billData.dueDate,
-          sub_total: preview.subTotal,
-          tax_rate: billData.taxRate,
-          tax_amount: preview.taxAmount,
-          tax_application: billData.taxApplication,
-          total: preview.total,
-          notes: billData.notes,
-          status: 'draft',
-          user_id: (await supabase.auth.getUser()).data.user?.id
-        }])
-        .select()
-        .single();
-
-      if (billError) {
-        console.error('Error creating bill:', billError);
-        throw billError;
-      }
+      // 1. Create the bill record
+      const bill = await createBillRecord(
+        billData.clientId,
+        billNumber,
+        billData.date,
+        billData.dueDate,
+        preview,
+        billData.taxRate,
+        billData.taxApplication,
+        billData.notes
+      );
       
-      if (!bill) {
-        throw new Error('Failed to create bill record');
-      }
+      // 2. Prepare bill items for insertion
+      const billItems = prepareBillItems(bill.id, preview);
       
-      console.log('Bill created:', bill);
+      // 3. Save bill items
+      await saveBillItems(billItems);
       
-      // Prepare bill items array
-      const billItems = [];
-      
-      // Process each item from the preview
-      for (const item of preview.items) {
-        if (!item.transfer || !item.transfer.id) {
-          console.error('Missing transfer data in item:', item);
-          continue;
-        }
-        
-        // Calculate the original base price (before any discounts)
-        const basePrice = calculateBasePrice(item.transfer);
-        // Calculate the discount amount separately
-        const discountAmount = calculateDiscountAmount(item.transfer);
-        // Calculate the final price after discounts
-        const finalPrice = basePrice - discountAmount;
-        
-        // Create the main transfer item
-        let description = item.description || generateTransferDescription(item.transfer);
-        
-        // Add discount information to the description if there is a discount
-        if (discountAmount > 0 && !description.includes('Descuento')) {
-          const discountInfo = item.transfer.discountType === 'percentage' 
-            ? `Descuento: ${item.transfer.discountValue}%` 
-            : `Descuento: ${item.transfer.discountValue}€`;
-          description += ` (${discountInfo})`;
-        }
-        
-        // For dispo services, quantity is the number of hours and unit price is the hourly rate
-        let quantity = 1;
-        let unitPrice = basePrice; // Store the original price before discount
-        let totalPrice = finalPrice; // Store the final price after discount
-        
-        if (item.transfer.serviceType === 'dispo' && item.transfer.hours) {
-          quantity = Number(item.transfer.hours);
-          unitPrice = Number(item.transfer.price); // The hourly rate
-          
-          // Calculate total price: hours * hourly rate - discount
-          const fullPrice = unitPrice * quantity;
-          totalPrice = fullPrice - discountAmount;
-        }
-        
-        const mainItem = {
-          bill_id: bill.id,
-          transfer_id: item.transfer.id,
-          description: description,
-          quantity: quantity,
-          unit_price: unitPrice, // Original price before discount
-          total_price: totalPrice, // Final price after discount
-          is_extra_charge: false,
-          parent_item_id: null
-        };
-        
-        // Add the main transfer item
-        billItems.push(mainItem);
-        
-        // Create and add extra charges as separate items
-        if (item.extraCharges && item.extraCharges.length > 0) {
-          console.log(`Adding ${item.extraCharges.length} extra charges for transfer ${item.transfer.id}`);
-          
-          // Add the extra charges as separate rows
-          for (const charge of item.extraCharges) {
-            if (!charge.name || !charge.price) {
-              console.error('Invalid extra charge:', charge);
-              continue;
-            }
-            
-            billItems.push({
-              bill_id: bill.id,
-              transfer_id: item.transfer.id,
-              description: charge.name,
-              quantity: 1,
-              unit_price: charge.price,
-              total_price: charge.price, // For extra charges, no discount applies
-              is_extra_charge: true,
-              extra_charge_id: charge.id,
-              parent_item_id: null // Will be set after main item is inserted
-            });
-          }
-        }
-        
-        // Mark the transfer as billed
-        const updateResult = await updateTransfer(item.transfer.id, { billed: true });
-        if (!updateResult) {
-          console.warn(`Failed to mark transfer ${item.transfer.id} as billed`);
-        }
-      }
-      
-      if (billItems.length === 0) {
-        console.error('No valid bill items to insert');
-        throw new Error('No se pudieron crear elementos de factura');
-      }
-      
-      console.log(`Inserting ${billItems.length} bill items:`, billItems);
-      
-      // Insert all bill items with explicit error handling
-      try {
-        const { data: insertedItems, error: itemsError } = await supabase
-          .from('bill_items')
-          .insert(billItems)
-          .select();
-
-        if (itemsError) {
-          console.error('Error inserting bill items:', itemsError);
-          // Don't throw here - we want to return the bill ID even if items fail
-          toast.error('La factura se creó, pero hubo un problema con los elementos');
-        } else {
-          console.log(`Successfully inserted ${insertedItems?.length || 0} bill items`);
-        }
-      } catch (itemInsertError) {
-        console.error('Exception inserting bill items:', itemInsertError);
-        // Don't throw here - return the bill ID even if items fail
-        toast.error('La factura se creó, pero hubo un problema con los elementos');
-      }
+      // 4. Mark transfers as billed
+      const transferIds = preview.items.map(item => item.transfer.id).filter(Boolean);
+      await markTransfersBilled(transferIds, updateTransfer);
       
       toast.success('Factura creada con éxito');
       return bill.id;
