@@ -65,12 +65,17 @@ export function TransferSummaryDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh]">
+      <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh] glass-card">
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">
-            <span>Detalles del Transfer</span>
+            <span className="text-xl font-semibold">Detalles del Transfer</span>
             {!loading && transfer && (
-              <Button variant="outline" size="sm" onClick={handlePrint} className="ml-auto">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handlePrint} 
+                className="ml-auto hover:bg-primary/10"
+              >
                 <Printer className="h-4 w-4 mr-2" />
                 Imprimir
               </Button>
@@ -84,31 +89,37 @@ export function TransferSummaryDialog({
             <span className="ml-2">Cargando detalles...</span>
           </div>
         ) : transfer ? (
-          <div className="space-y-6 py-2">
+          <div className="space-y-6 py-2 animate-fade-in">
             {transfer.client && (
-              <ClientInfoSection client={transfer.client} />
+              <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <ClientInfoSection client={transfer.client} />
+              </div>
             )}
             
-            <ServiceDetailsSection values={{
-              serviceType: transfer.serviceType,
-              date: transfer.date,
-              time: transfer.time,
-              origin: transfer.origin,
-              destination: transfer.destination,
-              hours: transfer.hours,
-              paymentStatus: transfer.paymentStatus
-            }} />
+            <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+              <ServiceDetailsSection values={{
+                serviceType: transfer.serviceType,
+                date: transfer.date,
+                time: transfer.time,
+                origin: transfer.origin,
+                destination: transfer.destination,
+                hours: transfer.hours,
+                paymentStatus: transfer.paymentStatus
+              }} />
+            </div>
             
             {transfer.collaborator && (
-              <CollaboratorInfoSection 
-                values={{
-                  collaborator: transfer.collaborator,
-                  commission: transfer.commission,
-                  commissionType: transfer.commissionType
-                }} 
-                commissionAmountEuros={calculateCommissionAmount(transfer)} 
-                formatCurrency={formatCurrency} 
-              />
+              <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <CollaboratorInfoSection 
+                  values={{
+                    collaborator: transfer.collaborator,
+                    commission: transfer.commission,
+                    commissionType: transfer.commissionType
+                  }} 
+                  commissionAmountEuros={calculateCommissionAmount(transfer)} 
+                  formatCurrency={formatCurrency} 
+                />
+              </div>
             )}
             
             {/* Show expenses if any exist */}
@@ -152,26 +163,28 @@ export function TransferSummaryDialog({
               const totalPrice = calculateTotalPrice(transfer) - commissionAmountEuros;
               
               return (
-                <PricingDetailSection 
-                  values={{
-                    serviceType: transfer.serviceType,
-                    price: transfer.price,
-                    hours: transfer.hours,
-                    discountType: transfer.discountType,
-                    discountValue: transfer.discountValue,
-                    collaborator: transfer.collaborator,
-                    commission: transfer.commission,
-                    commissionType: transfer.commissionType
-                  }}
-                  basePrice={basePrice}
-                  validExtraCharges={validExtraCharges}
-                  totalExtraCharges={totalExtraCharges}
-                  discountAmount={discountAmount}
-                  subtotalAfterDiscount={subtotalAfterDiscount}
-                  commissionAmountEuros={commissionAmountEuros}
-                  totalPrice={totalPrice}
-                  formatCurrency={formatCurrency}
-                />
+                <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <PricingDetailSection 
+                    values={{
+                      serviceType: transfer.serviceType,
+                      price: transfer.price,
+                      hours: transfer.hours,
+                      discountType: transfer.discountType,
+                      discountValue: transfer.discountValue,
+                      collaborator: transfer.collaborator,
+                      commission: transfer.commission,
+                      commissionType: transfer.commissionType
+                    }}
+                    basePrice={basePrice}
+                    validExtraCharges={validExtraCharges}
+                    totalExtraCharges={totalExtraCharges}
+                    discountAmount={discountAmount}
+                    subtotalAfterDiscount={subtotalAfterDiscount}
+                    commissionAmountEuros={commissionAmountEuros}
+                    totalPrice={totalPrice}
+                    formatCurrency={formatCurrency}
+                  />
+                </div>
               );
             })()}
           </div>
