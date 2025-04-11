@@ -14,8 +14,8 @@ import { TransferFormValues } from '../schema/transferSchema';
 
 interface BasicInfoTabProps {
   form: UseFormReturn<TransferFormValues>;
-  serviceType: 'transfer' | 'dispo';
-  setServiceType: (type: 'transfer' | 'dispo') => void;
+  serviceType: 'transfer' | 'dispo' | 'shuttle';
+  setServiceType: (type: 'transfer' | 'dispo' | 'shuttle') => void;
   clients: Client[];
   collaborators: Collaborator[];
 }
@@ -39,7 +39,7 @@ export function BasicInfoTab({
               <RadioGroup
                 onValueChange={(value) => {
                   field.onChange(value);
-                  setServiceType(value as 'transfer' | 'dispo');
+                  setServiceType(value as 'transfer' | 'dispo' | 'shuttle');
                 }}
                 defaultValue={field.value}
                 className="flex flex-col space-y-1"
@@ -53,6 +53,10 @@ export function BasicInfoTab({
                   <RadioGroupItem value="dispo" id="dispo-type" />
                   <Label htmlFor="dispo-type">Disposición (Por horas)</Label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="shuttle" id="shuttle-type" />
+                  <Label htmlFor="shuttle-type">Shuttle (Compartido)</Label>
+                </div>
               </RadioGroup>
             </FormControl>
             <FormMessage />
@@ -62,7 +66,7 @@ export function BasicInfoTab({
       
       <DateTimeFields form={form} />
       
-      {serviceType === 'transfer' ? (
+      {serviceType === 'transfer' || serviceType === 'shuttle' ? (
         <>
           <FormField
             control={form.control}

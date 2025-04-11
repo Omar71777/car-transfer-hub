@@ -4,7 +4,7 @@ import * as z from 'zod';
 export const transferSchema = z.object({
   date: z.string().min(1, { message: 'La fecha es requerida' }),
   time: z.string().optional(),
-  serviceType: z.enum(['transfer', 'dispo'], { 
+  serviceType: z.enum(['transfer', 'dispo', 'shuttle'], { 
     required_error: 'El tipo de servicio es requerido' 
   }).default('transfer'),
   origin: z.string().min(1, { message: 'El origen es requerido' }),
@@ -16,10 +16,10 @@ export const transferSchema = z.object({
         ? (ctx as any).data?.serviceType || 'transfer'  // Use type assertion to access data
         : 'transfer';
         
-      if (serviceType === 'transfer' && (!val || val.trim() === '')) {
+      if ((serviceType === 'transfer' || serviceType === 'shuttle') && (!val || val.trim() === '')) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'El destino es requerido para transfers'
+          message: 'El destino es requerido para transfers y shuttles'
         });
         return false;
       }

@@ -39,7 +39,9 @@ export function TransferForm({
     fetchClients
   } = useClients();
 
-  const [serviceType, setServiceType] = useState<'transfer' | 'dispo'>(initialValues?.serviceType || 'transfer');
+  const [serviceType, setServiceType] = useState<'transfer' | 'dispo' | 'shuttle'>(
+    initialValues?.serviceType || 'transfer'
+  );
   
   const { 
     extraCharges, 
