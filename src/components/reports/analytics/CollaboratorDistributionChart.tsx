@@ -31,8 +31,8 @@ export function CollaboratorDistributionChart({ data, loading }: CollaboratorDis
 
   if (data.length === 0) {
     return (
-      <div className="flex justify-center items-center h-80">
-        <p>No hay datos de colaboradores disponibles</p>
+      <div className="flex justify-center items-center h-80 text-muted-foreground">
+        <p>No hay datos de colaboradores disponibles. Añade transfers con colaboradores asignados.</p>
       </div>
     );
   }

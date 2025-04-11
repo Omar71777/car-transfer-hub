@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { Transfer } from '@/types';
-import { Expense } from '@/types';
-import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
+import { Transfer, Expense } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 
 interface StatsOverviewProps {
@@ -11,9 +9,17 @@ interface StatsOverviewProps {
 }
 
 export function StatsOverview({ transfers, expenses }: StatsOverviewProps) {
-  const totalIncome = transfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
-  const totalCommissions = transfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
-  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  // Calculate total income, expenses, and commissions
+  const totalIncome = transfers.reduce((sum, t) => sum + (Number(t.price) || 0), 0);
+  
+  // Calculate commissions
+  const totalCommissions = transfers.reduce((sum, t) => {
+    if (!t.commission) return sum;
+    return sum + ((Number(t.price) || 0) * Number(t.commission) / 100);
+  }, 0);
+  
+  // Calculate expenses
+  const totalExpenses = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

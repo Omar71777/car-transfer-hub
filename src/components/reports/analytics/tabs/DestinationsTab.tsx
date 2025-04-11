@@ -31,8 +31,8 @@ export function DestinationsTab({ destinationsData, transfers, loading, isMobile
               <p>Cargando datos...</p>
             </div>
           ) : destinationsData.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <p>No hay datos disponibles</p>
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              <p>No hay datos disponibles. Registra transfers para ver estadísticas de destinos.</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
@@ -64,7 +64,11 @@ export function DestinationsTab({ destinationsData, transfers, loading, isMobile
           <CardTitle>Lista de Destinos</CardTitle>
         </CardHeader>
         <CardContent>
-          <DestinationsTable destinationsData={destinationsData} transfers={transfers} isMobile={isMobile} />
+          <DestinationsTable 
+            destinationsData={destinationsData} 
+            transfers={transfers} 
+            isMobile={isMobile} 
+          />
         </CardContent>
       </Card>
     </div>
@@ -78,6 +82,8 @@ interface DestinationsTableProps {
 }
 
 function DestinationsTable({ destinationsData, transfers, isMobile }: DestinationsTableProps) {
+  const totalTransfers = transfers.length;
+  
   return (
     <div className={isMobile ? "overflow-x-auto -mx-4 px-4 mobile-scroll" : ""}>
       <table className="w-full">
@@ -89,21 +95,24 @@ function DestinationsTable({ destinationsData, transfers, isMobile }: Destinatio
           </tr>
         </thead>
         <tbody>
-          {destinationsData.slice(0, 10).map((destination, index) => (
-            <tr key={index} className="border-b">
-              <td className="py-2 capitalize">{destination.name}</td>
-              <td className="py-2 text-right">{destination.value}</td>
-              <td className="py-2 text-right">
-                {((destination.value / transfers.length) * 100).toFixed(1)}%
-              </td>
-            </tr>
-          ))}
-          {destinationsData.length === 0 && (
+          {destinationsData.length === 0 ? (
             <tr>
               <td colSpan={3} className="text-center py-8 text-muted-foreground">
                 No hay datos disponibles
               </td>
             </tr>
+          ) : (
+            destinationsData.slice(0, 10).map((destination, index) => (
+              <tr key={index} className="border-b">
+                <td className="py-2 capitalize">{destination.name}</td>
+                <td className="py-2 text-right">{destination.value}</td>
+                <td className="py-2 text-right">
+                  {totalTransfers > 0 
+                    ? ((destination.value / totalTransfers) * 100).toFixed(1) 
+                    : "0"}%
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </table>

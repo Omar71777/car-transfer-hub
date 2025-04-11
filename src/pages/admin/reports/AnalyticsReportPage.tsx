@@ -9,6 +9,8 @@ import { MonthlyTab } from '@/components/reports/analytics/tabs/MonthlyTab';
 import { DistributionTab } from '@/components/reports/analytics/tabs/DistributionTab';
 import { ClientsTab } from '@/components/reports/analytics/tabs/ClientsTab';
 import { DestinationsTab } from '@/components/reports/analytics/tabs/DestinationsTab';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 const AnalyticsReportPage = () => {
   const { 
@@ -23,10 +25,23 @@ const AnalyticsReportPage = () => {
   
   const isMobile = useIsMobile();
 
+  const hasData = transfers.length > 0 || expenses.length > 0;
+
   return (
     <MainLayout>
-      <div className="py-6">
+      <div className="py-6 px-4">
         <PageHeader />
+        
+        {!loading && !hasData && (
+          <Alert className="mb-6">
+            <Info className="h-4 w-4" />
+            <AlertTitle>No hay datos disponibles</AlertTitle>
+            <AlertDescription>
+              Para visualizar los informes analíticos, necesitas añadir transfers y gastos. 
+              Vuelve a esta página cuando hayas registrado algunas operaciones.
+            </AlertDescription>
+          </Alert>
+        )}
         
         <Tabs defaultValue="monthly" className="w-full">
           <TabsList className="mb-4 flex flex-wrap">

@@ -34,8 +34,8 @@ export function MonthlyEvolutionChart({ data, loading }: MonthlyEvolutionChartPr
 
   if (data.length === 0) {
     return (
-      <div className="flex justify-center items-center h-80">
-        <p>No hay datos disponibles</p>
+      <div className="flex justify-center items-center h-80 text-muted-foreground">
+        <p>No hay datos disponibles. Añade transfers y gastos para ver estadísticas mensuales.</p>
       </div>
     );
   }

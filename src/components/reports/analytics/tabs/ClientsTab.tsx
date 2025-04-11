@@ -84,24 +84,25 @@ function ClientTopTable({ clientData, isMobile }: ClientTopTableProps) {
           </tr>
         </thead>
         <tbody>
-          {clientData.slice(0, 10).map((client, index) => (
-            <tr key={index} className="border-b">
-              <td className="py-2">{client.name}</td>
-              <td className="py-2 text-right">{client.count}</td>
-              <td className="py-2 text-right font-medium">
-                {formatCurrency(client.value)}
-              </td>
-              <td className="py-2 text-right">
-                {formatCurrency(client.value / client.count)}
-              </td>
-            </tr>
-          ))}
-          {clientData.length === 0 && (
+          {clientData.length === 0 ? (
             <tr>
               <td colSpan={4} className="text-center py-8 text-muted-foreground">
                 No hay datos disponibles
               </td>
             </tr>
+          ) : (
+            clientData.slice(0, 10).map((client, index) => (
+              <tr key={index} className="border-b">
+                <td className="py-2">{client.name}</td>
+                <td className="py-2 text-right">{client.count}</td>
+                <td className="py-2 text-right font-medium">
+                  {formatCurrency(client.value)}
+                </td>
+                <td className="py-2 text-right">
+                  {formatCurrency(client.value / client.count)}
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </table>

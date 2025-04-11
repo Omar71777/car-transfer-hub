@@ -4,6 +4,7 @@ import { useExpenses } from '@/hooks/useExpenses';
 import { useClients } from '@/hooks/useClients';
 import { parseISO, format, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useMemo } from 'react';
 
 export interface MonthlyData {
   name: string;
@@ -30,15 +31,22 @@ export function useAnalyticsData() {
   const { clients, loading: clientsLoading } = useClients();
   
   // Generate monthly data
-  const generateMonthlyData = (): MonthlyData[] => {
+  const monthlyData = useMemo(() => {
     const months: Record<string, MonthlyData> = {};
     
     // Process transfers
     transfers.forEach(transfer => {
       try {
-        const date = parseISO(transfer.date);
-        if (!isValid(date)) {
-          console.warn(`Invalid date format in transfer: ${transfer.date}`);
+        // Make sure we have a valid date
+        let date;
+        try {
+          date = parseISO(transfer.date);
+          if (!isValid(date)) {
+            console.warn(`Invalid date format in transfer: ${transfer.date}`);
+            return;
+          }
+        } catch (error) {
+          console.warn(`Error parsing date: ${transfer.date}`, error);
           return;
         }
         
@@ -57,8 +65,13 @@ export function useAnalyticsData() {
           };
         }
         
-        months[monthYear].ingresos += transfer.price;
-        const commission = (transfer.price * transfer.commission) / 100;
+        // Add to income
+        const price = Number(transfer.price) || 0;
+        months[monthYear].ingresos += price;
+        
+        // Calculate commission
+        const commission = transfer.commission ? 
+          (price * Number(transfer.commission)) / 100 : 0;
         months[monthYear].comisiones += commission;
       } catch (error) {
         console.error('Error processing transfer date:', error);
@@ -68,16 +81,22 @@ export function useAnalyticsData() {
     // Process expenses
     expenses.forEach(expense => {
       try {
-        const date = parseISO(expense.date);
-        if (!isValid(date)) {
-          console.warn(`Invalid date format in expense: ${expense.date}`);
+        let date;
+        try {
+          date = parseISO(expense.date);
+          if (!isValid(date)) {
+            console.warn(`Invalid date format in expense: ${expense.date}`);
+            return;
+          }
+        } catch (error) {
+          console.warn(`Error parsing date: ${expense.date}`, error);
           return;
         }
         
         const monthYear = format(date, 'yyyy-MM', { locale: es });
         
         if (months[monthYear]) {
-          months[monthYear].gastos += expense.amount;
+          months[monthYear].gastos += Number(expense.amount) || 0;
         }
       } catch (error) {
         console.error('Error processing expense date:', error);
@@ -93,10 +112,10 @@ export function useAnalyticsData() {
     return Object.entries(months)
       .sort(([a], [b]) => b.localeCompare(a))
       .map(([_, data]) => data);
-  };
+  }, [transfers, expenses]);
   
   // Generate data for collaborator distribution
-  const generateCollaboratorData = (): CollaboratorData[] => {
+  const collaboratorData = useMemo(() => {
     const collaborators: Record<string, number> = {};
     
     // Filter transfers with collaborators
@@ -109,27 +128,29 @@ export function useAnalyticsData() {
       if (!collaborators[collaborator]) {
         collaborators[collaborator] = 0;
       }
-      collaborators[collaborator] += transfer.price;
+      collaborators[collaborator] += Number(transfer.price) || 0;
     });
     
     return Object.entries(collaborators)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  };
+  }, [transfers]);
   
   // Generate data for client distribution
-  const generateClientData = (): ClientData[] => {
+  const clientData = useMemo(() => {
     const clientsData: Record<string, { value: number, count: number }> = {};
     
     transfers.forEach(transfer => {
       if (transfer.clientId) {
-        const clientName = transfer.client?.name || 'Cliente sin nombre';
+        // Find client name
+        const client = clients.find(c => c.id === transfer.clientId);
+        const clientName = client ? client.name : 'Cliente desconocido';
         
         if (!clientsData[clientName]) {
           clientsData[clientName] = { value: 0, count: 0 };
         }
         
-        clientsData[clientName].value += transfer.price;
+        clientsData[clientName].value += Number(transfer.price) || 0;
         clientsData[clientName].count += 1;
       }
     });
@@ -141,13 +162,15 @@ export function useAnalyticsData() {
         count: data.count 
       }))
       .sort((a, b) => b.value - a.value);
-  };
+  }, [transfers, clients]);
   
   // Get destinations distribution
-  const generateDestinationsData = () => {
+  const destinationsData = useMemo(() => {
     const destinations: Record<string, number> = {};
     
     transfers.forEach(transfer => {
+      if (!transfer.destination) return;
+      
       const destination = transfer.destination;
       
       if (!destinations[destination]) {
@@ -160,16 +183,16 @@ export function useAnalyticsData() {
     return Object.entries(destinations)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  };
+  }, [transfers]);
   
   return {
     transfers,
     expenses,
     clients,
-    monthlyData: generateMonthlyData(),
-    collaboratorData: generateCollaboratorData(),
-    clientData: generateClientData(),
-    destinationsData: generateDestinationsData(),
+    monthlyData,
+    collaboratorData,
+    clientData,
+    destinationsData,
     loading: transfersLoading || expensesLoading || clientsLoading
   };
 }
