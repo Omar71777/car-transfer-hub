@@ -17,6 +17,9 @@ export function useBillingDialogState() {
   // Loading states
   const [isCreating, setIsCreating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Error state
+  const [error, setError] = useState<string | null>(null);
 
   const resetDialogStates = () => {
     // First, ensure any open dialogs are closed
@@ -30,6 +33,7 @@ export function useBillingDialogState() {
     setTimeout(() => {
       setSelectedBill(null);
       // Don't reset viewBill as it might be needed for the next operation
+      setError(null);
     }, 50);
   };
 
@@ -59,6 +63,10 @@ export function useBillingDialogState() {
     setIsCreating,
     isLoading,
     setIsLoading,
+    
+    // Error state
+    error,
+    setError,
     
     // Utility functions
     resetDialogStates

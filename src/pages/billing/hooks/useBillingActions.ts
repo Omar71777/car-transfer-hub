@@ -6,6 +6,7 @@ import { useBillDeleteHandler } from './handlers/useBillDeleteHandler';
 import { useBillCreateHandler } from './handlers/useBillCreateHandler';
 import { Bill, CreateBillDto } from '@/types/billing';
 import { useBilling } from '@/hooks/useBilling';
+import { useEffect } from 'react';
 
 export function useBillingActions() {
   const { 
@@ -19,7 +20,8 @@ export function useBillingActions() {
     deleteBill, 
     printBill,
     exportBillCsv,
-    updateBillTransfers
+    updateBillTransfers,
+    error: fetchError
   } = useBilling();
 
   // Centralized dialog state management
@@ -42,8 +44,17 @@ export function useBillingActions() {
     setIsCreating,
     isLoading,
     setIsLoading,
+    error,
+    setError,
     resetDialogStates
   } = useBillingDialogState();
+
+  // Sync error state from fetch to dialog state
+  useEffect(() => {
+    if (fetchError) {
+      setError(fetchError);
+    }
+  }, [fetchError, setError]);
 
   // Get handlers but don't use their internal state
   const {
@@ -88,44 +99,63 @@ export function useBillingActions() {
 
   // Integrated handlers that work with the central state
   const handleViewBill = async (bill: Bill) => {
-    // Close any open dialogs first
-    resetDialogStates();
-    
-    // Now open the requested dialog
-    await baseHandleViewBill(
-      bill,
-      setViewBill,
-      setIsViewDialogOpen,
-      setIsLoading
-    );
+    try {
+      // Close any open dialogs first
+      resetDialogStates();
+      setError(null);
+      
+      // Now open the requested dialog
+      await baseHandleViewBill(
+        bill,
+        setViewBill,
+        setIsViewDialogOpen,
+        setIsLoading
+      );
+    } catch (err: any) {
+      console.error('Error viewing bill:', err);
+      setError(`Error al ver factura: ${err.message}`);
+    }
   };
 
   const handleEditBill = async (bill: Bill) => {
-    // Close any open dialogs first
-    resetDialogStates();
-    
-    // Now open the requested dialog
-    await baseHandleEditBill(
-      bill,
-      setSelectedBill,
-      setIsEditDialogOpen,
-      setIsLoading
-    );
+    try {
+      // Close any open dialogs first
+      resetDialogStates();
+      setError(null);
+      
+      // Now open the requested dialog
+      await baseHandleEditBill(
+        bill,
+        setSelectedBill,
+        setIsEditDialogOpen,
+        setIsLoading
+      );
+    } catch (err: any) {
+      console.error('Error editing bill:', err);
+      setError(`Error al editar factura: ${err.message}`);
+    }
   };
 
   const handleDeleteBill = (bill: Bill) => {
-    // Close any open dialogs first
-    resetDialogStates();
-    
-    // Now open the requested dialog
-    baseHandleDeleteBill(
-      bill,
-      setSelectedBill,
-      setIsDeleteDialogOpen
-    );
+    try {
+      // Close any open dialogs first
+      resetDialogStates();
+      setError(null);
+      
+      // Now open the requested dialog
+      baseHandleDeleteBill(
+        bill,
+        setSelectedBill,
+        setIsDeleteDialogOpen
+      );
+    } catch (err: any) {
+      console.error('Error preparing bill deletion:', err);
+      setError(`Error al preparar la eliminación de factura: ${err.message}`);
+    }
   };
 
   const handleFormSubmit = async (values: CreateBillDto) => {
+    setError(null);
     await baseHandleFormSubmit(values);
   };
 
@@ -135,6 +165,7 @@ export function useBillingActions() {
     addedTransferIds: string[] = [],
     removedTransferIds: string[] = []
   ) => {
+    setError(null);
     await baseHandleEditSubmit(
       id, 
       data, 
@@ -147,6 +178,7 @@ export function useBillingActions() {
   };
 
   const handleConfirmDelete = async () => {
+    setError(null);
     await baseHandleConfirmDelete(
       selectedBill,
       setIsDeleteDialogOpen,
@@ -155,6 +187,7 @@ export function useBillingActions() {
   };
 
   const handleStatusChange = async (status: Bill['status']) => {
+    setError(null);
     await baseHandleStatusChange(
       status, 
       viewBill, 
@@ -182,6 +215,7 @@ export function useBillingActions() {
     selectedBill,
     viewBill,
     isCreating,
+    error,
     
     // Operations
     fetchBills,
