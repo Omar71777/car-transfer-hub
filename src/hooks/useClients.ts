@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Client } from '@/types/client';
+import { Client, CreateClientDto } from '@/types/client';
 import { toast } from 'sonner';
 
 export function useClients() {
