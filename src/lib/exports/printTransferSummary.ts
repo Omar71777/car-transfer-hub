@@ -51,7 +51,7 @@ export function printTransferSummary(transfer: Transfer) {
   const totalPrice = calculateTotalPrice(transfer) - commissionAmountEuros;
   
   // Calculate total expenses
-  const totalExpenses = transfer.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const totalExpenses = transfer.expenses?.reduce((sum, expense) => sum + expense.amount, 0) || 0;
 
   // Generate the HTML content
   printWindow.document.write(`
@@ -59,173 +59,321 @@ export function printTransferSummary(transfer: Transfer) {
       <head>
         <title>Resumen del Transfer #${transfer.id}</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
-          h1 { color: #333; margin-bottom: 20px; }
-          h2 { color: #555; margin-top: 30px; margin-bottom: 10px; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-          .section { margin-bottom: 25px; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-          .grid div { padding: 5px 0; }
-          .label { color: #666; font-size: 14px; }
-          .value { font-weight: 500; }
-          .expenses-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px; margin-top: 10px; }
-          .expenses-header { font-weight: bold; background-color: #f5f5f5; padding: 8px 5px; }
-          .expenses-row { padding: 5px; border-bottom: 1px solid #eee; }
-          .text-right { text-align: right; }
-          .total-row { font-weight: bold; border-top: 2px solid #ddd; padding-top: 10px; margin-top: 10px; }
-          .print-button { display: block; margin: 40px auto; padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; }
-          .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #999; }
+          body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background-color: #f5f8fc;
+            color: #333;
+            line-height: 1.5;
+          }
+          .container {
+            max-width: 800px;
+            margin: 0 auto;
+          }
+          .print-header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          h1 {
+            color: #0088e6;
+            margin-bottom: 15px;
+            font-size: 28px;
+          }
+          .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+          }
+          .card h2 {
+            color: #333;
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+          }
+          .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+          }
+          .label {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 2px;
+          }
+          .value {
+            font-weight: 500;
+            font-size: 15px;
+          }
+          .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+          }
+          .separator {
+            height: 1px;
+            background-color: #eee;
+            margin: 12px 0;
+          }
+          .expenses-header, .expense-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 10px;
+            padding: 8px 5px;
+          }
+          .expenses-header {
+            font-weight: bold;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 8px;
+          }
+          .expense-row {
+            border-bottom: 1px solid #f0f0f0;
+          }
+          .text-right {
+            text-align: right;
+          }
+          .text-primary {
+            color: #0088e6;
+          }
+          .text-green {
+            color: #22c55e;
+          }
+          .text-amber {
+            color: #f59e0b;
+          }
+          .total-row {
+            font-weight: bold;
+            margin-top: 10px;
+          }
+          .print-button {
+            display: block;
+            margin: 40px auto;
+            padding: 10px 20px;
+            background: #0088e6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+          }
+          .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+          }
           @media print {
-            .print-button { display: none; }
+            body {
+              background-color: white;
+              padding: 0;
+            }
+            .card {
+              box-shadow: none;
+              break-inside: avoid;
+            }
+            .print-button {
+              display: none;
+            }
           }
         </style>
       </head>
       <body>
-        <h1>Resumen del Transfer</h1>
-        
-        ${transfer.client ? `
-        <div class="section">
-          <h2>Información del Cliente</h2>
-          <div class="grid">
-            <div>
-              <div class="label">Cliente</div>
-              <div class="value">${transfer.client.name}</div>
-            </div>
-            <div>
-              <div class="label">Email</div>
-              <div class="value">${transfer.client.email || 'No especificado'}</div>
-            </div>
+        <div class="container">
+          <div class="print-header">
+            <h1>Resumen del Transfer</h1>
           </div>
-        </div>
-        ` : ''}
-        
-        <div class="section">
-          <h2>Detalles del Servicio</h2>
-          <div class="grid">
-            <div>
-              <div class="label">Tipo de servicio</div>
-              <div class="value">${transfer.serviceType === 'transfer' ? 'Transfer' : 'Disposición'}</div>
-            </div>
-            <div>
-              <div class="label">Fecha y hora</div>
-              <div class="value">${formatDate(transfer.date)} ${transfer.time || ''}</div>
-            </div>
-            
-            ${transfer.serviceType === 'transfer' ? `
-            <div>
-              <div class="label">Origen</div>
-              <div class="value">${transfer.origin}</div>
-            </div>
-            <div>
-              <div class="label">Destino</div>
-              <div class="value">${transfer.destination || ''}</div>
-            </div>
-            ` : `
-            <div>
-              <div class="label">Punto de inicio</div>
-              <div class="value">${transfer.origin}</div>
-            </div>
-            <div>
-              <div class="label">Horas contratadas</div>
-              <div class="value">${transfer.hours} ${Number(transfer.hours) === 1 ? 'hora' : 'horas'}</div>
-            </div>
-            `}
-            
-            <div>
-              <div class="label">Estado de pago</div>
-              <div class="value">${transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente de pago'}</div>
-            </div>
-          </div>
-        </div>
-        
-        ${transfer.collaborator ? `
-        <div class="section">
-          <h2>Información del Colaborador</h2>
-          <div class="grid">
-            <div>
-              <div class="label">Colaborador</div>
-              <div class="value">${transfer.collaborator}</div>
-            </div>
-            <div>
-              <div class="label">Comisión</div>
-              <div class="value">
-                ${transfer.commission}${transfer.commissionType === 'percentage' ? '%' : '€'} 
-                (${formatCurrency(commissionAmountEuros)})
+          
+          ${transfer.client ? `
+          <div class="card">
+            <h2>Información del Cliente</h2>
+            <div class="grid">
+              <div>
+                <div class="label">Cliente</div>
+                <div class="value">${transfer.client.name}</div>
+              </div>
+              <div>
+                <div class="label">Email</div>
+                <div class="value">${transfer.client.email || 'No especificado'}</div>
               </div>
             </div>
           </div>
-        </div>
-        ` : ''}
-        
-        <div class="section">
-          <h2>Detalles de Precios</h2>
-          <div class="grid">
-            <div>
-              <div class="label">Precio base</div>
-              <div class="value">${formatCurrency(basePrice)}</div>
-            </div>
-            
-            ${transfer.discountType && transfer.discountValue ? `
-            <div>
-              <div class="label">Descuento (${transfer.discountType === 'percentage' ? transfer.discountValue + '%' : formatCurrency(Number(transfer.discountValue))})</div>
-              <div class="value">-${formatCurrency(discountAmount)}</div>
-            </div>
-            ` : ''}
-            
-            ${validExtraCharges.length > 0 ? `
-            <div>
-              <div class="label">Cargos adicionales</div>
-              <div class="value">+${formatCurrency(totalExtraCharges)}</div>
-            </div>
-            ` : ''}
-            
-            <div>
-              <div class="label">Subtotal</div>
-              <div class="value">${formatCurrency(subtotalAfterDiscount)}</div>
-            </div>
-            
-            ${commissionAmountEuros > 0 ? `
-            <div>
-              <div class="label">Comisión del colaborador</div>
-              <div class="value">-${formatCurrency(commissionAmountEuros)}</div>
-            </div>
-            ` : ''}
-            
-            <div>
-              <div class="label">Precio final</div>
-              <div class="value">${formatCurrency(totalPrice)}</div>
+          ` : ''}
+          
+          <div class="card">
+            <h2>Detalles del Servicio</h2>
+            <div class="grid">
+              <div>
+                <div class="label">Tipo de servicio</div>
+                <div class="value">${transfer.serviceType === 'transfer' ? 'Transfer' : 'Disposición'}</div>
+              </div>
+              <div>
+                <div class="label">Fecha y hora</div>
+                <div class="value">${formatDate(transfer.date)} ${transfer.time || ''}</div>
+              </div>
+              
+              ${transfer.serviceType === 'transfer' ? `
+              <div>
+                <div class="label">Origen</div>
+                <div class="value">${transfer.origin}</div>
+              </div>
+              <div>
+                <div class="label">Destino</div>
+                <div class="value">${transfer.destination || ''}</div>
+              </div>
+              ` : `
+              <div>
+                <div class="label">Punto de inicio</div>
+                <div class="value">${transfer.origin}</div>
+              </div>
+              <div>
+                <div class="label">Horas contratadas</div>
+                <div class="value">${transfer.hours} ${Number(transfer.hours) === 1 ? 'hora' : 'horas'}</div>
+              </div>
+              `}
+              
+              <div>
+                <div class="label">Estado de pago</div>
+                <div class="value">${transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente de pago'}</div>
+              </div>
             </div>
           </div>
-        </div>
-        
-        ${transfer.expenses && transfer.expenses.length > 0 ? `
-        <div class="section">
-          <h2>Gastos Asociados</h2>
-          <div class="expenses-grid">
-            <div class="expenses-header">Fecha</div>
-            <div class="expenses-header">Concepto</div>
-            <div class="expenses-header text-right">Importe</div>
-            
-            ${transfer.expenses.map(expense => `
-            <div class="expenses-row">${formatDate(expense.date)}</div>
-            <div class="expenses-row">${expense.concept}</div>
-            <div class="expenses-row text-right">${formatCurrency(expense.amount)}</div>
-            `).join('')}
-            
-            <div class="expenses-row total-row"></div>
-            <div class="expenses-row total-row">Total gastos:</div>
-            <div class="expenses-row total-row text-right">${formatCurrency(totalExpenses)}</div>
+          
+          ${transfer.collaborator ? `
+          <div class="card">
+            <h2>Información del Colaborador</h2>
+            <div class="grid">
+              <div>
+                <div class="label">Colaborador</div>
+                <div class="value">${transfer.collaborator}</div>
+              </div>
+              <div>
+                <div class="label">Comisión</div>
+                <div class="value">
+                  ${transfer.commission}${transfer.commissionType === 'percentage' ? '%' : '€'} 
+                  <span style="color: #666; font-size: 13px;">
+                    (${formatCurrency(commissionAmountEuros)})
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          ` : ''}
+          
+          <div class="card">
+            <h2>Detalles de Precios</h2>
+            <div>
+              ${values.serviceType === 'dispo' ? `
+              <div class="flex-between">
+                <div>Precio base (${values.price}€ × ${values.hours} horas)</div>
+                <div>${formatCurrency(basePrice)}</div>
+              </div>
+              ` : `
+              <div class="flex-between">
+                <div>Precio base</div>
+                <div>${formatCurrency(basePrice)}</div>
+              </div>
+              `}
+              
+              ${transfer.discountType && transfer.discountValue ? `
+              <div class="flex-between" style="color: #22c55e;">
+                <div>Descuento ${transfer.discountType === 'percentage' ? `(${transfer.discountValue}%)` : ''}</div>
+                <div>-${formatCurrency(discountAmount)}</div>
+              </div>
+              ` : ''}
+              
+              <div class="separator"></div>
+              
+              ${validExtraCharges.length > 0 ? 
+                validExtraCharges.map(charge => `
+                <div class="flex-between">
+                  <div>${charge.name}</div>
+                  <div>${formatCurrency(Number(charge.price) || 0)}</div>
+                </div>
+                `).join('') + `
+                <div class="flex-between" style="font-weight: 500;">
+                  <div>Subtotal cargos extra</div>
+                  <div>${formatCurrency(totalExtraCharges)}</div>
+                </div>
+                ` : ''}
+              
+              <div class="separator"></div>
+              
+              <div class="flex-between" style="font-weight: 600;">
+                <div>Subtotal</div>
+                <div>${formatCurrency(subtotalAfterDiscount)}</div>
+              </div>
+              
+              ${commissionAmountEuros > 0 ? `
+              <div class="flex-between" style="color: #f59e0b;">
+                <div>Comisión colaborador ${transfer.commissionType === 'percentage' ? `(${transfer.commission}%)` : ''}</div>
+                <div>-${formatCurrency(commissionAmountEuros)}</div>
+              </div>
+              ` : ''}
+              
+              <div class="separator"></div>
+              
+              <div class="flex-between" style="font-weight: 700;">
+                <div>TOTAL</div>
+                <div>${formatCurrency(totalPrice)}</div>
+              </div>
+            </div>
+          </div>
+          
+          ${transfer.expenses && transfer.expenses.length > 0 ? `
+          <div class="card">
+            <h2>Gastos Asociados</h2>
+            <div>
+              <div class="expenses-header">
+                <div>Fecha</div>
+                <div>Concepto</div>
+                <div class="text-right">Importe</div>
+              </div>
+              
+              <div style="max-height: 220px; overflow-y: auto;">
+                ${transfer.expenses.map(expense => `
+                <div class="expense-row">
+                  <div>${formatDate(expense.date)}</div>
+                  <div>${expense.concept}</div>
+                  <div class="text-right">${formatCurrency(expense.amount)}</div>
+                </div>
+                `).join('')}
+              </div>
+              
+              <div class="separator"></div>
+              
+              <div class="flex-between total-row">
+                <div>Total gastos:</div>
+                <div class="text-primary">${formatCurrency(totalExpenses)}</div>
+              </div>
+            </div>
+          </div>
+          ` : ''}
+          
+          <button class="print-button" onclick="window.print();">Imprimir Resumen</button>
+          
+          <div class="footer">
+            Impreso el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}
           </div>
         </div>
-        ` : ''}
-        
-        <button class="print-button" onclick="window.print();">Imprimir Resumen</button>
-        
-        <div class="footer">
-          Impreso el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}
-        </div>
+        <script>
+          // Fix issue with values variable
+          const values = {
+            serviceType: '${transfer.serviceType}',
+            price: ${transfer.price},
+            hours: ${transfer.hours || 1}
+          };
+        </script>
       </body>
     </html>
   `);
   
   printWindow.document.close();
 }
+
