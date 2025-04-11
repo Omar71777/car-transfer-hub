@@ -23,7 +23,7 @@ const MobileSidebarToggle = () => {
       onClick={() => setOpenMobile(!openMobile)}
       aria-label="Toggle menu"
     >
-      <Menu className="h-5 w-5" />
+      <Menu className="h-5 w-5 text-charcoal" />
       <span className="sr-only">Toggle menu</span>
     </Button>
   );

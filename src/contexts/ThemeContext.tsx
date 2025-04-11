@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark';
+type Theme = 'light';
 
 interface ThemeContextType {
   theme: Theme;
@@ -20,36 +20,19 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check for stored preference
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'dark' || storedTheme === 'light') {
-      return storedTheme;
-    }
-    
-    // Check for system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    
-    return 'light';
-  });
+  const [theme] = useState<Theme>('light');
 
   useEffect(() => {
-    // Update localStorage
-    localStorage.setItem('theme', theme);
+    // Remove dark class from body
+    document.body.classList.remove('dark');
     
-    // Update body class for CSS theme switching
-    if (theme === 'dark') {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [theme]);
+    // Force light mode
+    localStorage.setItem('theme', 'light');
+  }, []);
 
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  // These functions are kept for API compatibility but do nothing
+  const setTheme = () => {};
+  const toggleTheme = () => {};
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>

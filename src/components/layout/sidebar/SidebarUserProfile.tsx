@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { UserProfile } from '@/types';
@@ -23,15 +24,15 @@ export const SidebarUserProfile: React.FC<SidebarUserProfileProps> = ({
     }
     return profile.email || 'Usuario';
   };
-  return <div className="px-4 py-6 flex items-center bg-ibiza-800">
+  return <div className="px-4 py-6 flex items-center bg-soft-beige dark:bg-charcoal-dark">
       <Avatar className="h-9 w-9 mr-2">
-        <AvatarFallback className="text-ibiza-500">{getInitials()}</AvatarFallback>
+        <AvatarFallback className="bg-warm/10 text-warm-dark">{getInitials()}</AvatarFallback>
       </Avatar>
       <div className="flex flex-col justify-center overflow-hidden">
-        <p className="text-sm font-medium truncate">
+        <p className="text-sm font-medium truncate text-charcoal dark:text-soft-beige">
           {fullName()}
         </p>
-        <p className="text-xs truncate text-slate-300">
+        <p className="text-xs truncate text-charcoal-light dark:text-soft-beige/70">
           {profile?.email || 'usuario@ejemplo.com'}
         </p>
       </div>

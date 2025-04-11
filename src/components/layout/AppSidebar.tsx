@@ -8,7 +8,6 @@ import { SidebarUserProfile } from './sidebar/SidebarUserProfile';
 import { SidebarMainMenu } from './sidebar/SidebarMainMenu';
 import { SidebarUserMenu } from './sidebar/SidebarUserMenu';
 import { SidebarAdminMenu } from './sidebar/SidebarAdminMenu';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { SidebarFooter } from '@/components/ui/sidebar';
 
 export const AppSidebar = () => {
@@ -28,9 +27,8 @@ export const AppSidebar = () => {
       {isAdmin && <SidebarAdminMenu />}
       
       <SidebarFooter className="mt-auto border-t border-border/30 py-4">
-        <div className="flex items-center justify-between px-4 py-2">
-          <span className="text-xs text-muted-foreground">Tema</span>
-          <ThemeToggle className="hover:bg-accent/10 hover:text-accent-foreground rounded-lg" />
+        <div className="px-4 py-2 text-xs text-muted-foreground">
+          Car Transfer Hub © {new Date().getFullYear()}
         </div>
       </SidebarFooter>
     </Sidebar>
