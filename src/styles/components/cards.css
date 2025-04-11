@@ -1,11 +1,11 @@
 
 /* Enhanced component styles */
 .glass-card {
-  @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg transition-all hover:shadow-xl;
+  @apply bg-white/95 backdrop-blur-sm border border-soft-beige shadow-card rounded-xl transition-all hover:shadow-hover;
 }
 
 .dark .glass-card {
-  @apply bg-black/40 backdrop-blur-sm border border-white/10 shadow-lg transition-all hover:shadow-xl;
+  @apply bg-charcoal-dark/90 backdrop-blur-sm border border-charcoal shadow-lg transition-all hover:shadow-xl;
 }
 
 .shine-effect {
@@ -23,31 +23,89 @@
   background: linear-gradient(
     to bottom right,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.08) 50%,
     rgba(255, 255, 255, 0) 100%
   );
   transform: rotate(30deg);
   animation: shine 6s infinite linear;
 }
 
+.dark .shine-effect::after {
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
 .stat-card {
-  @apply glass-card shine-effect p-5 rounded-xl flex flex-col justify-between;
-  min-height: 140px;
+  @apply glass-card shine-effect p-6 rounded-xl flex flex-col justify-between;
+  min-height: 160px;
 }
 
 /* Driver card styles */
 .driver-card {
-  @apply relative overflow-hidden rounded-lg border p-4 transition-all hover:shadow-md;
+  @apply relative overflow-hidden rounded-xl border p-5 transition-all hover:shadow-hover bg-white dark:bg-charcoal-dark;
 }
 
 .driver-card-header {
-  @apply flex justify-between items-center mb-2;
+  @apply flex justify-between items-center mb-3;
 }
 
 .driver-card-body {
-  @apply space-y-1;
+  @apply space-y-2;
 }
 
 .driver-actions {
-  @apply flex gap-2;
+  @apply flex gap-2 mt-3;
+}
+
+/* New modern card styles */
+.feature-card {
+  @apply glass-card p-6 flex flex-col gap-4;
+}
+
+.feature-card-icon {
+  @apply w-12 h-12 flex items-center justify-center bg-soft-beige dark:bg-charcoal rounded-full text-charcoal dark:text-soft-beige mb-2;
+}
+
+.feature-card-title {
+  @apply text-lg font-medium;
+}
+
+.feature-card-description {
+  @apply text-muted-foreground;
+}
+
+/* Gradient cards */
+.gradient-card {
+  @apply rounded-xl p-6 text-white relative overflow-hidden transition-all hover:shadow-hover;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+}
+
+.gradient-card.warm {
+  --gradient-start: #E6B980;
+  --gradient-end: #EACDA3;
+}
+
+.gradient-card.cool {
+  --gradient-start: #D3E4FD;
+  --gradient-end: #F1F0FB;
+  @apply text-charcoal;
+}
+
+.gradient-card.peach {
+  --gradient-start: #FFC3A0;
+  --gradient-end: #FFAFBD;
+}
+
+/* Card overlays */
+.card-overlay {
+  @apply absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-300;
+}
+
+.glass-card:hover .card-overlay,
+.gradient-card:hover .card-overlay {
+  @apply opacity-100;
 }

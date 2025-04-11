@@ -25,33 +25,33 @@
   
   .mobile-table th, 
   .mobile-table td {
-    @apply py-1 px-1;
+    @apply py-2 px-2 md:py-3 md:px-3;
   }
   
   /* Improved button sizing for mobile */
   button.mobile-btn {
-    @apply h-9 px-3 py-1.5 text-sm;
+    @apply h-10 px-4 py-2 text-sm;
   }
   
   /* Card content padding for mobile */
   .card-mobile-padding {
-    @apply px-2 py-3;
+    @apply px-4 py-4;
   }
   
   /* Input sizing for mobile */
   .mobile-input {
-    @apply h-9 px-2 py-1.5 text-sm;
+    @apply h-10 px-3 py-2 text-sm;
   }
 
   /* Better dialog sizing for mobile */
   [role="dialog"] .dialog-content, 
   [role="alertdialog"] .dialog-content {
-    @apply max-w-[92vw] max-h-[85vh] overflow-y-auto p-3;
+    @apply max-w-[92vw] max-h-[85vh] overflow-y-auto p-4;
   }
   
   /* Space for form fields on mobile */
   form .grid {
-    @apply gap-y-3;
+    @apply gap-y-4;
   }
   
   /* Make sure inputs are properly sized on mobile */
@@ -66,17 +66,17 @@
   .button, 
   a[role="button"],
   .clickable {
-    @apply min-h-9 min-w-9;
+    @apply min-h-10 min-w-10;
   }
   
   /* Better spacing for stacked elements */
   .mobile-stack > * + * {
-    @apply mt-3;
+    @apply mt-4;
   }
   
   /* Fix for mobile dialogs */
   [role="dialog"] {
-    @apply p-2;
+    @apply p-3;
   }
   
   /* Mobile-friendly forms */
@@ -86,7 +86,7 @@
   
   /* Better scrolling on mobile */
   .mobile-scroll {
-    @apply -mx-4 px-4 overflow-x-auto pb-2;
+    @apply -mx-4 px-4 overflow-x-auto pb-3;
   }
 
   /* Improve dialog sizing and scrolling */
@@ -97,7 +97,7 @@
   
   /* Smaller spacing in form elements on mobile */
   .space-y-4.mobile-spacing {
-    @apply space-y-2;
+    @apply space-y-3;
   }
   
   /* Prevent horizontal overflow on mobile */
@@ -107,7 +107,7 @@
   
   /* Make horizontal scroll containers more visible */
   .mobile-scroll {
-    @apply rounded-md border border-muted/30 p-1;
+    @apply rounded-xl border border-border/30 p-2 shadow-sm;
   }
   
   /* Ensure horizontal scroll works properly on mobile */
@@ -124,7 +124,7 @@
   
   /* Dialog content padding for mobile */
   .dialog-content {
-    padding: 1rem !important;
+    padding: 1.25rem !important;
   }
   
   /* Better table display on mobile */
@@ -140,5 +140,40 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+/* Modern animations for page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Card hover effects */
+@media (hover: hover) {
+  .hover-lift {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
   }
 }

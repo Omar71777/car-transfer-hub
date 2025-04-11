@@ -19,7 +19,7 @@ export const exportHtmlToPdf = async (
     
     // Convert to canvas with better quality settings
     const canvas = await html2canvas(contentElement, {
-      scale: 2,
+      scale: 2.5, // Higher scale for better quality
       logging: false,
       useCORS: true,
       allowTaint: true,
@@ -39,13 +39,13 @@ export const exportHtmlToPdf = async (
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const canvasRatio = canvas.height / canvas.width;
-    const pdfImgWidth = pdfWidth - 10; // Margins
+    const pdfImgWidth = pdfWidth - 20; // Wider margins for better look
     const pdfImgHeight = pdfImgWidth * canvasRatio;
     
     // If image is longer than a page, use multiple pages
-    if (pdfImgHeight > pdfHeight - 20) { // Account for margins
+    if (pdfImgHeight > pdfHeight - 30) { // More margin for cleaner look
       // Calculate how many pages needed
-      const numPages = Math.ceil(pdfImgHeight / (pdfHeight - 20));
+      const numPages = Math.ceil(pdfImgHeight / (pdfHeight - 30));
       let heightLeft = pdfImgHeight;
       let position = 0;
       
@@ -57,7 +57,7 @@ export const exportHtmlToPdf = async (
         }
         
         // Calculate the portion of canvas to use for this page
-        const heightToPrint = Math.min(pdfHeight - 20, heightLeft);
+        const heightToPrint = Math.min(pdfHeight - 30, heightLeft);
         const ratio = heightToPrint / pdfImgHeight;
         const canvasSliceHeight = canvas.height * ratio;
         
@@ -81,7 +81,7 @@ export const exportHtmlToPdf = async (
           
           // Add to PDF with margins
           const sliceImgData = sliceCanvas.toDataURL('image/png', 1.0);
-          pdf.addImage(sliceImgData, 'PNG', 5, 10, pdfImgWidth, heightToPrint);
+          pdf.addImage(sliceImgData, 'PNG', 10, 15, pdfImgWidth, heightToPrint);
           
           // Update for next page
           heightLeft -= heightToPrint;
@@ -90,17 +90,19 @@ export const exportHtmlToPdf = async (
       }
     } else {
       // Just add the whole image if it fits on one page
-      pdf.addImage(imgData, 'PNG', 5, 10, pdfImgWidth, pdfImgHeight);
+      pdf.addImage(imgData, 'PNG', 10, 15, pdfImgWidth, pdfImgHeight);
     }
     
-    // Save PDF
+    // Save PDF with modern filename convention
     pdf.save(fileName);
+    
+    toast.success('PDF exportado correctamente');
     
     if (loadingCallback) loadingCallback(false);
     return true;
   } catch (error) {
     console.error('Error exporting to PDF:', error);
-    toast.error('Error generating PDF. Please try again.');
+    toast.error('Error al generar PDF. Inténtalo de nuevo.');
     if (loadingCallback) loadingCallback(false);
     return false;
   }

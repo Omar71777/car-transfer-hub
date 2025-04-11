@@ -9,7 +9,7 @@ export const generateItemsHtml = (bill: Bill): string => {
   if (!bill.items || bill.items.length === 0) {
     return `
       <tr>
-        <td colspan="4" class="text-center py-4">No hay elementos en esta factura</td>
+        <td colspan="4" class="text-center py-5 text-muted-color">No hay elementos en esta factura</td>
       </tr>
     `;
   }
@@ -21,13 +21,15 @@ export const generateItemsHtml = (bill: Bill): string => {
     // Determine if this is a main item or an extra charge
     const isExtraCharge = item.is_extra_charge;
     
-    // Main item row
+    // Main item row with updated styling
     return `
       <tr class="${isExtraCharge ? 'extra-charge-row' : ''}">
-        <td class="${isExtraCharge ? 'pl-6 text-muted-foreground italic' : 'font-medium'}">${item.description || 'Sin descripción'}</td>
-        <td>${item.quantity}</td>
+        <td class="${isExtraCharge ? 'pl-8 text-muted-color italic font-light' : 'font-medium'}">
+          ${item.description || 'Sin descripción'}
+        </td>
+        <td class="text-center">${item.quantity}</td>
         <td class="text-right">${formatCurrency(item.unit_price)}</td>
-        <td class="text-right">${formatCurrency(item.total_price)}</td>
+        <td class="text-right font-medium">${formatCurrency(item.total_price)}</td>
       </tr>
     `;
   }).join('');

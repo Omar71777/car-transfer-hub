@@ -16,10 +16,10 @@ export const AppSidebar = () => {
   const { openMobile, setOpenMobile } = useSidebar();
 
   return (
-    <Sidebar>
-      <div className="pb-4">
+    <Sidebar className="border-r border-border/40 bg-soft-beige/50 dark:bg-charcoal/90 backdrop-blur-sm">
+      <div className="py-6 px-3">
         <SidebarUserProfile profile={profile} />
-        <Separator className="bg-sidebar-border/40 my-2" />
+        <Separator className="bg-border/40 my-4" />
       </div>
 
       <SidebarMainMenu />
@@ -27,10 +27,10 @@ export const AppSidebar = () => {
       
       {isAdmin && <SidebarAdminMenu />}
       
-      <SidebarFooter className="mt-auto border-t border-sidebar-border/40 pt-2">
+      <SidebarFooter className="mt-auto border-t border-border/30 py-4">
         <div className="flex items-center justify-between px-4 py-2">
-          <span className="text-xs text-sidebar-foreground/70">Tema</span>
-          <ThemeToggle className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
+          <span className="text-xs text-muted-foreground">Tema</span>
+          <ThemeToggle className="hover:bg-accent/10 hover:text-accent-foreground rounded-lg" />
         </div>
       </SidebarFooter>
     </Sidebar>

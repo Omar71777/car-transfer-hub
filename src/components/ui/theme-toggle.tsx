@@ -20,9 +20,9 @@ export function ThemeToggle({ className }: { className?: string }) {
             aria-label="Cambiar tema"
           >
             {theme === "light" ? (
-              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all" />
+              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all text-warm" />
             ) : (
-              <Moon className="h-5 w-5 rotate-0 scale-100 transition-all" />
+              <Moon className="h-5 w-5 rotate-0 scale-100 transition-all text-accent" />
             )}
             <span className="sr-only">Cambiar tema</span>
           </Button>

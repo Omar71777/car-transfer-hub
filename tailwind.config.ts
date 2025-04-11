@@ -19,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Inter', 'system-ui', 'sans-serif'],
+				display: ['DM Sans', 'system-ui', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -76,6 +80,25 @@ export default {
 					700: '#0044b3',
 					800: '#002299',
 					900: '#000080',
+				},
+				// New colors for modern UI
+				soft: {
+					beige: '#F5F2ED',
+					gray: '#F1F0FB',
+					peach: '#FDE1D3',
+					pink: '#FFDEE2',
+					blue: '#D3E4FD',
+					green: '#F2FCE2',
+				},
+				charcoal: {
+					DEFAULT: '#403E43',
+					dark: '#221F26',
+					light: '#5A5862',
+				},
+				warm: {
+					DEFAULT: '#E6B980',
+					light: '#EACDA3',
+					dark: '#D99E60',
 				}
 			},
 			borderRadius: {
@@ -111,6 +134,10 @@ export default {
 				'theme-transition': {
 					'0%': { opacity: '0.8' },
 					'100%': { opacity: '1' }
+				},
+				'pulse-soft': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.7' }
 				}
 			},
 			animation: {
@@ -118,10 +145,22 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
 				'scale-in': 'scale-in 0.2s ease-out',
-				'theme-transition': 'theme-transition 0.5s ease-out'
+				'theme-transition': 'theme-transition 0.5s ease-out',
+				'pulse-soft': 'pulse-soft 2s ease-in-out infinite'
 			},
 			transitionProperty: {
 				'theme': 'background-color, color, border-color, text-decoration-color, fill, stroke'
+			},
+			boxShadow: {
+				'soft': '0 4px 20px rgba(0, 0, 0, 0.05)',
+				'card': '0 2px 15px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02)',
+				'hover': '0 6px 25px rgba(0, 0, 0, 0.06)',
+				'button': '0 2px 6px rgba(0, 0, 0, 0.04)',
+			},
+			backgroundImage: {
+				'gradient-soft': 'linear-gradient(to right, #e6b980, #eacda3)',
+				'gradient-warm': 'linear-gradient(to right, #ffc3a0, #ffafbd)',
+				'gradient-cool': 'linear-gradient(to right, #e6e9f0, #eef1f5)',
 			}
 		}
 	},
