@@ -1,0 +1,53 @@
+
+/* Table column width specifications */
+
+/* Desktop-specific column sizing */
+@media (min-width: 769px) {
+  .col-date {
+    width: 80px;
+    min-width: 80px;
+  }
+  
+  .col-time {
+    width: 70px;
+    min-width: 70px;
+  }
+  
+  .col-type {
+    width: 80px;
+    min-width: 80px;
+  }
+  
+  .col-location {
+    width: 100px;
+    min-width: 100px;
+  }
+  
+  .col-client {
+    width: 120px;
+    min-width: 120px;
+  }
+  
+  .col-collaborator {
+    width: 120px;
+    min-width: 120px;
+  }
+  
+  .col-total {
+    width: 90px;
+    min-width: 90px;
+    text-align: right;
+  }
+  
+  .col-status {
+    width: 80px;
+    min-width: 80px;
+    text-align: center;
+  }
+  
+  .col-actions {
+    width: 50px;
+    min-width: 50px;
+    text-align: center;
+  }
+}

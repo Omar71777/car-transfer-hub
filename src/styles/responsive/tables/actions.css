@@ -1,0 +1,35 @@
+
+/* Table action buttons and controls */
+
+/* Action buttons for tables */
+.table-actions {
+  @apply flex justify-end gap-1;
+}
+
+/* Optimized width for action buttons on desktop */
+@media (min-width: 769px) {
+  .table-actions-compact {
+    display: flex;
+    gap: 2px;
+  }
+  
+  .table-actions-compact button {
+    @apply h-7 w-7;
+  }
+  
+  /* Remove overflow settings that might cause horizontal scroll */
+  .table-container, 
+  .overflow-x-auto,
+  .overflow-hidden {
+    overflow: visible;
+  }
+  
+  /* Table spacing and visibility improvements */
+  .truncate-cell {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+}

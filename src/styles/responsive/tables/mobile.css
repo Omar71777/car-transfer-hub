@@ -1,0 +1,78 @@
+
+/* Mobile-specific table styles */
+
+@media (max-width: 768px) {
+  /* Table cells */
+  .timetable-cell {
+    @apply p-0.5;
+  }
+  
+  /* Scrollable containers */
+  .timetable-scroll {
+    max-height: calc(100vh - 280px);
+  }
+
+  /* Smaller font and spacing for mobile tables */
+  .mobile-table {
+    @apply text-xs;
+  }
+  
+  .mobile-table th, 
+  .mobile-table td {
+    @apply py-0.5 px-0.5 md:py-1 md:px-1;
+  }
+
+  /* Better table display on mobile */
+  .table-container {
+    @apply w-full;
+    max-width: 100%;
+  }
+  
+  /* Tables should use full width */
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  /* Table columns for mobile */
+  .mobile-col-small {
+    width: 50px !important;
+    max-width: 50px !important;
+  }
+  
+  .mobile-col-medium {
+    width: 70px !important;
+    max-width: 70px !important;  
+  }
+  
+  .mobile-col-action {
+    width: 60px !important;
+    max-width: 60px !important;
+  }
+  
+  /* Ensure proper truncation for table cells */
+  .truncate, .max-w-[150px], .max-w-[100px] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
+  /* Table cell truncation */
+  .truncate-cell {
+    @apply max-w-[80px] truncate;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
+  /* Compact action buttons for tables */
+  .table-actions button {
+    @apply h-7 w-7 p-0;
+  }
+  
+  .table-actions button svg {
+    @apply h-3.5 w-3.5;
+  }
+}

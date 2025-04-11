@@ -1,0 +1,53 @@
+
+/* Status indicators and visual elements for tables */
+
+/* Service type specific colors */
+.bg-dispo {
+  @apply bg-green-800 text-white;
+}
+
+.bg-transfer {
+  @apply bg-green-400;
+}
+
+/* Dark header styles */
+.table-header-dark {
+  @apply bg-gray-800 text-white;
+}
+
+/* Add soft background colors */
+.bg-soft-green {
+  @apply bg-green-100;
+}
+
+.bg-soft-blue {
+  @apply bg-blue-100;
+}
+
+/* Icon styles for status indicators */
+.status-icon {
+  @apply w-3.5 h-3.5 inline-flex align-middle;
+}
+
+.status-badge {
+  @apply rounded-full px-2 py-1 inline-flex items-center gap-1;
+}
+
+.status-paid {
+  @apply bg-green-100 text-green-700;
+}
+
+.status-pending {
+  @apply bg-amber-100 text-amber-700;
+}
+
+/* Make sure badges are compact in tables */
+.table-badge {
+  @apply px-1.5 py-0 text-xs;
+}
+
+/* Center text in table headers and cells */
+.text-center-all th,
+.text-center-all td {
+  @apply text-center;
+}

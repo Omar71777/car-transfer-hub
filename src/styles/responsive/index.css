@@ -1,6 +1,6 @@
 
 /* Import all responsive style modules */
-@import './tables.css';
+@import './tables/index.css';
 @import './mobile.css';
 @import './cards.css';
 @import './dialogs.css';

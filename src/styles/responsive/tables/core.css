@@ -1,0 +1,57 @@
+
+/* Core table styles */
+
+/* Base table styles */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px 12px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Row hover effect */
+tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Table container */
+.table-container {
+  @apply rounded-md border w-full overflow-hidden;
+  margin: 0 auto;
+  max-width: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Table cell truncation for all screen sizes */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.truncate-cell {
+  @apply max-w-[80px] truncate;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
