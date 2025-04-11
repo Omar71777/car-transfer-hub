@@ -11,7 +11,6 @@ import * as z from 'zod';
 import { Transfer } from '@/types';
 import { CollaboratorField } from './form-fields/CollaboratorField';
 import { PaymentStatusField } from './form-fields/PaymentStatusField';
-import { useCollaborators } from '@/hooks/useCollaborators';
 
 const editFormSchema = z.object({
   price: z.string().min(1, { message: 'El precio es requerido' }).refine(
@@ -43,8 +42,6 @@ export function TransferEditDialog({
   onSubmit,
   transfer
 }: TransferEditDialogProps) {
-  const { collaborators } = useCollaborators();
-  
   const form = useForm<EditFormValues>({
     resolver: zodResolver(editFormSchema),
     defaultValues: {
@@ -94,7 +91,7 @@ export function TransferEditDialog({
               <PaymentStatusField form={form} />
             </div>
 
-            <CollaboratorField form={form} collaborators={collaborators} />
+            <CollaboratorField form={form} />
 
             {hasCollaborator && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
