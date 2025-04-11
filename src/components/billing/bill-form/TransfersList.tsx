@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Search } from 'lucide-react';
 import { Transfer } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { calculateBasePrice } from '@/lib/calculations';
 
 interface TransfersListProps {
   filteredTransfers: Transfer[];
@@ -87,7 +88,12 @@ export function TransfersList({
                     <div className="text-sm text-muted-foreground">
                       <span>Fecha: {transfer.date}</span>
                       <span className="mx-2">•</span>
-                      <span>Precio: {formatCurrency(transfer.price)}</span>
+                      <span>Precio: {formatCurrency(calculateBasePrice(transfer))}</span>
+                      {transfer.serviceType === 'dispo' && (
+                        <span className="ml-1 text-xs opacity-75">
+                          ({transfer.hours} horas)
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
