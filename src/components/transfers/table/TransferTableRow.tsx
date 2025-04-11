@@ -55,15 +55,15 @@ export function TransferTableRow({
           aria-label="Select row"
         />
       </TableCell>
-      <TableCell>{transfer.date || 'N/A'}</TableCell>
-      {!isMobile && <TableCell>{transfer.time || 'N/A'}</TableCell>}
+      <TableCell className="text-xs">{transfer.date || 'N/A'}</TableCell>
+      {!isMobile && <TableCell className="text-xs">{transfer.time || 'N/A'}</TableCell>}
       <TableCell>
         <ServiceTypeBadge serviceType={transfer.serviceType} hours={transfer.hours} />
       </TableCell>
-      <TableCell className="max-w-[150px] truncate" title={transfer.origin}>
+      <TableCell>
         <TruncatedCell text={transfer.origin} />
       </TableCell>
-      <TableCell className="max-w-[150px] truncate" title={transfer.destination}>
+      <TableCell>
         <TruncatedCell text={transfer.destination} />
       </TableCell>
       <TableCell>
@@ -74,20 +74,20 @@ export function TransferTableRow({
         />
       </TableCell>
       {!isMobile && (
-        <TableCell className="max-w-[150px] truncate" title={transfer.client?.name}>
+        <TableCell>
           <TruncatedCell text={transfer.client?.name} />
         </TableCell>
       )}
       {!isMobile && (
-        <TableCell className="max-w-[150px] truncate">
+        <TableCell>
           <TruncatedCell text={transfer.collaborator} />
         </TableCell>
       )}
-      {!isMobile && <TableCell className="text-right whitespace-nowrap">{formattedCommission}</TableCell>}
-      <TableCell className="text-center">
+      {!isMobile && <TableCell className="text-right whitespace-nowrap text-xs">{formattedCommission}</TableCell>}
+      <TableCell className="text-center p-1">
         <PaymentStatusCell paymentStatus={transfer.paymentStatus} />
       </TableCell>
-      <TableCell className="py-0">
+      <TableCell className="py-0 px-1">
         <TransferRowActions
           transferId={transfer.id}
           isMobile={isMobile}

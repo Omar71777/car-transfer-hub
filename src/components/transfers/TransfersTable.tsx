@@ -71,31 +71,33 @@ export function TransfersTable({
         </div>
       )}
       <div className="w-full overflow-hidden border rounded-md">
-        <Table className={isMobile ? "mobile-table" : ""}>
-          <TransferTableHeader 
-            onSelectAll={handleSelectAll} 
-            allSelected={selectedRows.length === transfers.length && transfers.length > 0}
-            someSelected={selectedRows.length > 0 && selectedRows.length < transfers.length}
-          />
-          <TableBody>
-            {transfers.length === 0 ? (
-              <EmptyTransfersRow />
-            ) : (
-              transfers.map(transfer => (
-                <TransferTableRow
-                  key={transfer.id}
-                  transfer={transfer}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onAddExpense={onAddExpense}
-                  onViewSummary={onViewSummary}
-                  selected={selectedRows.includes(transfer.id)}
-                  onSelectRow={handleSelectRow}
-                />
-              ))
-            )}
-          </TableBody>
-        </Table>
+        <div className="overflow-x-auto">
+          <Table className={isMobile ? "mobile-table w-full table-fixed" : "w-full table-fixed"}>
+            <TransferTableHeader 
+              onSelectAll={handleSelectAll} 
+              allSelected={selectedRows.length === transfers.length && transfers.length > 0}
+              someSelected={selectedRows.length > 0 && selectedRows.length < transfers.length}
+            />
+            <TableBody>
+              {transfers.length === 0 ? (
+                <EmptyTransfersRow />
+              ) : (
+                transfers.map(transfer => (
+                  <TransferTableRow
+                    key={transfer.id}
+                    transfer={transfer}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    onAddExpense={onAddExpense}
+                    onViewSummary={onViewSummary}
+                    selected={selectedRows.includes(transfer.id)}
+                    onSelectRow={handleSelectRow}
+                  />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

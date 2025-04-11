@@ -25,14 +25,14 @@ export function PriceDisplay({ price, discountType, discountValue }: PriceDispla
   const hasDiscount = discountType && Number(discountValue) > 0;
 
   return (
-    <div className="text-right font-medium whitespace-nowrap">
+    <div className="text-right font-medium whitespace-nowrap text-xs">
       {formatCurrency(price)}
       {hasDiscount && (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="inline-block ml-1">
-                <Tag className="h-3.5 w-3.5 text-green-600" />
+                <Tag className="h-3 w-3 text-green-600" />
               </div>
             </TooltipTrigger>
             <TooltipContent>

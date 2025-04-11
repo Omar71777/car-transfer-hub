@@ -16,7 +16,7 @@ export function ServiceTypeBadge({ serviceType, hours }: ServiceTypeBadgeProps) 
   };
 
   return (
-    <Badge variant="outline" className="font-normal whitespace-nowrap">
+    <Badge variant="outline" className="font-normal whitespace-nowrap text-xs">
       {serviceTypeDisplay()}
     </Badge>
   );
