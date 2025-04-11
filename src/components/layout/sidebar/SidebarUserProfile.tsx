@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { UserOutline, Mail } from 'lucide-react';
+import { User, Mail } from 'lucide-react';
 import { UserProfile } from '@/types';
 import { cn } from '@/lib/utils';
 
