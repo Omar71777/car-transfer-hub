@@ -6,7 +6,8 @@ import { toast } from 'sonner';
 import { 
   calculateTotalPrice, 
   calculateCommissionAmount, 
-  MinimalTransfer 
+  MinimalTransfer,
+  adaptExtraCharges
 } from '@/lib/calculations';
 
 interface DashboardStats {
@@ -57,7 +58,7 @@ export function useDashboardData() {
             .eq('transfer_id', transfer.id);
             
           if (extraChargesError) throw extraChargesError;
-          return extraCharges || [];
+          return adaptExtraCharges(extraCharges || []);
         });
         
         const allExtraCharges = await Promise.all(extraChargesPromises);
