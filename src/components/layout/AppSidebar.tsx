@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Separator } from '@/components/ui/separator';
 import { Sidebar, SidebarFooter } from '@/components/ui/sidebar';
@@ -10,6 +9,7 @@ import { SidebarUserMenu } from './sidebar/SidebarUserMenu';
 import { SidebarAdminMenu } from './sidebar/SidebarAdminMenu';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const AppSidebar = () => {
   const { profile, isAdmin, signOut } = useAuth();
