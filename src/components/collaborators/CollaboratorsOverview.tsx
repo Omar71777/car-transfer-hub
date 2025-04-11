@@ -25,7 +25,7 @@ export function CollaboratorsOverview({ transfers, loading = false }: Collaborat
     transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
-      // Use the correct commission calculation function
+      // Use the correct commission calculation function with complete transfer data
       const commissionAmount = calculateCommissionAmount(transfer);
       
       if (!collaborators[transfer.collaborator]) {

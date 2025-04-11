@@ -4,7 +4,7 @@ import { CollaboratorCard } from './CollaboratorCard';
 import { CollaboratorStat } from './types';
 import { Transfer } from '@/types';
 import { Loader2 } from 'lucide-react';
-import { calculateCommissionAmount } from '@/lib/calculations';
+import { calculateCommissionAmount, calculateTotalPrice } from '@/lib/calculations';
 
 interface CollaboratorStatsSectionProps {
   transfers: Transfer[];
@@ -24,7 +24,7 @@ export function CollaboratorStatsSection({ transfers, loading = false }: Collabo
     transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
-      // Use the correct commission calculation function
+      // Use the correct commission calculation function with full transfer data
       const commissionAmount = calculateCommissionAmount(transfer);
       
       if (!collaboratorStats[transfer.collaborator]) {
