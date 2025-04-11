@@ -30,7 +30,7 @@ export function DistributionTab({ collaboratorData, transfers, expenses, loading
           <CardTitle>Estadísticas Generales</CardTitle>
         </CardHeader>
         <CardContent>
-          <StatsOverview transfers={transfers} expenses={expenses} />
+          <StatsOverview transfers={transfers} expenses={expenses} loading={loading} />
         </CardContent>
       </Card>
     </div>

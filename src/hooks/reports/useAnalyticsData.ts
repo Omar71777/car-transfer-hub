@@ -4,7 +4,7 @@ import { useExpenses } from '@/hooks/useExpenses';
 import { useClients } from '@/hooks/useClients';
 import { parseISO, format, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 
 export interface MonthlyData {
   name: string;
@@ -26,9 +26,29 @@ export interface ClientData {
 }
 
 export function useAnalyticsData() {
-  const { transfers, loading: transfersLoading } = useTransfers();
-  const { expenses, loading: expensesLoading } = useExpenses();
-  const { clients, loading: clientsLoading } = useClients();
+  const { transfers, loading: transfersLoading, fetchTransfers } = useTransfers();
+  const { expenses, loading: expensesLoading, fetchExpenses } = useExpenses();
+  const { clients, loading: clientsLoading, fetchClients } = useClients();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  
+  // Ensure data is loaded initially
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchTransfers(),
+          fetchExpenses(),
+          fetchClients()
+        ]);
+      } catch (error) {
+        console.error('Error loading analytics data:', error);
+      } finally {
+        setIsInitialLoad(false);
+      }
+    };
+    
+    loadData();
+  }, [fetchTransfers, fetchExpenses, fetchClients]);
   
   // Generate monthly data
   const monthlyData = useMemo(() => {
@@ -193,6 +213,6 @@ export function useAnalyticsData() {
     collaboratorData,
     clientData,
     destinationsData,
-    loading: transfersLoading || expensesLoading || clientsLoading
+    loading: transfersLoading || expensesLoading || clientsLoading || isInitialLoad
   };
 }

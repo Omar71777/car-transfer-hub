@@ -9,6 +9,7 @@ import {
   Legend
 } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface CollaboratorDistributionChartProps {
   data: Array<{
@@ -23,8 +24,9 @@ export function CollaboratorDistributionChart({ data, loading }: CollaboratorDis
   
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-80">
-        <p>Cargando datos...</p>
+      <div className="flex flex-col gap-4 h-80 w-full">
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-full w-full rounded-md" />
       </div>
     );
   }

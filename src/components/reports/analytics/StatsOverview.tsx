@@ -2,13 +2,28 @@
 import React from 'react';
 import { Transfer, Expense } from '@/types';
 import { formatCurrency } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface StatsOverviewProps {
   transfers: Transfer[];
   expenses: Expense[];
+  loading?: boolean;
 }
 
-export function StatsOverview({ transfers, expenses }: StatsOverviewProps) {
+export function StatsOverview({ transfers, expenses, loading = false }: StatsOverviewProps) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="p-4 rounded-lg border">
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-8 w-16" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  
   // Calculate total income, expenses, and commissions
   const totalIncome = transfers.reduce((sum, t) => sum + (Number(t.price) || 0), 0);
   
