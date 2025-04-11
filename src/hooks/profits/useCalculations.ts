@@ -3,7 +3,13 @@ import { Transfer, Expense } from '@/types';
 import { ProfitStats } from './types';
 import { format, parse, parseISO, isValid } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
+import { 
+  calculateTotalPrice, 
+  calculateCommissionAmount,
+  calculateBasePrice,
+  calculateExtraChargesTotal,
+  calculateDiscountAmount
+} from '@/lib/calculations';
 
 // Calculate commission based on commission type
 export const calculateCommission = (transfer: Transfer): number => {
@@ -37,7 +43,19 @@ export const calculateStats = (transfers: Transfer[], expenses: Expense[]): Prof
     totalCommissions,
     regularExpenses,
     netProfit,
-    profitMargin
+    profitMargin,
+    // Log detailed for a sample transfer if available
+    sampleTransfer: transfers.length > 0 ? {
+      id: transfers[0].id,
+      serviceType: transfers[0].serviceType,
+      price: transfers[0].price,
+      hours: transfers[0].hours,
+      basePrice: calculateBasePrice(transfers[0]),
+      extraCharges: calculateExtraChargesTotal(transfers[0].extraCharges),
+      discount: calculateDiscountAmount(transfers[0]),
+      totalPrice: calculateTotalPrice(transfers[0]),
+      commission: calculateCommissionAmount(transfers[0])
+    } : 'No transfers'
   });
   
   return {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,6 +5,7 @@ import { Transfer, Expense } from '@/types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isWithinInterval } from 'date-fns';
 import { formatCurrency } from '@/lib/utils';
+import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
 
 interface ProfitCalculatorProps {
   transfers: Transfer[];
@@ -14,11 +14,6 @@ interface ProfitCalculatorProps {
 
 export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps) {
   const [tab, setTab] = useState('daily');
-  
-  // Calculate commissions total for a transfer
-  const calculateCommission = (transfer: Transfer) => {
-    return (transfer.price * transfer.commission) / 100;
-  };
   
   // Calcular ganancias diarias
   const calculateDailyData = () => {
@@ -33,8 +28,9 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
       const dayTransfers = transfers.filter(t => isSameDay(new Date(t.date), day));
       const dayExpenses = expenses.filter(e => isSameDay(new Date(e.date), day));
       
-      const income = dayTransfers.reduce((sum, t) => sum + t.price, 0);
-      const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommission(t), 0);
+      // Use the consistent calculation methods from lib/calculations
+      const income = dayTransfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
+      const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
       const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + commissionsTotal;
       const profit = income - expense;
       
@@ -62,8 +58,9 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
       const dayTransfers = transfers.filter(t => isSameDay(new Date(t.date), day));
       const dayExpenses = expenses.filter(e => isSameDay(new Date(e.date), day));
       
-      const income = dayTransfers.reduce((sum, t) => sum + t.price, 0);
-      const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommission(t), 0);
+      // Use the consistent calculation methods from lib/calculations
+      const income = dayTransfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
+      const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
       const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + commissionsTotal;
       
       return {
@@ -95,10 +92,10 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
     return weeks;
   };
 
-  // Calcular totales
+  // Calcular totales using the consistent calculation methods
   const calculateTotals = () => {
-    const totalIncome = transfers.reduce((sum, t) => sum + t.price, 0);
-    const totalCommissions = transfers.reduce((sum, t) => sum + calculateCommission(t), 0);
+    const totalIncome = transfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
+    const totalCommissions = transfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
     const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0) + totalCommissions;
     const totalProfit = totalIncome - totalExpense;
     

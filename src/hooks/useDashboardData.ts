@@ -31,6 +31,8 @@ export function useDashboardData() {
       setLoading(true);
       
       try {
+        console.log('Loading dashboard data...');
+        
         // Load transfers from Supabase
         const { data: transfers, error: transfersError } = await supabase
           .from('transfers')
@@ -100,13 +102,21 @@ export function useDashboardData() {
           sum + (Number(expense.amount) || 0), 0);
         const totalExpenses = expensesTotal + totalCommissions;
         
+        // Log sample data for debugging
         console.log('Dashboard data calculation:', {
           transfers: formattedTransfers.length,
           totalIncome,
           totalExpenses,
           totalCommissions,
           expensesTotal,
-          netIncome: totalIncome - totalExpenses
+          netIncome: totalIncome - totalExpenses,
+          sampleTransfer: formattedTransfers.length > 0 ? {
+            price: formattedTransfers[0].price,
+            serviceType: formattedTransfers[0].serviceType,
+            hours: formattedTransfers[0].hours,
+            totalPrice: calculateTotalPrice(formattedTransfers[0]),
+            commission: calculateCommissionAmount(formattedTransfers[0])
+          } : 'No transfers'
         });
         
         // Calculate stats
