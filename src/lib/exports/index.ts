@@ -13,7 +13,7 @@ export { prepareProfitDataForExport } from './profitExport';
 // Print exports
 export { printProfitReport } from './printExport';
 export { printUnpaidReport } from './printUnpaidReport';
-export { printTransferSummary } from './transfer-summary'; // Updated to use refactored module
+export { printTransferSummary } from './transfer-summary'; // Already updated to use refactored module
 
 // Shifts exports
 export { prepareShiftsForExport } from './shiftsExport';

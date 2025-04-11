@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Loader2, Printer } from 'lucide-react';
@@ -13,7 +12,7 @@ import {
   ExpensesSection,
 } from '@/components/transfers/wizard-steps/confirmation';
 import { calculateCommissionAmount, calculateTotalPrice } from '@/lib/calculations';
-import { printTransferSummary } from '@/lib/exports/printTransferSummary';
+import { printTransferSummary } from '@/lib/exports/transfer-summary';
 
 interface TransferSummaryDialogProps {
   isOpen: boolean;
@@ -37,7 +36,6 @@ export function TransferSummaryDialog({
       try {
         const transferData = await getTransfer(transferId);
         if (transferData) {
-          // The discountType and serviceType are already properly typed in the fetchTransferById function
           setTransfer(transferData as Transfer);
         }
       } catch (error) {
@@ -50,7 +48,6 @@ export function TransferSummaryDialog({
     fetchTransferDetails();
   }, [transferId, isOpen]);
 
-  // Format currency helper
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
@@ -122,7 +119,6 @@ export function TransferSummaryDialog({
               </div>
             )}
             
-            {/* Show expenses if any exist */}
             {transfer.expenses && transfer.expenses.length > 0 && (
               <ExpensesSection 
                 expenses={transfer.expenses} 
@@ -130,20 +126,16 @@ export function TransferSummaryDialog({
               />
             )}
             
-            {/* Calculate pricing details */}
             {(() => {
-              // Calculate base price (considering service type)
               const basePrice = transfer.serviceType === 'dispo'
                 ? Number(transfer.price) * Number(transfer.hours || 1)
                 : Number(transfer.price);
               
-              // Calculate extras total
               const validExtraCharges = transfer.extraCharges || [];
               const totalExtraCharges = validExtraCharges.reduce((sum, charge) => {
                 return sum + (typeof charge.price === 'number' ? charge.price : Number(charge.price) || 0);
               }, 0);
               
-              // Calculate discount amount
               let discountAmount = 0;
               if (transfer.discountType && transfer.discountValue) {
                 if (transfer.discountType === 'percentage') {
@@ -153,13 +145,10 @@ export function TransferSummaryDialog({
                 }
               }
               
-              // Subtotal after discount
               const subtotalAfterDiscount = basePrice + totalExtraCharges - discountAmount;
               
-              // Calculate commission amount
               const commissionAmountEuros = calculateCommissionAmount(transfer);
               
-              // Final total
               const totalPrice = calculateTotalPrice(transfer) - commissionAmountEuros;
               
               return (
