@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { validateRequiredProps } from '@/lib/type-validators';
 
-interface FormOptions<T> {
+interface FormOptions<T extends object> {
   initialValues: Partial<T>;
   requiredFields?: Array<keyof T>;
   onSubmit: (values: T) => Promise<any>;
@@ -16,7 +16,7 @@ interface FormOptions<T> {
 /**
  * A type-safe form handling hook
  */
-export function useTypeSafeForm<T>({
+export function useTypeSafeForm<T extends object>({
   initialValues,
   requiredFields = [],
   onSubmit,
