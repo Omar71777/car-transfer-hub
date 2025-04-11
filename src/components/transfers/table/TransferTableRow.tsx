@@ -44,6 +44,10 @@ export function TransferTableRow({
   
   // Calculate commission amount based on the correct formula for each service type
   const commissionAmount = calculateCommissionAmount(transfer);
+  
+  // Calculate total after commission
+  const totalAfterCommission = totalPrice - commissionAmount;
+  
   const formattedCommission = `${transfer.commission}% (${formatCurrency(commissionAmount)})`;
 
   return (
@@ -56,17 +60,10 @@ export function TransferTableRow({
         />
       </TableCell>
       <TableCell className="text-xs truncate-cell">{transfer.date || 'N/A'}</TableCell>
-      {!isMobile && <TableCell className="text-xs truncate-cell">{transfer.time || 'N/A'}</TableCell>}
       <TableCell>
         <ServiceTypeBadge serviceType={transfer.serviceType} hours={transfer.hours} />
       </TableCell>
-      <TableCell>
-        <TruncatedCell text={transfer.origin} />
-      </TableCell>
-      <TableCell>
-        <TruncatedCell text={transfer.destination} />
-      </TableCell>
-      <TableCell>
+      <TableCell className="text-right">
         <PriceDisplay 
           price={totalPrice} 
           discountType={transfer.discountType} 
@@ -84,6 +81,7 @@ export function TransferTableRow({
         </TableCell>
       )}
       {!isMobile && <TableCell className="text-right whitespace-nowrap text-xs">{formattedCommission}</TableCell>}
+      {!isMobile && <TableCell className="text-right whitespace-nowrap text-xs">{formatCurrency(totalAfterCommission)}</TableCell>}
       <TableCell className="text-center p-1">
         <PaymentStatusCell paymentStatus={transfer.paymentStatus} />
       </TableCell>

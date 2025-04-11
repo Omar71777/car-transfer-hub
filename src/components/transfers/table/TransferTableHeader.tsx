@@ -33,14 +33,12 @@ export function TransferTableHeader({
           )}
         </TableHead>
         <TableHead className="col-date">Fecha</TableHead>
-        {!isMobile && <TableHead className="col-time">Hora</TableHead>}
         <TableHead className="col-type">Tipo</TableHead>
-        <TableHead className="col-location">Origen</TableHead>
-        <TableHead className="col-location">Destino</TableHead>
         <TableHead className="col-price text-right">Precio</TableHead>
         {!isMobile && <TableHead className="col-client">Cliente</TableHead>}
         {!isMobile && <TableHead className="col-collaborator">Colaborador</TableHead>}
         {!isMobile && <TableHead className="col-commission text-right">Comisión</TableHead>}
+        {!isMobile && <TableHead className="col-total text-right">Total</TableHead>}
         <TableHead className="col-status text-center">Estado</TableHead>
         <TableHead className="col-actions text-right">Acciones</TableHead>
       </TableRow>
