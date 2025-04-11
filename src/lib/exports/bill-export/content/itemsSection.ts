@@ -46,7 +46,7 @@ const formatItemDescription = (item: any): string => {
 /**
  * Calculates discount for an item
  */
-const calculateDiscount = (item: any): number => {
+export function calculateDiscount(item: any): number {
   if (item.is_extra_charge) return 0;
   
   // For regular items, unit_price is the original price before discount
@@ -56,7 +56,7 @@ const calculateDiscount = (item: any): number => {
   const discount = fullPrice - item.total_price;
   
   return discount > 0 ? discount : 0;
-};
+}
 
 /**
  * Generates HTML content for bill items
@@ -93,15 +93,3 @@ export const generateItemsHtml = (bill: Bill): string => {
     `;
   }).join('');
 };
-
-export function calculateDiscount(item: any): number {
-  if (item.is_extra_charge) return 0;
-  
-  // For regular items, unit_price is the original price before discount
-  // and total_price is the final price after discount (quantity * unit_price - discount)
-  // So discount = (unit_price * quantity) - total_price
-  const fullPrice = item.unit_price * item.quantity;
-  const discount = fullPrice - item.total_price;
-  
-  return discount > 0 ? discount : 0;
-}
