@@ -54,7 +54,15 @@ export function useBillPreview(
           const finalBasePrice = basePrice - discountAmount;
 
           // Create description based on service type
-          const description = generateTransferDescription(transfer);
+          let description = generateTransferDescription(transfer);
+          
+          // Add discount information to the description if there is a discount
+          if (discountAmount > 0) {
+            const discountInfo = transfer.discountType === 'percentage' 
+              ? `Descuento: ${transfer.discountValue}%` 
+              : `Descuento: ${transfer.discountValue}€`;
+            description += ` (${discountInfo})`;
+          }
 
           // For dispo services, quantity is hours and unit price is hourly rate
           let unitPrice = finalBasePrice;

@@ -4,7 +4,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Transfer } from '@/types';
-import { format } from 'date-fns';
 
 interface TransferTableFiltersProps {
   transfers: Transfer[];
@@ -20,19 +19,6 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
   // Extract unique values for filter dropdowns
   const uniqueCollaborators = [...new Set(transfers.map(t => t.collaborator || "Propio"))];
   const uniqueClients = [...new Set(transfers.map(t => t.client?.name).filter(Boolean))];
-  
-  // Current year and month
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
-  
-  // Compute available date filters
-  const dateFilters = [
-    { value: 'all', label: 'Todas las fechas' },
-    { value: 'today', label: 'Hoy' },
-    { value: 'week', label: 'Esta semana' },
-    { value: 'month', label: 'Este mes' },
-    { value: 'year', label: 'Este año' },
-  ];
   
   // Apply filters
   useEffect(() => {
@@ -105,11 +91,11 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
               <SelectValue placeholder="Todas las fechas" />
             </SelectTrigger>
             <SelectContent>
-              {dateFilters.map(filter => (
-                <SelectItem key={filter.value} value={filter.value}>
-                  {filter.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="all">Todas las fechas</SelectItem>
+              <SelectItem value="today">Hoy</SelectItem>
+              <SelectItem value="week">Esta semana</SelectItem>
+              <SelectItem value="month">Este mes</SelectItem>
+              <SelectItem value="year">Este año</SelectItem>
             </SelectContent>
           </Select>
         </div>

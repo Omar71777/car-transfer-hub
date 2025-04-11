@@ -10,7 +10,7 @@
   }
 
   .sidebar-menu-item.selected {
-    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+    @apply bg-sidebar-selected text-white font-medium;
   }
   
   /* Add new styling improvements for sidebar */
@@ -29,7 +29,7 @@
   }
   
   .sidebar-menu-button.active {
-    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+    @apply bg-sidebar-selected text-white font-medium;
   }
 
   /* New vibrant sidebar styles */

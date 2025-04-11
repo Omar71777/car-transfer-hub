@@ -11,6 +11,13 @@ export type Collaborator = {
   email?: string;
 };
 
+// Default collaborators to populate if none exist
+const defaultCollaborators: Omit<Collaborator, 'id'>[] = [
+  { name: 'Juan Pérez', phone: '612345678', email: 'juan@example.com' },
+  { name: 'María García', phone: '623456789', email: 'maria@example.com' },
+  { name: 'Carlos Rodríguez', phone: '634567890', email: 'carlos@example.com' }
+];
+
 export function useCollaborators() {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +29,16 @@ export function useCollaborators() {
     try {
       // Try to get from localStorage first as fallback
       const stored = localStorage.getItem('collaborators');
-      const storedCollaborators = stored ? JSON.parse(stored) : [];
+      let storedCollaborators = stored ? JSON.parse(stored) : [];
+      
+      // If no collaborators exist yet, add default ones
+      if (storedCollaborators.length === 0) {
+        storedCollaborators = defaultCollaborators.map(collaborator => ({
+          ...collaborator,
+          id: crypto.randomUUID()
+        }));
+        localStorage.setItem('collaborators', JSON.stringify(storedCollaborators));
+      }
       
       if (user) {
         // If user is logged in, try to get from Supabase in future implementation

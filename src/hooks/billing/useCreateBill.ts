@@ -104,7 +104,15 @@ export function useCreateBill(
         const finalBasePrice = basePrice - discountAmount;
         
         // Create the main transfer item
-        const description = item.description || generateTransferDescription(item.transfer);
+        let description = item.description || generateTransferDescription(item.transfer);
+        
+        // Add discount information to the description if there is a discount
+        if (discountAmount > 0 && !description.includes('Descuento')) {
+          const discountInfo = item.transfer.discountType === 'percentage' 
+            ? `Descuento: ${item.transfer.discountValue}%` 
+            : `Descuento: ${item.transfer.discountValue}€`;
+          description += ` (${discountInfo})`;
+        }
         
         // For dispo services, quantity is the number of hours and unit price is the hourly rate
         let quantity = 1;

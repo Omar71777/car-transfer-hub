@@ -51,7 +51,7 @@ export function UsersTable({
             <TableHead>Email</TableHead>
             <TableHead>Rol</TableHead>
             <TableHead>Estado</TableHead>
-            <TableHead className="w-[120px] text-right">Acciones</TableHead>
+            <TableHead className="w-[100px] text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -64,7 +64,7 @@ export function UsersTable({
           ) : (
             users.map((user) => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium text-sm">
+                <TableCell className="font-medium text-xs">
                   {user.first_name || user.last_name ? (
                     <div>
                       <span>{user.first_name} {user.last_name}</span>
@@ -81,29 +81,29 @@ export function UsersTable({
                     </div>
                   )}
                 </TableCell>
-                <TableCell className="text-sm">{user.email}</TableCell>
-                <TableCell className="text-sm">
+                <TableCell className="text-xs">{user.email}</TableCell>
+                <TableCell className="text-xs">
                   {user.role === 'admin' ? (
-                    <Badge variant="secondary" className="bg-primary/20 text-primary hover:bg-primary/30">
+                    <Badge variant="secondary" className="bg-primary/20 text-primary hover:bg-primary/30 text-xs">
                       Administrador
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="bg-muted/50">
+                    <Badge variant="outline" className="bg-muted/50 text-xs">
                       Usuario
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-sm">
+                <TableCell className="text-xs">
                   {user.status === 'active' ? (
-                    <Badge variant="default" className="bg-green-600 hover:bg-green-700">
+                    <Badge variant="default" className="bg-green-600 hover:bg-green-700 text-xs">
                       Activo
                     </Badge>
                   ) : user.status === 'pending' ? (
-                    <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30">
+                    <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 text-xs">
                       Pendiente
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="text-muted-foreground">
+                    <Badge variant="outline" className="text-muted-foreground text-xs">
                       Inactivo
                     </Badge>
                   )}
