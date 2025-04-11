@@ -53,9 +53,9 @@ export function TransferTableRow({
     }
   };
   
-  // Determine row background color based on service type
+  // Determine row background color based on service type with more subtle colors
   const rowClass = cn(
-    transfer.serviceType === 'dispo' ? 'bg-green-800 text-white hover:bg-green-700' : 'bg-green-400 hover:bg-green-300',
+    transfer.serviceType === 'dispo' ? 'bg-soft-green/40 hover:bg-soft-green/60' : 'bg-soft-blue/40 hover:bg-soft-blue/60',
     selected && 'bg-primary/10'
   );
   
