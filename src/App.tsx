@@ -11,7 +11,6 @@ import UsersPage from './pages/admin/UsersPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import ProfitsPage from './pages/profits/ProfitsPage';
 import CollaboratorsPage from './pages/collaborators/CollaboratorsPage';
-import UnpaidTransfersPage from './pages/reports/UnpaidTransfersPage';
 import AnalyticsReportPage from './pages/admin/reports/AnalyticsReportPage';
 import TransfersReportPage from './pages/admin/reports/TransfersReportPage';
 import ClientsPage from './pages/clients/ClientsPage';
@@ -34,7 +33,6 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profits" element={<ProfitsPage />} />
             <Route path="/collaborators" element={<CollaboratorsPage />} />
-            <Route path="/reports/unpaid" element={<UnpaidTransfersPage />} />
             <Route path="/admin/reports/analytics" element={<AnalyticsReportPage />} />
             <Route path="/admin/reports/transfers" element={<TransfersReportPage />} />
             

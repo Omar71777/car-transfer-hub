@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, InfoIcon, Car, FileText } from 'lucide-react';
+import { ArrowRight, InfoIcon, FileText } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+
 export function InformationSection() {
   return <div className="space-y-6">
       <h2 className="text-xl font-semibold text-primary">Información y Recursos</h2>
@@ -27,29 +29,6 @@ export function InformationSection() {
               <Button asChild variant="outline" className="w-full">
                 <Link to="/admin/reports/transfers">
                   Ver Informes
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Car className="h-5 w-5 mr-2 text-primary" />
-              Transfers Pendientes
-            </CardTitle>
-            <CardDescription>
-              Gestiona los transfers pendientes de pago
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-sm">Consulta y organiza todos los transfers pendientes de pago.</p>
-              <Button asChild variant="outline" className="w-full">
-                <Link to="/reports/unpaid">
-                  Ver Pendientes
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
