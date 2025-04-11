@@ -10,6 +10,19 @@ import { generateStyles } from './styles';
  * Generates the complete HTML content for printing a bill
  */
 export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string => {
+  // Ensure bill has items array (defensive programming)
+  if (!bill.items) {
+    bill.items = [];
+    console.error('Bill items array is missing:', bill);
+  }
+  
+  // Debug what we're working with
+  console.log('Generating bill HTML with:', { 
+    billId: bill.id, 
+    itemsCount: bill.items?.length || 0,
+    hasClient: !!bill.client
+  });
+  
   const itemsHTML = generateItemsHtml(bill);
   const stylesHTML = generateStyles();
   
@@ -62,19 +75,22 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
           </div>
         </div>
         
-        <table class="items-table">
-          <thead>
-            <tr>
-              <th style="width: 50%;">Concepto</th>
-              <th>Cantidad</th>
-              <th class="text-right">Precio unitario</th>
-              <th class="text-right">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsHTML}
-          </tbody>
-        </table>
+        <div class="items-section">
+          <h3 class="section-title">Servicios facturados</h3>
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Concepto</th>
+                <th>Cantidad</th>
+                <th class="text-right">Precio unitario</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHTML}
+            </tbody>
+          </table>
+        </div>
         
         <div class="totals-section">
           <table class="totals-table">

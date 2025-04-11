@@ -14,40 +14,54 @@ export const exportHtmlToPdf = async (
   try {
     if (loadingCallback) loadingCallback(true);
     
+    // Force white background on the document
+    const htmlElement = contentElement.ownerDocument.documentElement;
+    htmlElement.style.colorScheme = 'light';
+    
     // Apply temporary styles to force white background
     const originalBg = document.body.style.backgroundColor;
     document.body.style.backgroundColor = 'white';
     
-    // Apply white background to the element
-    const elementsToFix = contentElement.querySelectorAll('*');
-    const originalStyles: Map<Element, { bg: string, color: string }> = new Map();
+    // Create a clone of the content to modify without affecting the original
+    const contentClone = contentElement.cloneNode(true) as HTMLElement;
+    document.body.appendChild(contentClone);
     
-    // Store original styles and apply white background
+    // Apply white background to the element and all its children
+    contentClone.style.backgroundColor = 'white';
+    contentClone.style.color = '#1e293b';
+    
+    const elementsToFix = contentClone.querySelectorAll('*');
     elementsToFix.forEach(el => {
-      const style = window.getComputedStyle(el);
-      originalStyles.set(el, {
-        bg: style.backgroundColor,
-        color: style.color
-      });
+      const htmlEl = el as HTMLElement;
       
-      if (style.backgroundColor === 'rgba(0, 0, 0, 0)' || 
-          style.backgroundColor === 'transparent' ||
-          style.backgroundColor.includes('rgba(0, 0, 0, 0.')) {
-        (el as HTMLElement).style.backgroundColor = 'white';
+      // Force backgrounds to white
+      const computedStyle = window.getComputedStyle(htmlEl);
+      if (computedStyle.backgroundColor === 'rgba(0, 0, 0, 0)' || 
+          computedStyle.backgroundColor === 'transparent' ||
+          computedStyle.backgroundColor.includes('rgba(0, 0, 0, 0.')) {
+        htmlEl.style.backgroundColor = 'white';
+      }
+      
+      // Force text color to be visible
+      if (computedStyle.color.includes('rgba(255, 255, 255') || 
+          computedStyle.color === 'rgb(255, 255, 255)') {
+        htmlEl.style.color = '#1e293b';
       }
     });
     
-    // Convert to canvas
-    const canvas = await html2canvas(contentElement, {
+    // Convert to canvas with better quality settings
+    const canvas = await html2canvas(contentClone, {
       scale: 2,
       logging: false,
       useCORS: true,
       allowTaint: true,
-      backgroundColor: 'white'
+      backgroundColor: 'white',
+      imageTimeout: 15000,
+      removeContainer: false
     });
     
     // Calculate dimensions
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/png', 1.0);
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -57,13 +71,13 @@ export const exportHtmlToPdf = async (
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const canvasRatio = canvas.height / canvas.width;
-    const pdfImgWidth = pdfWidth;
-    const pdfImgHeight = pdfWidth * canvasRatio;
+    const pdfImgWidth = pdfWidth - 10; // Margins
+    const pdfImgHeight = pdfImgWidth * canvasRatio;
     
     // If image is longer than a page, use multiple pages
-    if (pdfImgHeight > pdfHeight) {
+    if (pdfImgHeight > pdfHeight - 20) { // Account for margins
       // Calculate how many pages needed
-      const numPages = Math.ceil(pdfImgHeight / pdfHeight);
+      const numPages = Math.ceil(pdfImgHeight / (pdfHeight - 20));
       let heightLeft = pdfImgHeight;
       let position = 0;
       
@@ -75,7 +89,7 @@ export const exportHtmlToPdf = async (
         }
         
         // Calculate the portion of canvas to use for this page
-        const heightToPrint = Math.min(pdfHeight, heightLeft);
+        const heightToPrint = Math.min(pdfHeight - 20, heightLeft);
         const ratio = heightToPrint / pdfImgHeight;
         const canvasSliceHeight = canvas.height * ratio;
         
@@ -87,6 +101,8 @@ export const exportHtmlToPdf = async (
         
         if (ctx) {
           // Draw the slice of the original canvas
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
           ctx.drawImage(
             canvas, 
             0, position * canvas.height, 
@@ -95,9 +111,9 @@ export const exportHtmlToPdf = async (
             sliceCanvas.width, sliceCanvas.height
           );
           
-          // Add to PDF
-          const sliceImgData = sliceCanvas.toDataURL('image/png');
-          pdf.addImage(sliceImgData, 'PNG', 0, 0, pdfWidth, heightToPrint);
+          // Add to PDF with margins
+          const sliceImgData = sliceCanvas.toDataURL('image/png', 1.0);
+          pdf.addImage(sliceImgData, 'PNG', 5, 10, pdfImgWidth, heightToPrint);
           
           // Update for next page
           heightLeft -= heightToPrint;
@@ -106,20 +122,17 @@ export const exportHtmlToPdf = async (
       }
     } else {
       // Just add the whole image if it fits on one page
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfImgHeight);
+      pdf.addImage(imgData, 'PNG', 5, 10, pdfImgWidth, pdfImgHeight);
     }
     
     // Save PDF
     pdf.save(fileName);
     
-    // Restore original styles
+    // Clean up
     document.body.style.backgroundColor = originalBg;
-    elementsToFix.forEach(el => {
-      const original = originalStyles.get(el);
-      if (original) {
-        (el as HTMLElement).style.backgroundColor = '';
-      }
-    });
+    if (contentClone.parentNode) {
+      contentClone.parentNode.removeChild(contentClone);
+    }
     
     if (loadingCallback) loadingCallback(false);
     return true;

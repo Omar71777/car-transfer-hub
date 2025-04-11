@@ -25,10 +25,21 @@ export function useCreateBill(
         billData.taxApplication
       );
       
-      if (!preview) throw new Error('No se pudo calcular la vista previa de la factura');
+      if (!preview) {
+        console.error('Failed to calculate bill preview');
+        throw new Error('No se pudo calcular la vista previa de la factura');
+      }
+      
+      console.log('Creating bill with preview:', {
+        clientId: billData.clientId,
+        taxRate: billData.taxRate,
+        taxApplication: billData.taxApplication,
+        itemsCount: preview.items.length
+      });
       
       const billNumber = await generateBillNumber();
       
+      // Create the bill
       const { data: bill, error: billError } = await supabase
         .from('bills')
         .insert([{
@@ -48,18 +59,34 @@ export function useCreateBill(
         .select()
         .single();
 
-      if (billError) throw billError;
+      if (billError) {
+        console.error('Error creating bill:', billError);
+        throw billError;
+      }
       
+      if (!bill) {
+        throw new Error('Failed to create bill record');
+      }
+      
+      console.log('Bill created:', bill);
+      
+      // Prepare bill items array
       const billItems = [];
       
+      // Process each item from the preview
       for (const item of preview.items) {
+        if (!item.transfer || !item.transfer.id) {
+          console.error('Missing transfer data in item:', item);
+          continue;
+        }
+        
         // Calculate the base price correctly, accounting for service type
         const basePrice = calculateBasePrice(item.transfer);
         const discountAmount = calculateDiscountAmount(item.transfer);
         const finalBasePrice = basePrice - discountAmount;
         
         // Create the main transfer item
-        const description = generateTransferDescription(item.transfer);
+        const description = item.description || generateTransferDescription(item.transfer);
         
         // For dispo services, quantity is the number of hours and unit price is the hourly rate
         let quantity = 1;
@@ -88,6 +115,11 @@ export function useCreateBill(
         if (item.extraCharges && item.extraCharges.length > 0) {
           // Add the extra charges as separate rows
           for (const charge of item.extraCharges) {
+            if (!charge.name || !charge.price) {
+              console.error('Invalid extra charge:', charge);
+              continue;
+            }
+            
             billItems.push({
               bill_id: bill.id,
               transfer_id: item.transfer.id,
@@ -103,8 +135,18 @@ export function useCreateBill(
         }
         
         // Mark the transfer as billed
-        await updateTransfer(item.transfer.id, { billed: true });
+        const updateResult = await updateTransfer(item.transfer.id, { billed: true });
+        if (!updateResult) {
+          console.warn(`Failed to mark transfer ${item.transfer.id} as billed`);
+        }
       }
+      
+      if (billItems.length === 0) {
+        console.error('No valid bill items to insert');
+        throw new Error('No se pudieron crear elementos de factura');
+      }
+      
+      console.log(`Inserting ${billItems.length} bill items`);
       
       // Insert all bill items
       const { data: insertedItems, error: itemsError } = await supabase
@@ -112,7 +154,12 @@ export function useCreateBill(
         .insert(billItems)
         .select();
 
-      if (itemsError) throw itemsError;
+      if (itemsError) {
+        console.error('Error inserting bill items:', itemsError);
+        throw itemsError;
+      }
+      
+      console.log(`Successfully inserted ${insertedItems?.length || 0} bill items`);
       
       toast.success('Factura creada con éxito');
       return bill.id;

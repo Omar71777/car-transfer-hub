@@ -1,3 +1,4 @@
+
 /**
  * Generates the CSS styles for the bill document
  */
@@ -106,6 +107,18 @@ export const generateStyles = (): string => {
         margin: 0;
       }
       
+      .section-title {
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        margin: 30px 0 15px 0;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+      }
+      
+      .items-section {
+        margin: 30px 0;
+      }
+      
       .items-table {
         width: 100%;
         border-collapse: collapse;
@@ -126,6 +139,10 @@ export const generateStyles = (): string => {
       
       .items-table tr:last-child td {
         border-bottom: none;
+      }
+      
+      .text-center {
+        text-align: center;
       }
       
       .text-right {

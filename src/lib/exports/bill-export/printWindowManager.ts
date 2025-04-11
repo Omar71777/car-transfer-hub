@@ -16,6 +16,14 @@ export const createPrintWindow = (bill: Bill, companyInfo: CompanyInfo): Window 
     return null;
   }
 
+  // Debug the bill data before generating HTML
+  console.log('Creating print window with bill:', {
+    id: bill.id,
+    number: bill.number,
+    itemsCount: bill.items?.length || 0,
+    hasClient: !!bill.client
+  });
+
   // Generate and write the bill HTML content
   const content = generateBillHtml(bill, companyInfo);
   printWindow.document.open();
@@ -42,6 +50,28 @@ export const setupPrintWindowEvents = (printWindow: Window, bill: Bill): void =>
     const htmlElement = printWindow.document.documentElement;
     htmlElement.style.colorScheme = 'light';
     printWindow.document.body.style.backgroundColor = 'white';
+    
+    // Make sure all elements have proper color
+    const allElements = printWindow.document.querySelectorAll('*');
+    allElements.forEach(el => {
+      const element = el as HTMLElement;
+      const style = window.getComputedStyle(element);
+      
+      // Fix invisible text
+      if (style.color === 'rgb(255, 255, 255)' || 
+          style.color.includes('rgba(255, 255, 255')) {
+        element.style.color = '#1e293b';
+      }
+      
+      // Fix transparent backgrounds
+      if (style.backgroundColor === 'rgba(0, 0, 0, 0)' || 
+          style.backgroundColor === 'transparent') {
+        if (element.classList.contains('detail-card') || 
+            element.classList.contains('notes-section')) {
+          element.style.backgroundColor = 'rgba(14, 165, 233, 0.05)';
+        }
+      }
+    });
   };
 };
 
