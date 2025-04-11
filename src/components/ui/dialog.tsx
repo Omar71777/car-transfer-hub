@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -36,7 +35,7 @@ const DialogContent = React.forwardRef<
   const isMobile = useIsMobile()
   
   return (
-    <DialogPortal forceMount={false}>
+    <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
