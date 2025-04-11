@@ -88,6 +88,7 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
                 <th style="width: 50%;">Concepto</th>
                 <th>Cantidad</th>
                 <th class="text-right">Precio unitario</th>
+                <th class="text-right">Descuento</th>
                 <th class="text-right">Total</th>
               </tr>
             </thead>

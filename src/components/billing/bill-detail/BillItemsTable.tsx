@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Bill } from '@/types/billing';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,7 +12,37 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
 
-  // Log bill items for debugging
+  const formatItemDescription = (item: any) => {
+    let description = item.description;
+    
+    if (item.is_extra_charge) {
+      return description;
+    }
+    
+    const transferMatch = description.match(/Transfer: (.+)/i);
+    const dispoMatch = description.match(/Disposición: (.+)/i);
+    const dateMatch = description.match(/(\d{2}\/\d{2}\/\d{4})/);
+    
+    if (transferMatch || dispoMatch) {
+      const serviceType = transferMatch ? "Transfer" : "Disposición";
+      const date = dateMatch ? dateMatch[0] : "";
+      
+      return `${serviceType} - ${date}`;
+    }
+    
+    return description;
+  };
+
+  const calculateDiscount = (item: any): number => {
+    if (item.is_extra_charge) return 0;
+    
+    const fullPrice = item.unit_price * item.quantity;
+    const actualPrice = item.total_price;
+    const discount = fullPrice - actualPrice;
+    
+    return discount > 0 ? discount : 0;
+  };
+
   console.log('Rendering BillItemsTable with:', {
     billId: bill.id,
     itemsCount: bill.items?.length || 0,
@@ -42,31 +71,41 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                   Precio unitario
                 </th>
                 <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Descuento
+                </th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Total
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {bill.items && bill.items.length > 0 ? (
-                bill.items.map((item, index) => (
-                  <tr key={item.id} className={item.is_extra_charge ? "bg-muted/10" : ""}>
-                    <td className={`px-3 py-2 text-sm ${item.is_extra_charge ? "pl-6 text-muted-foreground italic" : "font-medium"}`}>
-                      {item.description}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-right">
-                      {item.quantity}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-right">
-                      {formatCurrency(item.unit_price)}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-right">
-                      {formatCurrency(item.total_price)}
-                    </td>
-                  </tr>
-                ))
+                bill.items.map((item, index) => {
+                  const discount = calculateDiscount(item);
+                  
+                  return (
+                    <tr key={item.id} className={item.is_extra_charge ? "bg-muted/10" : ""}>
+                      <td className={`px-3 py-2 text-sm ${item.is_extra_charge ? "pl-6 text-muted-foreground italic" : "font-medium"}`}>
+                        {item.is_extra_charge ? item.description : formatItemDescription(item)}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-right">
+                        {item.quantity}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-right">
+                        {formatCurrency(item.unit_price)}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-right">
+                        {discount > 0 ? formatCurrency(discount) : "-"}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-right">
+                        {formatCurrency(item.total_price)}
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan={4} className="px-3 py-4 text-center text-sm text-muted-foreground">
+                  <td colSpan={5} className="px-3 py-4 text-center text-sm text-muted-foreground">
                     No hay elementos en esta factura
                   </td>
                 </tr>
@@ -74,7 +113,7 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan={2} className="px-3 py-2"></td>
+                <td colSpan={3} className="px-3 py-2"></td>
                 <td className="px-3 py-2 text-sm text-right font-medium">
                   Subtotal:
                 </td>
@@ -83,7 +122,7 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                 </td>
               </tr>
               <tr>
-                <td colSpan={2} className="px-3 py-2"></td>
+                <td colSpan={3} className="px-3 py-2"></td>
                 <td className="px-3 py-2 text-sm text-right font-medium">
                   IVA ({bill.tax_rate}%) {bill.tax_application === 'included' ? '(incluido)' : ''}:
                 </td>
@@ -92,7 +131,7 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                 </td>
               </tr>
               <tr>
-                <td colSpan={2} className="px-3 py-2"></td>
+                <td colSpan={3} className="px-3 py-2"></td>
                 <td className="px-3 py-2 text-sm text-right font-bold">
                   Total:
                 </td>
