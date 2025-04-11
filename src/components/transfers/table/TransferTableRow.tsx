@@ -1,13 +1,15 @@
+
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Transfer } from '@/types';
-import { Edit2, Trash2, Receipt, Car, Clock, Tag, PackagePlus } from 'lucide-react';
+import { Edit2, Trash2, Receipt, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { calculateTotalPrice, calculateDiscountAmount, calculateExtraChargesTotal } from '@/lib/calculations';
+import { calculateTotalPrice } from '@/lib/calculations';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -26,6 +28,8 @@ export function TransferTableRow({
   selected,
   onSelectRow
 }: TransferTableRowProps) {
+  const isMobile = useIsMobile();
+  
   // Check if transfer has all required properties
   if (!transfer || !transfer.id) {
     console.error('Invalid transfer data:', transfer);
@@ -43,8 +47,12 @@ export function TransferTableRow({
     }
   };
 
-  // Get total number of extra charges
-  const extraChargesCount = Array.isArray(transfer.extraCharges) ? transfer.extraCharges.length : 0;
+  // Get price including extras and discounts
+  const totalPrice = calculateTotalPrice(transfer);
+  
+  // Format commission amount
+  const commissionAmount = transfer.price * (transfer.commission / 100);
+  const formattedCommission = `${transfer.commission}% (${formatCurrency(commissionAmount)})`;
 
   return (
     <TableRow className={selected ? 'bg-accent/20' : undefined}>
@@ -55,74 +63,45 @@ export function TransferTableRow({
           aria-label="Select row"
         />
       </TableCell>
-      <TableCell className="font-medium">
-        <div className="flex flex-col">
-          <div className="flex items-center">
-            {transfer.serviceType === 'dispo' ? (
-              <Clock className="h-4 w-4 mr-1 text-blue-500" />
-            ) : (
-              <Car className="h-4 w-4 mr-1 text-primary" />
-            )}
-            <span>
-              {transfer.origin || 'N/A'} 
-              {transfer.serviceType === 'transfer' && transfer.destination && (
-                <> → {transfer.destination}</>
-              )}
-            </span>
-          </div>
-          {transfer.serviceType === 'dispo' && transfer.hours && (
-            <span className="text-xs text-muted-foreground ml-5">
-              {transfer.hours} horas
-            </span>
-          )}
-          {transfer.client?.name && (
-            <span className="text-xs text-muted-foreground truncate max-w-[200px]">
-              {transfer.client.name}
-            </span>
-          )}
-        </div>
-      </TableCell>
       <TableCell>{transfer.date || 'N/A'}</TableCell>
-      <TableCell>
-        <div className="space-y-1">
-          <div className="flex items-center gap-1">
-            <span>{formatCurrency(calculateTotalPrice(transfer))}</span>
-            {transfer.discountType && Number(transfer.discountValue) > 0 && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Tag className="h-3.5 w-3.5 text-green-600" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Descuento: {formatDiscount()}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            {extraChargesCount > 0 && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <PackagePlus className="h-3.5 w-3.5 text-blue-600" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{extraChargesCount} cargo{extraChargesCount !== 1 ? 's' : ''} extra{extraChargesCount !== 1 ? 's' : ''}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
-          <Badge 
-            variant={transfer.paymentStatus === 'paid' ? 'default' : 'outline'}
-            className="text-xs"
-          >
-            {transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente'}
-          </Badge>
-        </div>
+      {!isMobile && <TableCell>{transfer.time || 'N/A'}</TableCell>}
+      <TableCell className="max-w-[120px] truncate" title={transfer.origin}>
+        {transfer.origin || 'N/A'}
+      </TableCell>
+      <TableCell className="max-w-[120px] truncate" title={transfer.destination}>
+        {transfer.destination || 'N/A'}
+      </TableCell>
+      <TableCell className="text-right font-medium">
+        {formatCurrency(totalPrice)}
+        {transfer.discountType && Number(transfer.discountValue) > 0 && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="inline-block ml-1">
+                  <Tag className="h-3.5 w-3.5 text-green-600" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Descuento: {formatDiscount()}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </TableCell>
+      {!isMobile && (
+        <TableCell className="max-w-[120px] truncate" title={transfer.client?.name}>
+          {transfer.client?.name || 'N/A'}
+        </TableCell>
+      )}
+      {!isMobile && <TableCell>{transfer.collaborator || 'N/A'}</TableCell>}
+      {!isMobile && <TableCell className="text-right">{formattedCommission}</TableCell>}
+      <TableCell className="text-center">
+        <Badge 
+          variant={transfer.paymentStatus === 'paid' ? 'success' : 'outline'}
+          className="text-xs whitespace-nowrap"
+        >
+          {transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente'}
+        </Badge>
       </TableCell>
       <TableCell>
         <div className="flex items-center justify-end space-x-1">

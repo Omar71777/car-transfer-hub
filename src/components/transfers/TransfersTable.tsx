@@ -7,7 +7,6 @@ import { TransferTableRow } from './table/TransferTableRow';
 import { EmptyTransfersRow } from './table/EmptyTransfersRow';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
-import { capitalizeFirstLetter } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransfersTableProps {
@@ -65,11 +64,11 @@ export function TransfersTable({
             className="gap-1"
           >
             <Trash2 className="h-4 w-4" />
-            {capitalizeFirstLetter('eliminar')}
+            Eliminar
           </Button>
         </div>
       )}
-      <div className="rounded-md border overflow-hidden glass-card px-[7px]">
+      <div className="rounded-md border overflow-hidden glass-card">
         <div className={isMobile ? "overflow-x-auto -mx-4 px-4 mobile-scroll" : ""}>
           <Table>
             <TransferTableHeader 

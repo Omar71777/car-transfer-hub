@@ -126,4 +126,19 @@
   .dialog-content {
     padding: 1rem !important;
   }
+  
+  /* Better table display on mobile */
+  .mobile-scroll .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  /* Limit text overflow in table cells */
+  .mobile-table td, 
+  .mobile-table th {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
