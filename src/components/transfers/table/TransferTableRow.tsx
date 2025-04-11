@@ -7,7 +7,6 @@ import { es } from 'date-fns/locale';
 import { Transfer } from '@/types';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
 import { PaymentStatusCell } from './PaymentStatusCell';
-import { PriceDisplay } from './PriceDisplay';
 import { TransferRowActions } from './TransferRowActions';
 import { TruncatedCell } from './TruncatedCell';
 import { cn } from '@/lib/utils';
@@ -90,9 +89,6 @@ export function TransferTableRow({
       <TableCell className="font-medium text-xs text-center">{formattedDate}</TableCell>
       <TableCell className="text-center">
         <ServiceTypeBadge serviceType={transfer.serviceType} />
-      </TableCell>
-      <TableCell className="text-right">
-        <PriceDisplay transfer={transfer} />
       </TableCell>
       {!isMobile && (
         <TableCell className="text-center">

@@ -34,7 +34,6 @@ export function TransferTableHeader({
         </TableHead>
         <TableHead className="col-date text-center text-xs font-bold">Fecha</TableHead>
         <TableHead className="col-type text-center text-xs font-bold">Tipo</TableHead>
-        <TableHead className="col-price text-right text-xs font-bold">Precio</TableHead>
         {!isMobile && <TableHead className="col-client text-center text-xs font-bold">Cliente</TableHead>}
         {!isMobile && <TableHead className="col-collaborator text-center text-xs font-bold">Colaborador</TableHead>}
         {!isMobile && <TableHead className="col-total text-right text-xs font-bold">Beneficio</TableHead>}

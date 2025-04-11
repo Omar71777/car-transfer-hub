@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
 import { Transfer } from '@/types';
 import { TransfersTable } from '@/components/transfers/TransfersTable';
+import { TransferStats } from '@/components/transfers/stats/TransferStats';
 
 interface TransferManagementTabProps {
   transfers: Transfer[];
@@ -39,6 +40,9 @@ export function TransferManagementTab({
           </Link>
         </Button>
       </div>
+      
+      {/* Add the new stats component */}
+      {!loading && <TransferStats transfers={transfers} />}
       
       {loading ? (
         <div className="flex justify-center items-center h-64">

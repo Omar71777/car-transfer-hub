@@ -16,6 +16,9 @@
 
 .table-container {
   @apply rounded-md border w-full overflow-hidden;
+  margin: 0 auto;
+  max-width: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Make sure badges are compact in tables */
@@ -58,6 +61,42 @@
 .text-center-all th,
 .text-center-all td {
   @apply text-center;
+}
+
+/* Add soft background colors */
+.bg-soft-green {
+  @apply bg-green-100;
+}
+
+.bg-soft-blue {
+  @apply bg-blue-100;
+}
+
+/* Improve table spacing and layout */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px 12px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Row hover effect */
+tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 @media (max-width: 768px) {
@@ -166,12 +205,6 @@
     min-width: 100px;
   }
   
-  .col-price {
-    width: 80px;
-    min-width: 80px;
-    text-align: right;
-  }
-  
   .col-client {
     width: 120px;
     min-width: 120px;
@@ -180,12 +213,6 @@
   .col-collaborator {
     width: 120px;
     min-width: 120px;
-  }
-  
-  .col-commission {
-    width: 100px;
-    min-width: 100px;
-    text-align: right;
   }
   
   .col-total {

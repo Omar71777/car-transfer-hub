@@ -89,7 +89,7 @@ export function TransfersTable({
         </div>
       )}
 
-      <div className="table-container">
+      <div className="table-container bg-card rounded-md border shadow-sm mx-auto">
         <div className="table-full-width">
           <Table className={isMobile ? "mobile-table w-full table-fixed" : "w-full table-fixed"}>
             <TransferTableHeader 
