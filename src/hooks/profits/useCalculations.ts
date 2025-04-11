@@ -28,11 +28,11 @@ export const calculateStats = (transfers: Transfer[], expenses: Expense[]): Prof
   // Sum all regular expenses (not including commissions)
   const regularExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   
-  // Total expenses is regular expenses plus commissions
-  const totalExpenses = regularExpenses + totalCommissions;
+  // Total expenses is ONLY regular expenses (commissions are displayed separately)
+  const totalExpenses = regularExpenses;
   
-  // Net profit is income minus total expenses
-  const netProfit = totalIncome - totalExpenses;
+  // Net profit is income minus total expenses and commissions
+  const netProfit = totalIncome - totalExpenses - totalCommissions;
   
   // Profit margin as a percentage (avoid division by zero)
   const profitMargin = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0;
@@ -82,7 +82,7 @@ export const generateChartData = (stats: ProfitStats) => {
     },
     {
       name: 'Otros Gastos',
-      value: stats.totalExpenses - stats.totalCommissions,
+      value: stats.totalExpenses,
       fill: '#ef4444'
     },
     {

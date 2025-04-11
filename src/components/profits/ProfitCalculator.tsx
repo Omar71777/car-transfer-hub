@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -31,13 +32,14 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
       // Use the consistent calculation methods from lib/calculations
       const income = dayTransfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
       const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
-      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + commissionsTotal;
-      const profit = income - expense;
+      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const profit = income - expense - commissionsTotal;
       
       return {
         date: format(day, 'dd/MM'),
         income,
         expense,
+        commission: commissionsTotal,
         profit,
       };
     });
@@ -61,12 +63,13 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
       // Use the consistent calculation methods from lib/calculations
       const income = dayTransfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
       const commissionsTotal = dayTransfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
-      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + commissionsTotal;
+      const expense = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
       
       return {
         day,
         income,
         expense,
+        commission: commissionsTotal,
       };
     });
 
@@ -76,7 +79,8 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
       const weekData = monthlyData.slice(i, i + 7);
       const weekIncome = weekData.reduce((sum, d) => sum + d.income, 0);
       const weekExpense = weekData.reduce((sum, d) => sum + d.expense, 0);
-      const weekProfit = weekIncome - weekExpense;
+      const weekCommission = weekData.reduce((sum, d) => sum + d.commission, 0);
+      const weekProfit = weekIncome - weekExpense - weekCommission;
       
       const weekStart = weekData[0]?.day || firstDayOfMonth;
       const weekEnd = weekData[weekData.length - 1]?.day || weekStart;
@@ -85,6 +89,7 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
         date: `${format(weekStart, 'dd/MM')} - ${format(weekEnd, 'dd/MM')}`,
         income: weekIncome,
         expense: weekExpense,
+        commission: weekCommission,
         profit: weekProfit,
       });
     }
@@ -96,15 +101,15 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
   const calculateTotals = () => {
     const totalIncome = transfers.reduce((sum, t) => sum + calculateTotalPrice(t), 0);
     const totalCommissions = transfers.reduce((sum, t) => sum + calculateCommissionAmount(t), 0);
-    const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0) + totalCommissions;
-    const totalProfit = totalIncome - totalExpense;
+    const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalProfit = totalIncome - totalExpense - totalCommissions;
     
-    return { totalIncome, totalExpense, totalProfit };
+    return { totalIncome, totalExpense, totalCommissions, totalProfit };
   };
 
   const dailyData = calculateDailyData();
   const monthlyData = calculateMonthlyData();
-  const { totalIncome, totalExpense, totalProfit } = calculateTotals();
+  const { totalIncome, totalExpense, totalCommissions, totalProfit } = calculateTotals();
 
   return (
     <Card className="glass-card w-full">
@@ -113,7 +118,7 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
         <CardDescription>Visualiza los ingresos, gastos y ganancias netas</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardHeader className="py-4">
               <CardTitle className="text-base text-ibiza-500">Ingresos Totales</CardTitle>
@@ -125,10 +130,19 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
           
           <Card>
             <CardHeader className="py-4">
-              <CardTitle className="text-base text-destructive">Gastos Totales (+ Comisiones)</CardTitle>
+              <CardTitle className="text-base text-destructive">Gastos Totales</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">{formatCurrency(totalExpense)}</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="py-4">
+              <CardTitle className="text-base text-amber-500">Comisiones</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">{formatCurrency(totalCommissions)}</p>
             </CardContent>
           </Card>
           
@@ -160,9 +174,10 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
                   <YAxis />
                   <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                   <Legend />
-                  <Bar dataKey="income" name="Ingresos" fill="#0088e6" />
-                  <Bar dataKey="expense" name="Gastos (+ Comisiones)" fill="#ff6b6b" />
-                  <Bar dataKey="profit" name="Ganancia" fill="#4ade80" />
+                  <Bar dataKey="income" name="Ingresos" fill="#3b82f6" />
+                  <Bar dataKey="expense" name="Gastos" fill="#ef4444" />
+                  <Bar dataKey="commission" name="Comisiones" fill="#f59e0b" />
+                  <Bar dataKey="profit" name="Ganancia" fill="#10b981" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -180,9 +195,10 @@ export function ProfitCalculator({ transfers, expenses }: ProfitCalculatorProps)
                   <YAxis />
                   <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                   <Legend />
-                  <Bar dataKey="income" name="Ingresos" fill="#0088e6" />
-                  <Bar dataKey="expense" name="Gastos (+ Comisiones)" fill="#ff6b6b" />
-                  <Bar dataKey="profit" name="Ganancia" fill="#4ade80" />
+                  <Bar dataKey="income" name="Ingresos" fill="#3b82f6" />
+                  <Bar dataKey="expense" name="Gastos" fill="#ef4444" />
+                  <Bar dataKey="commission" name="Comisiones" fill="#f59e0b" />
+                  <Bar dataKey="profit" name="Ganancia" fill="#10b981" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
