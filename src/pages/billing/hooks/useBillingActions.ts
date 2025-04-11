@@ -100,11 +100,9 @@ export function useBillingActions() {
   // Integrated handlers that work with the central state
   const handleViewBill = async (bill: Bill) => {
     try {
-      // Close any open dialogs first
-      resetDialogStates();
+      // Set error to null but don't reset dialog states
       setError(null);
       
-      // Now open the requested dialog
       await baseHandleViewBill(
         bill,
         setViewBill,
@@ -119,11 +117,9 @@ export function useBillingActions() {
 
   const handleEditBill = async (bill: Bill) => {
     try {
-      // Close any open dialogs first
-      resetDialogStates();
+      // Set error to null but don't reset dialog states
       setError(null);
       
-      // Now open the requested dialog
       await baseHandleEditBill(
         bill,
         setSelectedBill,
@@ -138,11 +134,9 @@ export function useBillingActions() {
 
   const handleDeleteBill = (bill: Bill) => {
     try {
-      // Close any open dialogs first
-      resetDialogStates();
+      // Set error to null but don't reset dialog states
       setError(null);
       
-      // Now open the requested dialog
       baseHandleDeleteBill(
         bill,
         setSelectedBill,
