@@ -22,8 +22,9 @@ export function useTransfers() {
     createTransfer, 
     updateTransfer, 
     deleteTransfer,
+    getTransfer,
     updateTransferBilledStatus
-  } = useTransferOperations();
+  } = useTransferOperations(user);
 
   // Refetch transfers when user changes
   useEffect(() => {
@@ -72,6 +73,7 @@ export function useTransfers() {
     fetchTransfers,
     fetchTransfersInRange,
     fetchTransferById,
+    getTransfer,
     createTransfer: handleCreateTransfer,
     updateTransfer: handleUpdateTransfer,
     deleteTransfer: handleDeleteTransfer,

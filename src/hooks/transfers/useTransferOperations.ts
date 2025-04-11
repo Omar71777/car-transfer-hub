@@ -5,8 +5,9 @@ import { createTransfer as createTransferUtil } from './operations/createTransfe
 import { updateTransfer as updateTransferUtil } from './operations/updateTransfer';
 import { deleteTransfer as deleteTransferUtil } from './operations/deleteTransfer';
 import { getTransfer as getTransferUtil } from './operations/getTransfer';
+import { updateTransferBilledStatus as updateBilledStatusUtil } from './operations/updateTransferBilledStatus';
 
-export function useTransferOperations(user: any) {
+export function useTransferOperations(user?: any) {
   const createTransfer = useCallback(async (transferData: any) => {
     return createTransferUtil(user, transferData);
   }, [user]);
@@ -23,5 +24,15 @@ export function useTransferOperations(user: any) {
     return getTransferUtil(id);
   }, []);
 
-  return { createTransfer, updateTransfer, deleteTransfer, getTransfer };
+  const updateTransferBilledStatus = useCallback(async (transferIds: string[], billed: boolean) => {
+    return updateBilledStatusUtil(user, transferIds, billed);
+  }, [user]);
+
+  return { 
+    createTransfer, 
+    updateTransfer, 
+    deleteTransfer, 
+    getTransfer,
+    updateTransferBilledStatus 
+  };
 }
