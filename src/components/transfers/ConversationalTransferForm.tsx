@@ -7,8 +7,7 @@ import { transferSchema, TransferFormValues } from './schema/transferSchema';
 import { ClientStep } from './wizard-steps/ClientStep';
 import { DateTimeStep } from './wizard-steps/DateTimeStep';
 import { LocationStep } from './wizard-steps/LocationStep';
-import { PricingStep } from './wizard-steps/PricingStep';
-import { ExtraChargesStep } from './wizard-steps/ExtraChargesStep';
+import { PricingAndExtraChargesStep } from './wizard-steps/PricingAndExtraChargesStep';
 import { CollaboratorStep } from './wizard-steps/CollaboratorStep';
 import { ConfirmationStep } from './wizard-steps/ConfirmationStep';
 import { useCollaborators } from '@/hooks/useCollaborators';
@@ -24,13 +23,12 @@ interface ConversationalTransferFormProps {
 }
 
 export function ConversationalTransferForm({ onSubmit }: ConversationalTransferFormProps) {
-  // Define steps
+  // Define steps in the new order
   const steps = [
     { id: 'client', title: 'Cliente', component: ClientStep },
     { id: 'datetime', title: 'Fecha y Hora', component: DateTimeStep },
     { id: 'location', title: 'Ubicación', component: LocationStep },
-    { id: 'pricing', title: 'Precio', component: PricingStep },
-    { id: 'extraCharges', title: 'Cargos Extra', component: ExtraChargesStep },
+    { id: 'pricing', title: 'Precio y Cargos', component: PricingAndExtraChargesStep },
     { id: 'collaborator', title: 'Colaborador', component: CollaboratorStep },
     { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep },
   ];

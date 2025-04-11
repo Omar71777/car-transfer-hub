@@ -45,18 +45,21 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
     }
   }
   
-  // Calculate total price
-  const totalPrice = basePrice + totalExtraCharges - discountAmount;
+  // Subtotal after discount
+  const subtotalAfterDiscount = basePrice + totalExtraCharges - discountAmount;
   
   // Calculate commission amount in euros
   let commissionAmountEuros = 0;
   if (values.collaborator && values.collaborator !== 'none' && values.commission) {
     if (values.commissionType === 'percentage') {
-      commissionAmountEuros = totalPrice * (Number(values.commission) / 100);
+      commissionAmountEuros = subtotalAfterDiscount * (Number(values.commission) / 100);
     } else {
       commissionAmountEuros = Number(values.commission);
     }
   }
+  
+  // Final total price after commission is deducted
+  const totalPrice = subtotalAfterDiscount - commissionAmountEuros;
   
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -184,6 +187,18 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
                   <div className="flex justify-between text-green-600">
                     <p className="text-sm">Descuento {values.discountType === 'percentage' ? `(${values.discountValue}%)` : ''}</p>
                     <p>-{formatCurrency(discountAmount)}</p>
+                  </div>
+                )}
+                
+                <div className="flex justify-between font-semibold pt-2 border-t">
+                  <p>Subtotal</p>
+                  <p>{formatCurrency(subtotalAfterDiscount)}</p>
+                </div>
+                
+                {values.collaborator && values.collaborator !== 'none' && values.commission && (
+                  <div className="flex justify-between text-amber-600">
+                    <p className="text-sm">Comisión colaborador {values.commissionType === 'percentage' ? `(${values.commission}%)` : ''}</p>
+                    <p>-{formatCurrency(commissionAmountEuros)}</p>
                   </div>
                 )}
                 

@@ -57,9 +57,7 @@ export const useTransferFormNavigation = (
         }
         return ['serviceType', 'origin', 'hours'];
       case 'pricing':
-        return ['price', 'paymentStatus']; // Don't validate discounts as they're optional
-      case 'extraCharges':
-        return []; // Extra charges are optional
+        return ['price', 'paymentStatus']; // Validate both price and payment status for combined step
       case 'collaborator':
         // Collaborator is required if it's a collaborator service
         return collaboratorValue !== 'none' ? ['collaborator'] : [];
