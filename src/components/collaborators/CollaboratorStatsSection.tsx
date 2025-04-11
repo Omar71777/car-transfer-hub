@@ -24,12 +24,19 @@ export function CollaboratorStatsSection({ transfers, loading = false }: Collabo
     transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
+      // Standardize the collaborator name to lowercase for comparison
+      const normalizedName = transfer.collaborator.toLowerCase();
+      // But preserve the original casing for display (using the first occurrence)
+      const displayName = collaboratorStats[normalizedName] 
+        ? collaboratorStats[normalizedName].name 
+        : transfer.collaborator;
+      
       // Use the correct commission calculation function with full transfer data
       const commissionAmount = calculateCommissionAmount(transfer);
       
-      if (!collaboratorStats[transfer.collaborator]) {
-        collaboratorStats[transfer.collaborator] = {
-          name: transfer.collaborator,
+      if (!collaboratorStats[normalizedName]) {
+        collaboratorStats[normalizedName] = {
+          name: displayName,
           transferCount: 0,
           commissionTotal: 0,
           averageCommission: 0,
@@ -37,10 +44,10 @@ export function CollaboratorStatsSection({ transfers, loading = false }: Collabo
         };
       }
       
-      collaboratorStats[transfer.collaborator].transferCount += 1;
-      collaboratorStats[transfer.collaborator].commissionTotal += commissionAmount;
-      collaboratorStats[transfer.collaborator].transfers = 
-        [...(collaboratorStats[transfer.collaborator].transfers || []), transfer];
+      collaboratorStats[normalizedName].transferCount += 1;
+      collaboratorStats[normalizedName].commissionTotal += commissionAmount;
+      collaboratorStats[normalizedName].transfers = 
+        [...(collaboratorStats[normalizedName].transfers || []), transfer];
     });
     
     // Calculate average commission

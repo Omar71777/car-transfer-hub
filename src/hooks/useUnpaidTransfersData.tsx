@@ -14,23 +14,40 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
     if (selectedCollaborator === 'all') {
       setUnpaidTransfers(filtered);
     } else {
-      setUnpaidTransfers(filtered.filter(t => t.collaborator === selectedCollaborator));
+      // Case-insensitive comparison for collaborator filtering
+      setUnpaidTransfers(filtered.filter(t => 
+        t.collaborator && t.collaborator.toLowerCase() === selectedCollaborator.toLowerCase()
+      ));
     }
   }, [transfers, selectedCollaborator]);
   
-  // Get unique collaborators from unpaid transfers
+  // Get unique collaborators from unpaid transfers with normalized names
   const getUnpaidCollaborators = () => {
-    const collaboratorNames = Array.from(
-      new Set(transfers.filter(t => t.paymentStatus === 'pending').map(t => t.collaborator))
-    ).filter(Boolean) as string[];
+    // Create a map to store unique collaborator names with original casing
+    const collaboratorMap = new Map<string, string>();
     
-    return collaboratorNames;
+    transfers
+      .filter(t => t.paymentStatus === 'pending' && t.collaborator)
+      .forEach(t => {
+        if (!t.collaborator) return;
+        const normalizedName = t.collaborator.toLowerCase();
+        if (!collaboratorMap.has(normalizedName)) {
+          collaboratorMap.set(normalizedName, t.collaborator);
+        }
+      });
+    
+    // Convert the map values to an array
+    return Array.from(collaboratorMap.values());
   };
   
   // Calculate total unpaid amount for a collaborator
   const calculateUnpaidTotal = (collaboratorName: string) => {
     return transfers
-      .filter(t => t.paymentStatus === 'pending' && t.collaborator === collaboratorName)
+      .filter(t => 
+        t.paymentStatus === 'pending' && 
+        t.collaborator && 
+        t.collaborator.toLowerCase() === collaboratorName.toLowerCase()
+      )
       .reduce((sum, t) => {
         // Consider commission type when calculating
         const commissionAmount = t.commissionType === 'percentage' 
@@ -42,6 +59,7 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
   
   // Group unpaid transfers by month for each collaborator
   const getMonthlyUnpaidData = () => {
+    // Get normalized unique collaborator names with original casing preserved
     const collaboratorNames = getUnpaidCollaborators();
     const monthlyData: {
       collaborator: string;
@@ -54,8 +72,11 @@ export function useUnpaidTransfersData(transfers: Transfer[], selectedCollaborat
     collaboratorNames.forEach(name => {
       if (!name) return;
       
+      // Case-insensitive filtering for collaborator transfers
       const collaboratorTransfers = transfers.filter(
-        t => t.paymentStatus === 'pending' && t.collaborator === name
+        t => t.paymentStatus === 'pending' && 
+             t.collaborator && 
+             t.collaborator.toLowerCase() === name.toLowerCase()
       );
       
       // Group by month - using Spanish locale

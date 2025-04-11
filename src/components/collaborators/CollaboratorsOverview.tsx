@@ -25,19 +25,26 @@ export function CollaboratorsOverview({ transfers, loading = false }: Collaborat
     transfersWithCollaborators.forEach(transfer => {
       if (!transfer.collaborator) return;
       
+      // Standardize the collaborator name to lowercase for comparison
+      const normalizedName = transfer.collaborator.toLowerCase();
+      // But preserve the original casing for display (using the first occurrence)
+      const displayName = collaborators[normalizedName] 
+        ? collaborators[normalizedName].name 
+        : transfer.collaborator;
+      
       // Use the correct commission calculation function with complete transfer data
       const commissionAmount = calculateCommissionAmount(transfer);
       
-      if (!collaborators[transfer.collaborator]) {
-        collaborators[transfer.collaborator] = {
-          name: transfer.collaborator,
+      if (!collaborators[normalizedName]) {
+        collaborators[normalizedName] = {
+          name: displayName,
           transferCount: 0,
           commissionTotal: 0
         };
       }
       
-      collaborators[transfer.collaborator].transferCount += 1;
-      collaborators[transfer.collaborator].commissionTotal += commissionAmount;
+      collaborators[normalizedName].transferCount += 1;
+      collaborators[normalizedName].commissionTotal += commissionAmount;
     });
     
     return Object.values(collaborators);
