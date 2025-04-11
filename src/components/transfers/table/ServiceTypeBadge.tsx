@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 
 interface ServiceTypeBadgeProps {
   serviceType: string;
-  hours?: number;
+  hours?: number | string;
 }
 
 export function ServiceTypeBadge({ serviceType, hours }: ServiceTypeBadgeProps) {
