@@ -1,8 +1,14 @@
 
 import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { 
+  ClientInfoSection,
+  ServiceDetailsSection,
+  CollaboratorInfoSection,
+  PricingDetailSection,
+  ConfirmationHeader
+} from './confirmation';
 
 interface ConfirmationStepProps {
   clients: any[];
@@ -68,146 +74,32 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-6">
-        <div className="rounded-full bg-green-100 w-12 h-12 flex items-center justify-center mx-auto mb-3">
-          <Check className="h-6 w-6 text-green-600" />
-        </div>
-        <h2 className="text-xl font-semibold">Confirma los detalles del servicio</h2>
-        <p className="text-muted-foreground mt-1">
-          Revisa toda la información antes de completar
-        </p>
-      </div>
+      <ConfirmationHeader />
 
       <div className="space-y-4">
         <Card>
           <CardContent className="p-4 space-y-4">
-            <div>
-              <h3 className="font-medium text-lg">Información del cliente</h3>
-              <p>{client?.name}</p>
-              <p className="text-sm text-muted-foreground">{client?.email}</p>
-            </div>
-
-            <div>
-              <h3 className="font-medium text-lg">Detalles del servicio</h3>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <div>
-                  <p className="text-sm text-muted-foreground">Tipo de servicio</p>
-                  <p>{values.serviceType === 'transfer' ? 'Transfer' : 'Disposición'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Fecha y hora</p>
-                  <p>{values.date} {values.time}</p>
-                </div>
-                
-                {values.serviceType === 'transfer' ? (
-                  <>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Origen</p>
-                      <p>{values.origin}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Destino</p>
-                      <p>{values.destination}</p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Punto de inicio</p>
-                      <p>{values.origin}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Horas contratadas</p>
-                      <p>{values.hours} horas</p>
-                    </div>
-                  </>
-                )}
-                
-                <div>
-                  <p className="text-sm text-muted-foreground">Estado de pago</p>
-                  <p>{values.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente de pago'}</p>
-                </div>
-              </div>
-            </div>
-
-            {values.collaborator && values.collaborator !== 'none' && (
-              <div>
-                <h3 className="font-medium text-lg">Información del colaborador</h3>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Nombre del colaborador</p>
-                    <p>{values.collaborator}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Comisión</p>
-                    <p>
-                      {values.commission} {values.commissionType === 'percentage' ? '%' : '€'}
-                      {values.commissionType === 'percentage' && (
-                        <span className="ml-1 text-sm text-muted-foreground">
-                          ({formatCurrency(commissionAmountEuros)})
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div>
-              <h3 className="font-medium text-lg">Detalles del precio</h3>
-              <div className="space-y-2 mt-2">
-                {values.serviceType === 'dispo' ? (
-                  <div className="flex justify-between">
-                    <p className="text-sm">Precio base ({values.price}€ × {values.hours} horas)</p>
-                    <p>{formatCurrency(basePrice)}</p>
-                  </div>
-                ) : (
-                  <div className="flex justify-between">
-                    <p className="text-sm">Precio base</p>
-                    <p>{formatCurrency(basePrice)}</p>
-                  </div>
-                )}
-                
-                {validExtraCharges.length > 0 && (
-                  <>
-                    {validExtraCharges.map((charge: any, index: number) => (
-                      <div key={index} className="flex justify-between">
-                        <p className="text-sm">{charge.name}</p>
-                        <p>{formatCurrency(Number(charge.price) || 0)}</p>
-                      </div>
-                    ))}
-                    <div className="flex justify-between font-medium pt-1">
-                      <p className="text-sm">Subtotal cargos extra</p>
-                      <p>{formatCurrency(totalExtraCharges)}</p>
-                    </div>
-                  </>
-                )}
-                
-                {values.discountType && values.discountValue && (
-                  <div className="flex justify-between text-green-600">
-                    <p className="text-sm">Descuento {values.discountType === 'percentage' ? `(${values.discountValue}%)` : ''}</p>
-                    <p>-{formatCurrency(discountAmount)}</p>
-                  </div>
-                )}
-                
-                <div className="flex justify-between font-semibold pt-2 border-t">
-                  <p>Subtotal</p>
-                  <p>{formatCurrency(subtotalAfterDiscount)}</p>
-                </div>
-                
-                {values.collaborator && values.collaborator !== 'none' && values.commission && (
-                  <div className="flex justify-between text-amber-600">
-                    <p className="text-sm">Comisión colaborador {values.commissionType === 'percentage' ? `(${values.commission}%)` : ''}</p>
-                    <p>-{formatCurrency(commissionAmountEuros)}</p>
-                  </div>
-                )}
-                
-                <div className="flex justify-between font-bold pt-2 border-t">
-                  <p>TOTAL</p>
-                  <p>{formatCurrency(totalPrice)}</p>
-                </div>
-              </div>
-            </div>
+            <ClientInfoSection client={client} />
+            
+            <ServiceDetailsSection values={values} />
+            
+            <CollaboratorInfoSection 
+              values={values} 
+              commissionAmountEuros={commissionAmountEuros} 
+              formatCurrency={formatCurrency} 
+            />
+            
+            <PricingDetailSection 
+              values={values}
+              basePrice={basePrice}
+              validExtraCharges={validExtraCharges}
+              totalExtraCharges={totalExtraCharges}
+              discountAmount={discountAmount}
+              subtotalAfterDiscount={subtotalAfterDiscount}
+              commissionAmountEuros={commissionAmountEuros}
+              totalPrice={totalPrice}
+              formatCurrency={formatCurrency}
+            />
           </CardContent>
         </Card>
       </div>
