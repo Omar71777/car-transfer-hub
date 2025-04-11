@@ -55,7 +55,7 @@ export function TransferTableRow({
   
   // Determine row background color based on service type
   const rowClass = cn(
-    transfer.serviceType === 'dispo' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-pink-50 hover:bg-pink-100',
+    transfer.serviceType === 'dispo' ? 'bg-green-800 text-white hover:bg-green-700' : 'bg-green-400 hover:bg-green-300',
     selected && 'bg-primary/10'
   );
   
@@ -73,29 +73,30 @@ export function TransferTableRow({
   
   return (
     <TableRow className={rowClass}>
-      <TableCell className="p-2">
+      <TableCell className="p-1">
         {onSelectRow && (
           <Checkbox 
             checked={selected} 
             onCheckedChange={handleSelect}
             aria-label="Select row"
+            className="h-3.5 w-3.5"
           />
         )}
       </TableCell>
-      <TableCell className="font-medium">{formattedDate}</TableCell>
-      <TableCell>
+      <TableCell className="font-medium text-xs text-center">{formattedDate}</TableCell>
+      <TableCell className="text-center">
         <ServiceTypeBadge serviceType={transfer.serviceType} />
       </TableCell>
       <TableCell className="text-right">
         <PriceDisplay price={transfer.price} />
       </TableCell>
       {!isMobile && (
-        <TableCell>
+        <TableCell className="text-center">
           <TruncatedCell text={transfer.client?.name || ''} maxWidth="max-w-[100px]" />
         </TableCell>
       )}
       {!isMobile && (
-        <TableCell>
+        <TableCell className="text-center">
           <TruncatedCell text={collaboratorName} maxWidth="max-w-[100px]" />
         </TableCell>
       )}

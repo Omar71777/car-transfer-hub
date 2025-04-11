@@ -12,7 +12,7 @@ export function ServiceTypeBadge({ serviceType }: ServiceTypeBadgeProps) {
       variant={serviceType === 'dispo' ? 'outline' : 'secondary'} 
       className="font-normal text-xs px-2 py-1"
     >
-      {serviceType === 'dispo' ? 'Dispo' : 'Transfer'}
+      {serviceType === 'dispo' ? 'Dispo' : 'Transf'}
     </Badge>
   );
 }

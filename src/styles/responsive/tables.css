@@ -15,7 +15,7 @@
 }
 
 .table-container {
-  @apply rounded-md border w-full;
+  @apply rounded-md border w-full overflow-hidden;
 }
 
 /* Make sure badges are compact in tables */
@@ -25,16 +25,21 @@
 
 /* Service type specific colors */
 .bg-dispo {
-  @apply bg-purple-50;
+  @apply bg-green-800 text-white;
 }
 
 .bg-transfer {
-  @apply bg-pink-50;
+  @apply bg-green-400;
+}
+
+/* Dark header styles */
+.table-header-dark {
+  @apply bg-gray-800 text-white;
 }
 
 /* Icon styles for status indicators */
 .status-icon {
-  @apply w-4 h-4 inline-flex align-middle;
+  @apply w-3.5 h-3.5 inline-flex align-middle;
 }
 
 .status-badge {
@@ -47,6 +52,12 @@
 
 .status-pending {
   @apply bg-amber-100 text-amber-700;
+}
+
+/* Center text in table headers and cells */
+.text-center-all th,
+.text-center-all td {
+  @apply text-center;
 }
 
 @media (max-width: 768px) {
@@ -67,7 +78,7 @@
   
   .mobile-table th, 
   .mobile-table td {
-    @apply py-0.5 px-0.5 md:py-1.5 md:px-1.5;
+    @apply py-0.5 px-0.5 md:py-1 md:px-1;
   }
 
   /* Better table display on mobile */
