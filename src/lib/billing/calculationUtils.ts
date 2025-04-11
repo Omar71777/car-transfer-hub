@@ -13,8 +13,6 @@ export function generateTransferDescription(transfer: Transfer, extraCharges?: a
   // Base description depends on service type
   if (transfer.serviceType === 'dispo') {
     description = `Servicio de disposición (${transfer.hours} horas) - ${transfer.origin} el ${transfer.date}`;
-  } else if (transfer.serviceType === 'shuttle') {
-    description = `Shuttle: ${transfer.origin} → ${transfer.destination} el ${transfer.date}`;
   } else {
     description = `Traslado: ${transfer.origin} → ${transfer.destination} el ${transfer.date}`;
   }
