@@ -1,61 +1,84 @@
 
 @keyframes shine {
-  from {
+  0% {
     transform: translateX(-100%) rotate(30deg);
   }
-  to {
-    transform: translateX(100%) rotate(30deg);
+  100% {
+    transform: translateX(200%) rotate(30deg);
   }
 }
 
 .animate-shine {
-  animation: shine 4s infinite linear;
+  animation: shine 6s infinite linear;
 }
 
-.animated-gradient {
-  background: linear-gradient(270deg, var(--tw-gradient-stops));
-  background-size: 200% 200%;
-  animation: gradientShift 8s ease infinite;
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }
 
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
+.hover-lift {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 3s ease-in-out infinite;
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
 }
 
-@keyframes scale-subtle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+.scale-on-hover {
+  transition: transform 0.2s ease;
 }
 
-.animate-scale-subtle {
-  animation: scale-subtle 3s ease-in-out infinite;
+.scale-on-hover:hover {
+  transform: scale(1.03);
 }
 
-@keyframes border-glow {
-  0%, 100% { border-color: rgba(59, 130, 246, 0.2); }
-  50% { border-color: rgba(59, 130, 246, 0.6); }
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
 }
 
-.animate-border-glow {
-  animation: border-glow 3s ease-in-out infinite;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes logo-spin {
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+@keyframes rotate {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
+}
+
+.animate-rotate {
+  animation: rotate 2s linear infinite;
 }
