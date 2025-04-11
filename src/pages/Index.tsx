@@ -16,17 +16,41 @@ import { BusinessInsights } from '@/components/dashboard/BusinessInsights';
 import { DashboardCustomization } from '@/components/dashboard/DashboardCustomization';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 const Index = () => {
   const { user, isAdmin } = useAuth();
   const { stats, loading, fetchDashboardData } = useDashboardData();
   const [isCompactMode, setIsCompactMode] = useState(false);
   const [dataRefreshing, setDataRefreshing] = useState(false);
+  const [currentLayout, setCurrentLayout] = useState('grid');
+  
+  // Listen for dashboard layout changes
+  useEffect(() => {
+    const handleLayoutChange = (e: CustomEvent) => {
+      setCurrentLayout(e.detail.layout);
+    };
+    
+    window.addEventListener('dashboard-layout-change', handleLayoutChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('dashboard-layout-change', handleLayoutChange as EventListener);
+    };
+  }, []);
   
   const handleRefreshData = async () => {
     setDataRefreshing(true);
-    await fetchDashboardData();
-    setTimeout(() => setDataRefreshing(false), 1000);
+    toast.info("Actualizando datos del dashboard...");
+    
+    try {
+      await fetchDashboardData();
+      toast.success("Datos actualizados correctamente");
+    } catch (error) {
+      toast.error("Error al actualizar los datos");
+      console.error("Error refreshing data:", error);
+    } finally {
+      setTimeout(() => setDataRefreshing(false), 1000);
+    }
   };
   
   useEffect(() => {
@@ -34,6 +58,12 @@ const Index = () => {
     const storedCompactMode = localStorage.getItem('dashboardCompactMode');
     if (storedCompactMode) {
       setIsCompactMode(storedCompactMode === 'true');
+    }
+    
+    // Check local storage for layout preference
+    const storedLayout = localStorage.getItem('dashboardLayout');
+    if (storedLayout) {
+      setCurrentLayout(storedLayout);
     }
   }, []);
   
@@ -47,6 +77,13 @@ const Index = () => {
   const containerVariants = {
     normal: { gap: "2rem" },
     compact: { gap: "1rem" }
+  };
+  
+  // Layout class based on the selected layout type
+  const layoutClasses = {
+    grid: "grid grid-cols-1 md:grid-cols-3 gap-6",
+    left: "flex flex-col md:flex-row gap-6 md:space-x-6",
+    right: "flex flex-col md:flex-row-reverse gap-6 md:space-x-6 md:space-x-reverse"
   };
   
   return (
@@ -148,38 +185,42 @@ const Index = () => {
           <BusinessInsights />
         </div>
         
-        {/* Activity & Timeline */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <EnhancedActivityFeed />
+        {/* Activity & Timeline in dynamic layout */}
+        <div className={layoutClasses[currentLayout as keyof typeof layoutClasses] || "grid grid-cols-1 lg:grid-cols-3 gap-6"}>
+          <div className={currentLayout !== 'grid' ? 'md:w-2/3' : 'lg:col-span-2'}>
+            <EnhancedActivityFeed />
+          </div>
           
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-amber-500" />
-                Próximos Transfers
-              </CardTitle>
-            </CardHeader>
-            <CardHeader className="pt-0">
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Tienes 3 transfers programados para los próximos 2 días.
-                </AlertDescription>
-              </Alert>
-              <div className="mt-4">
-                <Button asChild variant="outline" className="w-full">
-                  <Link to="/transfers">
-                    Ver Calendario
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </CardHeader>
-          </Card>
+          <div className={currentLayout !== 'grid' ? 'md:w-1/3' : ''}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-amber-500" />
+                  Próximos Transfers
+                </CardTitle>
+              </CardHeader>
+              <CardHeader className="pt-0">
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Tienes 3 transfers programados para los próximos 2 días.
+                  </AlertDescription>
+                </Alert>
+                <div className="mt-4">
+                  <Button asChild variant="outline" className="w-full">
+                    <Link to="/transfers">
+                      Ver Calendario
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+          </div>
         </div>
         
         {/* Resources & Information Section */}
-        <div className="mb-8">
+        <div className="mb-8 mt-8">
           <EnhancedResourceHub />
         </div>
       </motion.div>

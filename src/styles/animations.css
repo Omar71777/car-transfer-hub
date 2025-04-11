@@ -82,3 +82,34 @@
 .animate-rotate {
   animation: rotate 2s linear infinite;
 }
+
+/* Theme color transitions */
+.theme-blue {
+  --primary-hue: 210;
+  --accent-hue: 220;
+  --success-hue: 160;
+}
+
+.theme-purple {
+  --primary-hue: 270;
+  --accent-hue: 280;
+  --success-hue: 220;
+}
+
+.theme-green {
+  --primary-hue: 160;
+  --accent-hue: 170;
+  --success-hue: 140;
+}
+
+html {
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+  
+  /* Enable smooth transitions when theme changes */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
