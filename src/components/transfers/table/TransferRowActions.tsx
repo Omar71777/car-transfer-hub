@@ -49,21 +49,52 @@ export function TransferRowActions({
           style={{ zIndex: 999, position: 'relative' }}
           onCloseAutoFocus={(e) => {
             e.preventDefault();
+            // Ensure pointer events are enabled
+            document.body.style.pointerEvents = 'auto';
           }}
         >
-          <DropdownMenuItem onClick={onViewSummary} className="cursor-pointer">
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewSummary();
+              // Ensure pointer events are enabled
+              document.body.style.pointerEvents = 'auto';
+            }} 
+            className="cursor-pointer"
+          >
             <FileText className="h-4 w-4 mr-2" />
             Ver resumen
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onAddExpense} className="cursor-pointer">
+          
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddExpense();
+            }} 
+            className="cursor-pointer"
+          >
             <Receipt className="h-4 w-4 mr-2" />
             Añadir gasto
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
+          
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }} 
+            className="cursor-pointer"
+          >
             <Edit2 className="h-4 w-4 mr-2" />
             Editar
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onDelete} className="text-destructive cursor-pointer">
+          
+          <DropdownMenuItem 
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }} 
+            className="text-destructive cursor-pointer"
+          >
             <Trash2 className="h-4 w-4 mr-2" />
             Eliminar
           </DropdownMenuItem>
