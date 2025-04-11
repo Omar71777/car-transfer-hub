@@ -65,9 +65,15 @@ export function useBillPreview(
           }
 
           // For dispo services, quantity is hours and unit price is hourly rate
-          let unitPrice = finalBasePrice;
+          let unitPrice = 0;
+          let quantity = 1;
+          
           if (transfer.serviceType === 'dispo' && transfer.hours) {
+            quantity = Number(transfer.hours);
             unitPrice = Number(transfer.price || 0);
+          } else {
+            // For regular transfers, quantity is 1 and unit price is the base price
+            unitPrice = basePrice;
           }
 
           // Create the main transfer item
@@ -81,12 +87,8 @@ export function useBillPreview(
           // Add the main transfer item
           items.push(transferItem);
           
-          // Add to subtotal (for dispo, it's hours * price)
-          if (transfer.serviceType === 'dispo' && transfer.hours) {
-            subTotal += unitPrice * Number(transfer.hours);
-          } else {
-            subTotal += unitPrice;
-          }
+          // Add to subtotal - use finalBasePrice to account for discount
+          subTotal += finalBasePrice;
           
           // Add extra charges as separate items in the preview
           if (extraCharges && extraCharges.length > 0) {

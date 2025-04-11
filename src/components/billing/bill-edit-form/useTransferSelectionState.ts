@@ -14,12 +14,22 @@ export function useTransferSelectionState(transfers: Transfer[], bill: Bill) {
 
   useEffect(() => {
     // Filter out already billed transfers except those belonging to this bill
-    const availableT = transfers.filter(t => !t.billed || bill.items?.some(item => item.transfer_id === t.id));
+    const availableT = transfers.filter(t => 
+      !t.billed || 
+      (bill.items && bill.items.some(item => item.transfer_id === t.id && !item.is_extra_charge))
+    );
     setAvailableTransfers(availableT);
     
     // Get current transfers in this bill
     if (bill.items) {
-      const currentT = transfers.filter(t => bill.items?.some(item => item.transfer_id === t.id));
+      // Only get unique transfers (not extra charge items)
+      const transferIds = new Set(
+        bill.items
+          .filter(item => !item.is_extra_charge)
+          .map(item => item.transfer_id)
+      );
+      
+      const currentT = transfers.filter(t => transferIds.has(t.id));
       setCurrentTransfers(currentT);
     }
   }, [transfers, bill]);

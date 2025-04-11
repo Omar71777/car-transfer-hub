@@ -10,13 +10,15 @@ interface BillPreviewPanelProps {
 export function BillPreviewPanel({ billPreview, formatCurrency }: BillPreviewPanelProps) {
   if (!billPreview) return null;
   
-  // Calculate total for each item including extra charges
-  const calculateItemTotal = (item: any) => {
-    let total = item.unitPrice;
-    if (item.extraCharges && item.extraCharges.length > 0) {
-      total += item.extraCharges.reduce((sum: number, charge: any) => sum + charge.price, 0);
-    }
-    return total;
+  // Function to check if a description contains discount information
+  const hasDiscount = (description: string) => {
+    return description.includes('Descuento:');
+  };
+  
+  // Extract discount from description
+  const extractDiscountInfo = (description: string) => {
+    const match = description.match(/Descuento: (.+?)(\)|$)/);
+    return match ? match[1] : '';
   };
   
   return (
@@ -28,9 +30,20 @@ export function BillPreviewPanel({ billPreview, formatCurrency }: BillPreviewPan
         {billPreview.items.map((item, index) => (
           <div key={index} className="space-y-1">
             <div className="flex justify-between">
-              <span className="truncate max-w-[250px]">{item.description}</span>
+              <span className="truncate max-w-[250px]">
+                {hasDiscount(item.description) ? 
+                  item.description.replace(/\s*\(Descuento:.*?\)/, '') : 
+                  item.description}
+              </span>
               <span>{formatCurrency(item.unitPrice)}</span>
             </div>
+            
+            {/* Show discount if present in description */}
+            {hasDiscount(item.description) && (
+              <div className="pl-3 text-xs text-green-600 flex justify-between">
+                <span>Descuento: {extractDiscountInfo(item.description)}</span>
+              </div>
+            )}
             
             {/* Extra charges for this item */}
             {item.extraCharges && item.extraCharges.length > 0 && (

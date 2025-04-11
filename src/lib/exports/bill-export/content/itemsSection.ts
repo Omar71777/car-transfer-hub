@@ -12,12 +12,12 @@ const formatItemDescription = (item: any): string => {
   }
   
   // Try to extract date and service type
-  const transferMatch = item.description.match(/Transfer: (.+)/i);
+  const transferMatch = item.description.match(/Traslado: (.+)/i);
   const dispoMatch = item.description.match(/Disposición: (.+)/i);
   const dateMatch = item.description.match(/(\d{2}\/\d{2}\/\d{4})/);
   
   if (transferMatch || dispoMatch) {
-    const serviceType = transferMatch ? "Transfer" : "Disposición";
+    const serviceType = transferMatch ? "Traslado" : "Disposición";
     const date = dateMatch ? dateMatch[0] : "";
     
     return `${serviceType} - ${date}`;

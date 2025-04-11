@@ -20,12 +20,12 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
       return description;
     }
     
-    const transferMatch = description.match(/Transfer: (.+)/i);
+    const transferMatch = description.match(/Traslado: (.+)/i);
     const dispoMatch = description.match(/Disposición: (.+)/i);
     const dateMatch = description.match(/(\d{2}\/\d{2}\/\d{4})/);
     
     if (transferMatch || dispoMatch) {
-      const serviceType = transferMatch ? "Transfer" : "Disposición";
+      const serviceType = transferMatch ? "Traslado" : "Disposición";
       const date = dateMatch ? dateMatch[0] : "";
       
       return `${serviceType} - ${date}`;
@@ -69,7 +69,7 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                 <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Descripción
                 </th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <th className="px-3 py-2 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Cantidad
                 </th>
                 <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -93,7 +93,7 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
                       <td className={`px-3 py-2 text-sm ${item.is_extra_charge ? "pl-6 text-muted-foreground italic" : "font-medium"}`}>
                         {item.is_extra_charge ? item.description : formatItemDescription(item)}
                       </td>
-                      <td className="px-3 py-2 text-sm text-right">
+                      <td className="px-3 py-2 text-sm text-center">
                         {item.quantity}
                       </td>
                       <td className="px-3 py-2 text-sm text-right">
