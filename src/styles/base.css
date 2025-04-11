@@ -5,91 +5,91 @@
 
 @layer base {
   :root {
-    --background: 240 100% 99%; /* Extremely Light Blue */
-    --foreground: 240 30% 20%; /* Dark Blue-Gray for text */
+    --background: 210 100% 99%; /* Light Blue-tinted Background */
+    --foreground: 210 30% 20%; /* Dark Blue-Gray for text */
 
     --card: 0 0% 100%;
-    --card-foreground: 240 30% 20%;
+    --card-foreground: 210 30% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 30% 20%;
+    --popover-foreground: 210 30% 20%;
 
-    --primary: 260 80% 50%; /* Vibrant Purple */
-    --primary-foreground: 240 100% 99%;
+    --primary: 210 100% 40%; /* Rich Blue */
+    --primary-foreground: 210 100% 99%;
 
-    --secondary: 180 100% 50%; /* Bright Cyan */
-    --secondary-foreground: 240 30% 20%;
+    --secondary: 195 100% 50%; /* Bright Cyan */
+    --secondary-foreground: 210 30% 20%;
 
-    --muted: 260 40% 96%; /* Light Purple */
-    --muted-foreground: 240 10% 50%;
+    --muted: 210 40% 96%; /* Light Blue */
+    --muted-foreground: 210 10% 50%;
 
-    --accent: 30 100% 80%; /* Soft Peach */
-    --accent-foreground: 240 30% 20%;
+    --accent: 38 100% 80%; /* Soft Gold */
+    --accent-foreground: 210 30% 20%;
 
     --destructive: 0 100% 65%; /* Vibrant Red */
-    --destructive-foreground: 240 100% 99%;
+    --destructive-foreground: 210 100% 99%;
 
-    --border: 260 40% 50% / 15%; /* Purple with transparency */
-    --input: 260 40% 95%; /* Light Purple */
-    --ring: 260 80% 50%; /* Vibrant Purple */
+    --border: 210 40% 50% / 15%; /* Blue with transparency */
+    --input: 210 40% 95%; /* Light Blue */
+    --ring: 210 80% 50%; /* Vibrant Blue */
 
     --radius: 1rem;
 
-    /* Updated Sidebar states with vibrant colors */
-    --sidebar-background: 260 80% 50%; /* Vibrant Purple */
-    --sidebar-foreground: 240 100% 99%; /* White */
-    --sidebar-primary: 180 100% 50%; /* Bright Cyan */
-    --sidebar-primary-foreground: 240 30% 20%; /* Dark Blue-Gray */
-    --sidebar-accent: 30 100% 80%; /* Soft Peach */
-    --sidebar-accent-foreground: 240 30% 20%; /* Dark Blue-Gray */
-    --sidebar-hover: 260 60% 60%; /* Lighter Purple */
-    --sidebar-selected: 180 80% 60%; /* Medium Cyan */
-    --sidebar-border: 260 40% 90% / 20%; /* Light Purple with transparency */
-    --sidebar-ring: 180 100% 50%; /* Bright Cyan */
+    /* Updated Sidebar states with blue colors */
+    --sidebar-background: 210 100% 40%; /* Rich Blue */
+    --sidebar-foreground: 210 100% 99%; /* White */
+    --sidebar-primary: 195 100% 50%; /* Bright Cyan */
+    --sidebar-primary-foreground: 210 30% 20%; /* Dark Blue-Gray */
+    --sidebar-accent: 38 100% 80%; /* Soft Gold */
+    --sidebar-accent-foreground: 210 30% 20%; /* Dark Blue-Gray */
+    --sidebar-hover: 210 60% 50%; /* Lighter Blue */
+    --sidebar-selected: 195 80% 60%; /* Medium Cyan */
+    --sidebar-border: 210 40% 90% / 20%; /* Light Blue with transparency */
+    --sidebar-ring: 195 100% 50%; /* Bright Cyan */
     
     /* Shift colors with better contrast */
-    --shift-24h: 250 70% 50%;
-    --shift-24h-light: 250 70% 95%;
-    --shift-12h: 200 100% 45%;
-    --shift-12h-light: 200 100% 95%;
+    --shift-24h: 220 70% 50%;
+    --shift-24h-light: 220 70% 95%;
+    --shift-12h: 195 100% 45%;
+    --shift-12h-light: 195 100% 95%;
     --shift-free: 142 70% 45%;
     --shift-free-light: 142 70% 95%;
     
     /* Visual state colors for menus and items */
-    --item-unselected: 240 30% 65%;
-    --item-selected: 180 100% 50%; /* Bright Cyan */
-    --item-hover: 260 60% 75%; /* Medium Purple */
+    --item-unselected: 210 30% 65%;
+    --item-selected: 195 100% 50%; /* Bright Cyan */
+    --item-hover: 210 60% 75%; /* Medium Blue */
   }
 
   /* Forced light mode - only one theme */
   .dark {
-    --background: 240 100% 99%; /* Extremely Light Blue */
-    --foreground: 240 30% 20%; /* Dark Blue-Gray for text */
+    --background: 210 100% 99%; /* Light Blue-tinted Background */
+    --foreground: 210 30% 20%; /* Dark Blue-Gray for text */
 
     --card: 0 0% 100%;
-    --card-foreground: 240 30% 20%;
+    --card-foreground: 210 30% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 30% 20%;
+    --popover-foreground: 210 30% 20%;
 
-    --primary: 260 80% 50%; /* Vibrant Purple */
-    --primary-foreground: 240 100% 99%;
+    --primary: 210 100% 40%; /* Rich Blue */
+    --primary-foreground: 210 100% 99%;
 
-    --secondary: 180 100% 50%; /* Bright Cyan */
-    --secondary-foreground: 240 30% 20%;
+    --secondary: 195 100% 50%; /* Bright Cyan */
+    --secondary-foreground: 210 30% 20%;
 
-    --muted: 260 40% 96%; /* Light Purple */
-    --muted-foreground: 240 10% 50%;
+    --muted: 210 40% 96%; /* Light Blue */
+    --muted-foreground: 210 10% 50%;
 
-    --accent: 30 100% 80%; /* Soft Peach */
-    --accent-foreground: 240 30% 20%;
+    --accent: 38 100% 80%; /* Soft Gold */
+    --accent-foreground: 210 30% 20%;
 
     --destructive: 0 100% 65%; /* Vibrant Red */
-    --destructive-foreground: 240 100% 99%;
+    --destructive-foreground: 210 100% 99%;
 
-    --border: 260 40% 50% / 15%; /* Purple with transparency */
-    --input: 260 40% 95%; /* Light Purple */
-    --ring: 260 80% 50%; /* Vibrant Purple */
+    --border: 210 40% 50% / 15%; /* Blue with transparency */
+    --input: 210 40% 95%; /* Light Blue */
+    --ring: 210 80% 50%; /* Vibrant Blue */
   }
 }
 
@@ -101,7 +101,7 @@
   body {
     @apply bg-background text-foreground font-sans;
     @apply animate-theme-transition;
-    background-image: linear-gradient(to bottom right, rgba(244, 244, 255, 0.8), rgba(255, 255, 255, 0.8));
+    background-image: linear-gradient(to bottom right, rgba(230, 242, 255, 0.8), rgba(255, 255, 255, 0.8));
     background-attachment: fixed;
   }
 

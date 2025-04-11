@@ -69,19 +69,19 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// New vibrant color system
+				// New blue-centered color system
 				electric: {
-					DEFAULT: '#6A5ACD', // Slate Blue
-					light: '#7B68EE', // Medium Slate Blue
-					dark: '#483D8B', // Dark Slate Blue
+					DEFAULT: '#0066CC', // Blue
+					light: '#3399FF', // Light Blue
+					dark: '#004C99', // Dark Blue
 				},
 				aqua: {
-					DEFAULT: '#00FFFF', // Cyan
-					light: '#AFEEEE', // Pale Turquoise
-					dark: '#008B8B', // Dark Cyan
+					DEFAULT: '#00CCFF', // Cyan
+					light: '#99EEFF', // Light Cyan
+					dark: '#0099CC', // Dark Cyan
 				},
 				vibrant: {
-					DEFAULT: '#FF6B6B', // Coral Pink
+					DEFAULT: '#FF6B6B', // Coral Pink (keep as accent)
 					light: '#FF9E9E', // Light Coral
 					dark: '#E63946', // Imperial Red
 				},
@@ -91,9 +91,9 @@ export default {
 					dark: '#E6F2FF', // Very Light Blue
 				},
 				pine: {
-					DEFAULT: '#98FB98', // Mint Green
-					light: '#CCFFCC', // Light Mint
-					dark: '#66CDAA', // Medium Aquamarine
+					DEFAULT: '#4CAF50', // Green
+					light: '#8BC34A', // Light Green
+					dark: '#2E7D32', // Dark Green
 				},
 				sand: {
 					DEFAULT: '#FFDAB9', // Peach Puff

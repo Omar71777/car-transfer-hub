@@ -13,7 +13,10 @@ interface CollaboratorCardProps {
 
 export function CollaboratorCard({ name, transferCount, commissionTotal, averageCommission }: CollaboratorCardProps) {
   return (
-    <Card className="glass-card shine-effect h-full">
+    <Card className="relative overflow-hidden h-full group bg-gradient-to-r from-blue-50/80 to-white">
+      {/* Animated highlight effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-100/0 via-blue-100/20 to-blue-100/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
+      
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg text-primary">{name}</CardTitle>
@@ -48,6 +51,8 @@ export function CollaboratorCard({ name, transferCount, commissionTotal, average
           </div>
         </div>
       </CardContent>
+      
+      <div className="h-1 w-full bg-gradient-to-r from-primary/20 via-primary/60 to-primary/20 absolute bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out"></div>
     </Card>
   );
 }
