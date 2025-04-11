@@ -4,20 +4,15 @@ import { Badge } from '@/components/ui/badge';
 
 interface ServiceTypeBadgeProps {
   serviceType: string;
-  hours?: number | string;
 }
 
-export function ServiceTypeBadge({ serviceType, hours }: ServiceTypeBadgeProps) {
-  const serviceTypeDisplay = () => {
-    if (serviceType === 'dispo') {
-      return `Dispo ${hours || 0}h`;
-    }
-    return 'Transfer';
-  };
-
+export function ServiceTypeBadge({ serviceType }: ServiceTypeBadgeProps) {
   return (
-    <Badge variant="outline" className="font-normal whitespace-nowrap text-xs">
-      {serviceTypeDisplay()}
+    <Badge 
+      variant="outline" 
+      className="font-normal whitespace-nowrap text-xs"
+    >
+      {serviceType === 'dispo' ? 'Dispo' : 'Transfer'}
     </Badge>
   );
 }

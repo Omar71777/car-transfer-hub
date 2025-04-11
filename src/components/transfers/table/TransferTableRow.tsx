@@ -6,6 +6,8 @@ import { Transfer } from '@/types';
 import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { formatCurrency } from '@/lib/utils';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
 import { PriceDisplay } from './PriceDisplay';
 import { PaymentStatusCell } from './PaymentStatusCell';
@@ -50,8 +52,23 @@ export function TransferTableRow({
   
   const formattedCommission = `${transfer.commission}% (${formatCurrency(commissionAmount)})`;
 
+  // Format date to show only day and month abbreviation (e.g., "15 mar")
+  const formattedDate = format(new Date(transfer.date), 'dd MMM', { locale: es });
+
+  // Get collaborator name, use "Propio" if missing
+  const collaboratorName = transfer.collaborator && transfer.collaborator.trim() !== '' 
+    ? transfer.collaborator 
+    : 'Propio';
+
+  // Determine row background color based on service type
+  const rowBgClass = transfer.serviceType === 'dispo' 
+    ? 'bg-purple-50 hover:bg-purple-100' 
+    : 'bg-pink-50 hover:bg-pink-100';
+
   return (
-    <TableRow className={selected ? 'bg-accent/20' : undefined}>
+    <TableRow 
+      className={selected ? 'bg-accent/20' : rowBgClass}
+    >
       <TableCell className="px-1">
         <Checkbox 
           checked={selected} 
@@ -59,9 +76,9 @@ export function TransferTableRow({
           aria-label="Select row"
         />
       </TableCell>
-      <TableCell className="text-xs truncate-cell">{transfer.date || 'N/A'}</TableCell>
+      <TableCell className="text-xs truncate-cell">{formattedDate}</TableCell>
       <TableCell>
-        <ServiceTypeBadge serviceType={transfer.serviceType} hours={transfer.hours} />
+        <ServiceTypeBadge serviceType={transfer.serviceType} />
       </TableCell>
       <TableCell className="text-right">
         <PriceDisplay 
@@ -77,7 +94,7 @@ export function TransferTableRow({
       )}
       {!isMobile && (
         <TableCell>
-          <TruncatedCell text={transfer.collaborator} />
+          <TruncatedCell text={collaboratorName} />
         </TableCell>
       )}
       {!isMobile && <TableCell className="text-right whitespace-nowrap text-xs">{formattedCommission}</TableCell>}
