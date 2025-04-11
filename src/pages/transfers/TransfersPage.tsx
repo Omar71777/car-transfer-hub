@@ -108,7 +108,10 @@ const TransfersPage = () => {
 
   const handleCloseSummary = () => {
     setIsSummaryDialogOpen(false);
-    setSummaryTransferId(null);
+    setTimeout(() => {
+      // Small delay to ensure the dialog is fully closed before clearing the ID
+      setSummaryTransferId(null);
+    }, 100);
   };
 
   const handlePrint = () => {

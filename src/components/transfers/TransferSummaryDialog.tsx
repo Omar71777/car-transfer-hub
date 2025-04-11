@@ -64,12 +64,17 @@ export function TransferSummaryDialog({
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // Always call onClose when dialog is closing
+      onClose();
+    }
+  };
+
   return (
     <Dialog 
       open={isOpen} 
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
+      onOpenChange={handleOpenChange}
     >
       <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh] glass-card">
         <DialogHeader>

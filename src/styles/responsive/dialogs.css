@@ -27,58 +27,38 @@
   }
 }
 
-/* Fix for ghost overlays - this is a critical fix, but now scoped to dialog elements */
-[role="dialog"][data-state="closed"],
-[role="alertdialog"][data-state="closed"],
-[data-radix-popper-content-wrapper][data-state="closed"],
-.radix-sheet[data-state="closed"] {
-  pointer-events: none !important; 
-  animation-fill-mode: forwards !important;
-  visibility: hidden !important;
-}
-
-/* Remove from DOM after animation completes - only for dialog-related elements */
-[role="dialog"][data-state="closed"][data-removed="true"],
-[role="alertdialog"][data-state="closed"][data-removed="true"] {
-  display: none !important;
-}
-
-/* Ensure dialogs cleanup properly after animations */
+/* Fix for ghost overlays - make sure they are removed when closed */
 [role="dialog"][data-state="closed"],
 [role="alertdialog"][data-state="closed"] {
-  animation-fill-mode: forwards !important;
+  display: none !important;
   pointer-events: none !important;
+  animation-fill-mode: forwards !important;
+  visibility: hidden !important;
 }
 
-/* Additional fix for popover and sheet components - keeping separate selectors */
-[data-radix-popper-content-wrapper][data-state="closed"],
-.radix-sheet[data-state="closed"] {
+/* Remove overlays completely when closed */
+[role="dialog"] ~ .fixed.inset-0[data-state="closed"],
+[role="alertdialog"] ~ .fixed.inset-0[data-state="closed"] {
+  display: none !important;
   pointer-events: none !important;
   visibility: hidden !important;
 }
 
-/* Prevent clicks through overlays when animating out */
-[role="dialog"] ~ .fixed.inset-0[data-state="closed"],
-[role="alertdialog"] ~ .fixed.inset-0[data-state="closed"] {
-  pointer-events: none !important;
-}
-
-/* Force immediate removal for fully closed dialogs */
-body:not(:has([role="dialog"][data-state="open"])):not(:has([role="alertdialog"][data-state="open"])) [role="dialog"][data-state="closed"],
-body:not(:has([role="dialog"][data-state="open"])):not(:has([role="alertdialog"][data-state="open"])) [role="alertdialog"][data-state="closed"] {
-  display: none !important;
-}
-
-/* Special fix for dropdowns - ensure they remain visible and interactive */
+/* Fix for dropdowns - ensure proper z-index stacking */
 [data-radix-dropdown-menu-content][data-state="open"] {
   visibility: visible !important;
   pointer-events: all !important;
   z-index: 50;
 }
 
-/* Ensure dropdown menus don't get affected by dialog CSS */
+/* Ensure dropdown menus have proper styling */
 [data-radix-dropdown-menu-content] {
   z-index: 50;
   background-color: var(--background);
   border: 1px solid var(--border);
+}
+
+/* Ensure dropdown menu contents appear above dialogs when needed */
+.radix-dropdown-content {
+  z-index: 100;
 }
