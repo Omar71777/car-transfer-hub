@@ -5,3 +5,4 @@
  */
 export { exportBillCsv } from './exportBillCsv';
 export { printBill } from './printBill';
+export { exportHtmlToPdf } from './billPdfExporter';
