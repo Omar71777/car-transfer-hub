@@ -51,6 +51,23 @@ const TransfersPage = () => {
     fetchTransfers();
   }, [fetchTransfers]);
   
+  // Reset state when dialogs close
+  useEffect(() => {
+    if (!isEditDialogOpen && !isExpenseDialogOpen && !isSummaryDialogOpen) {
+      // Give time for animations to complete before clearing state
+      const timeout = setTimeout(() => {
+        if (!isEditDialogOpen && !isExpenseDialogOpen && !isSummaryDialogOpen) {
+          // No need to clear summaryTransferId if the summary dialog is still open
+          if (!isSummaryDialogOpen) {
+            setSummaryTransferId(null);
+          }
+        }
+      }, 300);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [isEditDialogOpen, isExpenseDialogOpen, isSummaryDialogOpen]);
+  
   const handleEditSubmit = async (values: any) => {
     if (!editingTransfer) return;
     const success = await updateTransfer(editingTransfer.id, values);
@@ -110,6 +127,7 @@ const TransfersPage = () => {
 
   const handleCloseSummary = () => {
     setIsSummaryDialogOpen(false);
+    // We'll let the useEffect handle clearing summaryTransferId after animation completes
   };
 
   const handlePrint = () => {
@@ -153,16 +171,19 @@ const TransfersPage = () => {
           </TabsContent>
         </Tabs>
 
-        <TransferDialogs
-          isExpenseDialogOpen={isExpenseDialogOpen}
-          setIsExpenseDialogOpen={setIsExpenseDialogOpen}
-          isEditDialogOpen={isEditDialogOpen}
-          setIsEditDialogOpen={setIsEditDialogOpen}
-          selectedTransferId={selectedTransferId}
-          editingTransfer={editingTransfer}
-          onExpenseSubmit={handleExpenseSubmit}
-          onEditSubmit={handleEditSubmit}
-        />
+        {/* Only render dialogs when needed */}
+        {(isExpenseDialogOpen || isEditDialogOpen) && (
+          <TransferDialogs
+            isExpenseDialogOpen={isExpenseDialogOpen}
+            setIsExpenseDialogOpen={setIsExpenseDialogOpen}
+            isEditDialogOpen={isEditDialogOpen}
+            setIsEditDialogOpen={setIsEditDialogOpen}
+            selectedTransferId={selectedTransferId}
+            editingTransfer={editingTransfer}
+            onExpenseSubmit={handleExpenseSubmit}
+            onEditSubmit={handleEditSubmit}
+          />
+        )}
 
         {summaryTransferId && (
           <TransferSummaryDialog

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Loader2, Printer } from 'lucide-react';
 import { getTransfer } from '@/hooks/transfers/operations/getTransfer';
 import { Transfer } from '@/types';
@@ -78,6 +78,9 @@ export function TransferSummaryDialog({
               </Button>
             )}
           </DialogTitle>
+          <DialogDescription>
+            Revisa los detalles completos del transfer seleccionado.
+          </DialogDescription>
         </DialogHeader>
 
         {loading ? (

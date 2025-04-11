@@ -47,9 +47,13 @@ const DialogContent = React.forwardRef<
             : "max-w-lg p-6",
           className
         )}
+        aria-describedby={props['aria-describedby'] || 'dialog-description'}
         {...props}
       >
         {children}
+        <div id="dialog-description" className="sr-only">
+          Dialog content
+        </div>
         <DialogPrimitive.Close className="absolute right-4 top-4 rounded-full opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent/10 data-[state=open]:text-muted-foreground p-2">
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>

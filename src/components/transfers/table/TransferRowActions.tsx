@@ -33,25 +33,26 @@ export function TransferRowActions({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 focus-visible:ring-0"
+            className="h-8 w-8 focus-visible:ring-0 relative z-10"
           >
             <MoreVertical className="h-4 w-4" />
+            <span className="sr-only">Opciones</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={onViewSummary}>
+        <DropdownMenuContent align="end" className="bg-background border border-border rounded-md shadow-md z-[999]">
+          <DropdownMenuItem onClick={onViewSummary} className="cursor-pointer">
             <FileText className="h-4 w-4 mr-2" />
             Ver resumen
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onAddExpense}>
+          <DropdownMenuItem onClick={onAddExpense} className="cursor-pointer">
             <Receipt className="h-4 w-4 mr-2" />
             Añadir gasto
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onEdit}>
+          <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
             <Edit2 className="h-4 w-4 mr-2" />
             Editar
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onDelete} className="text-destructive">
+          <DropdownMenuItem onClick={onDelete} className="text-destructive cursor-pointer">
             <Trash2 className="h-4 w-4 mr-2" />
             Eliminar
           </DropdownMenuItem>

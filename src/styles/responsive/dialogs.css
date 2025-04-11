@@ -47,11 +47,32 @@
 
 /* Ensure dropdowns appear above dialogs */
 [data-radix-popper-content-wrapper] {
-  z-index: 60 !important;
+  z-index: 999 !important;
 }
 
 /* Dropdown menu specific z-index fixes */
 .radix-dropdown-content,
 [data-radix-dropdown-menu-content] {
-  z-index: 60;
+  z-index: 999;
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Fix the dropdown content to appear properly */
+[data-radix-dropdown-menu-content=""] {
+  background-color: var(--background);
+}
+
+/* Ensure dropdown menu items are visible */
+[data-radix-dropdown-menu-content] [role="menuitem"] {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+[data-radix-dropdown-menu-content] [role="menuitem"]:hover {
+  background-color: var(--accent);
 }

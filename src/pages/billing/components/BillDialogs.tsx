@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Bill, CreateBillDto } from '@/types/billing';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { BillForm } from '@/components/billing/BillForm';
 import { BillEditForm } from '@/components/billing/BillEditForm';
@@ -55,6 +55,9 @@ export function BillDialogs({
         <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Crear Nueva Factura</DialogTitle>
+            <DialogDescription>
+              Rellena el formulario para crear una nueva factura.
+            </DialogDescription>
           </DialogHeader>
           <BillForm onSubmit={handleFormSubmit} />
         </DialogContent>
@@ -67,6 +70,9 @@ export function BillDialogs({
         <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Detalle de Factura</DialogTitle>
+            <DialogDescription>
+              Vista detallada de la factura seleccionada.
+            </DialogDescription>
           </DialogHeader>
           {viewBill && (
             <BillDetail
@@ -90,6 +96,9 @@ export function BillDialogs({
         <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>Editar Factura</DialogTitle>
+            <DialogDescription>
+              Modifica los detalles de la factura seleccionada.
+            </DialogDescription>
           </DialogHeader>
           {selectedBill && (
             <BillEditForm 

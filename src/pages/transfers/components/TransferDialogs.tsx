@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { Transfer } from '@/types';
@@ -33,6 +33,9 @@ export function TransferDialogs({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
+              <DialogDescription>
+                Introduce los detalles del gasto que deseas añadir a este transfer.
+              </DialogDescription>
             </DialogHeader>
             <ExpenseForm onSubmit={onExpenseSubmit} transferId={selectedTransferId || ''} />
           </DialogContent>
@@ -44,6 +47,9 @@ export function TransferDialogs({
           <DialogContent className="max-w-[min(800px,90vw)]">
             <DialogHeader>
               <DialogTitle>Editar Transfer</DialogTitle>
+              <DialogDescription>
+                Modifica los detalles del transfer seleccionado.
+              </DialogDescription>
             </DialogHeader>
             <TransferForm 
               onSubmit={onEditSubmit} 
