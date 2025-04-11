@@ -38,7 +38,7 @@ export function ServiceDetailsSection({ values }: ServiceDetailsSectionProps) {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Horas contratadas</p>
-              <p>{values.hours} horas</p>
+              <p>{values.hours} {values.hours === 1 ? 'hora' : 'horas'}</p>
             </div>
           </>
         )}
