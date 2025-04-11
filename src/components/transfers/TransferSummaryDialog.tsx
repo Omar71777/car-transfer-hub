@@ -1,16 +1,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Printer } from 'lucide-react';
 import { getTransfer } from '@/hooks/transfers/operations/getTransfer';
 import { Transfer } from '@/types';
+import { Button } from '@/components/ui/button';
 import {
   ClientInfoSection,
   ServiceDetailsSection,
   CollaboratorInfoSection,
   PricingDetailSection,
+  ExpensesSection,
 } from '@/components/transfers/wizard-steps/confirmation';
 import { calculateCommissionAmount, calculateTotalPrice } from '@/lib/calculations';
+import { printTransferSummary } from '@/lib/exports/printTransferSummary';
 
 interface TransferSummaryDialogProps {
   isOpen: boolean;
@@ -52,13 +55,27 @@ export function TransferSummaryDialog({
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
 
+  const handlePrint = () => {
+    if (transfer) {
+      printTransferSummary(transfer);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Detalles del Transfer</DialogTitle>
+          <DialogTitle className="flex justify-between items-center">
+            <span>Detalles del Transfer</span>
+            {!loading && transfer && (
+              <Button variant="outline" size="sm" onClick={handlePrint} className="ml-auto">
+                <Printer className="h-4 w-4 mr-2" />
+                Imprimir
+              </Button>
+            )}
+          </DialogTitle>
         </DialogHeader>
 
         {loading ? (
@@ -90,6 +107,14 @@ export function TransferSummaryDialog({
                   commissionType: transfer.commissionType
                 }} 
                 commissionAmountEuros={calculateCommissionAmount(transfer)} 
+                formatCurrency={formatCurrency} 
+              />
+            )}
+            
+            {/* Show expenses if any exist */}
+            {transfer.expenses && transfer.expenses.length > 0 && (
+              <ExpensesSection 
+                expenses={transfer.expenses} 
                 formatCurrency={formatCurrency} 
               />
             )}
