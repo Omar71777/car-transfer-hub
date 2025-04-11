@@ -69,6 +69,14 @@ export async function fetchTransferById(id: string) {
 
     // Ensure the service_type is properly typed as 'transfer' | 'dispo'
     const serviceType = transfer.service_type === 'dispo' ? 'dispo' : 'transfer';
+    
+    // Properly handle discount_type to match "percentage" | "fixed" | null
+    let discountType: 'percentage' | 'fixed' | null = null;
+    if (transfer.discount_type === 'percentage') {
+      discountType = 'percentage';
+    } else if (transfer.discount_type === 'fixed') {
+      discountType = 'fixed';
+    }
 
     return {
       id: transfer.id,
@@ -78,11 +86,11 @@ export async function fetchTransferById(id: string) {
       origin: capitalizeFirstLetter(transfer.origin),
       destination: transfer.destination ? capitalizeFirstLetter(transfer.destination) : undefined,
       price: Number(transfer.price),
-      discountType: transfer.discount_type,
+      discountType: discountType,
       discountValue: Number(transfer.discount_value) || 0,
       collaborator: transfer.collaborator && transfer.collaborator !== 'none' ? capitalizeFirstLetter(transfer.collaborator) : '',
       commission: Number(transfer.commission) || 0,
-      commissionType: transfer.commission_type || 'percentage',
+      commissionType: transfer.commission_type === 'fixed' ? 'fixed' : 'percentage',
       paymentStatus: transfer.payment_status || 'pending',
       clientId: transfer.client_id || '',
       client: client ? {

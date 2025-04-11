@@ -34,12 +34,8 @@ export function TransferSummaryDialog({
       try {
         const transferData = await getTransfer(transferId);
         if (transferData) {
-          // Ensure serviceType is properly typed as "transfer" | "dispo"
-          const validatedTransfer: Transfer = {
-            ...transferData,
-            serviceType: (transferData.serviceType === 'dispo' ? 'dispo' : 'transfer') as 'transfer' | 'dispo'
-          };
-          setTransfer(validatedTransfer);
+          // The discountType and serviceType are already properly typed in the fetchTransferById function
+          setTransfer(transferData as Transfer);
         }
       } catch (error) {
         console.error('Error fetching transfer details:', error);
