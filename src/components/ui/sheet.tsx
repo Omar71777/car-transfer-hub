@@ -23,6 +23,9 @@ const SheetOverlay = React.forwardRef<
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
+    onClick={(e) => {
+      e.stopPropagation();
+    }}
     {...props}
     ref={ref}
   />
@@ -58,6 +61,17 @@ const SheetContent = React.forwardRef<
 >(({ side = "right", className, children, ...props }, ref) => {
   const isMobile = useIsMobile()
   
+  React.useEffect(() => {
+    document.body.style.pointerEvents = 'auto';
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.pointerEvents = 'auto';
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+  
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -71,10 +85,32 @@ const SheetContent = React.forwardRef<
         )}
         onCloseAutoFocus={(e) => {
           e.preventDefault();
-          props.onCloseAutoFocus?.(e);
+          document.body.style.pointerEvents = 'auto';
+          
+          if (props.onCloseAutoFocus) {
+            props.onCloseAutoFocus(e);
+          }
         }}
         onEscapeKeyDown={(e) => {
-          props.onEscapeKeyDown?.(e);
+          document.body.style.pointerEvents = 'auto';
+          
+          if (props.onEscapeKeyDown) {
+            props.onEscapeKeyDown(e);
+          }
+        }}
+        onPointerDownOutside={(e) => {
+          if (props.onPointerDownOutside) {
+            props.onPointerDownOutside(e);
+          } else {
+            e.preventDefault();
+          }
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          
+          if (props.onClick) {
+            props.onClick(e);
+          }
         }}
         forceMount
         {...props}

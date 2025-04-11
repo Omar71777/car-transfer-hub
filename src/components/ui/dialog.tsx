@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -35,22 +34,25 @@ const DialogContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => {
   const isMobile = useIsMobile()
   
-  // Add effect to ensure pointer-events are always enabled
   React.useEffect(() => {
-    // Ensure pointer events are enabled when dialog is open
     document.body.classList.add('dialog-open');
     document.body.style.pointerEvents = 'auto';
     
-    // Cleanup when dialog unmounts
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
     return () => {
       document.body.classList.remove('dialog-open');
       document.body.style.pointerEvents = 'auto';
+      document.body.style.overflow = originalOverflow;
     };
   }, []);
   
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <DialogOverlay onClick={(e) => {
+        e.stopPropagation();
+      }}/>
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
@@ -69,16 +71,22 @@ const DialogContent = React.forwardRef<
           }
         }}
         onEscapeKeyDown={(e) => {
-          // Ensure pointer events are restored
           document.body.style.pointerEvents = 'auto';
           if (props.onEscapeKeyDown) {
             props.onEscapeKeyDown(e);
           }
         }}
         onPointerDownOutside={(e) => {
-          // Ensure event propagation works correctly
           if (props.onPointerDownOutside) {
             props.onPointerDownOutside(e);
+          } else {
+            e.preventDefault();
+          }
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (props.onClick) {
+            props.onClick(e);
           }
         }}
         {...props}

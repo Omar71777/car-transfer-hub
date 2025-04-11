@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Bill } from '@/types/billing';
 
 export function useBillingDialogState() {
@@ -18,20 +18,49 @@ export function useBillingDialogState() {
   const [isCreating, setIsCreating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const resetDialogStates = () => {
-    // First, ensure any open dialogs are closed
-    if (isFormDialogOpen) setIsFormDialogOpen(false);
-    if (isViewDialogOpen) setIsViewDialogOpen(false); 
-    if (isEditDialogOpen) setIsEditDialogOpen(false);
-    if (isDeleteDialogOpen) setIsDeleteDialogOpen(false);
+  // Create safe setters that ensure proper state transitions
+  const safeSetIsFormDialogOpen = useCallback((open: boolean) => {
+    // Ensure pointer events are enabled
+    document.body.style.pointerEvents = 'auto';
+    setIsFormDialogOpen(open);
+  }, []);
+
+  const safeSetIsViewDialogOpen = useCallback((open: boolean) => {
+    // Ensure pointer events are enabled
+    document.body.style.pointerEvents = 'auto';
+    setIsViewDialogOpen(open);
+  }, []);
+
+  const safeSetIsEditDialogOpen = useCallback((open: boolean) => {
+    // Ensure pointer events are enabled
+    document.body.style.pointerEvents = 'auto';
+    setIsEditDialogOpen(open);
+  }, []);
+
+  const safeSetIsDeleteDialogOpen = useCallback((open: boolean) => {
+    // Ensure pointer events are enabled
+    document.body.style.pointerEvents = 'auto';
+    setIsDeleteDialogOpen(open);
+  }, []);
+
+  const resetDialogStates = useCallback(() => {
+    // Only reset state for dialogs that are open
+    // This prevents unnecessary state updates that might cause issues
+    if (isFormDialogOpen) safeSetIsFormDialogOpen(false);
+    if (isViewDialogOpen) safeSetIsViewDialogOpen(false); 
+    if (isEditDialogOpen) safeSetIsEditDialogOpen(false);
+    if (isDeleteDialogOpen) safeSetIsDeleteDialogOpen(false);
     
-    // Wait a tick to ensure dialogs have a chance to properly close
-    // before resetting bill states (prevents flashing content)
-    setTimeout(() => {
-      setSelectedBill(null);
-      // Don't reset viewBill as it might be needed for the next operation
-    }, 50);
-  };
+    // No longer waiting or using setTimeout to clear bill states
+    // This avoids race conditions with React's state batching
+    
+    // Only clear selection if needed
+    if (selectedBill !== null) setSelectedBill(null);
+  }, [
+    isFormDialogOpen, isViewDialogOpen, isEditDialogOpen, isDeleteDialogOpen,
+    safeSetIsFormDialogOpen, safeSetIsViewDialogOpen, safeSetIsEditDialogOpen, safeSetIsDeleteDialogOpen,
+    selectedBill
+  ]);
 
   return {
     // Tab state
@@ -40,13 +69,13 @@ export function useBillingDialogState() {
     
     // Dialog visibility
     isFormDialogOpen,
-    setIsFormDialogOpen,
+    setIsFormDialogOpen: safeSetIsFormDialogOpen,
     isViewDialogOpen,
-    setIsViewDialogOpen,
+    setIsViewDialogOpen: safeSetIsViewDialogOpen,
     isEditDialogOpen,
-    setIsEditDialogOpen,
+    setIsEditDialogOpen: safeSetIsEditDialogOpen,
     isDeleteDialogOpen,
-    setIsDeleteDialogOpen,
+    setIsDeleteDialogOpen: safeSetIsDeleteDialogOpen,
     
     // Bill selection
     selectedBill,

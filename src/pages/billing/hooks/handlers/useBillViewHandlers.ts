@@ -15,23 +15,40 @@ export function useBillViewHandlers(
   ) => {
     try {
       setIsLoading(true);
+      // Force pointer events to be enabled
+      document.body.style.pointerEvents = 'auto';
+      
       // Fetch the complete bill with items
       const fullBill = await getBill(bill.id);
       if (fullBill) {
         console.log('Viewing bill with items:', fullBill.items);
+        
+        // Set the view bill first
         setViewBill(fullBill);
-        setIsViewDialogOpen(true);
+        
+        // Then open the dialog in a separate state update to avoid batching issues
+        // This guarantees the bill is set before the dialog opens
+        setTimeout(() => {
+          setIsLoading(false);
+          setIsViewDialogOpen(true);
+          // Force pointer events again to ensure dialog stays interactive
+          document.body.style.pointerEvents = 'auto';
+        }, 50);
+      } else {
+        setIsLoading(false);
+        toast.error('No se pudo cargar la factura');
       }
     } catch (error) {
       console.error('Error viewing bill:', error);
       toast.error('Error al cargar la factura');
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handlePrintBill = async (bill: Bill) => {
     try {
+      // Ensure pointer events are enabled before opening print dialog
+      document.body.style.pointerEvents = 'auto';
       await printBill(bill.id);
     } catch (error) {
       console.error('Error printing bill:', error);
@@ -41,6 +58,8 @@ export function useBillViewHandlers(
 
   const handleDownloadBill = async (bill: Bill) => {
     try {
+      // Ensure pointer events are enabled before download
+      document.body.style.pointerEvents = 'auto';
       await exportBillCsv(bill.id);
     } catch (error) {
       console.error('Error downloading bill:', error);
@@ -59,6 +78,9 @@ export function useBillViewHandlers(
     if (!viewBill) return;
 
     try {
+      // Ensure pointer events are enabled
+      document.body.style.pointerEvents = 'auto';
+      
       const success = await updateBillStatus(viewBill.id, status);
       if (success) {
         const statusMessages = {

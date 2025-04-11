@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bill, CreateBillDto } from '@/types/billing';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -49,10 +49,29 @@ export function BillDialogs({
 }: BillDialogsProps) {
   const isMobile = useIsMobile();
   
+  // Ensure pointer events are enabled when dialog opens
+  useEffect(() => {
+    if (isViewDialogOpen || isEditDialogOpen || isFormDialogOpen || isDeleteDialogOpen) {
+      document.body.style.pointerEvents = 'auto';
+    }
+  }, [isViewDialogOpen, isEditDialogOpen, isFormDialogOpen, isDeleteDialogOpen]);
+  
   return (
     <>
-      <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
-        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
+      <Dialog 
+        open={isFormDialogOpen} 
+        onOpenChange={(open) => {
+          // Only allow closure through our state setter
+          if (!open) {
+            document.body.style.pointerEvents = 'auto';
+            setIsFormDialogOpen(false);
+          }
+        }}
+      >
+        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]" onPointerDownOutside={(e) => {
+          // Prevent dialog from closing on outside click
+          e.preventDefault();
+        }}>
           <DialogHeader>
             <DialogTitle>Crear Nueva Factura</DialogTitle>
             <DialogDescription>
@@ -65,9 +84,21 @@ export function BillDialogs({
 
       <Dialog 
         open={isViewDialogOpen} 
-        onOpenChange={setIsViewDialogOpen}
+        onOpenChange={(open) => {
+          // Only allow closure through our state setter
+          if (!open) {
+            document.body.style.pointerEvents = 'auto';
+            setIsViewDialogOpen(false);
+          }
+        }}
       >
-        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
+        <DialogContent 
+          className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]"
+          onPointerDownOutside={(e) => {
+            // Prevent dialog from closing on outside click
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Detalle de Factura</DialogTitle>
             <DialogDescription>
@@ -78,8 +109,12 @@ export function BillDialogs({
             <BillDetail
               bill={viewBill}
               onEdit={() => {
+                // Explicitly set view dialog to false before opening edit dialog
                 setIsViewDialogOpen(false);
-                handleEditBill(viewBill);
+                // Add a short delay to ensure view dialog closes first
+                setTimeout(() => {
+                  handleEditBill(viewBill);
+                }, 50);
               }}
               onPrint={handlePrintBill}
               onDownload={() => handleDownloadBill(viewBill)}
@@ -91,9 +126,21 @@ export function BillDialogs({
 
       <Dialog 
         open={isEditDialogOpen} 
-        onOpenChange={setIsEditDialogOpen}
+        onOpenChange={(open) => {
+          // Only allow closure through our state setter
+          if (!open) {
+            document.body.style.pointerEvents = 'auto';
+            setIsEditDialogOpen(false);
+          }
+        }}
       >
-        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]">
+        <DialogContent 
+          className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]"
+          onPointerDownOutside={(e) => {
+            // Prevent dialog from closing on outside click
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Editar Factura</DialogTitle>
             <DialogDescription>
@@ -111,7 +158,15 @@ export function BillDialogs({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog 
+        open={isDeleteDialogOpen} 
+        onOpenChange={(open) => {
+          if (!open) {
+            document.body.style.pointerEvents = 'auto';
+            setIsDeleteDialogOpen(false);
+          }
+        }}
+      >
         <AlertDialogContent className="max-w-[min(450px,90vw)]">
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
