@@ -1,7 +1,7 @@
 
 import { Bill } from '@/types/billing';
 import { CompanyInfo } from './types';
-import { generateBillHtml } from './printBillContent';
+import { generateBillHtml } from './content';
 import { exportHtmlToPdf } from './billPdfExporter';
 import { toast } from 'sonner';
 
