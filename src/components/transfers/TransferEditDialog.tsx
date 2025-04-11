@@ -14,10 +14,17 @@ import { PaymentStatusField } from './form-fields/PaymentStatusField';
 import { useCollaborators } from '@/hooks/useCollaborators';
 
 const editFormSchema = z.object({
-  price: z.coerce.number().min(0, { message: 'El precio debe ser un número positivo' }),
+  price: z.string().min(1, { message: 'El precio es requerido' }).refine(
+    (val) => !isNaN(Number(val)) && Number(val) > 0, 
+    { message: 'El precio debe ser un número positivo' }
+  ),
   paymentStatus: z.enum(['paid', 'pending']),
   collaborator: z.string().optional(),
-  commission: z.coerce.number().min(0).max(100).optional(),
+  commission: z.string().optional()
+    .refine(
+      (val) => val === undefined || val === '' || (!isNaN(Number(val)) && Number(val) >= 0), 
+      { message: 'La comisión debe ser un número positivo o cero' }
+    ),
   commissionType: z.enum(['percentage', 'fixed']).optional(),
 });
 
@@ -41,16 +48,22 @@ export function TransferEditDialog({
   const form = useForm<EditFormValues>({
     resolver: zodResolver(editFormSchema),
     defaultValues: {
-      price: transfer.price,
+      price: transfer.price.toString(),
       paymentStatus: transfer.paymentStatus || 'pending',
       collaborator: transfer.collaborator || undefined,
-      commission: transfer.commission,
+      commission: transfer.commission ? transfer.commission.toString() : '',
       commissionType: transfer.commissionType || 'percentage',
     },
   });
 
   const handleSubmit = (values: EditFormValues) => {
-    onSubmit(values);
+    // Convert string values to numbers for submission
+    const processedValues = {
+      ...values,
+      price: Number(values.price),
+      commission: values.commission ? Number(values.commission) : undefined,
+    };
+    onSubmit(processedValues);
   };
 
   const paymentStatus = form.watch('paymentStatus');
