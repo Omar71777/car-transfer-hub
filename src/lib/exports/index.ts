@@ -23,3 +23,6 @@ export { prepareUnpaidDataForExport, prepareUnpaidSummaryForExport } from './unp
 
 // Billing exports
 export { printBill, exportBillCsv } from './billExport';
+
+// Calculation utility exports
+export { generateTransferDescription, generateExtraChargeDescription } from '@/lib/billing/calculationUtils';

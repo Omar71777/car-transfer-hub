@@ -9,12 +9,25 @@ import { supabase } from '@/integrations/supabase/client';
 export const exportBillCsv = (bill: Bill) => {
   const headers = ['Concepto', 'Cantidad', 'Precio unitario', 'Total'];
   
-  const rows = bill.items.map(item => [
-    item.description,
-    item.quantity.toString(),
-    item.unit_price.toString(),
-    item.total_price.toString()
-  ]);
+  const rows = bill.items.map(item => {
+    // Create the main item row
+    const mainRow = [
+      item.description,
+      item.quantity.toString(),
+      item.unit_price.toString(),
+      item.total_price.toString()
+    ];
+    
+    // Add extra charge rows if they exist
+    const extraRows = item.extra_charges ? item.extra_charges.map(charge => [
+      `  ${charge.name}`, // Indent to show hierarchy
+      '1',
+      charge.price.toString(),
+      charge.price.toString()
+    ]) : [];
+    
+    return [mainRow, ...extraRows];
+  }).flat(); // Flatten the nested arrays
   
   // Añadir filas de resumen
   rows.push(['', '', 'Subtotal', bill.sub_total.toString()]);
@@ -22,7 +35,6 @@ export const exportBillCsv = (bill: Bill) => {
   rows.push(['', '', 'Total', bill.total.toString()]);
   
   const fileName = `factura-${bill.number}.csv`;
-  // Fixed: downloadCSV expects headers and rows as arrays, and the filename as string
   downloadCSV(headers, rows, fileName);
 };
 
@@ -60,6 +72,37 @@ export const printBill = async (bill: Bill) => {
       return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
     };
 
+    // Create the items HTML with indented extra charges
+    const itemsHTML = bill.items.map(item => {
+      // Main item row
+      let html = `
+        <tr>
+          <td>${item.description}</td>
+          <td>${item.quantity}</td>
+          <td class="text-right">${formatCurrency(item.unit_price)}</td>
+          <td class="text-right">${formatCurrency(item.total_price)}</td>
+        </tr>
+      `;
+      
+      // Add extra charges if they exist
+      if (item.extra_charges && item.extra_charges.length > 0) {
+        item.extra_charges.forEach(charge => {
+          html += `
+            <tr class="extra-charge-row">
+              <td style="padding-left: 20px; font-style: italic; color: #666;">
+                ${charge.name}
+              </td>
+              <td>1</td>
+              <td class="text-right">${formatCurrency(charge.price)}</td>
+              <td class="text-right">${formatCurrency(charge.price)}</td>
+            </tr>
+          `;
+        });
+      }
+      
+      return html;
+    }).join('');
+
     // Generar contenido HTML para la impresión
     const content = `
       <!DOCTYPE html>
@@ -79,6 +122,7 @@ export const printBill = async (bill: Bill) => {
           .total-row { font-weight: bold; }
           .notes { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 10px; }
           .company-logo { max-width: 150px; max-height: 100px; margin-bottom: 10px; }
+          .extra-charge-row { background-color: #f9f9f9; }
           @media print {
             body { padding: 0; }
             button { display: none; }
@@ -122,14 +166,7 @@ export const printBill = async (bill: Bill) => {
             </tr>
           </thead>
           <tbody>
-            ${bill.items.map(item => `
-              <tr>
-                <td>${item.description}</td>
-                <td>${item.quantity}</td>
-                <td class="text-right">${formatCurrency(item.unit_price)}</td>
-                <td class="text-right">${formatCurrency(item.total_price)}</td>
-              </tr>
-            `).join('')}
+            ${itemsHTML}
           </tbody>
           <tfoot>
             <tr>
@@ -166,7 +203,7 @@ export const printBill = async (bill: Bill) => {
     printWindow.document.write(content);
     printWindow.document.close();
     
-    // Corregido: Esperar a que la ventana se cargue completamente antes de imprimir
+    // Esperar a que la ventana se cargue completamente antes de imprimir
     printWindow.onload = () => {
       printWindow.focus();
       // Imprimir automáticamente

@@ -36,20 +36,41 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {bill.items && bill.items.map((item) => (
-                <tr key={item.id}>
-                  <td className="px-3 py-2 text-sm">
-                    {item.description}
-                  </td>
-                  <td className="px-3 py-2 text-sm text-right">
-                    {item.quantity}
-                  </td>
-                  <td className="px-3 py-2 text-sm text-right">
-                    {formatCurrency(item.unit_price)}
-                  </td>
-                  <td className="px-3 py-2 text-sm text-right">
-                    {formatCurrency(item.total_price)}
-                  </td>
-                </tr>
+                <React.Fragment key={item.id}>
+                  {/* Main transfer item */}
+                  <tr>
+                    <td className="px-3 py-2 text-sm font-medium">
+                      {item.description}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-right">
+                      {item.quantity}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-right">
+                      {formatCurrency(item.unit_price)}
+                    </td>
+                    <td className="px-3 py-2 text-sm text-right">
+                      {formatCurrency(item.total_price)}
+                    </td>
+                  </tr>
+                  
+                  {/* Extra charges for this item */}
+                  {item.extra_charges && item.extra_charges.map((charge) => (
+                    <tr key={charge.id} className="bg-muted/10">
+                      <td className="px-3 py-1 text-sm pl-6">
+                        <span className="text-muted-foreground">{charge.name}</span>
+                      </td>
+                      <td className="px-3 py-1 text-sm text-right">
+                        1
+                      </td>
+                      <td className="px-3 py-1 text-sm text-right">
+                        {formatCurrency(charge.price)}
+                      </td>
+                      <td className="px-3 py-1 text-sm text-right">
+                        {formatCurrency(charge.price)}
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
               ))}
             </tbody>
             <tfoot>

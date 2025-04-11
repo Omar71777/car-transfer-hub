@@ -12,6 +12,7 @@ import {
 import {
   formatTransferForCalculations,
   generateTransferDescription,
+  generateExtraChargeDescription,
   calculateTaxTotals,
   createBillPreview
 } from '@/lib/billing/calculationUtils';
@@ -46,26 +47,44 @@ export function useBillPreview(
           // Calculate base price (considering service type)
           const basePrice = calculateBasePrice(formattedTransfer);
           
-          // Add extra charges total
-          const extraChargesTotal = calculateExtraChargesTotal(extraCharges || []);
-          
           // Apply discount
           const discountAmount = calculateDiscountAmount(formattedTransfer);
           
-          // Final transfer price
-          const finalPrice = basePrice + extraChargesTotal - discountAmount;
+          // Final transfer base price after discount
+          const finalBasePrice = basePrice - discountAmount;
 
           // Create description based on service type
-          const description = generateTransferDescription(transfer, extraCharges);
+          const description = generateTransferDescription(transfer);
 
-          const item = {
+          // Create the main transfer item
+          const transferItem = {
             transfer,
             description,
-            unitPrice: finalPrice,
+            unitPrice: finalBasePrice,
+            extraCharges: []
           };
-
-          items.push(item);
-          subTotal += finalPrice;
+          
+          // Add the main transfer item
+          items.push(transferItem);
+          subTotal += finalBasePrice;
+          
+          // Add extra charges as separate items in the preview
+          if (extraCharges && extraCharges.length > 0) {
+            // Convert and add extra charges
+            const formattedExtraCharges = extraCharges.map(charge => ({
+              id: charge.id,
+              name: charge.name,
+              price: Number(charge.price) || 0
+            }));
+            
+            // Add the extra charges to the transfer item
+            transferItem.extraCharges = formattedExtraCharges;
+            
+            // Add the extra charges to the total
+            for (const charge of formattedExtraCharges) {
+              subTotal += charge.price;
+            }
+          }
         }
 
         // Calculate tax amount and total

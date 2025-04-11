@@ -1,7 +1,6 @@
-
 import { useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Bill } from '@/types/billing';
+import { Bill, ExtraChargeBillItem } from '@/types/billing';
 import { toast } from 'sonner';
 
 export function useBillOperations() {
@@ -32,9 +31,33 @@ export function useBillOperations() {
 
       if (itemsError) throw itemsError;
       
+      const transferIds = [...new Set(items.map(item => item.transfer_id))];
+      
+      const itemsWithExtraCharges = await Promise.all(items.map(async (item) => {
+        if (!item.is_extra_charge) {
+          const { data: extraCharges } = await supabase
+            .from('extra_charges')
+            .select('*')
+            .eq('transfer_id', item.transfer_id);
+          
+          const formattedExtraCharges = (extraCharges || []).map(charge => ({
+            id: charge.id,
+            name: charge.name,
+            price: Number(charge.price) || 0
+          }));
+          
+          return {
+            ...item,
+            extra_charges: formattedExtraCharges
+          };
+        }
+        
+        return item;
+      }));
+      
       return {
         ...bill,
-        items: items || []
+        items: itemsWithExtraCharges || []
       } as unknown as Bill;
     } catch (error: any) {
       toast.error(`Error al obtener factura: ${error.message}`);
@@ -45,7 +68,6 @@ export function useBillOperations() {
 
   const updateBill = useCallback(async (id: string, data: Partial<Bill>) => {
     try {
-      // Filtramos solo los campos que se pueden actualizar
       const updateData: any = {};
       
       if (data.notes !== undefined) updateData.notes = data.notes;
@@ -55,7 +77,6 @@ export function useBillOperations() {
       if (data.tax_application !== undefined) updateData.tax_application = data.tax_application;
       if (data.number !== undefined) updateData.number = data.number;
       
-      // Si no hay datos para actualizar, salimos
       if (Object.keys(updateData).length === 0) {
         return false;
       }
