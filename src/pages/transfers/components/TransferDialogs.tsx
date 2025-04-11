@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { ExpenseForm } from '@/components/expenses/ExpenseForm';
-import { TransferForm } from '@/components/transfers/TransferForm';
+import { TransferExpenseDialog } from '@/components/transfers/TransferExpenseDialog';
+import { TransferEditDialog } from '@/components/transfers/TransferEditDialog';
+import { TransferPrintDialog, PrintOptions } from '@/components/transfers/TransferPrintDialog';
 import { Transfer } from '@/types';
 
 interface TransferDialogsProps {
@@ -10,10 +10,14 @@ interface TransferDialogsProps {
   setIsExpenseDialogOpen: (open: boolean) => void;
   isEditDialogOpen: boolean;
   setIsEditDialogOpen: (open: boolean) => void;
+  isPrintDialogOpen?: boolean;
+  onClosePrintDialog?: () => void;
+  onPrintWithOptions?: (options: PrintOptions) => void;
   selectedTransferId: string | null;
   editingTransfer: Transfer | null;
   onExpenseSubmit: (values: any) => void;
   onEditSubmit: (values: any) => void;
+  transfers?: Transfer[];
 }
 
 export function TransferDialogs({
@@ -21,43 +25,42 @@ export function TransferDialogs({
   setIsExpenseDialogOpen,
   isEditDialogOpen,
   setIsEditDialogOpen,
+  isPrintDialogOpen = false,
+  onClosePrintDialog = () => {},
+  onPrintWithOptions = () => {},
   selectedTransferId,
   editingTransfer,
   onExpenseSubmit,
-  onEditSubmit
+  onEditSubmit,
+  transfers = []
 }: TransferDialogsProps) {
   return (
     <>
       {isExpenseDialogOpen && (
-        <Dialog open={isExpenseDialogOpen} onOpenChange={setIsExpenseDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Añadir Gasto al Transfer</DialogTitle>
-              <DialogDescription>
-                Introduce los detalles del gasto que deseas añadir a este transfer.
-              </DialogDescription>
-            </DialogHeader>
-            <ExpenseForm onSubmit={onExpenseSubmit} transferId={selectedTransferId || ''} />
-          </DialogContent>
-        </Dialog>
+        <TransferExpenseDialog
+          isOpen={isExpenseDialogOpen}
+          onClose={() => setIsExpenseDialogOpen(false)}
+          onSubmit={onExpenseSubmit}
+          transferId={selectedTransferId}
+        />
       )}
-
+      
       {isEditDialogOpen && editingTransfer && (
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-[min(800px,90vw)]">
-            <DialogHeader>
-              <DialogTitle>Editar Transfer</DialogTitle>
-              <DialogDescription>
-                Modifica los detalles del transfer seleccionado.
-              </DialogDescription>
-            </DialogHeader>
-            <TransferForm 
-              onSubmit={onEditSubmit} 
-              initialValues={editingTransfer} 
-              isEditing={true} 
-            />
-          </DialogContent>
-        </Dialog>
+        <TransferEditDialog
+          isOpen={isEditDialogOpen}
+          onClose={() => setIsEditDialogOpen(false)}
+          onSubmit={onEditSubmit}
+          transfer={editingTransfer}
+        />
+      )}
+      
+      {isPrintDialogOpen && (
+        <TransferPrintDialog 
+          isOpen={isPrintDialogOpen}
+          onClose={onClosePrintDialog}
+          onPrint={onPrintWithOptions}
+          transfers={transfers}
+        />
       )}
     </>
   );

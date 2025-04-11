@@ -15,7 +15,7 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [collaboratorFilter, setCollaboratorFilter] = useState<string>('all');
   const [clientFilter, setClientFilter] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>('all');
   
   // Extract unique values for filter dropdowns
   const uniqueCollaborators = [...new Set(transfers.map(t => t.collaborator || "Propio"))];
@@ -84,17 +84,13 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
       filtered = filtered.filter(transfer => transfer.client?.name === clientFilter);
     }
     
-    // Search term (for location search)
-    if (searchTerm.trim() !== '') {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(transfer => 
-        transfer.origin.toLowerCase().includes(term) || 
-        (transfer.destination && transfer.destination.toLowerCase().includes(term))
-      );
+    // Payment status filter
+    if (paymentStatusFilter !== 'all') {
+      filtered = filtered.filter(transfer => transfer.paymentStatus === paymentStatusFilter);
     }
     
     onFilterChange(filtered);
-  }, [dateFilter, collaboratorFilter, clientFilter, searchTerm, transfers]);
+  }, [dateFilter, collaboratorFilter, clientFilter, paymentStatusFilter, transfers]);
   
   return (
     <div className="space-y-3 mb-4">
@@ -130,7 +126,7 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
             <SelectContent>
               <SelectItem value="all">Todos los colaboradores</SelectItem>
               {uniqueCollaborators.map(collaborator => (
-                <SelectItem key={collaborator} value={collaborator}>
+                <SelectItem key={collaborator || 'no-collaborator'} value={collaborator}>
                   {collaborator}
                 </SelectItem>
               ))}
@@ -150,7 +146,7 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
             <SelectContent>
               <SelectItem value="all">Todos los clientes</SelectItem>
               {uniqueClients.map(client => (
-                <SelectItem key={client} value={client}>
+                <SelectItem key={client || 'no-client'} value={client || 'no-client'}>
                   {client}
                 </SelectItem>
               ))}
@@ -159,13 +155,20 @@ export function TransferTableFilters({ transfers, onFilterChange }: TransferTabl
         </div>
         
         <div className="w-full md:w-1/4">
-          <Label htmlFor="search">Buscar por ubicación</Label>
-          <Input
-            id="search"
-            placeholder="Buscar..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <Label htmlFor="payment-status-filter">Estado de pago</Label>
+          <Select 
+            value={paymentStatusFilter} 
+            onValueChange={setPaymentStatusFilter}
+          >
+            <SelectTrigger id="payment-status-filter">
+              <SelectValue placeholder="Todos los estados" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los estados</SelectItem>
+              <SelectItem value="paid">Cobrados</SelectItem>
+              <SelectItem value="pending">Pendientes de pago</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

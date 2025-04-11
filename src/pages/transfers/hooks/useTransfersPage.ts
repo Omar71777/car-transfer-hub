@@ -8,6 +8,8 @@ import { useTransferDialogs } from './useTransferDialogs';
 import { toast } from 'sonner';
 import { handleExportCSV, generateReportStats } from '../helpers/reportHelpers';
 import { printProfitReport } from '@/lib/exports';
+import { PrintOptions } from '@/components/transfers/TransferPrintDialog';
+import { printTransfersList, printCollaboratorCommissionSummary } from '@/lib/exports/transfersPrintHandler';
 
 export function useTransfersPage() {
   const {
@@ -40,6 +42,7 @@ export function useTransfersPage() {
 
   const [isSummaryDialogOpen, setIsSummaryDialogOpen] = useState(false);
   const [summaryTransferId, setSummaryTransferId] = useState<string | null>(null);
+  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
   
   // Global cleanup for pointer events issues
   useEffect(() => {
@@ -159,14 +162,25 @@ export function useTransfersPage() {
   };
 
   const handlePrint = () => {
+    // Open the print dialog
+    setIsPrintDialogOpen(true);
+  };
+  
+  const handleClosePrintDialog = () => {
+    setIsPrintDialogOpen(false);
+  };
+  
+  const handlePrintWithOptions = (options: PrintOptions) => {
     // Ensure pointer events are enabled
     document.body.style.pointerEvents = 'auto';
-    const stats = generateReportStats(transfers, expenses);
     
-    printProfitReport('Informe de Transfers', transfers, expenses, stats, {
-      name: profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : '',
-      email: profile?.email || ''
-    });
+    if (options.type === 'collaborator' && !options.filterValue) {
+      // Print summary report for all collaborators
+      printCollaboratorCommissionSummary(transfers);
+    } else {
+      // Print filtered transfer list
+      printTransfersList(transfers, options);
+    }
     
     // Restore pointer events after a short delay
     setTimeout(() => {
@@ -188,6 +202,7 @@ export function useTransfersPage() {
     editingTransfer,
     isSummaryDialogOpen,
     summaryTransferId,
+    isPrintDialogOpen,
     activeTab,
     selectedTransferId,
     
@@ -204,6 +219,8 @@ export function useTransfersPage() {
     handleDeleteMultipleTransfers,
     handleExpenseSubmit,
     handlePrint,
-    handleExportTransfers
+    handleExportTransfers,
+    handleClosePrintDialog,
+    handlePrintWithOptions
   };
 }

@@ -17,6 +17,7 @@ const TransfersPage = () => {
     editingTransfer,
     isSummaryDialogOpen,
     summaryTransferId,
+    isPrintDialogOpen,
     activeTab,
     selectedTransferId,
     
@@ -33,7 +34,9 @@ const TransfersPage = () => {
     handleDeleteMultipleTransfers,
     handleExpenseSubmit,
     handlePrint,
-    handleExportTransfers
+    handleExportTransfers,
+    handleClosePrintDialog,
+    handlePrintWithOptions
   } = useTransfersPage();
   
   return (
@@ -54,16 +57,20 @@ const TransfersPage = () => {
       />
 
       {/* Only render dialogs when needed */}
-      {(isExpenseDialogOpen || isEditDialogOpen) && (
+      {(isExpenseDialogOpen || isEditDialogOpen || isPrintDialogOpen) && (
         <TransferDialogs
           isExpenseDialogOpen={isExpenseDialogOpen}
           setIsExpenseDialogOpen={setIsExpenseDialogOpen}
           isEditDialogOpen={isEditDialogOpen}
           setIsEditDialogOpen={setIsEditDialogOpen}
+          isPrintDialogOpen={isPrintDialogOpen}
+          onClosePrintDialog={handleClosePrintDialog}
+          onPrintWithOptions={handlePrintWithOptions}
           selectedTransferId={selectedTransferId}
           editingTransfer={editingTransfer}
           onExpenseSubmit={handleExpenseSubmit}
           onEditSubmit={handleEditSubmit}
+          transfers={transfers}
         />
       )}
 

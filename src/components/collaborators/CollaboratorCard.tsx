@@ -37,11 +37,6 @@ export function CollaboratorCard({ name, transferCount, commissionTotal, average
             <span className="font-medium text-accent-foreground">{formatCurrency(commissionTotal)}</span>
           </div>
           
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Comisión Media</span>
-            <span className="font-medium">{formatCurrency(averageCommission)}</span>
-          </div>
-          
           <div className="mt-4 pt-4 border-t flex justify-between items-center">
             <span className="text-sm font-medium">Comisión Media por Transfer</span>
             <div className="flex items-center gap-1 text-primary">

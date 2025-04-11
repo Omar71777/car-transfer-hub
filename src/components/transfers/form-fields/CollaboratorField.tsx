@@ -33,8 +33,11 @@ export function CollaboratorField({ form, collaborators }: CollaboratorFieldProp
               <SelectItem value="none">Sin colaborador</SelectItem>
               {collaborators && collaborators.length > 0 ? (
                 collaborators.map((collaborator) => (
-                  <SelectItem key={collaborator.id} value={collaborator.name || `collaborator-${collaborator.id}`}>
-                    {collaborator.name}
+                  <SelectItem 
+                    key={collaborator.id} 
+                    value={collaborator.name || `collaborator-${collaborator.id}`}
+                  >
+                    {collaborator.name || `Colaborador ${collaborator.id}`}
                   </SelectItem>
                 ))
               ) : (
