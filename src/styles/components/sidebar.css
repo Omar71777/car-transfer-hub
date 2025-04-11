@@ -32,9 +32,9 @@
     @apply bg-sidebar-selected text-sidebar-foreground font-medium;
   }
 
-  /* New Ibiza-inspired sidebar styles */
+  /* New vibrant sidebar styles */
   .sidebar-icon {
-    @apply text-electric;
+    @apply text-aqua;
   }
 
   .sidebar-highlight {
@@ -42,6 +42,6 @@
   }
 
   .sidebar-active-indicator {
-    @apply w-1 h-8 bg-electric absolute left-0 rounded-r-md transition-all duration-200;
+    @apply w-1 h-8 bg-aqua absolute left-0 rounded-r-md transition-all duration-200;
   }
 }

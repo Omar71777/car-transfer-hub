@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -68,66 +69,55 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				ibiza: {
-					50: '#e6f6ff',
-					100: '#b3e0ff',
-					200: '#80caff',
-					300: '#4db4ff',
-					400: '#1a9eff',
-					500: '#0088e6',
-					600: '#0066cc',
-					700: '#0044b3',
-					800: '#002299',
-					900: '#000080',
-				},
+				// New vibrant color system
 				electric: {
-					DEFAULT: '#023E8A',
-					light: '#045CB4',
-					dark: '#012C61',
+					DEFAULT: '#6A5ACD', // Slate Blue
+					light: '#7B68EE', // Medium Slate Blue
+					dark: '#483D8B', // Dark Slate Blue
 				},
 				aqua: {
-					DEFAULT: '#48CAE4',
-					light: '#ADE8F4',
-					dark: '#0096C7',
-				},
-				sand: {
-					DEFAULT: '#F6BD60',
-					light: '#FAD193',
-					dark: '#E09F3E',
+					DEFAULT: '#00FFFF', // Cyan
+					light: '#AFEEEE', // Pale Turquoise
+					dark: '#008B8B', // Dark Cyan
 				},
 				vibrant: {
-					DEFAULT: '#FF6B6B',
-					light: '#FF9E9E',
-					dark: '#E63946',
+					DEFAULT: '#FF6B6B', // Coral Pink
+					light: '#FF9E9E', // Light Coral
+					dark: '#E63946', // Imperial Red
 				},
 				foam: {
-					DEFAULT: '#F7FFF7',
-					light: '#FFFFFF',
-					dark: '#E6F7E6',
+					DEFAULT: '#F0F8FF', // Alice Blue
+					light: '#FFFFFF', // White
+					dark: '#E6F2FF', // Very Light Blue
 				},
 				pine: {
-					DEFAULT: '#006D77',
-					light: '#0A9396',
-					dark: '#004F55',
+					DEFAULT: '#98FB98', // Mint Green
+					light: '#CCFFCC', // Light Mint
+					dark: '#66CDAA', // Medium Aquamarine
+				},
+				sand: {
+					DEFAULT: '#FFDAB9', // Peach Puff
+					light: '#FFE4C4', // Bisque
+					dark: '#FFCC99', // Light Peach
+				},
+				lavender: {
+					DEFAULT: '#E6E6FA', // Lavender
+					light: '#F5F5FF', // Light Lavender
+					dark: '#D8BFD8', // Thistle
+				},
+				charcoal: {
+					DEFAULT: '#36454F', // Charcoal
+					dark: '#1A1A2E', // Very Dark Blue
+					light: '#4B5D67', // Slate Gray
 				},
 				soft: {
 					beige: '#F5F2ED',
 					gray: '#F1F0FB',
 					peach: '#FDE1D3',
 					pink: '#FFDEE2',
-					blue: '#ADE8F4',
+					blue: '#D3E4FD',
 					green: '#F2FCE2',
 				},
-				charcoal: {
-					DEFAULT: '#403E43',
-					dark: '#221F26',
-					light: '#5A5862',
-				},
-				warm: {
-					DEFAULT: '#F6BD60',
-					light: '#FAD193',
-					dark: '#E09F3E',
-				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -191,10 +181,10 @@ export default {
 				'button': '0 2px 6px rgba(0, 0, 0, 0.04)',
 			},
 			backgroundImage: {
-				'gradient-soft': 'linear-gradient(to right, #F6BD60, #FAD193)',
-				'gradient-aqua': 'linear-gradient(to right, #48CAE4, #ADE8F4)',
-				'gradient-electric': 'linear-gradient(to right, #023E8A, #045CB4)',
-				'gradient-foam': 'linear-gradient(to right, #F7FFF7, #FFFFFF)',
+				'gradient-soft': 'linear-gradient(to right, #6A5ACD, #7B68EE)',
+				'gradient-aqua': 'linear-gradient(to right, #00FFFF, #AFEEEE)',
+				'gradient-vibrant': 'linear-gradient(to right, #FF6B6B, #FF9E9E)',
+				'gradient-foam': 'linear-gradient(to right, #F0F8FF, #FFFFFF)',
 			}
 		}
 	},

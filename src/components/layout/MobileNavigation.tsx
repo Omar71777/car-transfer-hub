@@ -14,7 +14,7 @@ export function MobileNavigation() {
   };
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 md:hidden z-30 bg-foam-light/90 dark:bg-electric-dark/90 backdrop-blur-md border-t border-aqua/20 shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 md:hidden z-30 bg-primary/95 backdrop-blur-md border-t border-white/20 shadow-lg">
       <div className="flex items-center justify-around h-16">
         <Button 
           variant="ghost" 
@@ -22,8 +22,8 @@ export function MobileNavigation() {
           className="flex flex-col items-center justify-center rounded-full h-12 w-12"
           onClick={() => navigate('/')}
         >
-          <Home className="h-5 w-5 text-electric" />
-          <span className="text-xs mt-0.5 text-electric">Inicio</span>
+          <Home className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Inicio</span>
         </Button>
         
         <Button 
@@ -32,8 +32,8 @@ export function MobileNavigation() {
           className="flex flex-col items-center justify-center rounded-full h-12 w-12"
           onClick={() => navigate('/transfers')}
         >
-          <CreditCard className="h-5 w-5 text-electric" />
-          <span className="text-xs mt-0.5 text-electric">Transfers</span>
+          <CreditCard className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Transfers</span>
         </Button>
         
         <Button 
@@ -42,8 +42,8 @@ export function MobileNavigation() {
           className="flex flex-col items-center justify-center rounded-full h-12 w-12"
           onClick={() => navigate('/profits')}
         >
-          <BarChart2 className="h-5 w-5 text-electric" />
-          <span className="text-xs mt-0.5 text-electric">Beneficios</span>
+          <BarChart2 className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Beneficios</span>
         </Button>
         
         <Button 
@@ -52,8 +52,8 @@ export function MobileNavigation() {
           className="flex flex-col items-center justify-center rounded-full h-12 w-12"
           onClick={() => navigate('/profile')}
         >
-          <User className="h-5 w-5 text-electric" />
-          <span className="text-xs mt-0.5 text-electric">Perfil</span>
+          <User className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Perfil</span>
         </Button>
         
         <Button 
@@ -62,8 +62,8 @@ export function MobileNavigation() {
           className="flex flex-col items-center justify-center rounded-full h-12 w-12"
           onClick={handleMenuClick}
         >
-          <Menu className="h-5 w-5 text-electric" />
-          <span className="text-xs mt-0.5 text-electric">Menú</span>
+          <Menu className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Menú</span>
         </Button>
       </div>
     </div>

@@ -16,7 +16,7 @@ interface StatCardsProps {
 export const StatCards = ({ stats }: StatCardsProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <Card className="border-none shadow-md bg-gradient-to-br from-blue-500/90 to-blue-600 text-white">
+      <Card className="border-none shadow-md bg-gradient-to-br from-primary/90 to-primary text-white">
         <CardContent className="p-6">
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-lg font-medium text-white/90">Transfers</h3>
@@ -36,7 +36,7 @@ export const StatCards = ({ stats }: StatCardsProps) => {
         </CardContent>
       </Card>
       
-      <Card className="border-none shadow-md bg-gradient-to-br from-green-500/90 to-green-600 text-white">
+      <Card className="border-none shadow-md bg-gradient-to-br from-pine-dark/90 to-pine-dark text-white">
         <CardContent className="p-6">
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-lg font-medium text-white/90">Ingresos</h3>
@@ -56,7 +56,7 @@ export const StatCards = ({ stats }: StatCardsProps) => {
         </CardContent>
       </Card>
       
-      <Card className="border-none shadow-md bg-gradient-to-br from-red-500/90 to-red-600 text-white">
+      <Card className="border-none shadow-md bg-gradient-to-br from-vibrant/90 to-vibrant text-white">
         <CardContent className="p-6">
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-lg font-medium text-white/90">Gastos</h3>
@@ -76,17 +76,17 @@ export const StatCards = ({ stats }: StatCardsProps) => {
         </CardContent>
       </Card>
       
-      <Card className="border-none shadow-md bg-gradient-to-br from-purple-500/90 to-indigo-600 text-white">
+      <Card className="border-none shadow-md bg-gradient-to-br from-secondary/90 to-secondary text-secondary-foreground">
         <CardContent className="p-6">
           <div className="flex justify-between items-start mb-4">
-            <h3 className="text-lg font-medium text-white/90">Beneficio</h3>
-            <div className="p-2 bg-white/20 rounded-full">
-              <BarChart2 className="h-5 w-5 text-white" />
+            <h3 className="text-lg font-medium text-secondary-foreground/90">Beneficio</h3>
+            <div className="p-2 bg-secondary-foreground/20 rounded-full">
+              <BarChart2 className="h-5 w-5 text-secondary-foreground" />
             </div>
           </div>
           <div>
             <p className="text-3xl font-bold mb-1">{formatCurrency(stats.netIncome)}</p>
-            <div className="flex items-center text-xs text-white/80">
+            <div className="flex items-center text-xs text-secondary-foreground/80">
               <span>Beneficio neto</span>
               {stats.netIncome > 0 && (
                 <ArrowRight className="h-3 w-3 ml-1" />
