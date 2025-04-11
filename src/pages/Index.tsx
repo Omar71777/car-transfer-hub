@@ -9,7 +9,6 @@ import { useAuth } from '@/contexts/auth';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { StatCards } from '@/components/dashboard/StatCards';
 import { QuickAccessCards } from '@/components/dashboard/QuickAccessCards';
-import { InformationSection } from '@/components/dashboard/InformationSection';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -145,11 +144,11 @@ const Index = () => {
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    Visita la sección de Informes para ver análisis detallados y gráficos de tendencias.
+                    Visita la sección de Profits para ver análisis detallados y tendencias de ingresos.
                   </AlertDescription>
                 </Alert>
                 <Button variant="outline" asChild className="mt-4">
-                  <Link to="/admin/reports/analytics">
+                  <Link to="/profits">
                     Ver Análisis Completo
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -157,11 +156,6 @@ const Index = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
-        
-        {/* Information Section */}
-        <div className="mb-8">
-          <InformationSection />
         </div>
       </div>
     </MainLayout>
