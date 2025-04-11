@@ -28,6 +28,22 @@ export function TransferSummaryDialog({
 }: TransferSummaryDialogProps) {
   const [transfer, setTransfer] = useState<Transfer | null>(null);
   const [loading, setLoading] = useState(false);
+  
+  // Add body class when dialog is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('dialog-open');
+    } else {
+      document.body.classList.remove('dialog-open');
+    }
+    
+    // Cleanup function to ensure body class is removed on unmount
+    return () => {
+      document.body.classList.remove('dialog-open');
+      // Ensure pointer events are restored
+      document.body.style.pointerEvents = 'auto';
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     async function fetchTransferDetails() {
@@ -53,7 +69,14 @@ export function TransferSummaryDialog({
 
   const handlePrint = () => {
     if (transfer) {
+      // Ensure the body has pointer events before printing
+      document.body.style.pointerEvents = 'auto';
       printTransferSummary(transfer);
+      
+      // Set a timeout to ensure pointer events are restored after printing window opens
+      setTimeout(() => {
+        document.body.style.pointerEvents = 'auto';
+      }, 100);
     }
   };
 
@@ -61,8 +84,14 @@ export function TransferSummaryDialog({
   if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh]">
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        // Ensure pointer events are restored when dialog closes
+        document.body.style.pointerEvents = 'auto';
+        onClose();
+      }
+    }}>
+      <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh] z-50">
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">
             <span className="text-xl font-semibold">Detalles del Transfer</span>

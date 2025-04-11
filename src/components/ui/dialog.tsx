@@ -35,6 +35,19 @@ const DialogContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => {
   const isMobile = useIsMobile()
   
+  // Add effect to ensure pointer-events are always enabled
+  React.useEffect(() => {
+    // Ensure pointer events are enabled when dialog is open
+    document.body.classList.add('dialog-open');
+    document.body.style.pointerEvents = 'auto';
+    
+    // Cleanup when dialog unmounts
+    return () => {
+      document.body.classList.remove('dialog-open');
+      document.body.style.pointerEvents = 'auto';
+    };
+  }, []);
+  
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -48,6 +61,26 @@ const DialogContent = React.forwardRef<
           className
         )}
         aria-describedby={props['aria-describedby'] || 'dialog-description'}
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          document.body.style.pointerEvents = 'auto';
+          if (props.onCloseAutoFocus) {
+            props.onCloseAutoFocus(e);
+          }
+        }}
+        onEscapeKeyDown={(e) => {
+          // Ensure pointer events are restored
+          document.body.style.pointerEvents = 'auto';
+          if (props.onEscapeKeyDown) {
+            props.onEscapeKeyDown(e);
+          }
+        }}
+        onPointerDownOutside={(e) => {
+          // Ensure event propagation works correctly
+          if (props.onPointerDownOutside) {
+            props.onPointerDownOutside(e);
+          }
+        }}
         {...props}
       >
         {children}

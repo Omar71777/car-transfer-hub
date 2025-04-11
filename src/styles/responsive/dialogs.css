@@ -76,3 +76,8 @@
 [data-radix-dropdown-menu-content] [role="menuitem"]:hover {
   background-color: var(--accent);
 }
+
+/* Prevent body from losing pointer events when dialogs or print windows are open */
+body.dialog-open {
+  pointer-events: auto !important;
+}

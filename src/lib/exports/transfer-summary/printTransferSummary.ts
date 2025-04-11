@@ -68,7 +68,7 @@ export function printTransferSummary(transfer: Transfer) {
     totalPrice
   );
 
-  // Generate the HTML content
+  // Generate the HTML content - ensure styles don't leak to main window
   printWindow.document.write(`
     <html>
       <head>
@@ -93,6 +93,12 @@ export function printTransferSummary(transfer: Transfer) {
             Impreso el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}
           </div>
         </div>
+        <script>
+          // Handle cleanup when window closes
+          window.addEventListener('beforeunload', function() {
+            // Nothing needed here as we're in a separate window
+          });
+        </script>
       </body>
     </html>
   `);

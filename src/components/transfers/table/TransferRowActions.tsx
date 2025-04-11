@@ -33,13 +33,24 @@ export function TransferRowActions({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 focus-visible:ring-0 relative z-10"
+            className="h-8 w-8 focus-visible:ring-0 relative"
+            onClick={(e) => {
+              // Ensure the event doesn't bubble up to parent elements
+              e.stopPropagation();
+            }}
           >
             <MoreVertical className="h-4 w-4" />
             <span className="sr-only">Opciones</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="bg-background border border-border rounded-md shadow-md z-[999]">
+        <DropdownMenuContent 
+          align="end" 
+          className="bg-background border border-border rounded-md shadow-md"
+          style={{ zIndex: 999, position: 'relative' }}
+          onCloseAutoFocus={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DropdownMenuItem onClick={onViewSummary} className="cursor-pointer">
             <FileText className="h-4 w-4 mr-2" />
             Ver resumen
