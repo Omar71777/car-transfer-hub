@@ -269,9 +269,9 @@ export function printTransferSummary(transfer: Transfer) {
           <div class="card">
             <h2>Detalles de Precios</h2>
             <div>
-              ${values.serviceType === 'dispo' ? `
+              ${transfer.serviceType === 'dispo' ? `
               <div class="flex-between">
-                <div>Precio base (${values.price}€ × ${values.hours} horas)</div>
+                <div>Precio base (${transfer.price}€ × ${transfer.hours} horas)</div>
                 <div>${formatCurrency(basePrice)}</div>
               </div>
               ` : `
@@ -362,18 +362,9 @@ export function printTransferSummary(transfer: Transfer) {
             Impreso el ${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}
           </div>
         </div>
-        <script>
-          // Fix issue with values variable
-          const values = {
-            serviceType: '${transfer.serviceType}',
-            price: ${transfer.price},
-            hours: ${transfer.hours || 1}
-          };
-        </script>
       </body>
     </html>
   `);
   
   printWindow.document.close();
 }
-
