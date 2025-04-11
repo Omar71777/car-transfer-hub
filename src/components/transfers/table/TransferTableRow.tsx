@@ -2,17 +2,16 @@
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Transfer } from '@/types';
-import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { formatCurrency } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { truncate } from '@/lib/utils';
+import { Transfer } from '@/types';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
-import { PriceDisplay } from './PriceDisplay';
 import { PaymentStatusCell } from './PaymentStatusCell';
+import { PriceDisplay } from './PriceDisplay';
 import { TransferRowActions } from './TransferRowActions';
 import { TruncatedCell } from './TruncatedCell';
+import { cn } from '@/lib/utils';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -20,8 +19,8 @@ interface TransferTableRowProps {
   onDelete: (id: string) => void;
   onAddExpense: (transferId: string) => void;
   onViewSummary: (transferId: string) => void;
-  selected: boolean;
-  onSelectRow: (id: string, selected: boolean) => void;
+  selected?: boolean;
+  onSelectRow?: (id: string, selected: boolean) => void;
 }
 
 export function TransferTableRow({
@@ -30,83 +29,65 @@ export function TransferTableRow({
   onDelete,
   onAddExpense,
   onViewSummary,
-  selected,
+  selected = false,
   onSelectRow
 }: TransferTableRowProps) {
-  const isMobile = useIsMobile();
+  const handleSelect = (checked: boolean) => {
+    if (onSelectRow) {
+      onSelectRow(transfer.id, checked);
+    }
+  };
   
-  // Check if transfer has all required properties
-  if (!transfer || !transfer.id) {
-    console.error('Invalid transfer data:', transfer);
-    return null;
-  }
-
-  // Get price including extras and discounts
-  const totalPrice = calculateTotalPrice(transfer);
-  
-  // Calculate commission amount based on the correct formula for each service type
-  const commissionAmount = calculateCommissionAmount(transfer);
-  
-  // Calculate total after commission
-  const totalAfterCommission = totalPrice - commissionAmount;
-  
-  const formattedCommission = `${transfer.commission}% (${formatCurrency(commissionAmount)})`;
-
-  // Format date to show only day and month abbreviation (e.g., "15 mar")
+  // Date formatting to show only day and month abbreviation
   const formattedDate = format(new Date(transfer.date), 'dd MMM', { locale: es });
-
-  // Get collaborator name, use "Propio" if missing
-  const collaboratorName = transfer.collaborator && transfer.collaborator.trim() !== '' 
-    ? transfer.collaborator 
-    : 'Propio';
-
+  
   // Determine row background color based on service type
-  const rowBgClass = transfer.serviceType === 'dispo' 
-    ? 'bg-purple-50 hover:bg-purple-100' 
-    : 'bg-pink-50 hover:bg-pink-100';
-
+  const rowClass = cn(
+    transfer.service_type === 'dispo' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-pink-50 hover:bg-pink-100',
+    selected && 'bg-primary/10'
+  );
+  
+  // Use "Propio" if no collaborator is assigned
+  const collaboratorName = transfer.collaborator_name || "Propio";
+  
   return (
-    <TableRow 
-      className={selected ? 'bg-accent/20' : rowBgClass}
-    >
-      <TableCell className="px-1">
-        <Checkbox 
-          checked={selected} 
-          onCheckedChange={(checked) => onSelectRow(transfer.id, !!checked)} 
-          aria-label="Select row"
-        />
+    <TableRow className={rowClass}>
+      <TableCell className="p-2">
+        {onSelectRow && (
+          <Checkbox 
+            checked={selected} 
+            onCheckedChange={handleSelect}
+            aria-label="Select row"
+          />
+        )}
       </TableCell>
-      <TableCell className="text-xs truncate-cell">{formattedDate}</TableCell>
+      <TableCell className="font-medium">{formattedDate}</TableCell>
+      <TableCell>{format(new Date(transfer.time), 'HH:mm')}</TableCell>
       <TableCell>
-        <ServiceTypeBadge serviceType={transfer.serviceType} />
+        <ServiceTypeBadge serviceType={transfer.service_type} />
       </TableCell>
-      <TableCell className="text-right">
-        <PriceDisplay 
-          price={totalPrice} 
-          discountType={transfer.discountType} 
-          discountValue={transfer.discountValue} 
-        />
+      <TableCell>
+        <TruncatedCell value={transfer.pickup_location} maxWidth="max-w-[150px]" />
       </TableCell>
-      {!isMobile && (
-        <TableCell>
-          <TruncatedCell text={transfer.client?.name} />
-        </TableCell>
-      )}
-      {!isMobile && (
-        <TableCell>
-          <TruncatedCell text={collaboratorName} />
-        </TableCell>
-      )}
-      {!isMobile && <TableCell className="text-right whitespace-nowrap text-xs">{formattedCommission}</TableCell>}
-      {!isMobile && <TableCell className="text-right whitespace-nowrap text-xs">{formatCurrency(totalAfterCommission)}</TableCell>}
-      <TableCell className="text-center p-1">
-        <PaymentStatusCell paymentStatus={transfer.paymentStatus} />
+      <TableCell>
+        <TruncatedCell value={transfer.dropoff_location} maxWidth="max-w-[150px]" />
       </TableCell>
-      <TableCell className="py-0 px-1 table-actions">
-        <TransferRowActions
-          transferId={transfer.id}
-          isMobile={isMobile}
-          onEdit={() => onEdit(transfer)}
+      <TableCell>
+        <TruncatedCell value={transfer.client_name} maxWidth="max-w-[100px]" />
+      </TableCell>
+      <TableCell>
+        <TruncatedCell value={collaboratorName} maxWidth="max-w-[100px]" />
+      </TableCell>
+      <TableCell>
+        <PriceDisplay amount={transfer.price} />
+      </TableCell>
+      <TableCell>
+        <PaymentStatusCell paymentStatus={transfer.payment_status || 'pending'} />
+      </TableCell>
+      <TableCell>
+        <TransferRowActions 
+          transferId={transfer.id} 
+          onEdit={() => onEdit(transfer)} 
           onDelete={() => onDelete(transfer.id)}
           onAddExpense={() => onAddExpense(transfer.id)}
           onViewSummary={() => onViewSummary(transfer.id)}

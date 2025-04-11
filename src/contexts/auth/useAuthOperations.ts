@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -64,6 +65,13 @@ export function useAuthOperations() {
   const signOut = async () => {
     try {
       console.log('Signing out user...');
+      // First clear state before making the API call
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setIsAdmin(false);
+      
+      // Then call signOut
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -71,20 +79,18 @@ export function useAuthOperations() {
         throw error;
       }
       
-      // Clear state explicitly
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      setIsAdmin(false);
-      
       console.log('User signed out successfully');
       toast.success('Sesión cerrada con éxito');
       
       // Force page reload to ensure all state is cleared
-      window.location.href = '/auth';
+      setTimeout(() => {
+        window.location.href = '/auth';
+      }, 100);
+      
     } catch (error: any) {
       console.error('SignOut error full details:', error);
       toast.error(`Error al cerrar sesión: ${error.message}`);
+      throw error;
     }
   };
 

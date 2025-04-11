@@ -35,6 +35,7 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
 
   const handleSignOut = async () => {
     try {
+      console.log('Attempting to sign out...');
       // Call the provided signOut function
       await onSignOut();
       
