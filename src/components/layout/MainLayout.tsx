@@ -20,7 +20,7 @@ const MobileSidebarToggle = () => {
     <Button 
       variant="ghost" 
       size="icon" 
-      className="md:hidden fixed top-4 left-4 z-50 bg-white/80 backdrop-blur-sm shadow-soft rounded-full"
+      className="md:hidden fixed top-4 left-4 z-50 bg-foam/80 backdrop-blur-sm shadow-soft rounded-full"
       onClick={() => setOpenMobile(!openMobile)}
       aria-label="Toggle menu"
     >
@@ -36,7 +36,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <TooltipProvider>
       <SidebarProvider defaultOpen={!isMobile}>
-        <div className="min-h-screen flex w-full bg-white transition-all duration-300">
+        <div className="min-h-screen flex w-full bg-background transition-all duration-300">
           <AppSidebar />
           <main className="flex-1 p-0 md:p-5 lg:p-6 overflow-auto max-w-full transition-all pb-16 md:pb-0">
             <MobileSidebarToggle />

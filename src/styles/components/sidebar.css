@@ -6,35 +6,35 @@
   }
 
   .sidebar-menu-item:hover {
-    @apply bg-sidebar-hover text-white;
+    @apply bg-sidebar-hover text-sidebar-foreground;
   }
 
   .sidebar-menu-item.selected {
-    @apply bg-sidebar-selected text-white font-medium;
+    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
   }
   
   /* Add new styling improvements for sidebar */
   .sidebar-header {
-    @apply border-b border-white/10 pb-2;
+    @apply border-b border-sidebar-border/40 pb-2;
   }
   
   .sidebar-menu-label {
-    @apply text-white/70 text-xs font-semibold tracking-wider uppercase;
+    @apply text-sidebar-foreground/70 text-xs font-semibold tracking-wider uppercase;
   }
   
   .sidebar-menu-button {
-    @apply flex items-center gap-3 px-3 py-2 rounded-md text-white/90 
-           hover:bg-electric-light hover:text-white transition-all duration-200
-           focus:outline-none focus:ring-1 focus:ring-aqua/50;
+    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground/90 
+           hover:bg-sidebar-hover hover:text-sidebar-foreground transition-all duration-200
+           focus:outline-none focus:ring-1 focus:ring-sidebar-ring;
   }
   
   .sidebar-menu-button.active {
-    @apply bg-electric-light text-white font-medium;
+    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
   }
 
   /* New Ibiza-inspired sidebar styles */
   .sidebar-icon {
-    @apply text-white;
+    @apply text-electric;
   }
 
   .sidebar-highlight {
@@ -42,19 +42,6 @@
   }
 
   .sidebar-active-indicator {
-    @apply w-1 h-8 bg-aqua absolute left-0 rounded-r-md transition-all duration-200;
-  }
-  
-  /* Collapsed sidebar styles */
-  .sidebar-collapsed .sidebar-menu-label {
-    @apply hidden;
-  }
-  
-  .sidebar-collapsed .sidebar-menu-button {
-    @apply justify-center px-2;
-  }
-  
-  .sidebar-collapsed .sidebar-menu-button span {
-    @apply hidden;
+    @apply w-1 h-8 bg-electric absolute left-0 rounded-r-md transition-all duration-200;
   }
 }
