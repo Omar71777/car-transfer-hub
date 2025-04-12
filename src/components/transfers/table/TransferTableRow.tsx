@@ -52,7 +52,7 @@ export function TransferTableRow({
       </TableCell>
       <TableCell className="font-medium">{formatDate(transfer.date)}</TableCell>
       <TableCell>{transfer.time || '-'}</TableCell>
-      <TableCell><ServiceTypeBadge type={transfer.serviceType} /></TableCell>
+      <TableCell><ServiceTypeBadge serviceType={transfer.serviceType} /></TableCell>
       <TableCell><TruncatedCell text={transfer.origin} /></TableCell>
       <TableCell><TruncatedCell text={transfer.destination} /></TableCell>
       <TableCell className="font-medium">
@@ -63,7 +63,7 @@ export function TransferTableRow({
           </span>
         )}
       </TableCell>
-      <TableCell><PaymentStatusCell status={transfer.paymentStatus} /></TableCell>
+      <TableCell><PaymentStatusCell paymentStatus={transfer.paymentStatus} /></TableCell>
       <TableCell className="text-right">
         <TransferRowActions
           transferId={transfer.id}

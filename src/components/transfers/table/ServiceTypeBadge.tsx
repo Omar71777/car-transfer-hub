@@ -2,7 +2,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 
-interface ServiceTypeBadgeProps {
+export interface ServiceTypeBadgeProps {
   serviceType: string;
 }
 
