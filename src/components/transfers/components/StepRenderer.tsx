@@ -22,7 +22,7 @@ export function StepRenderer({ clients, collaborators }: StepRendererProps) {
     return (
       <div className="min-h-[300px] py-4">
         <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded-md">
-          <p className="text-sm">Servicio configurado como <strong>servicio propio</strong>. No se requiere colaborador.</p>
+          <p className="text-sm">Servicio configurado como <strong>servicio propio</strong>. No se requiere información de colaborador.</p>
         </div>
         <Component 
           clients={clients} 
