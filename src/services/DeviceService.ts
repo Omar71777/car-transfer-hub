@@ -1,4 +1,3 @@
-
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { Preferences } from '@capacitor/preferences';
