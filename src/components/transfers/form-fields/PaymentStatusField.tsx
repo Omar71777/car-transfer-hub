@@ -3,12 +3,11 @@ import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { useFormContext } from 'react-hook-form';
 
-interface PaymentStatusFieldProps {
-  form: any;
-}
-
-export function PaymentStatusField({ form }: PaymentStatusFieldProps) {
+export function PaymentStatusField() {
+  const form = useFormContext();
+  
   return (
     <FormField
       control={form.control}

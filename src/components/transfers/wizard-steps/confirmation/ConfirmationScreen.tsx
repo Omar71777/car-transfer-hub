@@ -8,7 +8,7 @@ import { useTransferForm } from '../../context/TransferFormContext';
 import { formatCurrency } from '@/lib/format';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-interface ConfirmationScreenProps {
+export interface ConfirmationScreenProps {
   formState: any;
   clients: any[];
 }

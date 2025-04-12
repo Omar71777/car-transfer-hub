@@ -22,9 +22,8 @@ export function ConfirmationStep({ clients, collaborators, formState }: Confirma
       <h3 className="font-medium text-lg mb-4">Confirmación</h3>
       
       <ConfirmationScreen 
-        values={values} 
+        formState={values} 
         clients={clients}
-        collaborators={collaborators}
       />
     </div>
   );
