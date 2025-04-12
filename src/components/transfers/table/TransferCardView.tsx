@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Transfer } from '@/types';
-import { MoreVertical, MapPin, Calendar, Clock, DollarSign, User } from 'lucide-react';
+import { MoreVertical, MapPin, Calendar, Clock, User } from 'lucide-react';
 import { formatCurrency } from '@/lib/format';
 import {
   DropdownMenu,
@@ -141,7 +141,6 @@ export function TransferCardView({
               
               <div className="flex justify-between items-center mt-2 pt-2 border-t border-border/50">
                 <div className="flex items-center">
-                  <DollarSign className="h-4 w-4 mr-1 text-muted-foreground" />
                   <span className="font-medium">{formatCurrency(transfer.price)}</span>
                   {transfer.serviceType === 'dispo' && transfer.hours && (
                     <span className="text-xs text-muted-foreground ml-1">
