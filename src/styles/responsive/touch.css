@@ -54,6 +54,18 @@
   [data-radix-popper-content-wrapper] [role="menuitem"] {
     @apply py-3 px-4 min-h-[44px];
   }
+  
+  /* Fix for mobile overflow issues */
+  main {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix for touch momentum scrolling */
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Improve scrollbars on touch devices */
@@ -103,5 +115,17 @@
   
   .show-on-touch {
     @apply block;
+  }
+  
+  /* Fix mobile chart layouts */
+  .recharts-wrapper {
+    touch-action: pan-y;
+  }
+  
+  /* Fix mobile scrolling */
+  .main-content-area {
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
