@@ -7,7 +7,6 @@ import { ChartsSection } from '@/components/profits/ChartsSection';
 import { ExportOptions } from '@/components/profits/ExportOptions';
 import { ProfitFilters } from '@/components/profits/ProfitFilters';
 import { useProfitsData } from '@/hooks/useProfitsData';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ProfitsPage = () => {
   const {

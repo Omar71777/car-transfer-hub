@@ -19,7 +19,7 @@ export function FormNavigationButtons({
   isSubmitting
 }: FormNavigationButtonsProps) {
   return (
-    <div className="flex items-center justify-between gap-2 mt-8">
+    <div className="flex items-center justify-between gap-2 mt-6 mb-4">
       <Button
         type="button"
         variant="outline"

@@ -91,7 +91,7 @@ const ExpensesPage = () => {
               <DialogHeader>
                 <DialogTitle>{currentExpense ? 'Editar Gasto' : 'Nuevo Gasto'}</DialogTitle>
               </DialogHeader>
-              <ScrollArea className="max-h-[80vh] overflow-auto pr-4">
+              <ScrollArea className="max-h-[70vh] overflow-auto pr-4">
                 <ExpenseForm 
                   onSubmit={currentExpense ? handleUpdateExpense : handleAddExpense} 
                   defaultValues={currentExpense ? {

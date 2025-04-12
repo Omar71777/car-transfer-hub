@@ -2,6 +2,7 @@
 import React from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { useSidebar } from '@/components/ui/sidebar/sidebar-provider';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { AppSidebar } from './AppSidebar';
 
 export function MobileSidebar() {
@@ -10,9 +11,9 @@ export function MobileSidebar() {
   return (
     <Sheet open={openMobile} onOpenChange={setOpenMobile}>
       <SheetContent side="left" className="p-0 max-w-[85%] border-r">
-        <div className="h-full overflow-y-auto">
+        <ScrollArea className="h-full">
           <AppSidebar />
-        </div>
+        </ScrollArea>
       </SheetContent>
     </Sheet>
   );

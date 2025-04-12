@@ -8,6 +8,7 @@ import { Client, CreateClientDto } from '@/types/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ClientsPage = () => {
   const { clients, loading, fetchClients, createClient, updateClient, deleteClient } = useClients();
@@ -86,11 +87,13 @@ const ClientsPage = () => {
                 {selectedClient ? 'Editar Cliente' : 'Añadir Nuevo Cliente'}
               </DialogTitle>
             </DialogHeader>
-            <ClientForm
-              initialValues={selectedClient || {}}
-              onSubmit={handleFormSubmit}
-              isEditing={!!selectedClient}
-            />
+            <ScrollArea className="max-h-[70vh]">
+              <ClientForm
+                initialValues={selectedClient || {}}
+                onSubmit={handleFormSubmit}
+                isEditing={!!selectedClient}
+              />
+            </ScrollArea>
           </DialogContent>
         </Dialog>
 

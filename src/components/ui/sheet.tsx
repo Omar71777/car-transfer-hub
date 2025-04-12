@@ -1,3 +1,4 @@
+
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
@@ -33,7 +34,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 max-h-[95vh] overflow-y-auto backdrop-blur-sm",
+  "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 overflow-auto backdrop-blur-sm",
   {
     variants: {
       side: {
@@ -61,17 +62,6 @@ const SheetContent = React.forwardRef<
 >(({ side = "right", className, children, ...props }, ref) => {
   const isMobile = useIsMobile()
   
-  React.useEffect(() => {
-    document.body.style.pointerEvents = 'auto';
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    
-    return () => {
-      document.body.style.pointerEvents = 'auto';
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
-  
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -83,28 +73,6 @@ const SheetContent = React.forwardRef<
           isMobile ? "p-4" : "",
           className
         )}
-        onCloseAutoFocus={(e) => {
-          e.preventDefault();
-          document.body.style.pointerEvents = 'auto';
-          
-          if (props.onCloseAutoFocus) {
-            props.onCloseAutoFocus(e);
-          }
-        }}
-        onEscapeKeyDown={(e) => {
-          document.body.style.pointerEvents = 'auto';
-          
-          if (props.onEscapeKeyDown) {
-            props.onEscapeKeyDown(e);
-          }
-        }}
-        onPointerDownOutside={(e) => {
-          if (props.onPointerDownOutside) {
-            props.onPointerDownOutside(e);
-          } else {
-            e.preventDefault();
-          }
-        }}
         onClick={(e) => {
           e.stopPropagation();
           
@@ -112,7 +80,6 @@ const SheetContent = React.forwardRef<
             props.onClick(e);
           }
         }}
-        forceMount
         {...props}
       >
         {children}

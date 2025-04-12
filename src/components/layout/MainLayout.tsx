@@ -9,6 +9,7 @@ import { MobileHeader } from './MobileHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { SidebarProvider } from '@/components/ui/sidebar/sidebar-provider';
 import { AppSidebar } from './AppSidebar';
+import { MobileSidebar } from './MobileSidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -19,21 +20,28 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, hideNavigation
   const isMobile = useIsMobile();
   
   return (
-    <SidebarProvider>
-      <TooltipProvider>
-        <div className="min-h-screen flex flex-col w-full bg-background">
+    <TooltipProvider>
+      <div className="flex w-full bg-background">
+        {!isMobile && <AppSidebar />}
+        
+        <div className="flex flex-col flex-grow min-h-screen w-full relative">
           {isMobile && <MobileHeader />}
-          <AppSidebar />
+          {isMobile && <MobileSidebar />}
           
-          <main className="flex-1 p-0 w-full h-screen overflow-auto pb-20">
-            <div className="container mx-auto pt-2 pb-20 px-2 animate-fade-in">
+          <main className="flex-grow overflow-auto pb-16">
+            <div className="container mx-auto pt-2 pb-8 px-2 animate-fade-in">
               <OfflineStatus className="mb-4" />
               {children}
             </div>
-            {!hideNavigation && isMobile && <MobileNavigation />}
           </main>
+          
+          {!hideNavigation && isMobile && (
+            <div className="sticky bottom-0 left-0 right-0 z-40">
+              <MobileNavigation />
+            </div>
+          )}
         </div>
-      </TooltipProvider>
-    </SidebarProvider>
+      </div>
+    </TooltipProvider>
   );
 }

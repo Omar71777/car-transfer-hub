@@ -15,7 +15,14 @@ import BillingPage from './pages/billing/BillingPage';
 import AuthPage from './pages/auth/AuthPage';
 import NotFound from './pages/NotFound';
 import { DeviceService } from '@/services/DeviceService';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar/sidebar-provider';
+import { usePointerEventsCleanup } from './pages/transfers/hooks/usePointerEventsCleanup';
+
+// Global component to handle pointer-events cleanup
+function PointerEventsCleanup() {
+  usePointerEventsCleanup();
+  return null;
+}
 
 function App() {
   // Initialize device-specific features when the app starts
@@ -42,6 +49,7 @@ function App() {
     <React.StrictMode>
       <Providers>
         <SidebarProvider>
+          <PointerEventsCleanup />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />

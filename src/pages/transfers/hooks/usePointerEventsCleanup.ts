@@ -6,16 +6,18 @@ export function usePointerEventsCleanup() {
   useEffect(() => {
     // Ensure pointer-events are always enabled when component mounts
     document.body.style.pointerEvents = 'auto';
+    document.body.style.overflow = '';
     
     // Create a MutationObserver to watch for style changes on body
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'style') {
           const bodyStyle = document.body.style;
-          if (bodyStyle.pointerEvents === 'none') {
-            // Fix it after a short delay to allow other code to finish
+          // Reset any problematic styles that block interactions
+          if (bodyStyle.pointerEvents === 'none' || bodyStyle.overflow === 'hidden') {
             setTimeout(() => {
               document.body.style.pointerEvents = 'auto';
+              document.body.style.overflow = '';
             }, 100);
           }
         }
@@ -29,6 +31,7 @@ export function usePointerEventsCleanup() {
     return () => {
       observer.disconnect();
       document.body.style.pointerEvents = 'auto';
+      document.body.style.overflow = '';
     };
   }, []);
 }

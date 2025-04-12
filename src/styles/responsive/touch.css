@@ -66,8 +66,22 @@
 
 /* Better scrolling for touch */
 .touch-scroll {
-  @apply overflow-auto overscroll-contain;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch !important;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+/* Fix iOS momentum scrolling */
+html, body {
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: none;
+}
+
+main {
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain;
 }
 
 /* Ensure large enough touch areas for inputs */
