@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -27,7 +28,24 @@ export const SidebarProvider = React.forwardRef<
     ref
   ) => {
     const isMobile = useIsMobile()
-    const [openMobile, setOpenMobile] = React.useState(false)
+    
+    // Store mobile sidebar state in a stable ref to prevent unnecessary re-renders
+    const mobileStateRef = React.useRef(false);
+    const [openMobile, _setOpenMobile] = React.useState(false)
+    
+    // Stable function for updating mobile sidebar state
+    const setOpenMobile = React.useCallback((value: boolean) => {
+      if (typeof value === "function") {
+        _setOpenMobile((current) => {
+          const newValue = value(current);
+          mobileStateRef.current = newValue;
+          return newValue;
+        });
+      } else {
+        mobileStateRef.current = value;
+        _setOpenMobile(value);
+      }
+    }, []);
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.

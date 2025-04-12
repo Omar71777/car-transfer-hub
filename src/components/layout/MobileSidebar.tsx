@@ -17,23 +17,37 @@ export function MobileSidebar() {
   useEffect(() => {
     const currentPath = location.pathname;
     
-    // Only close if the path changed and sidebar is open
     if (prevPathRef.current !== currentPath && openMobile) {
-      // Add a small delay to prevent closing immediately
+      // Close the sidebar with a slight delay to allow for transition
       const timer = setTimeout(() => {
         setOpenMobile(false);
-      }, 100);
+      }, 150);
       
       return () => clearTimeout(timer);
     }
     
     // Update previous path reference
     prevPathRef.current = currentPath;
-  }, [location.pathname, setOpenMobile]);
+  }, [location.pathname, setOpenMobile, openMobile]);
   
   return (
-    <Sheet open={openMobile} onOpenChange={setOpenMobile}>
-      <SheetContent side="left" className="p-0 max-w-[85%] border-r">
+    <Sheet 
+      open={openMobile} 
+      onOpenChange={(open) => {
+        // Only update if we're actually changing the state
+        if (open !== openMobile) {
+          setOpenMobile(open);
+        }
+      }}
+    >
+      <SheetContent 
+        side="left" 
+        className="p-0 max-w-[85%] border-r"
+        onClick={(e) => {
+          // Prevent event bubbling that might cause state conflicts
+          e.stopPropagation();
+        }}
+      >
         <ScrollArea className="h-full">
           <AppSidebar />
         </ScrollArea>

@@ -2,14 +2,10 @@
 import React from 'react';
 import { MobileNavigation } from './MobileNavigation';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { OfflineStatus } from '@/components/ui/offline-status';
 import { MobileHeader } from './MobileHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { SidebarProvider } from '@/components/ui/sidebar/sidebar-provider';
 import { AppSidebar } from './AppSidebar';
-import { MobileSidebar } from './MobileSidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -26,7 +22,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, hideNavigation
         
         <div className="flex flex-col flex-grow min-h-screen w-full relative">
           {isMobile && <MobileHeader />}
-          {isMobile && <MobileSidebar />}
           
           <main className="flex-grow overflow-auto pb-16">
             <div className="container mx-auto pt-2 pb-8 px-2 animate-fade-in">

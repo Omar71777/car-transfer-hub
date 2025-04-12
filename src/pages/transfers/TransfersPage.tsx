@@ -8,7 +8,6 @@ import { TransferSummaryDialogContainer } from './components/TransferSummaryDial
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MobileSidebar } from '@/components/layout/MobileSidebar';
 
 const TransfersPage = () => {
   const navigate = useNavigate();
@@ -61,8 +60,6 @@ const TransfersPage = () => {
   
   return (
     <MainLayout>
-      <MobileSidebar />
-      
       <TransfersPageContent
         transfers={transfers}
         expenses={expenses}

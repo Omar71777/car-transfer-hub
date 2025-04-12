@@ -17,6 +17,8 @@ import NotFound from './pages/NotFound';
 import { DeviceService } from '@/services/DeviceService';
 import { SidebarProvider } from '@/components/ui/sidebar/sidebar-provider';
 import { usePointerEventsCleanup } from './pages/transfers/hooks/usePointerEventsCleanup';
+import { MobileSidebar } from '@/components/layout/MobileSidebar';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Global component to handle pointer-events cleanup
 function PointerEventsCleanup() {
@@ -25,6 +27,8 @@ function PointerEventsCleanup() {
 }
 
 function App() {
+  const isMobile = useIsMobile();
+  
   // Initialize device-specific features when the app starts
   useEffect(() => {
     if (DeviceService.isNative()) {
@@ -51,6 +55,8 @@ function App() {
         <SidebarProvider>
           <PointerEventsCleanup />
           <BrowserRouter>
+            {/* Render MobileSidebar once for the entire app */}
+            {isMobile && <MobileSidebar />}
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/transfers" element={<TransfersPage />} />
