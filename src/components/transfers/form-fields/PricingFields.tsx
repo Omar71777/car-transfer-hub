@@ -1,23 +1,37 @@
 
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { BanknoteIcon, Percent } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useFormContext } from 'react-hook-form';
 
-export interface PricingFieldsProps {
+interface PricingFieldsProps {
   serviceType: string;
 }
 
 export function PricingFields({ serviceType }: PricingFieldsProps) {
   const { control, watch, setValue } = useFormContext();
+  const price = watch('price');
+  const hours = watch('hours');
   const discountType = watch('discountType');
-
+  
+  // Calculate total price for dispo services
+  const calculateTotalPrice = () => {
+    if (serviceType !== 'dispo' || !hours || !price) return price;
+    return (Number(price) * Number(hours)).toFixed(2);
+  };
+  
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <BanknoteIcon className="mx-auto h-12 w-12 text-primary opacity-80 mb-3" />
+        <h2 className="text-xl font-semibold">Información de precio</h2>
+        <p className="text-muted-foreground mt-1">
+          Indica el precio {serviceType === 'dispo' ? 'por hora' : 'del transfer'} y los descuentos aplicados
+        </p>
+      </div>
+
       <FormField
         control={control}
         name="price"
@@ -39,14 +53,14 @@ export function PricingFields({ serviceType }: PricingFieldsProps) {
         )}
       />
       
-      {serviceType === 'dispo' && (
+      {serviceType === 'dispo' && hours && price && (
         <div className="text-sm text-muted-foreground">
           <p>
-            Precio total para {watch('hours') || 0} horas: €{((Number(watch('price')) || 0) * (Number(watch('hours')) || 0)).toFixed(2)}
+            Precio total para {hours} horas: €{calculateTotalPrice()}
           </p>
         </div>
       )}
-
+      
       <div className="space-y-3">
         <FormLabel>Descuento (opcional)</FormLabel>
         <FormField
@@ -76,7 +90,7 @@ export function PricingFields({ serviceType }: PricingFieldsProps) {
           )}
         />
         
-        {discountType && discountType !== "no-discount" && (
+        {discountType && (
           <FormField
             control={control}
             name="discountValue"

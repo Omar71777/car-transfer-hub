@@ -1,64 +1,51 @@
 
 import { useState, useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { ExtraCharge } from '@/types';
 
-export function useExtraCharges(initialCharges: Partial<ExtraCharge>[] = []) {
-  // Ensure initial charges have IDs
-  const processedInitialCharges = initialCharges.map(charge => ({
-    ...charge,
-    id: charge.id || uuidv4()
-  }));
+interface ExtraCharge {
+  id?: string;
+  name: string;
+  price: string | number;
+}
+
+export function useExtraCharges(initialCharges: ExtraCharge[] = []) {
+  const [extraCharges, setExtraCharges] = useState<ExtraCharge[]>(initialCharges || []);
   
-  const [extraCharges, setExtraCharges] = useState<Partial<ExtraCharge>[]>(processedInitialCharges);
-
+  // Add a new empty extra charge
   const handleAddExtraCharge = useCallback(() => {
-    console.log('Adding new extra charge');
-    const newCharges = [...extraCharges, { id: uuidv4(), name: '', price: '' }];
+    const newCharges = [...extraCharges, { name: '', price: '' }];
     setExtraCharges(newCharges);
     return newCharges;
   }, [extraCharges]);
-
+  
+  // Remove an extra charge at specified index
   const handleRemoveExtraCharge = useCallback((index: number) => {
-    console.log('Removing extra charge at index:', index);
-    if (index < 0 || index >= extraCharges.length) {
-      console.error('Invalid index for removing extra charge:', index);
-      return extraCharges;
-    }
-    
-    const newExtraCharges = [...extraCharges];
-    newExtraCharges.splice(index, 1);
-    setExtraCharges(newExtraCharges);
-    return newExtraCharges;
+    const newCharges = extraCharges.filter((_, i) => i !== index);
+    setExtraCharges(newCharges);
+    return newCharges;
   }, [extraCharges]);
-
-  const handleExtraChargeChange = useCallback((
-    index: number, 
-    field: keyof ExtraCharge, 
-    value: any
-  ) => {
-    console.log(`Updating extra charge at index ${index}, field: ${field}, value: ${value}`);
-    if (index < 0 || index >= extraCharges.length) {
-      console.error('Invalid index for updating extra charge:', index);
-      return extraCharges;
-    }
-    
-    const newExtraCharges = [...extraCharges];
-    (newExtraCharges[index] as any)[field] = value;
-    setExtraCharges(newExtraCharges);
-    return newExtraCharges;
+  
+  // Update a field in an extra charge
+  const handleExtraChargeChange = useCallback((index: number, field: keyof ExtraCharge, value: string) => {
+    const newCharges = [...extraCharges];
+    newCharges[index] = {
+      ...newCharges[index],
+      [field]: value
+    };
+    setExtraCharges(newCharges);
+    return newCharges;
   }, [extraCharges]);
-
-  // Process extra charges for submission
+  
+  // Process extra charges for form submission
   const processExtraChargesForSubmission = useCallback(() => {
     return extraCharges
-      .filter(charge => charge.name && charge.price && charge.name.trim() !== '')
+      .filter(charge => charge.name && charge.price)
       .map(charge => ({
+        id: charge.id,
         name: charge.name,
         price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
       }));
   }, [extraCharges]);
-
+  
   return {
     extraCharges,
     setExtraCharges,

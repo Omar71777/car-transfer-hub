@@ -1,20 +1,20 @@
 
 import React from 'react';
+import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { useFormContext } from 'react-hook-form';
 
 export function PaymentStatusField() {
-  const form = useFormContext();
+  const { control } = useFormContext();
   
   return (
     <FormField
-      control={form.control}
+      control={control}
       name="paymentStatus"
       render={({ field }) => (
         <FormItem className="space-y-3">
-          <FormLabel>Estado de Pago</FormLabel>
+          <FormLabel>Estado de Pago *</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}

@@ -11,11 +11,12 @@ interface LocationStepProps {
   clients: any;
   collaborators: any;
   formState: any;
-  serviceType: string;
+  serviceType?: string;
 }
 
-export function LocationStep({ clients, collaborators, formState, serviceType }: LocationStepProps) {
+export function LocationStep({ clients, collaborators, formState, serviceType: propServiceType }: LocationStepProps) {
   const { control, watch, setValue, trigger } = useFormContext();
+  const serviceType = propServiceType || watch('serviceType');
   
   // Re-trigger validation when service type changes
   useEffect(() => {
@@ -23,7 +24,7 @@ export function LocationStep({ clients, collaborators, formState, serviceType }:
     if (serviceType === 'transfer') {
       setValue('hours', '');
     } else if (serviceType === 'dispo') {
-      setValue('destination', '');
+      setValue('destination', 'N/A');
     }
     
     // Trigger validation for the fields

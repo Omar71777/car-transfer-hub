@@ -22,10 +22,7 @@ export const useTransferFormNavigation = (
     setValue
   } = useTransferFormWithFormContext();
   
-  // Get user authentication context
   const { user } = useAuth();
-  
-  // Watch collaborator value to determine if we should show collaborator step
   const collaboratorValue = watch('collaborator');
   const serviceType = watch('serviceType');
   
@@ -40,7 +37,7 @@ export const useTransferFormNavigation = (
     }
   }, [isServicioPropio, setShowCollaboratorStep, setValue]);
   
-  // Fill in default values for destination when service type is 'dispo'
+  // Set default destination for dispo service type
   useEffect(() => {
     if (serviceType === 'dispo') {
       const destination = getValues('destination');
@@ -54,70 +51,65 @@ export const useTransferFormNavigation = (
   const getFieldsForStep = (stepId: string): string[] => {
     switch (stepId) {
       case 'client':
-        return ['clientId']; // Only require clientId, not clientName (which is optional for existing clients)
+        return ['clientId']; 
       case 'datetime':
-        return ['date']; // time is optional
+        return ['date']; 
       case 'location':
-        // For location, we need different validations based on service type
         if (serviceType === 'transfer') {
           return ['serviceType', 'origin', 'destination'];
         }
         return ['serviceType', 'origin', 'hours'];
       case 'pricing':
-        return ['price', 'paymentStatus']; // Validate both price and payment status for combined step
+        return ['price', 'paymentStatus']; 
       case 'collaborator':
-        // Commission is optional, collaborator can be 'none'
         return [];
       case 'confirmation':
-        return []; // No specific fields to validate in confirmation step
+        return []; 
       default:
         return [];
     }
   };
 
-  // Find the next step index, taking into account isServicioPropio
+  // Enhanced navigation to handle servicio propio flow
   const getNextStepIndex = useCallback(() => {
     if (isServicioPropio && activeSteps[currentStep]?.id === 'pricing') {
-      // Skip the collaborator step, go straight to confirmation
+      // Skip collaborator step, go straight to confirmation
       return activeSteps.findIndex(step => step.id === 'confirmation');
     }
     return currentStep + 1;
   }, [currentStep, activeSteps, isServicioPropio]);
 
-  // Handle next step
+  // Improved handleNext with better validation and error handling
   const handleNext = useCallback(async () => {
-    console.log('Attempting to move to next step from:', activeSteps[currentStep]?.id);
+    console.log('Moving to next step from:', activeSteps[currentStep]?.id);
     
     // If this is the last step, submit the form
     if (currentStep === activeSteps.length - 1) {
-      console.log('Final step reached - submitting form');
+      console.log('Final step - submitting form');
       
-      // Validate the authentication state
+      // Validate user authentication
       if (!user) {
-        console.error('User not authenticated during form submission');
+        console.error('Authentication required');
         toast.error('Debe iniciar sesión para crear un transfer');
         return;
       }
       
-      // Create a submit handler that processes the form data
+      // Create a submit handler with proper data validation
       const submitHandler = (data: any) => {
         try {
-          console.log('Form data before processing:', data);
+          console.log('Processing form data:', data);
           
-          // Ensure required fields for specific service types
+          // Validate service type specific fields
           if (data.serviceType === 'dispo') {
-            // For dispositions, we need hours and origin
             if (!data.hours || data.hours.trim() === '') {
               toast.error('Las horas son requeridas para disposiciones');
               return;
             }
             
-            // Set default destination for dispo if empty
             if (!data.destination || data.destination.trim() === '') {
               data.destination = 'N/A';
             }
           } else if (data.serviceType === 'transfer') {
-            // For transfers, we need origin and destination
             if (!data.origin || data.origin.trim() === '') {
               toast.error('El origen es requerido para transfers');
               return;
@@ -128,7 +120,7 @@ export const useTransferFormNavigation = (
             }
           }
           
-          // Process the form data
+          // Process form data
           const processedValues = {
             ...data,
             price: Number(data.price),
@@ -142,39 +134,36 @@ export const useTransferFormNavigation = (
             }))
           };
           
-          console.log('Submitting form with processed data:', processedValues);
+          console.log('Submitting with processed data:', processedValues);
           onSubmit(processedValues);
         } catch (error: any) {
-          console.error('Error during form submission:', error);
+          console.error('Form submission error:', error);
           toast.error(`Error al procesar el formulario: ${error.message || 'Error desconocido'}`);
         }
       };
       
-      // Execute the submit handler with the form data
       handleSubmit(submitHandler)();
       return;
     }
 
-    // Validate current step fields before proceeding
+    // Validate current step fields
     const stepFields = getFieldsForStep(activeSteps[currentStep]?.id);
-    console.log('Validating fields for current step:', stepFields);
+    console.log('Validating fields:', stepFields);
     
-    // If there are no fields to validate for this step, or validation passes, proceed
     if (stepFields.length === 0 || await trigger(stepFields as any)) {
       const nextStepIndex = getNextStepIndex();
       setCurrentStep(nextStepIndex);
       window.scrollTo(0, 0);
     } else {
       console.log('Validation errors:', errors);
-      toast.error('Por favor complete todos los campos requeridos antes de continuar');
+      toast.error('Por favor complete todos los campos requeridos');
     }
-  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, errors, getNextStepIndex, user, setValue, serviceType, getValues, isServicioPropio]);
+  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, errors, getNextStepIndex, user, serviceType, getValues, isServicioPropio]);
 
-  // Handle previous step
+  // Enhanced previous step handler
   const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
-      // If we're in the confirmation step and servicio propio is enabled,
-      // we need to go back to pricing, skipping collaborator
+      // Handle special case for servicio propio
       if (isServicioPropio && activeSteps[currentStep]?.id === 'confirmation') {
         const pricingIndex = activeSteps.findIndex(step => step.id === 'pricing');
         setCurrentStep(pricingIndex);

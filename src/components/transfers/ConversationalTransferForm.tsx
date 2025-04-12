@@ -14,6 +14,7 @@ import { StepRenderer } from './components/StepRenderer';
 import { FormNavigationButtons } from './components/FormNavigationButtons';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
+import { useTransferFormNavigation } from './hooks/useTransferFormNavigation';
 
 // Import steps
 import { BasicInfoStep } from './wizard-steps/BasicInfoStep';
@@ -97,7 +98,8 @@ export function ConversationalTransferForm({
   
   const form = useForm<TransferFormValues>({
     resolver: zodResolver(transferSchema),
-    defaultValues: getDefaultValues()
+    defaultValues: getDefaultValues(),
+    mode: 'onChange' // Enable onChange validation
   });
   
   // Update client ID when it changes externally
@@ -107,22 +109,12 @@ export function ConversationalTransferForm({
     }
   }, [initialClientId, form]);
   
-  // Watch collaborator field to update steps
-  useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === 'collaborator') {
-        const collaborator = value.collaborator as string;
-        setIsServicioPropio(collaborator === 'servicio propio');
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
-  
   // Define available steps
   const allSteps = [
-    { id: 'basic-info', title: 'Información básica', component: BasicInfoStep },
+    { id: 'client', title: 'Cliente', component: BasicInfoStep },
+    { id: 'datetime', title: 'Fecha y Hora', component: DateTimeStep },
+    { id: 'location', title: 'Ubicación', component: LocationStep },
     { id: 'pricing', title: 'Precio', component: PricingStep },
-    { id: 'extra-charges', title: 'Cargos extra', component: ExtraChargesStep },
     { id: 'collaborator', title: 'Colaborador', component: CollaboratorStep },
     { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep }
   ];
@@ -139,49 +131,9 @@ export function ConversationalTransferForm({
     return allSteps;
   }, [isServicioPropio, showCollaboratorStep]);
   
-  const handleNext = async () => {
-    const currentStepId = activeSteps[currentStep]?.id;
-    
-    if (currentStepId === 'basic-info') {
-      const basicInfoFields = ['date', 'serviceType', 'origin', 'destination', 'hours', 'clientId'];
-      const isValid = await form.trigger(basicInfoFields as any);
-      
-      if (!isValid) {
-        toast.error('Por favor, complete todos los campos obligatorios');
-        return;
-      }
-    } else if (currentStepId === 'pricing') {
-      const pricingFields = ['price', 'discountValue', 'paymentStatus'];
-      const isValid = await form.trigger(pricingFields as any);
-      
-      if (!isValid) {
-        toast.error('Por favor, complete todos los campos obligatorios');
-        return;
-      }
-    } else if (currentStepId === 'collaborator') {
-      const collaboratorFields = ['collaborator', 'commission', 'commissionType'];
-      const isValid = await form.trigger(collaboratorFields as any);
-      
-      if (!isValid) {
-        toast.error('Por favor, complete todos los campos obligatorios');
-        return;
-      }
-    } else if (currentStepId === 'confirmation') {
-      form.handleSubmit(onSubmit)();
-      return;
-    }
-    
-    if (currentStep < activeSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-  
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-  
+  // Use our improved navigation hook
+  const { handleNext, handlePrevious } = useTransferFormNavigation(onSubmit);
+
   const isLastStep = currentStep === activeSteps.length - 1;
   const isFirstStep = currentStep === 0;
   
