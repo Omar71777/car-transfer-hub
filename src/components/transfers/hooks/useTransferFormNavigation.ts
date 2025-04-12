@@ -16,6 +16,8 @@ export const useTransferFormNavigation = (
     handleSubmit,
     formState: { errors, isValid },
     setShowCollaboratorStep,
+    isServicioPropio,
+    setIsServicioPropio,
     watch,
     setValue
   } = useTransferFormWithFormContext();
@@ -27,11 +29,16 @@ export const useTransferFormNavigation = (
   const collaboratorValue = watch('collaborator');
   const serviceType = watch('serviceType');
   
-  // Update showCollaboratorStep - ALWAYS show the collaborator step now
+  // Update showCollaboratorStep based on servicio propio status
   useEffect(() => {
-    // Always show collaborator step regardless of value
-    setShowCollaboratorStep(true);
-  }, [collaboratorValue, setShowCollaboratorStep]);
+    if (isServicioPropio) {
+      setShowCollaboratorStep(false);
+      // Set the collaborator value to "servicio propio"
+      setValue('collaborator', 'servicio propio', { shouldValidate: false });
+    } else {
+      setShowCollaboratorStep(true);
+    }
+  }, [isServicioPropio, setShowCollaboratorStep, setValue]);
   
   // Fill in default values for destination when service type is 'dispo'
   useEffect(() => {
@@ -68,10 +75,14 @@ export const useTransferFormNavigation = (
     }
   };
 
-  // Find the next step index, never skip collaborator
+  // Find the next step index, taking into account isServicioPropio
   const getNextStepIndex = useCallback(() => {
+    if (isServicioPropio && activeSteps[currentStep]?.id === 'pricing') {
+      // Skip the collaborator step, go straight to confirmation
+      return activeSteps.findIndex(step => step.id === 'confirmation');
+    }
     return currentStep + 1;
-  }, [currentStep]);
+  }, [currentStep, activeSteps, isServicioPropio]);
 
   // Handle next step
   const handleNext = useCallback(async () => {
@@ -157,15 +168,22 @@ export const useTransferFormNavigation = (
       console.log('Validation errors:', errors);
       toast.error('Por favor complete todos los campos requeridos antes de continuar');
     }
-  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, errors, getNextStepIndex, user, setValue, serviceType, getValues]);
+  }, [currentStep, activeSteps, handleSubmit, onSubmit, trigger, errors, getNextStepIndex, user, setValue, serviceType, getValues, isServicioPropio]);
 
   // Handle previous step
   const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      // If we're in the confirmation step and servicio propio is enabled,
+      // we need to go back to pricing, skipping collaborator
+      if (isServicioPropio && activeSteps[currentStep]?.id === 'confirmation') {
+        const pricingIndex = activeSteps.findIndex(step => step.id === 'pricing');
+        setCurrentStep(pricingIndex);
+      } else {
+        setCurrentStep(currentStep - 1);
+      }
       window.scrollTo(0, 0);
     }
-  }, [currentStep, setCurrentStep]);
+  }, [currentStep, setCurrentStep, isServicioPropio, activeSteps]);
 
   return {
     handleNext,

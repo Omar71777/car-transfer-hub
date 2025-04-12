@@ -35,6 +35,7 @@ export function ConversationalTransferForm({ onSubmit, initialClientId = null }:
   ];
 
   const [showCollaboratorStep, setShowCollaboratorStep] = useState(true);
+  const [isServicioPropio, setIsServicioPropio] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   
   const {
@@ -84,8 +85,10 @@ export function ConversationalTransferForm({ onSubmit, initialClientId = null }:
     }
   }, [initialClientId, methods]);
 
-  // Always include the collaborator step
-  const activeSteps = steps;
+  // Always include the collaborator step unless it's a servicio propio
+  const activeSteps = isServicioPropio ? 
+    steps.filter(step => step.id !== 'collaborator') : 
+    steps;
 
   return (
     <TransferFormProvider 
@@ -95,6 +98,8 @@ export function ConversationalTransferForm({ onSubmit, initialClientId = null }:
       activeSteps={activeSteps}
       showCollaboratorStep={showCollaboratorStep}
       setShowCollaboratorStep={setShowCollaboratorStep}
+      isServicioPropio={isServicioPropio}
+      setIsServicioPropio={setIsServicioPropio}
     >
       <Card className="glass-card w-full max-w-2xl mx-auto">
         <CardContent className="p-4 md:p-6">

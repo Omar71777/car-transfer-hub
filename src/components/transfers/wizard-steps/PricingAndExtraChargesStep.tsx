@@ -9,6 +9,7 @@ import { BanknoteIcon, Percent } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExtraChargesForm } from '../form-fields/ExtraChargesForm';
 import { useExtraCharges } from '../hooks/useExtraCharges';
+import { useTransferForm } from '../context/TransferFormContext';
 
 interface PricingAndExtraChargesStepProps {
   clients: any;
@@ -18,6 +19,7 @@ interface PricingAndExtraChargesStepProps {
 
 export function PricingAndExtraChargesStep({ clients, collaborators, formState }: PricingAndExtraChargesStepProps) {
   const { control, watch, setValue } = useFormContext();
+  const { setIsServicioPropio } = useTransferForm();
   const discountType = watch('discountType');
   const extraCharges = watch('extraCharges') || [];
   const serviceType = watch('serviceType');
@@ -59,6 +61,19 @@ export function PricingAndExtraChargesStep({ clients, collaborators, formState }
   const totalExtraCharges = extraCharges.reduce((sum: number, charge: any) => {
     return sum + (Number(charge.price) || 0);
   }, 0);
+
+  // Handle the selection of servicio propio
+  const handleCollaboratorTypeChange = (value: string) => {
+    if (value === 'no') {
+      // It's a servicio propio
+      setIsServicioPropio(true);
+      setValue('collaborator', 'servicio propio');
+    } else {
+      // It's a collaborator service
+      setIsServicioPropio(false);
+      setValue('collaborator', '');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -194,25 +209,20 @@ export function PricingAndExtraChargesStep({ clients, collaborators, formState }
           name="collaborator"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel>¿Es un servicio de colaborador?</FormLabel>
+              <FormLabel>Tipo de servicio</FormLabel>
               <FormControl>
                 <RadioGroup
-                  onValueChange={(value) => {
-                    // When user selects "No", set collaborator to 'none'
-                    // When user selects "Yes", set it to empty string so they can select a collaborator
-                    field.onChange(value === 'no' ? 'none' : '');
-                    console.log('Collaborator selection:', value, 'Field value will be:', value === 'no' ? 'none' : '');
-                  }}
-                  value={field.value === 'none' ? 'no' : 'yes'}
+                  onValueChange={handleCollaboratorTypeChange}
+                  value={field.value === 'servicio propio' ? 'no' : 'yes'}
                   className="flex flex-col space-y-1"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="has-collaborator" />
-                    <Label htmlFor="has-collaborator">Sí, lo hemos recibido de un colaborador</Label>
+                    <RadioGroupItem value="no" id="servicio-propio" />
+                    <Label htmlFor="servicio-propio">Servicio propio</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="no-collaborator" />
-                    <Label htmlFor="no-collaborator">No, es un servicio propio</Label>
+                    <RadioGroupItem value="yes" id="servicio-collaborador" />
+                    <Label htmlFor="servicio-collaborador">Servicio de colaborador</Label>
                   </div>
                 </RadioGroup>
               </FormControl>
