@@ -10,12 +10,26 @@ export function MobileSidebar() {
   const { openMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
   
-  // Close sidebar when route changes
+  // Track previous pathname to only close sidebar on actual navigation
+  const prevPathRef = React.useRef(location.pathname);
+  
+  // Close sidebar only when route actually changes (not on initial render or sidebar state changes)
   useEffect(() => {
-    if (openMobile) {
-      setOpenMobile(false);
+    const currentPath = location.pathname;
+    
+    // Only close if the path changed and sidebar is open
+    if (prevPathRef.current !== currentPath && openMobile) {
+      // Add a small delay to prevent closing immediately
+      const timer = setTimeout(() => {
+        setOpenMobile(false);
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [location.pathname, setOpenMobile, openMobile]);
+    
+    // Update previous path reference
+    prevPathRef.current = currentPath;
+  }, [location.pathname, setOpenMobile]);
   
   return (
     <Sheet open={openMobile} onOpenChange={setOpenMobile}>
