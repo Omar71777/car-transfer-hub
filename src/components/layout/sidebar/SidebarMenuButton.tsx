@@ -2,7 +2,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
 
 interface SidebarMenuButtonProps {
   label: string;
@@ -20,19 +19,28 @@ export function SidebarMenuButton({ label, icon: Icon, url, end }: SidebarMenuBu
         cn(
           'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors relative overflow-hidden group',
           isActive
-            ? 'bg-aqua/30 text-white font-medium shadow-sm' 
-            : 'text-white/80 hover:bg-white/10 hover:text-white'
+            ? 'bg-sidebar-selected text-white font-medium shadow-sm' 
+            : 'text-sidebar-foreground hover:bg-sidebar-hover hover:text-white'
         )
       }
     >
       {({ isActive }) => (
         <>
-          {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4/5 bg-aqua rounded-r" />}
-          <Icon className={cn("h-4 w-4", isActive ? "text-aqua" : "text-aqua/70")} />
-          <span>{label}</span>
           {isActive && (
-            <div className="absolute inset-0 bg-gradient-to-r from-aqua/0 via-aqua/10 to-aqua/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-shine"></div>
+            <div 
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4/5 bg-1EAEDB rounded-r"
+              style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}
+            />
           )}
+          <Icon 
+            className={cn(
+              "h-4 w-4", 
+              isActive 
+                ? "text-white" 
+                : "text-sidebar-foreground/70 group-hover:text-white"
+            )} 
+          />
+          <span>{label}</span>
         </>
       )}
     </NavLink>
