@@ -9,12 +9,13 @@ import { toast } from 'sonner';
 import { Transfer } from '@/types';
 import { useClients } from '@/hooks/useClients';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useExtraCharges } from './hooks/useExtraCharges';
 import { BasicInfoTab } from './form-tabs/BasicInfoTab';
 import { PricingTab } from './form-tabs/PricingTab';
 import { ExtraChargesTab } from './form-tabs/ExtraChargesTab';
 import { Car, Clock } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
@@ -163,7 +164,7 @@ export function TransferForm({
     <Card className="glass-card w-full max-full mx-auto">
       <CardContent className="pt-4 px-3 md:px-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 md:space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
               <TabsList className="w-full grid grid-cols-2 mb-4">
                 <TabsTrigger value="transfer" className="flex items-center">
@@ -188,38 +189,40 @@ export function TransferForm({
                     : 'Complete los detalles del servicio por horas'}
                 </p>
               </div>
-              
-              <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="w-full grid grid-cols-3 mb-4">
-                  <TabsTrigger value="basic">Información Básica</TabsTrigger>
-                  <TabsTrigger value="pricing">Precio</TabsTrigger>
-                  <TabsTrigger value="extras">Cargos Extra</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="basic" className="space-y-4">
-                  <BasicInfoTab 
-                    form={form} 
-                    serviceType={activeTab} 
-                    clients={clients}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="pricing" className="space-y-4">
-                  <PricingTab form={form} serviceType={activeTab} />
-                </TabsContent>
-                
-                <TabsContent value="extras">
-                  <ExtraChargesTab 
-                    extraCharges={extraCharges}
-                    onAddCharge={handleAddExtraCharge}
-                    onRemoveCharge={handleRemoveExtraCharge}
-                    onChangeCharge={handleExtraChargeChange}
-                  />
-                </TabsContent>
-              </Tabs>
             </Tabs>
+            
+            {/* Section 1: Basic Information */}
+            <div>
+              <h3 className="text-base font-semibold mb-4">Información Básica</h3>
+              <BasicInfoTab 
+                form={form} 
+                serviceType={activeTab} 
+                clients={clients}
+              />
+            </div>
+            
+            <Separator className="my-6" />
+            
+            {/* Section 2: Pricing */}
+            <div>
+              <h3 className="text-base font-semibold mb-4">Precio y Pago</h3>
+              <PricingTab form={form} serviceType={activeTab} />
+            </div>
+            
+            <Separator className="my-6" />
+            
+            {/* Section 3: Extra Charges */}
+            <div>
+              <h3 className="text-base font-semibold mb-4">Cargos Extra</h3>
+              <ExtraChargesTab 
+                extraCharges={extraCharges}
+                onAddCharge={handleAddExtraCharge}
+                onRemoveCharge={handleRemoveExtraCharge}
+                onChangeCharge={handleExtraChargeChange}
+              />
+            </div>
 
-            <Button type="submit" className="w-full mobile-btn">
+            <Button type="submit" className="w-full mobile-btn mt-8">
               {isEditing ? 'Actualizar Transfer' : 'Registrar Transfer'}
             </Button>
           </form>
