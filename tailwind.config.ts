@@ -4,6 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Define border color separately to fix the border-border reference
+        border: 'hsl(var(--border))',
+        
         sidebar: {
           // Dark Blue-Gray background
           DEFAULT: '#1A1F2C', 

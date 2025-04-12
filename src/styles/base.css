@@ -95,7 +95,8 @@
 
 @layer base {
   * {
-    @apply border-border transition-theme duration-200;
+    @apply border-[hsl(var(--border))];
+    @apply transition-theme duration-200;
   }
 
   body {
