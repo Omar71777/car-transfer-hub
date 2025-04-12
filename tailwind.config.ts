@@ -15,12 +15,17 @@ export default {
       colors: {
         border: 'hsl(var(--border))',
         ring: 'hsl(var(--ring))',
+        primary: 'hsl(var(--primary))',
         sidebar: {
           DEFAULT: '#1A1F2C', 
           foreground: '#8E9196', 
           hover: '#1EAEDB', 
           selected: '#9b87f5',
         }
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.05)',
+        'hover': '0 4px 12px rgba(0, 0, 0, 0.1)',
       }
     }
   }
