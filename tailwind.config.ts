@@ -1,8 +1,10 @@
+
 export default {
   theme: {
     extend: {
       backgroundColor: {
         'background': 'hsl(var(--background))',
+        'muted': 'hsl(var(--muted))',
       },
       textColor: {
         'foreground': 'hsl(var(--foreground))',
@@ -16,6 +18,7 @@ export default {
         border: 'hsl(var(--border))',
         ring: 'hsl(var(--ring))',
         primary: 'hsl(var(--primary))',
+        muted: 'hsl(var(--muted))',
         sidebar: {
           DEFAULT: '#1A1F2C', 
           foreground: '#8E9196', 
