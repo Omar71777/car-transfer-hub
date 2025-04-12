@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ExpensesTable } from '@/components/expenses/ExpensesTable';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
+import { ExpensesCharts } from '@/components/expenses/ExpensesCharts';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Expense } from '@/types';
@@ -101,7 +102,10 @@ const ExpensesPage = () => {
           </Dialog>
         </div>
 
-        {loading ? (
+        {/* Add the new ExpensesCharts component */}
+        <ExpensesCharts expenses={expenses} loading={loading} />
+
+        {loading && !expenses.length ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">Cargando gastos...</p>
           </div>
