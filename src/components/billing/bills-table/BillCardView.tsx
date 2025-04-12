@@ -91,14 +91,11 @@ export function BillCardView({
               </div>
               
               {/* Company information if available */}
-              {bill.client?.company && (
+              {bill.client?.tax_id && (
                 <div className="col-span-2 flex">
                   <Building className="h-3.5 w-3.5 mr-1.5 mt-0.5 text-muted-foreground flex-shrink-0" />
                   <div className="flex-1">
-                    <div className="text-xs font-medium">{bill.client.company}</div>
-                    {bill.client?.vat && (
-                      <div className="text-xs text-muted-foreground">CIF/NIF: {bill.client.vat}</div>
-                    )}
+                    <div className="text-xs font-medium">CIF/NIF: {bill.client.tax_id}</div>
                   </div>
                 </div>
               )}
@@ -131,7 +128,7 @@ export function BillCardView({
                 <CreditCard className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <div>
                   <div className="text-xs font-medium text-muted-foreground">Subtotal:</div>
-                  <div className="text-xs">{formatCurrency(bill.subTotal)}</div>
+                  <div className="text-xs">{formatCurrency(bill.sub_total)}</div>
                 </div>
               </div>
               
@@ -139,7 +136,7 @@ export function BillCardView({
                 <Tag className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <div>
                   <div className="text-xs font-medium text-muted-foreground">IVA ({bill.tax_rate}%):</div>
-                  <div className="text-xs">{formatCurrency(bill.taxAmount)}</div>
+                  <div className="text-xs">{formatCurrency(bill.tax_amount)}</div>
                 </div>
               </div>
               

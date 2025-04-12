@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,17 +7,11 @@ import {
   Tag, CreditCard, Percent, CheckCircle, Timer
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/format';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { TransferRowActions } from './TransferRowActions';
 
 interface TransferCardViewProps {
   transfers: Transfer[];
@@ -51,7 +44,6 @@ export function TransferCardView({
     );
   }
 
-  // Format date
   const formatTransferDate = (dateString: string) => {
     try {
       return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
@@ -68,7 +60,6 @@ export function TransferCardView({
           className="overflow-hidden transition-all hover:border-primary/40"
         >
           <CardContent className="p-3">
-            {/* Header with status badges */}
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 {onSelectRow && (
@@ -110,9 +101,7 @@ export function TransferCardView({
               />
             </div>
             
-            {/* Main content grid */}
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
-              {/* Date and time */}
               <div className="flex items-center col-span-2">
                 <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <span>{formatTransferDate(transfer.date)}</span>
@@ -130,7 +119,6 @@ export function TransferCardView({
                 )}
               </div>
               
-              {/* Origin and destination */}
               <div className="col-span-2">
                 <div className="flex items-start space-x-1.5">
                   <MapPin className="h-3.5 w-3.5 mt-0.5 text-muted-foreground flex-shrink-0" />
@@ -151,7 +139,6 @@ export function TransferCardView({
                 </div>
               </div>
               
-              {/* Price information */}
               <div className="flex items-center">
                 <DollarSign className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <div>
@@ -160,7 +147,6 @@ export function TransferCardView({
                 </div>
               </div>
               
-              {/* Discount information */}
               <div className="flex items-center">
                 {transfer.discountValue && transfer.discountValue > 0 ? (
                   <>
@@ -187,7 +173,6 @@ export function TransferCardView({
                 )}
               </div>
               
-              {/* Collaborator information */}
               {transfer.collaborator && transfer.collaborator !== 'none' && (
                 <div className="col-span-1 flex items-center">
                   <User className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
@@ -200,7 +185,6 @@ export function TransferCardView({
                 </div>
               )}
               
-              {/* Commission information */}
               {transfer.collaborator && 
                 transfer.collaborator !== 'none' && 
                 transfer.collaborator !== 'servicio propio' && 
