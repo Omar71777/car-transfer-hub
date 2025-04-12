@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Home, List, FileText, User, Layers } from 'lucide-react';
+import { Home, Bus, FileText, User, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function MobileNavigation() {
@@ -20,15 +20,15 @@ export function MobileNavigation() {
         />
         <NavItem 
           to="/transfers" 
-          icon={<List size={20} />} 
-          label="Transfers" 
+          icon={<Bus size={20} />} 
+          label="Traslados" 
           isActive={currentPath.startsWith('/transfers')} 
         />
         <NavItem 
-          to="/bills" 
+          to="/billing" 
           icon={<FileText size={20} />} 
           label="Facturas" 
-          isActive={currentPath.startsWith('/bills')} 
+          isActive={currentPath.startsWith('/billing')} 
         />
         <NavItem 
           to="/clients" 
@@ -37,10 +37,10 @@ export function MobileNavigation() {
           isActive={currentPath.startsWith('/clients')} 
         />
         <NavItem 
-          to="/settings" 
-          icon={<Layers size={20} />} 
-          label="Ajustes" 
-          isActive={currentPath.startsWith('/settings')} 
+          to="/profile" 
+          icon={<Settings size={20} />} 
+          label="Perfil" 
+          isActive={currentPath.startsWith('/profile')} 
         />
       </div>
     </div>
