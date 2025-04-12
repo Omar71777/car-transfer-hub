@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -94,16 +95,7 @@
 
 @layer base {
   * {
-    @apply border-[hsl(var(--border))];
-    @apply transition-theme duration-200;
-  }
-
-  .ring-ring {
-    @apply ring-[hsl(var(--ring))];
-  }
-
-  .transition-theme {
-    transition-property: background-color, color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+    @apply border-border transition-theme duration-200;
   }
 
   body {
@@ -137,16 +129,6 @@
   /* Focus styles */
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
-  }
-
-  .ring-offset-background {
-    @apply bg-background;
-  }
-}
-
-@layer utilities {
-  .animate-theme-transition {
-    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
   }
 }
 

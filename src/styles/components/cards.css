@@ -1,6 +1,7 @@
+
 /* Enhanced component styles */
 .glass-card {
-  @apply bg-background/95 backdrop-blur-sm border border-[#0000001a] shadow-card rounded-xl transition-all hover:shadow-hover;
+  @apply bg-background/95 backdrop-blur-sm border border-primary/20 shadow-card rounded-xl transition-all hover:shadow-hover;
 }
 
 .shine-effect {

@@ -1,16 +1,47 @@
 
+/* Sidebar menu state styles */
 @layer components {
   .sidebar-menu-item {
-    @apply transition-colors duration-200 text-sidebar-foreground/70;
+    @apply transition-colors duration-200;
   }
 
   .sidebar-menu-item:hover {
-    @apply bg-sidebar-hover text-white;
+    @apply bg-sidebar-hover text-sidebar-foreground;
   }
 
   .sidebar-menu-item.selected {
     @apply bg-sidebar-selected text-white font-medium;
-    /* Add a subtle text shadow for better readability */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Standardized sidebar styling */
+  .sidebar-header {
+    @apply border-b border-sidebar-border/40 pb-2;
+  }
+  
+  .sidebar-menu-label {
+    @apply text-sidebar-foreground/70 text-xs font-semibold tracking-wider uppercase;
+  }
+  
+  .sidebar-menu-button {
+    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground/90 
+           hover:bg-sidebar-hover hover:text-sidebar-foreground transition-all duration-200
+           focus:outline-none focus:ring-1 focus:ring-sidebar-ring;
+  }
+  
+  .sidebar-menu-button.active {
+    @apply bg-sidebar-selected text-white font-medium;
+  }
+
+  /* Consistent styling for all sidebar buttons */
+  .sidebar-icon {
+    @apply text-aqua;
+  }
+
+  .sidebar-highlight {
+    @apply bg-aqua-light/40;
+  }
+
+  .sidebar-active-indicator {
+    @apply w-1 h-8 bg-aqua absolute left-0 rounded-r-md transition-all duration-200;
   }
 }
