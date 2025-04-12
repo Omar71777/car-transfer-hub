@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,6 +96,10 @@
   * {
     @apply border-[hsl(var(--border))];
     @apply transition-theme duration-200;
+  }
+
+  .transition-theme {
+    transition-property: background-color, color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
   }
 
   body {
