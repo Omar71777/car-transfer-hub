@@ -36,7 +36,7 @@ export function BillCardView({
       {bills.map((bill) => (
         <Card 
           key={bill.id} 
-          className="overflow-hidden transition-all hover:border-primary/40"
+          className="overflow-hidden transition-all hover:border-primary/40 touch-list-item"
           onClick={() => onView(bill)}
         >
           <CardContent className="p-4">

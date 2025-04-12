@@ -5,10 +5,10 @@ import { useTransfersPage } from './hooks/useTransfersPage';
 import { TransfersPageContent } from './components/TransfersPageContent';
 import { TransferDialogs } from './components/TransferDialogs';
 import { TransferSummaryDialogContainer } from './components/TransferSummaryDialogContainer';
-import { MobileHeader } from '@/components/layout/MobileHeader';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MobileSidebar } from '@/components/layout/MobileSidebar';
 
 const TransfersPage = () => {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const TransfersPage = () => {
   
   return (
     <MainLayout>
-      <MobileHeader actions={headerActions} />
+      <MobileSidebar />
       
       <TransfersPageContent
         transfers={transfers}
@@ -100,6 +100,6 @@ const TransfersPage = () => {
       />
     </MainLayout>
   );
-};
+}
 
 export default TransfersPage;

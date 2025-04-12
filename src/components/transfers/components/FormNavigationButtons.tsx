@@ -25,7 +25,7 @@ export function FormNavigationButtons({
         variant="outline"
         onClick={onPrevious}
         disabled={isFirstStep}
-        className="flex-1 flex-grow-0"
+        className="flex-1 flex-grow-0 touch-manipulation min-h-[44px]"
       >
         <ChevronLeft className="mr-1 h-4 w-4" />
         <span className="hidden sm:inline">Anterior</span>
@@ -35,7 +35,7 @@ export function FormNavigationButtons({
         type="button"
         onClick={onNext}
         disabled={isSubmitting}
-        className="flex-1 flex-grow-0"
+        className="flex-1 flex-grow-0 touch-manipulation min-h-[44px]"
       >
         {isSubmitting ? (
           <span>Procesando...</span>

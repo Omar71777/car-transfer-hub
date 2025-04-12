@@ -26,6 +26,16 @@
   .touch-list-item {
     @apply active:bg-accent/10 transition-colors;
   }
+  
+  /* Sidebar menu touch patterns */
+  [data-sidebar="menu-button"] {
+    @apply min-h-[44px];
+  }
+  
+  /* Improved touch targets for menu items */
+  .sidebar-menu-button {
+    @apply py-3;
+  }
 }
 
 /* Swipe gestures for cards */
@@ -66,4 +76,26 @@ select,
 textarea, 
 .touch-input {
   @apply min-h-[44px] py-2;
+}
+
+/* Mobile sidebar modifications */
+@media (max-width: 768px) {
+  [data-sidebar="sidebar"] {
+    @apply rounded-none;
+  }
+  
+  /* Improved touch areas for sidebar items on mobile */
+  [data-sidebar="menu-button"] {
+    @apply min-h-[48px] px-4;
+  }
+  
+  /* Add visual feedback when pressing sidebar items */
+  [data-sidebar="menu-button"]:active {
+    @apply bg-sidebar-accent/30;
+  }
+  
+  /* Improved spacing for sidebar group labels */
+  [data-sidebar="group-label"] {
+    @apply mt-3 mb-1 px-4;
+  }
 }

@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Menu, Search, BellRing } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/auth';
+import { useSidebar } from '@/components/ui/sidebar/sidebar-provider';
 
 interface MobileHeaderProps {
   title?: string;
@@ -21,9 +22,14 @@ export function MobileHeader({
   const navigate = useNavigate();
   const location = useLocation();
   const { profile } = useAuth();
+  const { openMobile, setOpenMobile } = useSidebar();
   
   const handleBack = () => {
     navigate(-1);
+  };
+  
+  const handleOpenSidebar = () => {
+    setOpenMobile(true);
   };
   
   // Get page title from location if not provided
@@ -33,7 +39,7 @@ export function MobileHeader({
     <div className={`sticky top-0 z-40 w-full border-b border-border/40 ${transparent ? 'bg-transparent' : 'bg-background/80 backdrop-blur-sm'}`}>
       <div className="container flex h-14 items-center justify-between px-2">
         <div className="flex items-center">
-          {backButton && (
+          {backButton ? (
             <Button
               variant="ghost"
               size="icon"
@@ -42,6 +48,16 @@ export function MobileHeader({
               aria-label="Go back"
             >
               <ArrowLeft className="h-5 w-5" />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleOpenSidebar}
+              className="mr-2 touch-manipulation"
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
             </Button>
           )}
           <h1 className="text-lg font-semibold">{pageTitle}</h1>

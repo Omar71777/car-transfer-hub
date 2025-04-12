@@ -15,6 +15,7 @@ import BillingPage from './pages/billing/BillingPage';
 import AuthPage from './pages/auth/AuthPage';
 import NotFound from './pages/NotFound';
 import { DeviceService } from '@/services/DeviceService';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 function App() {
   // Initialize device-specific features when the app starts
@@ -40,22 +41,24 @@ function App() {
   return (
     <React.StrictMode>
       <Providers>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/transfers" element={<TransfersPage />} />
-            <Route path="/transfers/new" element={<NewTransferPage />} />
-            <Route path="/expenses" element={<ExpensesPage />} />
-            <Route path="/admin/users" element={<UsersPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/profits" element={<ProfitsPage />} />
-            <Route path="/collaborators" element={<CollaboratorsPage />} />
-            <Route path="/clients" element={<ClientsPage />} />
-            <Route path="/billing" element={<BillingPage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <SidebarProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/transfers" element={<TransfersPage />} />
+              <Route path="/transfers/new" element={<NewTransferPage />} />
+              <Route path="/expenses" element={<ExpensesPage />} />
+              <Route path="/admin/users" element={<UsersPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profits" element={<ProfitsPage />} />
+              <Route path="/collaborators" element={<CollaboratorsPage />} />
+              <Route path="/clients" element={<ClientsPage />} />
+              <Route path="/billing" element={<BillingPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </SidebarProvider>
       </Providers>
     </React.StrictMode>
   );
