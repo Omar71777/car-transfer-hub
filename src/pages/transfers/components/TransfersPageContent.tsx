@@ -14,6 +14,7 @@ interface TransfersPageContentProps {
   onAddExpense: (transferId: string) => void;
   onViewSummary: (transferId: string) => void;
   onDeleteMultiple: (ids: string[]) => void;
+  onMarkAsPaid?: (transferId: string) => void;
 }
 
 export function TransfersPageContent({
@@ -26,7 +27,8 @@ export function TransfersPageContent({
   onDelete,
   onAddExpense,
   onViewSummary,
-  onDeleteMultiple
+  onDeleteMultiple,
+  onMarkAsPaid
 }: TransfersPageContentProps) {
   return (
     <div className="py-4 md:py-6 w-full">
@@ -38,6 +40,7 @@ export function TransfersPageContent({
         onAddExpense={onAddExpense}
         onViewSummary={onViewSummary}
         onDeleteMultiple={onDeleteMultiple}
+        onMarkAsPaid={onMarkAsPaid}
       />
     </div>
   );

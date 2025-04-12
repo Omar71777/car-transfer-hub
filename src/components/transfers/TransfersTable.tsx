@@ -10,6 +10,7 @@ import { Trash2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { TransferTableFilters } from './table/TransferTableFilters';
 import { TransferCardView } from './table/TransferCardView';
+import { TransferSearchBar } from './table/TransferSearchBar';
 
 interface TransfersTableProps {
   transfers: Transfer[];
@@ -18,6 +19,7 @@ interface TransfersTableProps {
   onAddExpense: (transferId: string) => void;
   onViewSummary: (transferId: string) => void;
   onDeleteMultiple?: (ids: string[]) => void;
+  onMarkAsPaid?: (transferId: string) => void;
 }
 
 export function TransfersTable({
@@ -26,16 +28,27 @@ export function TransfersTable({
   onDelete,
   onAddExpense,
   onViewSummary,
-  onDeleteMultiple = (ids) => ids.forEach(onDelete)
+  onDeleteMultiple = (ids) => ids.forEach(onDelete),
+  onMarkAsPaid
 }: TransfersTableProps) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [filteredTransfers, setFilteredTransfers] = useState<Transfer[]>(transfers);
+  const [searchResults, setSearchResults] = useState<Transfer[]>(transfers);
   const isMobile = useIsMobile();
   
   // Update filtered transfers when transfers prop changes
   React.useEffect(() => {
     setFilteredTransfers(transfers);
+    setSearchResults(transfers);
   }, [transfers]);
+
+  // Combine filter and search results
+  const displayedTransfers = useMemo(() => {
+    // Get the intersection of filtered and search results
+    return filteredTransfers.filter(transfer => 
+      searchResults.some(result => result.id === transfer.id)
+    );
+  }, [filteredTransfers, searchResults]);
 
   const handleSelectRow = (id: string, selected: boolean) => {
     if (selected) {
@@ -47,7 +60,7 @@ export function TransfersTable({
   
   const handleSelectAll = (selected: boolean) => {
     if (selected) {
-      setSelectedRows(filteredTransfers.map(transfer => transfer.id));
+      setSelectedRows(displayedTransfers.map(transfer => transfer.id));
     } else {
       setSelectedRows([]);
     }
@@ -68,6 +81,11 @@ export function TransfersTable({
   
   return (
     <div className="space-y-2 w-full">
+      <TransferSearchBar 
+        transfers={transfers} 
+        onSearchResults={setSearchResults} 
+      />
+      
       <TransferTableFilters 
         transfers={transfers} 
         onFilterChange={handleFilterChange} 
@@ -92,12 +110,13 @@ export function TransfersTable({
 
       {isMobile ? (
         <TransferCardView
-          transfers={filteredTransfers}
+          transfers={displayedTransfers}
           onEdit={onEdit}
           onDelete={onDelete}
           onAddExpense={onAddExpense}
           onViewSummary={onViewSummary}
           onSelectRow={handleSelectRow}
+          onMarkAsPaid={onMarkAsPaid}
           selectedRows={selectedRows}
         />
       ) : (
@@ -106,14 +125,14 @@ export function TransfersTable({
             <Table className="w-full table-fixed">
               <TransferTableHeader 
                 onSelectAll={handleSelectAll} 
-                allSelected={selectedRows.length === filteredTransfers.length && filteredTransfers.length > 0}
-                someSelected={selectedRows.length > 0 && selectedRows.length < filteredTransfers.length}
+                allSelected={selectedRows.length === displayedTransfers.length && displayedTransfers.length > 0}
+                someSelected={selectedRows.length > 0 && selectedRows.length < displayedTransfers.length}
               />
               <TableBody>
-                {filteredTransfers.length === 0 ? (
+                {displayedTransfers.length === 0 ? (
                   <EmptyTransfersRow />
                 ) : (
-                  filteredTransfers.map(transfer => (
+                  displayedTransfers.map(transfer => (
                     <TransferTableRow
                       key={transfer.id}
                       transfer={transfer}
@@ -123,6 +142,7 @@ export function TransfersTable({
                       onViewSummary={onViewSummary}
                       selected={selectedRows.includes(transfer.id)}
                       onSelectRow={handleSelectRow}
+                      onMarkAsPaid={onMarkAsPaid}
                     />
                   ))
                 )}

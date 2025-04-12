@@ -1,12 +1,18 @@
 
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Home, Bus, FileText, User, Settings } from 'lucide-react';
+import { Home, Bus, FileText, User, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSidebar } from '@/components/ui/sidebar/sidebar-provider';
 
 export function MobileNavigation() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { setOpenMobile } = useSidebar();
+  
+  const handleOpenSidebar = () => {
+    setOpenMobile(true);
+  };
   
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
@@ -35,12 +41,18 @@ export function MobileNavigation() {
           label="Clientes" 
           isActive={currentPath.startsWith('/clients')} 
         />
-        <NavItem 
-          to="/settings" 
-          icon={<Settings size={20} />} 
-          label="Ajustes" 
-          isActive={currentPath.startsWith('/settings') || currentPath.startsWith('/profile')} 
-        />
+        <button
+          onClick={handleOpenSidebar}
+          className={cn(
+            "flex flex-col items-center justify-center px-3 py-1 rounded-lg touch-manipulation",
+            "text-muted-foreground active:text-foreground active:bg-accent/30"
+          )}
+        >
+          <div className="flex items-center justify-center w-10 h-10 rounded-full mb-0.5">
+            <Menu size={20} />
+          </div>
+          <span className="text-xs">Menú</span>
+        </button>
       </div>
     </div>
   );

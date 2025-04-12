@@ -1,13 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Transfer } from '@/types';
-import { 
-  MapPin, Calendar, Clock, User, DollarSign, 
-  Tag, CreditCard, Percent, CheckCircle, Timer
-} from 'lucide-react';
 import { formatCurrency } from '@/lib/format';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -78,8 +74,8 @@ export function TransferCardView({
                   {transfer.serviceType === 'transfer' ? 'Transfer' : 'Dispo'}
                 </Badge>
                 <Badge 
-                  variant={transfer.paymentStatus === 'paid' ? "outline" : "secondary"}
-                  className={`text-xs px-1.5 py-0 ${transfer.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}
+                  variant={transfer.paymentStatus === 'paid' ? "success" : "secondary"}
+                  className="text-xs px-1.5 py-0"
                 >
                   {transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente'}
                 </Badge>
@@ -97,108 +93,74 @@ export function TransferCardView({
                 onAddExpense={() => onAddExpense(transfer.id)}
                 onViewSummary={() => onViewSummary(transfer.id)}
                 onMarkAsPaid={() => onMarkAsPaid && onMarkAsPaid(transfer.id)}
-                onMarkAsBilled={() => onMarkAsBilled && onMarkAsBilled(transfer.id)}
               />
             </div>
             
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
-              <div className="flex items-center col-span-2">
-                <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                <span>{formatTransferDate(transfer.date)}</span>
+              <div className="flex items-center col-span-2 text-slate-700 font-medium">
+                <div>{formatTransferDate(transfer.date)}</div>
                 {transfer.time && (
-                  <>
-                    <Clock className="h-3.5 w-3.5 mx-1.5 text-muted-foreground" />
-                    <span>{transfer.time}</span>
-                  </>
+                  <div className="ml-2">{transfer.time}</div>
                 )}
                 {transfer.serviceType === 'dispo' && transfer.hours && (
-                  <>
-                    <Timer className="h-3.5 w-3.5 mx-1.5 text-muted-foreground" />
-                    <span>{transfer.hours}h</span>
-                  </>
+                  <div className="ml-2 text-primary-600">{transfer.hours}h</div>
                 )}
               </div>
               
-              <div className="col-span-2">
-                <div className="flex items-start space-x-1.5">
-                  <MapPin className="h-3.5 w-3.5 mt-0.5 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1">
-                    <div className="grid grid-cols-2 gap-x-2">
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground">Origen:</p>
-                        <p className="text-xs truncate">{transfer.origin}</p>
-                      </div>
-                      {transfer.serviceType === 'transfer' && (
-                        <div>
-                          <p className="text-xs font-medium text-muted-foreground">Destino:</p>
-                          <p className="text-xs truncate">{transfer.destination}</p>
-                        </div>
-                      )}
-                    </div>
+              <div className="col-span-2 mt-1">
+                <div className="grid grid-cols-2 gap-x-2">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Origen:</p>
+                    <p className="text-xs text-slate-800 font-medium truncate">{transfer.origin}</p>
                   </div>
+                  {transfer.serviceType === 'transfer' && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Destino:</p>
+                      <p className="text-xs text-slate-800 font-medium truncate">{transfer.destination}</p>
+                    </div>
+                  )}
                 </div>
               </div>
               
-              <div className="flex items-center">
-                <DollarSign className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground">Precio:</p>
-                  <p className="text-sm font-medium">{formatCurrency(transfer.price)}</p>
-                </div>
+              <div className="mt-1">
+                <p className="text-xs font-medium text-muted-foreground">Precio:</p>
+                <p className="text-sm font-semibold text-emerald-700">{formatCurrency(transfer.price)}</p>
               </div>
               
-              <div className="flex items-center">
+              <div className="mt-1">
                 {transfer.discountValue && transfer.discountValue > 0 ? (
                   <>
-                    <Percent className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Descuento:</p>
-                      <p className="text-xs text-emerald-600 font-medium">
-                        {transfer.discountType === 'percentage' 
-                          ? `${transfer.discountValue}%` 
-                          : formatCurrency(Number(transfer.discountValue))}
-                      </p>
-                    </div>
+                    <p className="text-xs font-medium text-muted-foreground">Descuento:</p>
+                    <p className="text-xs text-emerald-600 font-medium">
+                      {transfer.discountType === 'percentage' 
+                        ? `${transfer.discountValue}%` 
+                        : formatCurrency(Number(transfer.discountValue))}
+                    </p>
                   </>
                 ) : (
                   <>
-                    <CreditCard className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">Estado:</p>
-                      <p className="text-xs">
-                        {transfer.paymentStatus === 'paid' ? 'Pagado' : 'Pendiente'}
-                      </p>
-                    </div>
+                    <p className="text-xs font-medium text-muted-foreground">Estado:</p>
+                    <p className={`text-xs font-medium ${transfer.paymentStatus === 'paid' ? 'text-green-600' : 'text-amber-600'}`}>
+                      {transfer.paymentStatus === 'paid' ? 'Pagado' : 'Pendiente'}
+                    </p>
                   </>
                 )}
               </div>
               
               {transfer.collaborator && transfer.collaborator !== 'none' && (
-                <div className="col-span-1 flex items-center">
-                  <User className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Colaborador:</p>
-                    <p className="text-xs truncate">
-                      {transfer.collaborator}
-                    </p>
-                  </div>
-                </div>
-              )}
-              
-              {transfer.collaborator && 
-                transfer.collaborator !== 'none' && 
-                transfer.collaborator !== 'servicio propio' && 
-                transfer.commission && (
-                <div className="col-span-1 flex items-center">
-                  <Tag className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Comisión:</p>
-                    <p className="text-xs">
-                      {transfer.commissionType === 'percentage' 
-                        ? `${transfer.commission}%` 
-                        : formatCurrency(Number(transfer.commission))}
-                    </p>
-                  </div>
+                <div className="col-span-2 mt-1">
+                  <p className="text-xs font-medium text-muted-foreground inline mr-1">Colaborador:</p>
+                  <p className="text-xs font-medium text-indigo-600 inline">
+                    {transfer.collaborator}
+                    {transfer.collaborator !== 'servicio propio' && 
+                     transfer.commission && (
+                      <span className="ml-2 text-slate-600">
+                        ({transfer.commissionType === 'percentage' 
+                          ? `${transfer.commission}%` 
+                          : formatCurrency(Number(transfer.commission))})
+                      </span>
+                    )}
+                  </p>
                 </div>
               )}
             </div>

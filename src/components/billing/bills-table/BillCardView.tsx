@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Bill } from '@/types/billing';
 import { BillStatusBadge } from './BillStatusBadge';
 import { BillTableActions } from './BillTableActions';
-import { CalendarDays, User, CreditCard, FileText, Clock, Tag, Building, Phone } from 'lucide-react';
 
 interface BillCardViewProps {
   bills: Bill[];
@@ -35,15 +34,6 @@ export function BillCardView({
     );
   }
   
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "-";
-    const parts = dateString.split("-");
-    if (parts.length === 3) {
-      return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-    return dateString;
-  };
-  
   return (
     <div className="space-y-3">
       {bills.map((bill) => (
@@ -55,11 +45,8 @@ export function BillCardView({
           <CardContent className="p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex flex-col">
-                <div className="flex items-center">
-                  <FileText className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                  <span className="font-medium text-sm">Factura #{bill.number}</span>
-                </div>
-                <span className="text-xs text-muted-foreground">
+                <span className="font-medium text-primary text-sm">Factura #{bill.number}</span>
+                <span className="text-lg font-semibold text-emerald-700">
                   {formatCurrency(bill.total)}
                 </span>
               </div>
@@ -78,81 +65,8 @@ export function BillCardView({
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs mt-2">
-              {/* Client information */}
-              <div className="col-span-2 flex">
-                <User className="h-3.5 w-3.5 mr-1.5 mt-0.5 text-muted-foreground flex-shrink-0" />
-                <div className="flex-1">
-                  <div className="text-xs font-medium">{bill.client?.name || '-'}</div>
-                  {bill.client?.email && (
-                    <div className="text-xs text-muted-foreground truncate">{bill.client.email}</div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Company information if available */}
-              {bill.client?.tax_id && (
-                <div className="col-span-2 flex">
-                  <Building className="h-3.5 w-3.5 mr-1.5 mt-0.5 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1">
-                    <div className="text-xs font-medium">CIF/NIF: {bill.client.tax_id}</div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Phone if available */}
-              {bill.client?.phone && (
-                <div className="col-span-1 flex items-center">
-                  <Phone className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                  <span className="text-xs">{bill.client.phone}</span>
-                </div>
-              )}
-              
-              {/* Dates information */}
-              <div className="col-span-2 flex">
-                <CalendarDays className="h-3.5 w-3.5 mr-1.5 mt-0.5 text-muted-foreground flex-shrink-0" />
-                <div className="grid grid-cols-2 gap-x-2 w-full">
-                  <div>
-                    <div className="text-xs font-medium text-muted-foreground">Fecha:</div>
-                    <div className="text-xs">{formatDate(bill.date)}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-medium text-muted-foreground">Vencimiento:</div>
-                    <div className="text-xs">{formatDate(bill.due_date)}</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Financial information */}
-              <div className="col-span-1 flex items-center">
-                <CreditCard className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground">Subtotal:</div>
-                  <div className="text-xs">{formatCurrency(bill.sub_total)}</div>
-                </div>
-              </div>
-              
-              <div className="col-span-1 flex items-center">
-                <Tag className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground">IVA ({bill.tax_rate}%):</div>
-                  <div className="text-xs">{formatCurrency(bill.tax_amount)}</div>
-                </div>
-              </div>
-              
-              {/* Total amount */}
-              <div className="col-span-2 flex justify-between items-center pt-1 mt-1 border-t border-border/40">
-                <span className="text-xs font-medium text-muted-foreground">Total:</span>
-                <span className="text-sm font-semibold">{formatCurrency(bill.total)}</span>
-              </div>
-              
-              {/* Items count if available */}
-              {bill.items && (
-                <div className="col-span-2 text-xs text-muted-foreground mt-0.5">
-                  <Clock className="h-3.5 w-3.5 inline mr-1.5 text-muted-foreground" />
-                  {bill.items.length} {bill.items.length === 1 ? 'concepto' : 'conceptos'}
-                </div>
-              )}
+            <div className="text-slate-800">
+              <span className="text-sm font-medium">{bill.client?.name || '-'}</span>
             </div>
           </CardContent>
         </Card>

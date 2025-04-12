@@ -103,6 +103,7 @@ export function useTransfersPage() {
     handlePrint: printHandlers.handlePrint,
     handleExportTransfers: printHandlers.handleExportTransfers,
     handleClosePrintDialog: printHandlers.handleClosePrintDialog,
-    handlePrintWithOptions: printHandlers.handlePrintWithOptions
+    handlePrintWithOptions: printHandlers.handlePrintWithOptions,
+    handleMarkAsPaid: transferOperations.handleMarkAsPaid
   };
 }

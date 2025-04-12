@@ -4,56 +4,65 @@ import { toast } from 'sonner';
 import { Transfer } from '@/types';
 
 export function useTransferOperations(
-  fetchTransfers: () => Promise<void>,
-  updateTransfer: (id: string, data: any) => Promise<boolean>,
-  deleteTransfer: (id: string) => Promise<boolean>,
-  setIsEditDialogOpen: (open: boolean) => void
+  fetchTransfers: () => void,
+  updateTransfer: (id: string, data: Partial<Transfer>) => Promise<any>,
+  deleteTransfer: (id: string) => Promise<any>,
+  setIsEditDialogOpen: (isOpen: boolean) => void
 ) {
   const [editingTransfer, setEditingTransfer] = useState<Transfer | null>(null);
 
-  const handleEditSubmit = async (values: any) => {
+  const handleEditSubmit = async (data: any) => {
     if (!editingTransfer) return;
     
-    // Convert string values to numbers for the API call
-    const processedValues = {
-      ...values,
-      price: Number(values.price),
-      commission: values.commission && values.commission !== '' ? Number(values.commission) : undefined,
-    };
-    
-    const success = await updateTransfer(editingTransfer.id, processedValues);
-    if (success) {
+    try {
+      await updateTransfer(editingTransfer.id, data);
+      toast.success('Traslado actualizado correctamente');
       setIsEditDialogOpen(false);
-      toast.success("Transfer actualizado");
       fetchTransfers();
+    } catch (error) {
+      console.error('Error updating transfer:', error);
+      toast.error('Error al actualizar el traslado');
     }
   };
-  
+
   const handleDeleteTransfer = async (id: string) => {
-    const success = await deleteTransfer(id);
-    if (success) {
-      toast.success("Transfer eliminado");
-      fetchTransfers();
+    if (window.confirm('¿Estás seguro de que quieres eliminar este traslado?')) {
+      try {
+        await deleteTransfer(id);
+        toast.success('Traslado eliminado correctamente');
+        fetchTransfers();
+      } catch (error) {
+        console.error('Error deleting transfer:', error);
+        toast.error('Error al eliminar el traslado');
+      }
     }
   };
-  
+
   const handleDeleteMultipleTransfers = async (ids: string[]) => {
-    let successCount = 0;
-    
-    for (const id of ids) {
-      const success = await deleteTransfer(id);
-      if (success) successCount++;
+    if (window.confirm(`¿Estás seguro de que quieres eliminar ${ids.length} traslados?`)) {
+      try {
+        // Delete each transfer in sequence
+        for (const id of ids) {
+          await deleteTransfer(id);
+        }
+        toast.success(`${ids.length} traslados eliminados correctamente`);
+        fetchTransfers();
+      } catch (error) {
+        console.error('Error deleting multiple transfers:', error);
+        toast.error('Error al eliminar los traslados');
+      }
     }
-    
-    if (successCount === ids.length) {
-      toast.success(`${successCount} transfers eliminados correctamente`);
-    } else if (successCount > 0) {
-      toast.warning(`${successCount} de ${ids.length} transfers eliminados. Algunos no pudieron ser eliminados.`);
-    } else {
-      toast.error("No se pudo eliminar ningún transfer");
+  };
+
+  const handleMarkAsPaid = async (transferId: string) => {
+    try {
+      await updateTransfer(transferId, { paymentStatus: 'paid' });
+      toast.success('Traslado marcado como cobrado');
+      fetchTransfers();
+    } catch (error) {
+      console.error('Error marking transfer as paid:', error);
+      toast.error('Error al marcar el traslado como cobrado');
     }
-    
-    fetchTransfers();
   };
 
   return {
@@ -61,6 +70,7 @@ export function useTransferOperations(
     setEditingTransfer,
     handleEditSubmit,
     handleDeleteTransfer,
-    handleDeleteMultipleTransfers
+    handleDeleteMultipleTransfers,
+    handleMarkAsPaid
   };
 }
