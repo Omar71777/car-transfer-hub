@@ -22,6 +22,8 @@ import { PricingStep } from './wizard-steps/PricingStep';
 import { ExtraChargesStep } from './wizard-steps/ExtraChargesStep';
 import { CollaboratorStep } from './wizard-steps/CollaboratorStep';
 import { ConfirmationStep } from './wizard-steps/ConfirmationStep';
+import { DateTimeStep } from './wizard-steps/DateTimeStep';
+import { LocationStep } from './wizard-steps/LocationStep';
 
 interface ConversationalTransferFormProps {
   onSubmit: (values: any) => void;
