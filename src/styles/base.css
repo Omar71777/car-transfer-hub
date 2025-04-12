@@ -136,5 +136,11 @@
   }
 }
 
+@layer utilities {
+  .animate-theme-transition {
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  }
+}
+
 /* Add Google Fonts import for Inter and DM Sans */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
