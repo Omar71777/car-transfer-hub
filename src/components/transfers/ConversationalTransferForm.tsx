@@ -20,9 +20,10 @@ import { useTransferFormNavigation } from './hooks/useTransferFormNavigation';
 
 interface ConversationalTransferFormProps {
   onSubmit: (values: any) => void;
+  initialClientId?: string | null;
 }
 
-export function ConversationalTransferForm({ onSubmit }: ConversationalTransferFormProps) {
+export function ConversationalTransferForm({ onSubmit, initialClientId = null }: ConversationalTransferFormProps) {
   // Define steps in the new order
   const steps = [
     { id: 'client', title: 'Cliente', component: ClientStep },
@@ -71,10 +72,17 @@ export function ConversationalTransferForm({ onSubmit }: ConversationalTransferF
       commissionType: 'percentage',
       commission: '',
       paymentStatus: 'pending',
-      clientId: ''
+      clientId: initialClientId || ''
     },
     mode: 'onTouched'
   });
+
+  // Update client ID when it changes externally
+  useEffect(() => {
+    if (initialClientId) {
+      methods.setValue('clientId', initialClientId, { shouldValidate: true });
+    }
+  }, [initialClientId, methods]);
 
   // Always include the collaborator step
   const activeSteps = steps;

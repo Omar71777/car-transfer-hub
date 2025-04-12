@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -14,6 +14,7 @@ const NewTransferPage = () => {
   const { createTransfer } = useTransfers();
   const { clients, createClient } = useClients();
   const { user } = useAuth();
+  const [newClientId, setNewClientId] = useState<string | null>(null);
   
   useEffect(() => {
     console.log('NewTransferPage mounted, user authentication state:', !!user);
@@ -55,6 +56,8 @@ const NewTransferPage = () => {
         if (newClient) {
           // Update the clientId with the newly created client ID
           values.clientId = newClient.id;
+          // Store the new client ID to update the form
+          setNewClientId(newClient.id);
           console.log('Client created successfully with ID:', newClient.id);
           toast.success('Cliente creado exitosamente');
         } else {
@@ -127,7 +130,10 @@ const NewTransferPage = () => {
           <p className="text-muted-foreground text-left text-sm md:text-base">Completa el formulario paso a paso para registrar un nuevo servicio</p>
         </div>
         
-        <ConversationalTransferForm onSubmit={handleSubmit} />
+        <ConversationalTransferForm 
+          onSubmit={handleSubmit} 
+          initialClientId={newClientId}
+        />
       </div>
     </MainLayout>
   );
