@@ -58,7 +58,7 @@ export function ClientStep({ clients, collaborators, formState }: ClientStepProp
               <div className="flex-1">
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>

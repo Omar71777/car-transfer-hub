@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -6,12 +7,14 @@ import { useTransfers } from '@/hooks/useTransfers';
 import { useClients } from '@/hooks/useClients';
 import { ConversationalTransferForm } from '@/components/transfers/ConversationalTransferForm';
 import { useAuth } from '@/contexts/auth';
+import { CreateClientDto } from '@/types/client';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
   const { createTransfer } = useTransfers();
   const { clients, createClient } = useClients();
   const { user } = useAuth();
+  const [newClientId, setNewClientId] = useState<string | null>(null);
   
   useEffect(() => {
     console.log('NewTransferPage mounted, user authentication state:', !!user);
@@ -41,15 +44,21 @@ const NewTransferPage = () => {
         const clientEmail = values.clientEmail || `${values.clientName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
         
         console.log('Creating new client:', { name: values.clientName, email: clientEmail });
-        const clientId = await createClient({
+        
+        // Create client data that conforms to CreateClientDto
+        const newClientData: CreateClientDto = {
           name: values.clientName,
           email: clientEmail,
-        });
+        };
         
-        if (clientId) {
+        const newClient = await createClient(newClientData);
+        
+        if (newClient) {
           // Update the clientId with the newly created client ID
-          values.clientId = clientId;
-          console.log('Client created successfully with ID:', clientId);
+          values.clientId = newClient.id;
+          // Store the new client ID to update the form
+          setNewClientId(newClient.id);
+          console.log('Client created successfully with ID:', newClient.id);
           toast.success('Cliente creado exitosamente');
         } else {
           console.error('Failed to create client');
@@ -121,7 +130,10 @@ const NewTransferPage = () => {
           <p className="text-muted-foreground text-left text-sm md:text-base">Completa el formulario paso a paso para registrar un nuevo servicio</p>
         </div>
         
-        <ConversationalTransferForm onSubmit={handleSubmit} />
+        <ConversationalTransferForm 
+          onSubmit={handleSubmit} 
+          initialClientId={newClientId}
+        />
       </div>
     </MainLayout>
   );

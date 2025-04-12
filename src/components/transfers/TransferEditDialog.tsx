@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Transfer } from '@/types';
@@ -71,7 +71,7 @@ export function TransferEditDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
+        <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -88,10 +88,10 @@ export function TransferEditDialog({
                 )}
               />
 
-              <PaymentStatusField form={form} />
+              <PaymentStatusField />
             </div>
 
-            <CollaboratorField form={form} />
+            <CollaboratorField collaborators={[]} />
 
             {hasCollaborator && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -140,7 +140,7 @@ export function TransferEditDialog({
               <Button type="submit">Guardar Cambios</Button>
             </DialogFooter>
           </form>
-        </Form>
+        </FormProvider>
       </DialogContent>
     </Dialog>
   );

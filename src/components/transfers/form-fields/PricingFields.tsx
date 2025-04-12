@@ -1,59 +1,29 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { UseFormReturn } from 'react-hook-form';
-import { TransferFormValues } from '../schema/transferSchema';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { BanknoteIcon, Percent } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useFormContext } from 'react-hook-form';
 
-interface PricingFieldsProps {
-  form: UseFormReturn<TransferFormValues>;
-  serviceType?: 'transfer' | 'dispo';
+export interface PricingFieldsProps {
+  serviceType: string;
 }
 
-export function PricingFields({
-  form,
-  serviceType = 'transfer'
-}: PricingFieldsProps) {
-  const commissionType = form.watch('commissionType');
-  const price = form.watch('price');
-  const commission = form.watch('commission');
-  const hours = form.watch('hours');
-  
-  // Calculate the total price for a dispo service
-  const getTotalPrice = () => {
-    if (serviceType !== 'dispo' || !hours || !price) return Number(price) || 0;
-    return Number(price) * Number(hours);
-  };
-  
-  // Calculate the equivalent value based on the opposite commission type
-  const getEquivalentValue = () => {
-    if (!price || !commission) return null;
-    
-    const totalPrice = getTotalPrice();
-    const commissionNum = Number(commission);
-    
-    if (isNaN(totalPrice) || isNaN(commissionNum) || totalPrice <= 0) return null;
-    
-    if (commissionType === 'percentage') {
-      // Calculate the fixed amount equivalent to the percentage
-      const fixedAmount = (totalPrice * commissionNum) / 100;
-      return `${fixedAmount.toFixed(2)}€`;
-    } else {
-      // Calculate the percentage equivalent to the fixed amount
-      const percentage = (commissionNum / totalPrice) * 100;
-      return `${percentage.toFixed(1)}%`;
-    }
-  };
-  
+export function PricingFields({ serviceType }: PricingFieldsProps) {
+  const { control, watch, setValue } = useFormContext();
+  const discountType = watch('discountType');
+
   return (
     <div className="space-y-4">
-      <FormField 
-        control={form.control} 
-        name="price" 
+      <FormField
+        control={control}
+        name="price"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Precio (€)</FormLabel>
+            <FormLabel>Precio{serviceType === 'dispo' ? ' por hora' : ''} (€) *</FormLabel>
             <FormControl>
               <Input 
                 type="number" 
@@ -61,71 +31,80 @@ export function PricingFields({
                 step="0.01" 
                 placeholder="120.00" 
                 {...field} 
-                className="mobile-input"
+                className="w-full"
               />
             </FormControl>
             <FormMessage />
           </FormItem>
-        )} 
+        )}
       />
       
-      <div className="space-y-2">
-        <FormLabel>Comisión - Opcional</FormLabel>
-        
+      {serviceType === 'dispo' && (
+        <div className="text-sm text-muted-foreground">
+          <p>
+            Precio total para {watch('hours') || 0} horas: €{((Number(watch('price')) || 0) * (Number(watch('hours')) || 0)).toFixed(2)}
+          </p>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        <FormLabel>Descuento (opcional)</FormLabel>
         <FormField
-          control={form.control}
-          name="commissionType"
+          control={control}
+          name="discountType"
           render={({ field }) => (
-            <FormItem className="space-y-1">
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex space-x-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="percentage" id="percentage" />
-                    <Label htmlFor="percentage">Porcentaje (%)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="fixed" id="fixed" />
-                    <Label htmlFor="fixed">Cantidad fija (€)</Label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
+            <FormItem>
+              <Select 
+                onValueChange={(value) => {
+                  field.onChange(value === "no-discount" ? null : value);
+                }} 
+                value={field.value || "no-discount"}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar tipo de descuento" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="no-discount">Sin descuento</SelectItem>
+                  <SelectItem value="percentage">Porcentaje (%)</SelectItem>
+                  <SelectItem value="fixed">Monto fijo (€)</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
         />
         
-        <FormField 
-          control={form.control} 
-          name="commission" 
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input 
-                  type="number" 
-                  min="0" 
-                  max={commissionType === 'percentage' ? "100" : undefined} 
-                  step={commissionType === 'percentage' ? "0.1" : "0.01"} 
-                  placeholder={commissionType === 'percentage' ? "10.0" : "25.00"} 
-                  {...field} 
-                  className="mobile-input"
-                />
-              </FormControl>
-              {commission && price && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {serviceType === 'dispo' && hours && (
-                    <span className="block mb-1">Aplicado sobre el precio total: €{getTotalPrice().toFixed(2)}</span>
-                  )}
-                  Equivalente a: {getEquivalentValue()}
-                </p>
-              )}
-              <FormMessage />
-            </FormItem>
-          )} 
-        />
+        {discountType && discountType !== "no-discount" && (
+          <FormField
+            control={control}
+            name="discountValue"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="relative">
+                    <Input 
+                      type="number" 
+                      min="0" 
+                      max={discountType === 'percentage' ? "100" : undefined}
+                      step={discountType === 'percentage' ? "1" : "0.01"} 
+                      placeholder={discountType === 'percentage' ? "10" : "25.00"} 
+                      {...field} 
+                      className="w-full"
+                    />
+                    {discountType === 'percentage' && (
+                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                        <Percent className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
       </div>
     </div>
   );

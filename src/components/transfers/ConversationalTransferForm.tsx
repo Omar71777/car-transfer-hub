@@ -1,117 +1,233 @@
 
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { useClients } from '@/hooks/useClients';
+import { TransferFormProvider, useTransferForm } from './context/TransferFormContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { transferSchema, TransferFormValues } from './schema/transferSchema';
-import { ClientStep } from './wizard-steps/ClientStep';
-import { DateTimeStep } from './wizard-steps/DateTimeStep';
-import { LocationStep } from './wizard-steps/LocationStep';
-import { PricingAndExtraChargesStep } from './wizard-steps/PricingAndExtraChargesStep';
+import { Transfer } from '@/types';
+import { useCollaborators } from '@/hooks/useCollaborators';
+import { FormStepper } from './components/FormStepper';
+import { StepRenderer } from './components/StepRenderer';
+import { FormNavigationButtons } from './components/FormNavigationButtons';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
+
+// Import steps
+import { BasicInfoStep } from './wizard-steps/BasicInfoStep';
+import { PricingStep } from './wizard-steps/PricingStep';
+import { ExtraChargesStep } from './wizard-steps/ExtraChargesStep';
 import { CollaboratorStep } from './wizard-steps/CollaboratorStep';
 import { ConfirmationStep } from './wizard-steps/ConfirmationStep';
-import { useCollaborators } from '@/hooks/useCollaborators';
-import { useClients } from '@/hooks/useClients';
-import { TransferFormProvider } from './context/TransferFormContext';
-import { StepProgressBar } from './components/StepProgressBar';
-import { StepRenderer } from './components/StepRenderer';
-import { TransferFormNavigation } from './components/TransferFormNavigation';
-import { useTransferFormNavigation } from './hooks/useTransferFormNavigation';
 
 interface ConversationalTransferFormProps {
   onSubmit: (values: any) => void;
+  initialValues?: Transfer;
+  isEditing?: boolean;
+  initialClientId?: string | null;
 }
 
-export function ConversationalTransferForm({ onSubmit }: ConversationalTransferFormProps) {
-  // Define steps in the new order
-  const steps = [
-    { id: 'client', title: 'Cliente', component: ClientStep },
-    { id: 'datetime', title: 'Fecha y Hora', component: DateTimeStep },
-    { id: 'location', title: 'Ubicación', component: LocationStep },
-    { id: 'pricing', title: 'Precio y Cargos', component: PricingAndExtraChargesStep },
-    { id: 'collaborator', title: 'Colaborador', component: CollaboratorStep },
-    { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep },
-  ];
-
-  const [showCollaboratorStep, setShowCollaboratorStep] = useState(true);
-  const [currentStep, setCurrentStep] = useState(0);
+export function ConversationalTransferForm({
+  onSubmit,
+  initialValues,
+  isEditing = false,
+  initialClientId = null
+}: ConversationalTransferFormProps) {
+  const {
+    clients,
+    loading: loadingClients
+  } = useClients();
   
   const {
     collaborators,
-    loading: loadingCollaborators,
-    fetchCollaborators
+    loading: loadingCollaborators
   } = useCollaborators();
   
-  const {
-    clients,
-    loading: loadingClients,
-    fetchClients
-  } = useClients();
-
-  // Fetch data when component mounts
-  useEffect(() => {
-    fetchCollaborators();
-    fetchClients();
-  }, [fetchCollaborators, fetchClients]);
-
-  const methods = useForm<TransferFormValues>({
-    resolver: zodResolver(transferSchema),
-    defaultValues: {
+  const isMobile = useIsMobile();
+  
+  const [currentStep, setCurrentStep] = useState(0);
+  const [showCollaboratorStep, setShowCollaboratorStep] = useState(!isEditing && !initialValues?.collaborator);
+  const [isServicioPropio, setIsServicioPropio] = useState(
+    initialValues?.collaborator === 'servicio propio' || false
+  );
+  
+  const getDefaultValues = () => {
+    if (initialValues) {
+      return {
+        ...initialValues,
+        serviceType: initialValues.serviceType || 'transfer',
+        price: initialValues.price.toString(),
+        hours: initialValues.hours !== undefined ? initialValues.hours.toString() : '',
+        discountType: initialValues.discountType || null,
+        discountValue: initialValues.discountValue?.toString() || '',
+        commissionType: initialValues.commissionType || 'percentage',
+        commission: initialValues.commission?.toString() || '',
+        paymentStatus: initialValues.paymentStatus || 'pending',
+        clientId: initialValues.clientId || initialClientId || '',
+        extraCharges: initialValues.extraCharges 
+          ? initialValues.extraCharges.map(charge => ({
+              id: charge.id,
+              name: charge.name,
+              price: typeof charge.price === 'number' ? charge.price.toString() : charge.price
+            }))
+          : []
+      };
+    }
+    
+    return {
       date: new Date().toISOString().split('T')[0],
       time: '',
-      serviceType: 'transfer',
+      serviceType: 'transfer' as const,
       origin: '',
       destination: '',
       hours: '',
       price: '',
       discountType: null,
       discountValue: '',
-      extraCharges: [],
       collaborator: '',
-      commissionType: 'percentage',
+      commissionType: 'percentage' as const,
       commission: '',
-      paymentStatus: 'pending',
-      clientId: ''
-    },
-    mode: 'onTouched'
+      paymentStatus: 'pending' as const,
+      clientId: initialClientId || '',
+      extraCharges: []
+    };
+  };
+  
+  const form = useForm<TransferFormValues>({
+    resolver: zodResolver(transferSchema),
+    defaultValues: getDefaultValues()
   });
-
-  // Always include the collaborator step
-  const activeSteps = steps;
-
+  
+  // Update client ID when it changes externally
+  useEffect(() => {
+    if (initialClientId) {
+      form.setValue('clientId', initialClientId, { shouldValidate: true });
+    }
+  }, [initialClientId, form]);
+  
+  // Watch collaborator field to update steps
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'collaborator') {
+        const collaborator = value.collaborator as string;
+        setIsServicioPropio(collaborator === 'servicio propio');
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+  
+  // Define available steps
+  const allSteps = [
+    { id: 'basic-info', title: 'Información básica', component: BasicInfoStep },
+    { id: 'pricing', title: 'Precio', component: PricingStep },
+    { id: 'extra-charges', title: 'Cargos extra', component: ExtraChargesStep },
+    { id: 'collaborator', title: 'Colaborador', component: CollaboratorStep },
+    { id: 'confirmation', title: 'Confirmación', component: ConfirmationStep }
+  ];
+  
+  // Determine which steps should be active
+  const activeSteps = useMemo(() => {
+    if (isServicioPropio) {
+      // When "servicio propio" is selected, skip the collaborator step
+      return allSteps.filter(step => step.id !== 'collaborator');
+    } else if (!showCollaboratorStep) {
+      // When explicitly hiding collaborator step
+      return allSteps.filter(step => step.id !== 'collaborator');
+    }
+    return allSteps;
+  }, [isServicioPropio, showCollaboratorStep]);
+  
+  const handleNext = async () => {
+    const currentStepId = activeSteps[currentStep]?.id;
+    
+    if (currentStepId === 'basic-info') {
+      const basicInfoFields = ['date', 'serviceType', 'origin', 'destination', 'hours', 'clientId'];
+      const isValid = await form.trigger(basicInfoFields as any);
+      
+      if (!isValid) {
+        toast.error('Por favor, complete todos los campos obligatorios');
+        return;
+      }
+    } else if (currentStepId === 'pricing') {
+      const pricingFields = ['price', 'discountValue', 'paymentStatus'];
+      const isValid = await form.trigger(pricingFields as any);
+      
+      if (!isValid) {
+        toast.error('Por favor, complete todos los campos obligatorios');
+        return;
+      }
+    } else if (currentStepId === 'collaborator') {
+      const collaboratorFields = ['collaborator', 'commission', 'commissionType'];
+      const isValid = await form.trigger(collaboratorFields as any);
+      
+      if (!isValid) {
+        toast.error('Por favor, complete todos los campos obligatorios');
+        return;
+      }
+    } else if (currentStepId === 'confirmation') {
+      form.handleSubmit(onSubmit)();
+      return;
+    }
+    
+    if (currentStep < activeSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+  
+  const isLastStep = currentStep === activeSteps.length - 1;
+  const isFirstStep = currentStep === 0;
+  
   return (
-    <TransferFormProvider 
-      methods={methods}
+    <TransferFormProvider
+      methods={form}
       currentStep={currentStep}
       setCurrentStep={setCurrentStep}
       activeSteps={activeSteps}
       showCollaboratorStep={showCollaboratorStep}
       setShowCollaboratorStep={setShowCollaboratorStep}
+      isServicioPropio={isServicioPropio}
+      setIsServicioPropio={setIsServicioPropio}
     >
-      <Card className="glass-card w-full max-w-2xl mx-auto">
-        <CardContent className="p-4 md:p-6">
-          <StepProgressBar />
-
+      <Card className={cn(
+        "glass-card w-full mx-auto",
+        isMobile ? "p-3" : "p-6"
+      )}>
+        <CardContent className={cn(
+          "pt-4",
+          isMobile ? "px-2" : "px-6"
+        )}>
+          {/* Form Stepper */}
+          <FormStepper />
+          
+          {/* Step Content */}
           <StepRenderer 
             clients={clients} 
             collaborators={collaborators} 
           />
-
-          <FormNavigationContainer onSubmit={onSubmit} />
+          
+          {/* Navigation Buttons */}
+          <FormNavigationButtons 
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            isFirstStep={isFirstStep}
+            isLastStep={isLastStep}
+            isSubmitting={form.formState.isSubmitting}
+          />
         </CardContent>
       </Card>
     </TransferFormProvider>
   );
 }
 
-// Separate component to ensure form context is fully initialized
-const FormNavigationContainer = ({ onSubmit }: { onSubmit: (values: any) => void }) => {
-  const { handleNext, handlePrevious } = useTransferFormNavigation(onSubmit);
-  
-  return (
-    <TransferFormNavigation 
-      onPrevious={handlePrevious}
-      onNext={handleNext}
-    />
-  );
-};
+// Helper function to conditionally join classnames
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
+}
