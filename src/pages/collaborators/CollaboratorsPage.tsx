@@ -8,7 +8,6 @@ import { Transfer, ExtraCharge } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { CollaboratorStatsSection } from '@/components/collaborators/CollaboratorStatsSection';
 import { toast } from 'sonner';
-import { adaptExtraCharges } from '@/lib/calculations';
 
 const CollaboratorsPage = () => {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -63,10 +62,15 @@ const CollaboratorsPage = () => {
         });
 
         // Transform data to match our Transfer type
-        const processedTransfers = transfersData.map((transfer: any) => {
-          // Get and adapt extra charges for this transfer
+        const processedTransfers: Transfer[] = transfersData.map((transfer: any) => {
+          // Map extra charges for this transfer with proper ExtraCharge structure
           const transferExtraCharges = extraChargesByTransferId[transfer.id] || [];
-          const adaptedExtraCharges = adaptExtraCharges(transferExtraCharges);
+          const mappedExtraCharges: ExtraCharge[] = transferExtraCharges.map((charge: any) => ({
+            id: charge.id,
+            transferId: charge.transfer_id,
+            name: charge.name || '',
+            price: Number(charge.price)
+          }));
           
           return {
             id: transfer.id,
@@ -85,7 +89,7 @@ const CollaboratorsPage = () => {
             discountType: transfer.discount_type,
             discountValue: Number(transfer.discount_value) || 0,
             hours: transfer.hours,
-            extraCharges: adaptedExtraCharges
+            extraCharges: mappedExtraCharges
           };
         });
         
