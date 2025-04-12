@@ -1,4 +1,3 @@
-
 /**
  * Calculations utility for transfers and billing
  */
@@ -9,8 +8,22 @@ export interface MinimalTransfer {
   hours?: number | string;
   discountType?: 'percentage' | 'fixed' | null;
   discountValue?: number;
-  extraCharges?: { price: number }[];
+  extraCharges?: { price: number | string }[];
+  commission?: number;
+  commissionType?: 'percentage' | 'fixed';
+  destination?: string;
+  origin?: string;
+  date?: string;
 }
+
+/**
+ * Adapts ExtraCharge[] to the format required by calculation functions
+ */
+export const adaptExtraCharges = (extraCharges: any[]): { price: number }[] => {
+  return extraCharges.map(charge => ({
+    price: typeof charge.price === 'string' ? parseFloat(charge.price) : charge.price
+  }));
+};
 
 /**
  * Calculate the base price of a transfer before discounts
@@ -26,27 +39,67 @@ export const calculateBasePrice = (transfer: MinimalTransfer): number => {
 };
 
 /**
+ * Calculate discount amount based on discount type and value
+ * @param transfer Transfer object with discount info
+ * @returns Discount amount in currency
+ */
+export const calculateDiscountAmount = (transfer: MinimalTransfer): number => {
+  const basePrice = calculateBasePrice(transfer);
+  
+  // Calculate discount amount
+  if (transfer.discountType && transfer.discountValue) {
+    if (transfer.discountType === 'percentage') {
+      return basePrice * (transfer.discountValue / 100);
+    } else if (transfer.discountType === 'fixed') {
+      return transfer.discountValue;
+    }
+  }
+  
+  return 0;
+};
+
+/**
+ * Calculate the total of all extra charges
+ * @param extraCharges Array of extra charges
+ * @returns Sum of all extra charges
+ */
+export const calculateExtraChargesTotal = (extraCharges: { price: number | string }[] = []): number => {
+  return extraCharges.reduce((sum, charge) => {
+    const chargePrice = typeof charge.price === 'string' ? parseFloat(charge.price) : charge.price;
+    return sum + (isNaN(chargePrice) ? 0 : chargePrice);
+  }, 0);
+};
+
+/**
+ * Calculate commission amount based on commission type
+ * @param transfer Transfer object with commission info
+ * @returns Commission amount in currency
+ */
+export const calculateCommissionAmount = (transfer: MinimalTransfer): number => {
+  if (!transfer.commission || !transfer.commissionType) return 0;
+
+  const basePrice = calculateBasePrice(transfer);
+  const discountAmount = calculateDiscountAmount(transfer);
+  const netPrice = basePrice - discountAmount;
+  
+  if (transfer.commissionType === 'percentage') {
+    return netPrice * (transfer.commission / 100);
+  } else {
+    return transfer.commission;
+  }
+};
+
+/**
  * Calculate the total price of a transfer including discounts and extra charges
  * @param transfer Transfer object
  * @returns Total price after all calculations
  */
 export const calculateTotalPrice = (transfer: MinimalTransfer): number => {
   const basePrice = calculateBasePrice(transfer);
-  
-  // Calculate discount amount
-  let discountAmount = 0;
-  if (transfer.discountType && transfer.discountValue) {
-    if (transfer.discountType === 'percentage') {
-      discountAmount = basePrice * (transfer.discountValue / 100);
-    } else if (transfer.discountType === 'fixed') {
-      discountAmount = transfer.discountValue;
-    }
-  }
+  const discountAmount = calculateDiscountAmount(transfer);
   
   // Sum up extra charges
-  const extraChargesTotal = (transfer.extraCharges || []).reduce((sum, charge) => {
-    return sum + (typeof charge.price === 'number' ? charge.price : 0);
-  }, 0);
+  const extraChargesTotal = calculateExtraChargesTotal(transfer.extraCharges);
   
   // Calculate final price
   return basePrice - discountAmount + extraChargesTotal;

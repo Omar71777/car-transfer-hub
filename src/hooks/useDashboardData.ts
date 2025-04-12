@@ -67,8 +67,8 @@ export function useDashboardData() {
         const allExtraCharges = await Promise.all(extraChargesPromises);
         
         // Format transfers to match the MinimalTransfer interface
-        const formattedTransfers: MinimalTransfer[] = transfers.map((transfer, index) => ({
-          serviceType: transfer.service_type || 'transfer',
+        const formattedTransfers = transfers.map((transfer, index) => ({
+          serviceType: transfer.service_type === 'dispo' ? 'dispo' : 'transfer', // Ensure correct typing
           price: Number(transfer.price),
           commission: Number(transfer.commission) || 0,
           commissionType: (transfer.commission_type || 'percentage') as 'percentage' | 'fixed',
@@ -91,11 +91,11 @@ export function useDashboardData() {
         
         // Calculate total income with the correct price calculation
         const totalIncome = formattedTransfers.reduce((sum, transfer) => 
-          sum + calculateTotalPrice(transfer), 0);
+          sum + calculateTotalPrice(transfer as MinimalTransfer), 0);
         
         // Calculate total commissions with the correct method
         const totalCommissions = formattedTransfers.reduce((sum, transfer) => 
-          sum + calculateCommissionAmount(transfer), 0);
+          sum + calculateCommissionAmount(transfer as MinimalTransfer), 0);
         
         // Add regular expenses and commissions
         const expensesTotal = expenses.reduce((sum, expense) => 
@@ -114,8 +114,8 @@ export function useDashboardData() {
             price: formattedTransfers[0].price,
             serviceType: formattedTransfers[0].serviceType,
             hours: formattedTransfers[0].hours,
-            totalPrice: calculateTotalPrice(formattedTransfers[0]),
-            commission: calculateCommissionAmount(formattedTransfers[0])
+            totalPrice: calculateTotalPrice(formattedTransfers[0] as MinimalTransfer),
+            commission: calculateCommissionAmount(formattedTransfers[0] as MinimalTransfer)
           } : 'No transfers'
         });
         
