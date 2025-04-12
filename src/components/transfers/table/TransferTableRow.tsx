@@ -5,7 +5,7 @@ import { Transfer } from '@/types';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatCurrency } from '@/lib/format';
-import { PaymentStatusCell } from './PaymentStatusCell';
+import { PaymentStatusBadge } from './PaymentStatusBadge';
 import { TruncatedCell } from './TruncatedCell';
 import { TransferRowActions } from './TransferRowActions';
 import { format } from 'date-fns';
@@ -40,6 +40,12 @@ export function TransferTableRow({
     }
   };
 
+  const handleTogglePaymentStatus = () => {
+    if (onMarkAsPaid && transfer.paymentStatus === 'pending') {
+      onMarkAsPaid(transfer.id);
+    }
+  };
+
   return (
     <TableRow>
       <TableCell className="w-10">
@@ -63,7 +69,12 @@ export function TransferTableRow({
           </span>
         )}
       </TableCell>
-      <TableCell><PaymentStatusCell paymentStatus={transfer.paymentStatus} /></TableCell>
+      <TableCell>
+        <PaymentStatusCell 
+          paymentStatus={transfer.paymentStatus} 
+          onToggle={onMarkAsPaid ? handleTogglePaymentStatus : undefined}
+        />
+      </TableCell>
       <TableCell className="text-right">
         <TransferRowActions
           transferId={transfer.id}
@@ -72,7 +83,8 @@ export function TransferTableRow({
           onDelete={() => onDelete(transfer.id)}
           onAddExpense={() => onAddExpense(transfer.id)}
           onViewSummary={() => onViewSummary(transfer.id)}
-          onMarkAsPaid={() => onMarkAsPaid && onMarkAsPaid(transfer.id)}
+          onMarkAsPaid={onMarkAsPaid && transfer.paymentStatus === 'pending' ? () => onMarkAsPaid(transfer.id) : undefined}
+          onMarkAsUnpaid={onMarkAsPaid && transfer.paymentStatus === 'paid' ? () => onMarkAsPaid(transfer.id, 'pending') : undefined}
         />
       </TableCell>
     </TableRow>

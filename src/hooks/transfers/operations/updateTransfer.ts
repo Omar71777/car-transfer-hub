@@ -37,6 +37,13 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       updated_at: new Date().toISOString()
     };
     
+    // Filter out undefined values to avoid setting null in the database
+    Object.keys(dataForDb).forEach(key => {
+      if (dataForDb[key] === undefined) {
+        delete dataForDb[key];
+      }
+    });
+    
     const { error } = await supabase
       .from('transfers')
       .update(dataForDb)

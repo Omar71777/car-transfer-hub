@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Edit2, Trash2, Receipt, FileText, MoreVertical, DollarSign } from 'lucide-react';
+import { Edit2, Trash2, Receipt, FileText, MoreVertical, DollarSign, XCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,7 @@ interface TransferRowActionsProps {
   onAddExpense: () => void;
   onViewSummary: () => void;
   onMarkAsPaid?: () => void;
+  onMarkAsUnpaid?: () => void;
 }
 
 export function TransferRowActions({
@@ -27,7 +28,8 @@ export function TransferRowActions({
   onDelete,
   onAddExpense,
   onViewSummary,
-  onMarkAsPaid
+  onMarkAsPaid,
+  onMarkAsUnpaid
 }: TransferRowActionsProps) {
   return (
     <div className={`flex ${isMobile ? 'justify-end' : 'justify-center'}`}>
@@ -86,10 +88,23 @@ export function TransferRowActions({
                 e.stopPropagation();
                 onMarkAsPaid();
               }} 
-              className="cursor-pointer"
+              className="cursor-pointer text-green-600"
             >
               <DollarSign className="h-4 w-4 mr-2" />
               Marcar como cobrado
+            </DropdownMenuItem>
+          )}
+          
+          {onMarkAsUnpaid && (
+            <DropdownMenuItem 
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkAsUnpaid();
+              }} 
+              className="cursor-pointer text-amber-600"
+            >
+              <XCircle className="h-4 w-4 mr-2" />
+              Marcar como pendiente
             </DropdownMenuItem>
           )}
           

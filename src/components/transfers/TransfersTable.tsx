@@ -19,7 +19,7 @@ interface TransfersTableProps {
   onAddExpense: (transferId: string) => void;
   onViewSummary: (transferId: string) => void;
   onDeleteMultiple?: (ids: string[]) => void;
-  onMarkAsPaid?: (transferId: string) => void;
+  onMarkAsPaid?: (transferId: string, newStatus?: 'paid' | 'pending') => void;
 }
 
 export function TransfersTable({

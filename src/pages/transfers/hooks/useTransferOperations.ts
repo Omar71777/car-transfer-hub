@@ -54,14 +54,19 @@ export function useTransferOperations(
     }
   };
 
-  const handleMarkAsPaid = async (transferId: string) => {
+  const handleMarkAsPaid = async (transferId: string, newStatus: 'paid' | 'pending' = 'paid') => {
     try {
-      await updateTransfer(transferId, { paymentStatus: 'paid' });
-      toast.success('Traslado marcado como cobrado');
+      await updateTransfer(transferId, { paymentStatus: newStatus });
+      
+      const statusMessage = newStatus === 'paid' 
+        ? 'Traslado marcado como cobrado' 
+        : 'Traslado marcado como pendiente';
+      
+      toast.success(statusMessage);
       fetchTransfers();
     } catch (error) {
-      console.error('Error marking transfer as paid:', error);
-      toast.error('Error al marcar el traslado como cobrado');
+      console.error('Error updating payment status:', error);
+      toast.error('Error al actualizar el estado de pago');
     }
   };
 
