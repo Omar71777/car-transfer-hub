@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { TransferTableFilters } from './table/TransferTableFilters';
+import { TransferCardView } from './table/TransferCardView';
 
 interface TransfersTableProps {
   transfers: Transfer[];
@@ -89,35 +90,47 @@ export function TransfersTable({
         </div>
       )}
 
-      <div className="table-container bg-card rounded-md border shadow-sm mx-auto">
-        <div className="table-full-width">
-          <Table className={isMobile ? "mobile-table w-full table-fixed" : "w-full table-fixed"}>
-            <TransferTableHeader 
-              onSelectAll={handleSelectAll} 
-              allSelected={selectedRows.length === filteredTransfers.length && filteredTransfers.length > 0}
-              someSelected={selectedRows.length > 0 && selectedRows.length < filteredTransfers.length}
-            />
-            <TableBody>
-              {filteredTransfers.length === 0 ? (
-                <EmptyTransfersRow />
-              ) : (
-                filteredTransfers.map(transfer => (
-                  <TransferTableRow
-                    key={transfer.id}
-                    transfer={transfer}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                    onAddExpense={onAddExpense}
-                    onViewSummary={onViewSummary}
-                    selected={selectedRows.includes(transfer.id)}
-                    onSelectRow={handleSelectRow}
-                  />
-                ))
-              )}
-            </TableBody>
-          </Table>
+      {isMobile ? (
+        <TransferCardView
+          transfers={filteredTransfers}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onAddExpense={onAddExpense}
+          onViewSummary={onViewSummary}
+          onSelectRow={handleSelectRow}
+          selectedRows={selectedRows}
+        />
+      ) : (
+        <div className="table-container bg-card rounded-md border shadow-sm mx-auto">
+          <div className="table-full-width">
+            <Table className="w-full table-fixed">
+              <TransferTableHeader 
+                onSelectAll={handleSelectAll} 
+                allSelected={selectedRows.length === filteredTransfers.length && filteredTransfers.length > 0}
+                someSelected={selectedRows.length > 0 && selectedRows.length < filteredTransfers.length}
+              />
+              <TableBody>
+                {filteredTransfers.length === 0 ? (
+                  <EmptyTransfersRow />
+                ) : (
+                  filteredTransfers.map(transfer => (
+                    <TransferTableRow
+                      key={transfer.id}
+                      transfer={transfer}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                      onAddExpense={onAddExpense}
+                      onViewSummary={onViewSummary}
+                      selected={selectedRows.includes(transfer.id)}
+                      onSelectRow={handleSelectRow}
+                    />
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

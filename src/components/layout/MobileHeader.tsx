@@ -9,9 +9,15 @@ interface MobileHeaderProps {
   title?: string;
   backButton?: boolean;
   actions?: React.ReactNode;
+  transparent?: boolean;
 }
 
-export function MobileHeader({ title, backButton = false, actions }: MobileHeaderProps) {
+export function MobileHeader({ 
+  title, 
+  backButton = false, 
+  actions,
+  transparent = false
+}: MobileHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { profile } = useAuth();
@@ -24,15 +30,15 @@ export function MobileHeader({ title, backButton = false, actions }: MobileHeade
   const pageTitle = title || getPageTitleFromLocation(location.pathname);
   
   return (
-    <div className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-14 items-center justify-between px-4">
+    <div className={`sticky top-0 z-40 w-full border-b border-border/40 ${transparent ? 'bg-transparent' : 'bg-background/80 backdrop-blur-sm'}`}>
+      <div className="container flex h-14 items-center justify-between px-2">
         <div className="flex items-center">
           {backButton && (
             <Button
               variant="ghost"
               size="icon"
               onClick={handleBack}
-              className="mr-2"
+              className="mr-2 touch-manipulation"
               aria-label="Go back"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -43,11 +49,13 @@ export function MobileHeader({ title, backButton = false, actions }: MobileHeade
         
         <div className="flex items-center space-x-1">
           {actions}
-          <Button variant="ghost" size="icon" aria-label="Notifications">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            aria-label="Notifications"
+            className="touch-manipulation"
+          >
             <BellRing className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" aria-label="Search">
-            <Search className="h-5 w-5" />
           </Button>
         </div>
       </div>

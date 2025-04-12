@@ -12,6 +12,7 @@ import { BillTableRow } from './BillTableRow';
 import { EmptyBillsState } from './EmptyBillsState';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { BillCardView } from './BillCardView';
 
 interface BillsTableProps {
   bills: Bill[];
@@ -50,27 +51,17 @@ export function BillsTable({
         </Button>
       </div>
 
-      <div className="table-container">
-        {isMobile ? (
-          <div className="overflow-x-auto px-1 w-full">
-            <Table className="mobile-table">
-              <BillTableHeader />
-              <TableBody>
-                {bills.map((bill) => (
-                  <BillTableRow
-                    key={bill.id}
-                    bill={bill}
-                    formatCurrency={formatCurrency}
-                    onView={onView}
-                    onEdit={onEdit}
-                    onPrint={onPrint}
-                    onDelete={onDelete}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : (
+      {isMobile ? (
+        <BillCardView
+          bills={bills}
+          formatCurrency={formatCurrency}
+          onView={onView}
+          onEdit={onEdit}
+          onPrint={onPrint}
+          onDelete={onDelete}
+        />
+      ) : (
+        <div className="table-container">
           <ScrollArea className="w-full">
             <div className="min-w-full table-scroll-container">
               <Table>
@@ -91,8 +82,8 @@ export function BillsTable({
               </Table>
             </div>
           </ScrollArea>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

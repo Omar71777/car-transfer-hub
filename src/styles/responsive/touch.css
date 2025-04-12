@@ -1,141 +1,69 @@
 
-/* Touch device enhancements */
-
-/* Optimize touch targets for mobile */
+/* Enhanced touch interactions */
 @media (hover: none) and (pointer: coarse) {
-  /* Make buttons larger on touch devices */
+  /* Larger touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Disable hover effects that can cause issues on touch */
+  .hover-effect {
+    @apply transition-none hover:bg-transparent active:bg-accent/20;
+  }
+  
+  /* Enhanced active states */
+  .touch-active {
+    @apply active:bg-accent/20;
+  }
+  
+  /* Better feedback for buttons */
   button, 
-  [role="button"],
-  .clickable,
-  a.btn {
-    @apply p-3 min-h-[44px] min-w-[44px] touch-manipulation;
+  [role="button"] {
+    @apply active:scale-95 transition-transform touch-manipulation;
   }
   
-  /* Optimize form elements for touch */
-  input, 
-  select, 
-  textarea {
-    @apply min-h-[44px];
-  }
-  
-  /* Larger checkboxes and radio buttons */
-  input[type="checkbox"],
-  input[type="radio"] {
-    @apply h-5 w-5;
-  }
-  
-  /* Tooltip adjustments for mobile */
-  [data-tip]:before {
-    @apply text-sm py-2 px-3;
-  }
-  
-  /* Disable hover effects on mobile that could cause issues */
-  .hover-only {
-    @apply transition-none transform-none;
-  }
-  
-  /* Ensure active states are more visible for touch */
-  .active-touch {
-    @apply bg-primary/10;
-  }
-  
-  /* Fix for iOS Safari's 300ms delay on touch */
-  a, button, [role="button"] {
-    touch-action: manipulation;
-  }
-  
-  /* Improved scrolling on touch devices */
-  .scrollable-touch {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-  }
-  
-  /* Better touch area for dropdown menus */
-  [data-radix-popper-content-wrapper] [role="menuitem"] {
-    @apply py-3 px-4 min-h-[44px];
-  }
-  
-  /* Fix for mobile overflow issues */
-  main {
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Fix for touch momentum scrolling */
-  .overflow-auto,
-  .overflow-y-auto,
-  .overflow-x-auto {
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Add overscroll behavior for bouncy scrolling */
-  html, body, main, .scrollable-content {
-    overscroll-behavior-y: contain;
-  }
-  
-  /* Improve table interactions on mobile */
-  td, th {
-    @apply py-3 px-3;
+  /* List item touch feedback */
+  .touch-list-item {
+    @apply active:bg-accent/10 transition-colors;
   }
 }
 
-/* Improve scrollbars on touch devices */
-.better-scrollbar {
-  scrollbar-width: thin;
+/* Swipe gestures for cards */
+.swipeable-card {
+  @apply relative overflow-hidden;
 }
 
-.better-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.swipeable-card-content {
+  @apply transform transition-transform duration-200;
 }
 
-.better-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
+.swipeable-card-actions {
+  @apply absolute top-0 right-0 bottom-0 flex items-center;
 }
 
-.better-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30;
+.swipeable-card-action {
+  @apply h-full flex items-center justify-center px-4;
 }
 
-/* Add pull-to-refresh styles */
-.ptr-element {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  color: #aaa;
-  z-index: 10;
-  text-align: center;
-  height: 50px;
-  transition: all .25s ease;
+/* Pull to refresh indicator */
+.pull-indicator {
+  @apply absolute top-0 left-0 right-0 h-16 flex items-center justify-center transform -translate-y-full transition-transform;
 }
 
-.ptr-refresh {
-  @apply text-primary animate-spin h-6 w-6;
+.pull-indicator-icon {
+  @apply animate-spin h-6 w-6 text-primary;
 }
 
-/* Adaptive layout for touch devices */
-@media (pointer: coarse) {
-  .stack-on-touch {
-    @apply flex-col;
-  }
-  
-  .hide-on-touch {
-    @apply hidden;
-  }
-  
-  .show-on-touch {
-    @apply block;
-  }
-  
-  /* Fix mobile chart layouts */
-  .recharts-wrapper {
-    touch-action: pan-y;
-  }
-  
-  /* Fix mobile scrolling */
-  .main-content-area {
-    height: calc(100vh - 56px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+/* Better scrolling for touch */
+.touch-scroll {
+  @apply overflow-auto overscroll-contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure large enough touch areas for inputs */
+input, 
+select, 
+textarea, 
+.touch-input {
+  @apply min-h-[44px] py-2;
 }

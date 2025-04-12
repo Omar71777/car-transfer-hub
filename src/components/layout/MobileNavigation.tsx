@@ -10,7 +10,7 @@ export function MobileNavigation() {
   
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50">
-      <div className="flex items-center justify-around bg-background border-t border-border/40 shadow-lg backdrop-blur-md py-3 px-1">
+      <div className="flex items-center justify-around bg-background/90 border-t border-border/40 shadow-lg backdrop-blur-md py-2">
         <NavItem 
           to="/" 
           icon={<Home size={20} />} 
@@ -58,19 +58,19 @@ function NavItem({ to, icon, label, isActive }: NavItemProps) {
     <Link
       to={to}
       className={cn(
-        "flex flex-col items-center justify-center px-2 py-1 rounded-lg transition-colors",
+        "flex flex-col items-center justify-center px-3 py-1 rounded-lg touch-manipulation",
         isActive 
-          ? "text-primary font-medium" 
-          : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
+          ? "text-primary" 
+          : "text-muted-foreground active:text-foreground active:bg-accent/30"
       )}
     >
       <div className={cn(
-        "flex items-center justify-center w-10 h-10 rounded-full",
+        "flex items-center justify-center w-10 h-10 rounded-full mb-0.5",
         isActive && "bg-primary/10"
       )}>
         {icon}
       </div>
-      <span className="text-xs mt-1">{label}</span>
+      <span className="text-xs">{label}</span>
     </Link>
   );
 }

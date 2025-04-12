@@ -11,6 +11,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Edit, Trash, Plus } from 'lucide-react';
 import { Client } from '@/types/client';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ClientCardView } from './ClientCardView';
 
 interface ClientsTableProps {
   clients: Client[];
@@ -20,6 +22,8 @@ interface ClientsTableProps {
 }
 
 export function ClientsTable({ clients, onAdd, onEdit, onDelete }: ClientsTableProps) {
+  const isMobile = useIsMobile();
+
   if (clients.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-6 text-center">
@@ -41,37 +45,45 @@ export function ClientsTable({ clients, onAdd, onEdit, onDelete }: ClientsTableP
         </Button>
       </div>
 
-      <div className="rounded-md border overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Teléfono</TableHead>
-              <TableHead>NIF/CIF</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {clients.map((client) => (
-              <TableRow key={client.id}>
-                <TableCell className="font-medium">{client.name}</TableCell>
-                <TableCell>{client.email}</TableCell>
-                <TableCell>{client.phone || '-'}</TableCell>
-                <TableCell>{client.tax_id || '-'}</TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button size="sm" variant="outline" onClick={() => onEdit(client)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => onDelete(client)}>
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+      {isMobile ? (
+        <ClientCardView
+          clients={clients}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      ) : (
+        <div className="rounded-md border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Teléfono</TableHead>
+                <TableHead>NIF/CIF</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {clients.map((client) => (
+                <TableRow key={client.id}>
+                  <TableCell className="font-medium">{client.name}</TableCell>
+                  <TableCell>{client.email}</TableCell>
+                  <TableCell>{client.phone || '-'}</TableCell>
+                  <TableCell>{client.tax_id || '-'}</TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button size="sm" variant="outline" onClick={() => onEdit(client)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => onDelete(client)}>
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }
