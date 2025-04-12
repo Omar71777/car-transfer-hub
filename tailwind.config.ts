@@ -14,6 +14,7 @@ export default {
       },
       colors: {
         border: 'hsl(var(--border))',
+        ring: 'hsl(var(--ring))',
         sidebar: {
           DEFAULT: '#1A1F2C', 
           foreground: '#8E9196', 
