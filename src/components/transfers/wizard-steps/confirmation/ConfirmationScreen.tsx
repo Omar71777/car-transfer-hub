@@ -81,11 +81,11 @@ export function ConfirmationScreen({ formState, clients }: ConfirmationScreenPro
   }, [subtotalAfterDiscount, commissionAmountEuros]);
   
   return (
-    <div className={`space-y-6 ${isMobile ? 'text-sm' : ''}`}>
-      <div className="bg-secondary/30 p-4 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Resumen del Transfer</h2>
+    <div className={`space-y-4 ${isMobile ? 'text-sm' : ''}`}>
+      <div className="bg-secondary/30 p-3 rounded-lg">
+        <h2 className="text-lg font-semibold mb-3">Resumen del Transfer</h2>
         
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Client Information */}
           <ClientInfoSection client={client} />
           
@@ -115,7 +115,7 @@ export function ConfirmationScreen({ formState, clients }: ConfirmationScreenPro
       </div>
       
       {isServicioPropio && (
-        <div className="text-sm text-blue-700 italic">
+        <div className="text-xs text-blue-700 italic">
           Este servicio está configurado como servicio propio. No se aplicarán comisiones.
         </div>
       )}

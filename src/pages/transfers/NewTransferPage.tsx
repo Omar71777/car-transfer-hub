@@ -8,6 +8,7 @@ import { useClients } from '@/hooks/useClients';
 import { ConversationalTransferForm } from '@/components/transfers/ConversationalTransferForm';
 import { useAuth } from '@/contexts/auth';
 import { CreateClientDto } from '@/types/client';
+import { MobileHeader } from '@/components/layout/MobileHeader';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
@@ -22,8 +23,6 @@ const NewTransferPage = () => {
     if (!user) {
       console.warn('No authenticated user detected');
       toast.warning('Debe iniciar sesión para crear un transfer');
-      // Note: You might want to add navigation to login page here
-      // but keeping this as is for now to avoid breaking current flow
     }
   }, [user]);
 
@@ -124,10 +123,11 @@ const NewTransferPage = () => {
 
   return (
     <MainLayout>
-      <div className="py-4 md:py-6 px-2 md:px-0">
-        <div className="mb-4 md:mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold mb-1 text-ibiza-900 text-left">Nuevo Transfer</h1>
-          <p className="text-muted-foreground text-left text-sm md:text-base">Completa el formulario paso a paso para registrar un nuevo servicio</p>
+      <MobileHeader title="Nuevo Transfer" backButton={true} />
+      
+      <div className="py-4 px-0">
+        <div className="mb-3">
+          <p className="text-muted-foreground text-sm">Completa el formulario paso a paso para registrar un nuevo servicio</p>
         </div>
         
         <ConversationalTransferForm 

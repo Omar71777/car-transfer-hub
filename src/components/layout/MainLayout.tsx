@@ -1,52 +1,27 @@
 
 import React from 'react';
-import { AppSidebar } from './AppSidebar';
-import { SidebarProvider, useSidebar } from '@/components/ui/sidebar';
+import { MobileNavigation } from './MobileNavigation';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MobileNavigation } from './MobileNavigation';
+import { OfflineStatus } from '@/components/ui/offline-status';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
-// Sidebar toggle for mobile
-const MobileSidebarToggle = () => {
-  const { openMobile, setOpenMobile } = useSidebar();
-  
-  return (
-    <Button 
-      variant="ghost" 
-      size="icon" 
-      className="md:hidden fixed top-4 left-4 z-50 bg-background/80 backdrop-blur-sm shadow-soft rounded-full"
-      onClick={() => setOpenMobile(!openMobile)}
-      aria-label="Toggle menu"
-    >
-      <Menu className="h-5 w-5 text-primary" />
-      <span className="sr-only">Toggle menu</span>
-    </Button>
-  );
-};
-
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const isMobile = useIsMobile();
-  
   return (
     <TooltipProvider>
-      <SidebarProvider defaultOpen={!isMobile}>
-        <div className="min-h-screen flex w-full bg-background">
-          <AppSidebar />
-          <main className="flex-1 p-0 md:p-5 lg:p-6 w-full h-screen overflow-auto">
-            <MobileSidebarToggle />
-            <div className="container mx-auto max-w-7xl pt-12 pb-20 px-3 md:pt-2 md:pb-6 md:px-4 animate-fade-in">
-              {children}
-            </div>
-            <MobileNavigation />
-          </main>
-        </div>
-      </SidebarProvider>
+      <div className="min-h-screen flex flex-col w-full bg-background">
+        <main className="flex-1 p-0 w-full h-screen overflow-auto pb-20">
+          <div className="container mx-auto pt-4 pb-20 px-3 animate-fade-in">
+            <OfflineStatus className="mb-4" />
+            {children}
+          </div>
+          <MobileNavigation />
+        </main>
+      </div>
     </TooltipProvider>
   );
 };

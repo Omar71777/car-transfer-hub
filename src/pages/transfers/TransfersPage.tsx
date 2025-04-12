@@ -5,8 +5,14 @@ import { useTransfersPage } from './hooks/useTransfersPage';
 import { TransfersPageContent } from './components/TransfersPageContent';
 import { TransferDialogs } from './components/TransferDialogs';
 import { TransferSummaryDialogContainer } from './components/TransferSummaryDialogContainer';
+import { MobileHeader } from '@/components/layout/MobileHeader';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const TransfersPage = () => {
+  const navigate = useNavigate();
+  
   const {
     // State
     transfers,
@@ -37,8 +43,25 @@ const TransfersPage = () => {
     handlePrintWithOptions
   } = useTransfersPage();
   
+  const handleAddTransfer = () => {
+    navigate('/transfers/new');
+  };
+  
+  const headerActions = (
+    <Button 
+      variant="ghost" 
+      size="icon" 
+      onClick={handleAddTransfer}
+      aria-label="Add new transfer"
+    >
+      <Plus className="h-5 w-5" />
+    </Button>
+  );
+  
   return (
     <MainLayout>
+      <MobileHeader actions={headerActions} />
+      
       <TransfersPageContent
         transfers={transfers}
         expenses={expenses}

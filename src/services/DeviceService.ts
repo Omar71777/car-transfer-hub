@@ -1,3 +1,4 @@
+
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Geolocation, Position } from '@capacitor/geolocation';
 import { Preferences } from '@capacitor/preferences';
@@ -52,7 +53,7 @@ export class DeviceService {
     }
   }
 
-  // Local storage functionality
+  // Local storage functionality with automatic JSON handling
   static async storeData(key: string, value: any): Promise<void> {
     try {
       await Preferences.set({
@@ -109,6 +110,11 @@ export class DeviceService {
 
   // Push notifications
   static async initializePushNotifications(): Promise<void> {
+    if (!DeviceService.isNative()) {
+      console.log('Push notifications are only available in native apps');
+      return;
+    }
+    
     try {
       // Request permission to use push notifications
       const result = await PushNotifications.requestPermissions();
@@ -143,8 +149,17 @@ export class DeviceService {
     }
   }
 
-  // Network status
+  // Check if app is running on native platform
   static isNative(): boolean {
-    return window.Capacitor !== undefined && window.Capacitor.isNative;
+    return typeof window !== 'undefined' && window.Capacitor !== undefined && window.Capacitor.isNative;
+  }
+  
+  // Helper for platform detection
+  static isIOS(): boolean {
+    return DeviceService.isNative() && /iPhone|iPad|iPod/.test(navigator.userAgent);
+  }
+  
+  static isAndroid(): boolean {
+    return DeviceService.isNative() && /Android/.test(navigator.userAgent);
   }
 }

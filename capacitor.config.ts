@@ -13,6 +13,13 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 2000
     }
+  },
+  ios: {
+    contentInset: 'always'
+  },
+  android: {
+    captureInput: true,
+    webContentsDebuggingEnabled: true
   }
 };
 

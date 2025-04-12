@@ -8,10 +8,9 @@ export function MobileNavigation() {
   const location = useLocation();
   const currentPath = location.pathname;
   
-  // Only show on mobile screens
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      <div className="flex items-center justify-around bg-background border-t border-border/40 shadow-lg backdrop-blur-md py-2 px-1">
+    <div className="fixed bottom-0 left-0 right-0 z-50">
+      <div className="flex items-center justify-around bg-background border-t border-border/40 shadow-lg backdrop-blur-md py-3 px-1">
         <NavItem 
           to="/" 
           icon={<Home size={20} />} 
@@ -66,7 +65,7 @@ function NavItem({ to, icon, label, isActive }: NavItemProps) {
       )}
     >
       <div className={cn(
-        "flex items-center justify-center w-8 h-8 rounded-full",
+        "flex items-center justify-center w-10 h-10 rounded-full",
         isActive && "bg-primary/10"
       )}>
         {icon}

@@ -66,6 +66,16 @@
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
   }
+  
+  /* Add overscroll behavior for bouncy scrolling */
+  html, body, main, .scrollable-content {
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Improve table interactions on mobile */
+  td, th {
+    @apply py-3 px-3;
+  }
 }
 
 /* Improve scrollbars on touch devices */
