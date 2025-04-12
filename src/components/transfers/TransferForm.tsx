@@ -12,6 +12,8 @@ import { PricingTab } from './form-tabs/PricingTab';
 import { ExtraChargesTab } from './form-tabs/ExtraChargesTab';
 import { ServiceTypeSelector } from './components/ServiceTypeSelector';
 import { useTransferForm } from './hooks/useTransferForm';
+import { CollaboratorField } from './form-fields/CollaboratorField';
+import { useCollaborators } from '@/hooks/useCollaborators';
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
@@ -60,9 +62,16 @@ export function TransferForm({
       : []
   );
 
+  const {
+    collaborators,
+    loading: loadingCollaborators,
+    fetchCollaborators,
+  } = useCollaborators();
+
   React.useEffect(() => {
     fetchClients();
-  }, [fetchClients]);
+    fetchCollaborators();
+  }, [fetchClients, fetchCollaborators]);
 
   return (
     <Card className="glass-card w-full max-full mx-auto">
@@ -94,7 +103,15 @@ export function TransferForm({
             
             <Separator className="my-6" />
             
-            {/* Section 3: Extra Charges */}
+            {/* Section 3: Collaborator */}
+            <div>
+              <h3 className="text-base font-semibold mb-4">Información del Colaborador</h3>
+              <CollaboratorField collaborators={collaborators} />
+            </div>
+            
+            <Separator className="my-6" />
+            
+            {/* Section 4: Extra Charges */}
             <div>
               <h3 className="text-base font-semibold mb-4">Cargos Extra</h3>
               <ExtraChargesTab 
