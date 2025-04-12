@@ -1,3 +1,4 @@
+
 export default {
   theme: {
     extend: {
@@ -6,6 +7,10 @@ export default {
       },
       textColor: {
         'foreground': 'hsl(var(--foreground))',
+      },
+      fontFamily: {
+        'sans': ['Inter', 'sans-serif'],
+        'display': ['DM Sans', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
