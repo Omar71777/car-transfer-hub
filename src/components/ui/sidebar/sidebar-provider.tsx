@@ -34,7 +34,7 @@ export const SidebarProvider = React.forwardRef<
     const [openMobile, _setOpenMobile] = React.useState(false)
     
     // Stable function for updating mobile sidebar state
-    const setOpenMobile = React.useCallback((value: boolean) => {
+    const setOpenMobile = React.useCallback((value: boolean | ((prevState: boolean) => boolean)) => {
       if (typeof value === "function") {
         _setOpenMobile((current) => {
           const newValue = value(current);
@@ -52,7 +52,7 @@ export const SidebarProvider = React.forwardRef<
     const [_open, _setOpen] = React.useState(defaultOpen)
     const open = openProp ?? _open
     const setOpen = React.useCallback(
-      (value: boolean | ((value: boolean) => boolean)) => {
+      (value: boolean | ((prevValue: boolean) => boolean)) => {
         const openState = typeof value === "function" ? value(open) : value
         if (setOpenProp) {
           setOpenProp(openState)
@@ -69,8 +69,8 @@ export const SidebarProvider = React.forwardRef<
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
       return isMobile
-        ? setOpenMobile((open) => !open)
-        : setOpen((open) => !open)
+        ? setOpenMobile((prevOpen: boolean) => !prevOpen)
+        : setOpen((prevOpen: boolean) => !prevOpen)
     }, [isMobile, setOpen, setOpenMobile])
 
     // Adds a keyboard shortcut to toggle the sidebar.
