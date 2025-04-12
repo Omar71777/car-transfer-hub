@@ -1,4 +1,3 @@
-
 export default {
   theme: {
     extend: {
@@ -7,6 +6,7 @@ export default {
       },
       textColor: {
         'foreground': 'hsl(var(--foreground))',
+        'muted-foreground': 'hsl(var(--muted-foreground))',
       },
       fontFamily: {
         'sans': ['Inter', 'sans-serif'],
@@ -21,7 +21,8 @@ export default {
           foreground: '#8E9196', 
           hover: '#1EAEDB', 
           selected: '#9b87f5',
-        }
+        },
+        'muted-foreground': 'hsl(var(--muted-foreground))',
       },
       boxShadow: {
         'card': '0 2px 8px rgba(0, 0, 0, 0.05)',
