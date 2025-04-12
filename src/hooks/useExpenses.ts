@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Expense } from '@/types';
 import { useAuth } from '@/contexts/auth';
-import { capitalizeFirstLetter } from '@/lib/utils';
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -16,7 +15,7 @@ export function useExpenses() {
     
     try {
       setLoading(true);
-      // Fetch expenses with order by date descending
+      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('expenses')
         .select('*')
@@ -26,12 +25,12 @@ export function useExpenses() {
         throw error;
       }
 
-      // Transform the data to match our Expense type and ensure consistent formatting
+      // Transform the data to match our Expense type
       const transformedData = data.map((expense: any) => ({
         id: expense.id,
         transferId: expense.transfer_id || '',
         date: expense.date,
-        concept: capitalizeFirstLetter(expense.concept || 'Sin categoría'),
+        concept: expense.concept,
         amount: Number(expense.amount)
       }));
 
@@ -53,15 +52,13 @@ export function useExpenses() {
     if (!user) return null;
     
     try {
-      // Format the concept with capitalized first letter
-      const formattedConcept = capitalizeFirstLetter(expenseData.concept);
-      
+      // Use 'from' instead of directly accessing the table name
       const { data, error } = await supabase
         .from('expenses')
         .insert({
           transfer_id: expenseData.transferId || null,
           date: expenseData.date,
-          concept: formattedConcept,
+          concept: expenseData.concept,
           amount: expenseData.amount
         })
         .select('id')
@@ -71,30 +68,25 @@ export function useExpenses() {
         throw error;
       }
 
-      // Refresh the expense list
-      await fetchExpenses();
-      
       return data.id as string;
     } catch (error: any) {
       console.error('Error creating expense:', error);
       toast.error(`Error al crear el gasto: ${error.message}`);
       return null;
     }
-  }, [user, fetchExpenses]);
+  }, [user]);
 
   const updateExpense = useCallback(async (id: string, expenseData: Partial<Expense>) => {
     if (!user) return false;
     
     try {
-      // Format the concept with capitalized first letter if provided
-      const formattedConcept = expenseData.concept ? capitalizeFirstLetter(expenseData.concept) : undefined;
-      
+      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('expenses')
         .update({
           transfer_id: expenseData.transferId || null,
           date: expenseData.date,
-          concept: formattedConcept,
+          concept: expenseData.concept,
           amount: expenseData.amount,
           updated_at: new Date().toISOString()
         })
@@ -104,21 +96,19 @@ export function useExpenses() {
         throw error;
       }
 
-      // Refresh the expense list
-      await fetchExpenses();
-      
       return true;
     } catch (error: any) {
       console.error('Error updating expense:', error);
       toast.error(`Error al actualizar el gasto: ${error.message}`);
       return false;
     }
-  }, [user, fetchExpenses]);
+  }, [user]);
 
   const deleteExpense = useCallback(async (id: string) => {
     if (!user) return false;
     
     try {
+      // Use 'from' instead of directly accessing the table name
       const { error } = await supabase
         .from('expenses')
         .delete()
@@ -128,35 +118,13 @@ export function useExpenses() {
         throw error;
       }
 
-      // Refresh the expense list
-      await fetchExpenses();
-      
       return true;
     } catch (error: any) {
       console.error('Error deleting expense:', error);
       toast.error(`Error al eliminar el gasto: ${error.message}`);
       return false;
     }
-  }, [user, fetchExpenses]);
-
-  // Add a function to get expense statistics
-  const getExpenseStats = useCallback(() => {
-    const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-    
-    // Get unique categories and their totals
-    const categories = [...new Set(expenses.map(expense => expense.concept))];
-    const categoryTotals = categories.map(category => {
-      const categoryExpenses = expenses.filter(expense => expense.concept === category);
-      const categoryTotal = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-      return {
-        category,
-        total: categoryTotal,
-        percentage: (categoryTotal / total) * 100
-      };
-    }).sort((a, b) => b.total - a.total);
-    
-    return { total, categoryTotals };
-  }, [expenses]);
+  }, [user]);
 
   return {
     expenses,
@@ -164,7 +132,6 @@ export function useExpenses() {
     fetchExpenses,
     createExpense,
     updateExpense,
-    deleteExpense,
-    getExpenseStats
+    deleteExpense
   };
 }

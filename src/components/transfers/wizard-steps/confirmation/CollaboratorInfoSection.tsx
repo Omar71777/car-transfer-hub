@@ -12,8 +12,7 @@ export function CollaboratorInfoSection({
   commissionAmountEuros, 
   formatCurrency 
 }: CollaboratorInfoSectionProps) {
-  // Hide the section if collaborator is not set, is "none", or is "servicio propio"
-  if (!values.collaborator || values.collaborator === 'none' || values.collaborator === 'servicio propio') return null;
+  if (!values.collaborator || values.collaborator === 'none') return null;
   
   return (
     <div>

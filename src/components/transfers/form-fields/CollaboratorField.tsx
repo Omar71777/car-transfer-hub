@@ -2,26 +2,28 @@
 import React, { useState } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collaborator } from '@/hooks/useCollaborators';
+import { UseFormReturn } from 'react-hook-form';
+import { TransferFormValues } from '../schema/transferSchema';
+import { Collaborator, useCollaborators } from '@/hooks/useCollaborators';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CollaboratorForm } from '@/components/collaborators/CollaboratorForm';
-import { useFormContext } from 'react-hook-form';
 
-export interface CollaboratorFieldProps {
-  collaborators: Collaborator[];
+interface CollaboratorFieldProps {
+  form: UseFormReturn<TransferFormValues>;
 }
 
-export function CollaboratorField({ collaborators }: CollaboratorFieldProps) {
-  const form = useFormContext();
+export function CollaboratorField({ form }: CollaboratorFieldProps) {
+  const { collaborators, addCollaborator } = useCollaborators();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   const handleAddCollaborator = async (values: any) => {
-    // This is just a placeholder since we don't have access to addCollaborator here
-    console.log('Adding collaborator:', values);
-    form.setValue('collaborator', values.name);
-    setIsAddDialogOpen(false);
+    const success = await addCollaborator(values);
+    if (success) {
+      form.setValue('collaborator', values.name);
+      setIsAddDialogOpen(false);
+    }
   };
 
   return (

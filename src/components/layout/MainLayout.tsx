@@ -36,11 +36,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <TooltipProvider>
       <SidebarProvider defaultOpen={!isMobile}>
-        <div className="min-h-screen flex w-full bg-background">
+        <div className="min-h-screen flex w-full bg-background transition-all duration-300">
           <AppSidebar />
-          <main className="flex-1 p-0 md:p-5 lg:p-6 w-full h-screen overflow-auto">
+          <main className="flex-1 p-0 md:p-5 lg:p-6 overflow-auto max-w-full transition-all pb-16 md:pb-0">
             <MobileSidebarToggle />
-            <div className="container mx-auto max-w-7xl pt-12 pb-20 px-3 md:pt-2 md:pb-6 md:px-4 animate-fade-in">
+            <div className="container mx-auto max-w-7xl pt-12 px-3 md:pt-2 md:px-4 animate-fade-in">
               {children}
             </div>
             <MobileNavigation />

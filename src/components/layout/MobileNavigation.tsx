@@ -1,77 +1,71 @@
 
 import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { Home, List, FileText, User, Layers } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+import { Home, CreditCard, BarChart2, User, Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export function MobileNavigation() {
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const navigate = useNavigate();
+  const { setOpenMobile } = useSidebar();
   
-  // Only show on mobile screens
+  const handleMenuClick = () => {
+    setOpenMobile(true);
+  };
+  
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      <div className="flex items-center justify-around bg-background border-t border-border/40 shadow-lg backdrop-blur-md py-2 px-1">
-        <NavItem 
-          to="/" 
-          icon={<Home size={20} />} 
-          label="Inicio" 
-          isActive={currentPath === '/'} 
-        />
-        <NavItem 
-          to="/transfers" 
-          icon={<List size={20} />} 
-          label="Transfers" 
-          isActive={currentPath.startsWith('/transfers')} 
-        />
-        <NavItem 
-          to="/bills" 
-          icon={<FileText size={20} />} 
-          label="Facturas" 
-          isActive={currentPath.startsWith('/bills')} 
-        />
-        <NavItem 
-          to="/clients" 
-          icon={<User size={20} />} 
-          label="Clientes" 
-          isActive={currentPath.startsWith('/clients')} 
-        />
-        <NavItem 
-          to="/settings" 
-          icon={<Layers size={20} />} 
-          label="Ajustes" 
-          isActive={currentPath.startsWith('/settings')} 
-        />
+    <div className="fixed bottom-0 left-0 right-0 md:hidden z-30 bg-primary/95 backdrop-blur-md border-t border-white/20 shadow-lg">
+      <div className="flex items-center justify-around h-16">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="flex flex-col items-center justify-center rounded-full h-12 w-12"
+          onClick={() => navigate('/')}
+        >
+          <Home className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Inicio</span>
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="flex flex-col items-center justify-center rounded-full h-12 w-12"
+          onClick={() => navigate('/transfers')}
+        >
+          <CreditCard className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Transfers</span>
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="flex flex-col items-center justify-center rounded-full h-12 w-12"
+          onClick={() => navigate('/profits')}
+        >
+          <BarChart2 className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Beneficios</span>
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="flex flex-col items-center justify-center rounded-full h-12 w-12"
+          onClick={() => navigate('/profile')}
+        >
+          <User className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Perfil</span>
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="flex flex-col items-center justify-center rounded-full h-12 w-12"
+          onClick={handleMenuClick}
+        >
+          <Menu className="h-5 w-5 text-white" />
+          <span className="text-xs mt-0.5 text-white/90">Menú</span>
+        </Button>
       </div>
     </div>
-  );
-}
-
-interface NavItemProps {
-  to: string;
-  icon: React.ReactNode;
-  label: string;
-  isActive: boolean;
-}
-
-function NavItem({ to, icon, label, isActive }: NavItemProps) {
-  return (
-    <Link
-      to={to}
-      className={cn(
-        "flex flex-col items-center justify-center px-2 py-1 rounded-lg transition-colors",
-        isActive 
-          ? "text-primary font-medium" 
-          : "text-muted-foreground hover:text-foreground hover:bg-accent/30"
-      )}
-    >
-      <div className={cn(
-        "flex items-center justify-center w-8 h-8 rounded-full",
-        isActive && "bg-primary/10"
-      )}>
-        {icon}
-      </div>
-      <span className="text-xs mt-1">{label}</span>
-    </Link>
   );
 }

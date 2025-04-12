@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
 import { ExtraCharge } from '@/types';
 
-export interface ExtraChargesFormProps {
+interface ExtraChargesFormProps {
   extraCharges: Partial<ExtraCharge>[];
   onAddCharge: () => void;
   onRemoveCharge: (index: number) => void;

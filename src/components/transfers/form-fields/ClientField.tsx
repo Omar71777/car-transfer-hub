@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
@@ -35,7 +35,7 @@ export function ClientField({ form, clients }: ClientFieldProps) {
     }
     
     // Set the client ID to 'new' to indicate it's a new client
-    form.setValue('clientId', 'new', { shouldValidate: true });
+    form.setValue('clientId', 'new');
     setIsNewClientDialogOpen(false);
   };
 
@@ -50,7 +50,7 @@ export function ClientField({ form, clients }: ClientFieldProps) {
             <div className="flex gap-2">
               <Select
                 onValueChange={field.onChange}
-                value={field.value}
+                defaultValue={field.value}
               >
                 <FormControl>
                   <SelectTrigger className="flex-1">

@@ -1,17 +1,21 @@
 
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { format, isValid } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Transfer } from '@/types';
+import { ServiceTypeBadge } from './ServiceTypeBadge';
+import { PaymentStatusCell } from './PaymentStatusCell';
 import { TransferRowActions } from './TransferRowActions';
+import { TruncatedCell } from './TruncatedCell';
 import { cn } from '@/lib/utils';
-import { formatCurrency } from '@/lib/format';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { calculateTotalPrice, calculateCommissionAmount } from '@/lib/calculations';
 
 interface TransferTableRowProps {
-  transfer: any;
-  onEdit: (transfer: any) => void;
+  transfer: Transfer;
+  onEdit: (transfer: Transfer) => void;
   onDelete: (id: string) => void;
   onAddExpense: (transferId: string) => void;
   onViewSummary: (transferId: string) => void;
@@ -30,123 +34,85 @@ export function TransferTableRow({
 }: TransferTableRowProps) {
   const isMobile = useIsMobile();
   
-  // Calculate profit (price - commission)
-  const calculateProfit = () => {
-    const price = Number(transfer.price);
-    
-    if (!transfer.commission || !transfer.commissionType) {
-      return price;
-    }
-    
-    const commission = Number(transfer.commission);
-    
-    if (transfer.commissionType === 'percentage') {
-      return price - (price * commission / 100);
-    } else {
-      return price - commission;
+  const handleSelect = (checked: boolean) => {
+    if (onSelectRow) {
+      onSelectRow(transfer.id, checked);
     }
   };
   
-  // Format date
-  const formattedDate = transfer.date 
-    ? format(new Date(transfer.date), 'dd-MM-yyyy', { locale: es })
-    : 'N/A';
-  
-  // Get service type display text
-  const getServiceType = () => {
-    if (transfer.serviceType === 'dispo') {
-      return 'Disposición';
-    } 
-    return 'Transfer';
+  // Safely format the date with validation
+  const getFormattedDate = () => {
+    try {
+      const dateObj = new Date(transfer.date);
+      return isValid(dateObj) 
+        ? format(dateObj, 'dd MMM', { locale: es }) 
+        : 'Fecha inválida';
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Fecha inválida';
+    }
   };
   
-  // Get payment status class
-  const getPaymentStatusClass = () => {
-    return transfer.paymentStatus === 'paid' 
-      ? 'text-green-600 font-medium' 
-      : 'text-amber-600 font-medium';
-  };
+  // Determine row background color based on service type with more subtle colors
+  const rowClass = cn(
+    transfer.serviceType === 'dispo' ? 'bg-soft-green/40 hover:bg-soft-green/60' : 'bg-soft-blue/40 hover:bg-soft-blue/60',
+    selected && 'bg-primary/10'
+  );
   
-  // Get payment status text
-  const getPaymentStatusText = () => {
-    return transfer.paymentStatus === 'paid' 
-      ? 'Cobrado' 
-      : 'Pendiente';
-  };
+  // Use "Propio" if no collaborator is assigned
+  const collaboratorName = transfer.collaborator || "Propio";
   
-  // Format profit with appropriate currency
-  const profit = calculateProfit();
-  const formattedProfit = formatCurrency(profit);
+  // Get the formatted date
+  const formattedDate = getFormattedDate();
+  
+  // Calculate total price including extras and discounts
+  const totalPrice = calculateTotalPrice(transfer);
+  
+  // Calculate commission based on the total price
+  const commission = calculateCommissionAmount(transfer);
+  
+  // Calculate profit (total price minus commission)
+  const profit = totalPrice - commission;
   
   return (
-    <TableRow 
-      className={cn(
-        "cursor-pointer transition-colors hover:bg-muted/80",
-        selected && "bg-muted/50"
-      )}
-      data-state={selected ? "selected" : ""}
-      onClick={() => onViewSummary(transfer.id)}
-    >
-      <TableCell className="w-[36px] p-0 text-center">
+    <TableRow className={rowClass}>
+      <TableCell className="p-1">
         {onSelectRow && (
-          <div onClick={(e) => {
-            e.stopPropagation();
-            onSelectRow(transfer.id, !selected);
-          }} className="flex justify-center">
-            <Checkbox 
-              checked={selected} 
-              onCheckedChange={(checked) => onSelectRow(transfer.id, !!checked)}
-              aria-label="Select row" 
-              className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground" 
-            />
-          </div>
+          <Checkbox 
+            checked={selected} 
+            onCheckedChange={handleSelect}
+            aria-label="Select row"
+            className="h-3.5 w-3.5"
+          />
         )}
       </TableCell>
-      
-      <TableCell className="col-date text-center font-medium">{formattedDate}</TableCell>
-      
-      <TableCell className="col-type text-center">
-        <span className={cn(
-          "px-2 py-1 rounded-full text-xs font-medium",
-          transfer.serviceType === 'dispo' 
-            ? "bg-blue-100 text-blue-800" 
-            : "bg-purple-100 text-purple-800"
-        )}>
-          {getServiceType()}
-        </span>
+      <TableCell className="font-medium text-xs text-center">{formattedDate}</TableCell>
+      <TableCell className="text-center">
+        <ServiceTypeBadge serviceType={transfer.serviceType} />
       </TableCell>
-      
       {!isMobile && (
-        <TableCell className="col-client">
-          <span className="truncate-cell">{transfer.client?.name || "Cliente no asignado"}</span>
+        <TableCell className="text-center">
+          <TruncatedCell text={transfer.client?.name || ''} maxWidth="max-w-[100px]" />
         </TableCell>
       )}
-      
       {!isMobile && (
-        <TableCell className="col-collaborator">
-          <span className="truncate-cell">
-            {transfer.collaborator || "Servicio propio"}
-          </span>
+        <TableCell className="text-center">
+          <TruncatedCell text={collaboratorName} maxWidth="max-w-[100px]" />
         </TableCell>
       )}
-      
       {!isMobile && (
-        <TableCell className="col-total text-right font-medium">
-          {formattedProfit}
+        <TableCell className="text-right">
+          <span className="text-xs font-medium">{profit.toFixed(2)}€</span>
         </TableCell>
       )}
-      
-      <TableCell className="col-status text-center">
-        <span className={getPaymentStatusClass()}>
-          {getPaymentStatusText()}
-        </span>
+      <TableCell className="text-center">
+        <PaymentStatusCell paymentStatus={transfer.paymentStatus || 'pending'} />
       </TableCell>
-      
-      <TableCell className="col-actions p-0">
+      <TableCell>
         <TransferRowActions 
-          transferId={transfer.id}
+          transferId={transfer.id} 
           isMobile={isMobile}
-          onEdit={() => onEdit(transfer)}
+          onEdit={() => onEdit(transfer)} 
           onDelete={() => onDelete(transfer.id)}
           onAddExpense={() => onAddExpense(transfer.id)}
           onViewSummary={() => onViewSummary(transfer.id)}

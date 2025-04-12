@@ -38,16 +38,11 @@ export async function createTransfer(user: any, transferData: any) {
     
     // Format data for insertion
     // If collaborator is "none" or empty, save as empty string
-    // If it's "servicio propio", save that value directly
-    let collaboratorValue = '';
-    if (transferData.collaborator === 'servicio propio') {
-      collaboratorValue = 'servicio propio';
-    } else if (transferData.collaborator !== 'none' && transferData.collaborator) {
-      collaboratorValue = transferData.collaborator;
-    }
+    const collaboratorValue = transferData.collaborator === 'none' || !transferData.collaborator 
+      ? '' 
+      : transferData.collaborator;
     
     console.log('Preparing transfer data for database insertion');
-    console.log('Collaborator value:', collaboratorValue);
     
     // Prepare data for insertion
     const insertData = {

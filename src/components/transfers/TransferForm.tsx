@@ -19,14 +19,12 @@ interface TransferFormProps {
   onSubmit: (values: any) => void;
   initialValues?: Transfer;
   isEditing?: boolean;
-  newClientId?: string | null;
 }
 
 export function TransferForm({
   onSubmit,
   initialValues,
-  isEditing = false,
-  newClientId = null
+  isEditing = false
 }: TransferFormProps) {
   const {
     clients,
@@ -71,7 +69,7 @@ export function TransferForm({
         commissionType: initialValues.commissionType || 'percentage',
         commission: initialValues.commission?.toString() || '',
         paymentStatus: initialValues.paymentStatus as 'paid' | 'pending',
-        clientId: initialValues.clientId || newClientId || '',
+        clientId: initialValues.clientId || '',
         extraCharges: initialValues.extraCharges 
           ? initialValues.extraCharges.map(charge => ({
               id: charge.id,
@@ -95,7 +93,7 @@ export function TransferForm({
       commissionType: 'percentage' as const,
       commission: '',
       paymentStatus: 'pending' as const,
-      clientId: newClientId || '',
+      clientId: '',
       extraCharges: []
     };
   };
@@ -104,13 +102,6 @@ export function TransferForm({
     resolver: zodResolver(transferSchema),
     defaultValues: getDefaultValues()
   });
-
-  // Update client ID when it changes externally
-  useEffect(() => {
-    if (newClientId) {
-      form.setValue('clientId', newClientId, { shouldValidate: true });
-    }
-  }, [newClientId, form]);
 
   function handleSubmit(values: TransferFormValues) {
     const processedValues = {

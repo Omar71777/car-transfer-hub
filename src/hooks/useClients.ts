@@ -60,21 +60,17 @@ export function useClients() {
     }
   }, [clients]);
 
-  const createClient = useCallback(async (clientData: CreateClientDto) => {
+  const createClient = useCallback(async (clientData: Omit<Client, 'id' | 'created_at' | 'updated_at'> | CreateClientDto) => {
     try {
-      // Get the current user's ID
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('User must be authenticated to create a client');
-      }
+      // Ensure we have all the required fields with the user_id from auth
+      const client = {
+        ...clientData,
+        user_id: (await supabase.auth.getUser()).data.user?.id
+      };
 
       const { data, error } = await supabase
         .from('clients')
-        .insert({
-          ...clientData,
-          user_id: user.id
-        })
+        .insert(client)
         .select()
         .single();
 

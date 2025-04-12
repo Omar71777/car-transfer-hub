@@ -1,8 +1,7 @@
 
 import React from 'react';
+import { Separator } from '@/components/ui/separator';
 
 export function SeparatorLine() {
-  return (
-    <div className="h-px w-full bg-border my-2" />
-  );
+  return <Separator className="my-2" />;
 }

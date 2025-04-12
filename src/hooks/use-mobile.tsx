@@ -1,61 +1,45 @@
 
-import { useState, useEffect } from 'react';
+import * as React from "react"
 
-/**
- * Custom hook to detect mobile devices based on screen width
- * @param breakpoint The screen width breakpoint to consider as mobile (default: 768px)
- * @returns Boolean indicating if the device is considered mobile
- */
-export function useIsMobile(breakpoint: number = 768) {
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    // Check if window is available (client-side)
-    if (typeof window !== 'undefined') {
-      return window.innerWidth < breakpoint;
+const MOBILE_BREAKPOINT = 768
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+
+  React.useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
     }
-    // Default to false on server-side
-    return false;
-  });
+    
+    // Check on initial render
+    checkIfMobile()
+    
+    // Add event listener with debounce to avoid performance issues
+    let resizeTimer: ReturnType<typeof setTimeout>
+    const handleResize = () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(checkIfMobile, 100)
+    }
 
-  useEffect(() => {
-    // Skip if window is not available
-    if (typeof window === 'undefined') return;
+    window.addEventListener("resize", handleResize)
     
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < breakpoint);
-    };
+    // Create a MediaQueryList object
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
     
-    // Listen for resize events
-    window.addEventListener('resize', checkMobile);
+    // MediaQueryList change event
+    const handleMediaChange = () => {
+      setIsMobile(mql.matches)
+    }
     
-    // Initial check
-    checkMobile();
+    mql.addEventListener("change", handleMediaChange)
     
-    // Cleanup
     return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, [breakpoint]);
+      window.removeEventListener("resize", handleResize)
+      mql.removeEventListener("change", handleMediaChange)
+      clearTimeout(resizeTimer)
+    }
+  }, [])
 
-  return isMobile;
-}
-
-/**
- * Custom hook to detect if a device supports touch
- * @returns Boolean indicating if the device supports touch
- */
-export function useTouchDevice() {
-  const [isTouch, setIsTouch] = useState<boolean>(false);
-  
-  useEffect(() => {
-    const hasTouch = (
-      'ontouchstart' in window || 
-      navigator.maxTouchPoints > 0 ||
-      // @ts-ignore
-      (navigator.msMaxTouchPoints !== undefined && navigator.msMaxTouchPoints > 0)
-    );
-    
-    setIsTouch(hasTouch);
-  }, []);
-  
-  return isTouch;
+  // Always return a boolean even if state is undefined initially
+  return !!isMobile
 }

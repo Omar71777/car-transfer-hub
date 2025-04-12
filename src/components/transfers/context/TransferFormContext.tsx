@@ -10,8 +10,6 @@ type TransferFormContextType = {
   activeSteps: Array<{ id: string; title: string; component: React.ComponentType<any> }>;
   showCollaboratorStep: boolean;
   setShowCollaboratorStep: (show: boolean) => void;
-  isServicioPropio: boolean;
-  setIsServicioPropio: (isPropio: boolean) => void;
 };
 
 // Create the context
@@ -26,8 +24,6 @@ interface TransferFormProviderProps {
   activeSteps: Array<{ id: string; title: string; component: React.ComponentType<any> }>;
   showCollaboratorStep: boolean;
   setShowCollaboratorStep: (show: boolean) => void;
-  isServicioPropio: boolean;
-  setIsServicioPropio: (isPropio: boolean) => void;
 }
 
 export const TransferFormProvider: React.FC<TransferFormProviderProps> = ({
@@ -38,8 +34,6 @@ export const TransferFormProvider: React.FC<TransferFormProviderProps> = ({
   activeSteps,
   showCollaboratorStep,
   setShowCollaboratorStep,
-  isServicioPropio,
-  setIsServicioPropio,
 }) => {
   const contextValue: TransferFormContextType = {
     currentStep,
@@ -47,8 +41,6 @@ export const TransferFormProvider: React.FC<TransferFormProviderProps> = ({
     activeSteps,
     showCollaboratorStep,
     setShowCollaboratorStep,
-    isServicioPropio,
-    setIsServicioPropio,
   };
 
   return (

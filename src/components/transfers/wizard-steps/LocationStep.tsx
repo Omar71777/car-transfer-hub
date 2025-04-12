@@ -11,14 +11,15 @@ interface LocationStepProps {
   clients: any;
   collaborators: any;
   formState: any;
-  serviceType: string;
 }
 
-export function LocationStep({ clients, collaborators, formState, serviceType }: LocationStepProps) {
+export function LocationStep({ clients, collaborators, formState }: LocationStepProps) {
   const { control, watch, setValue, trigger } = useFormContext();
+  const serviceType = watch('serviceType');
   
   // Re-trigger validation when service type changes
   useEffect(() => {
+    console.log('Service type changed to:', serviceType);
     // Clear fields that are not relevant for the current service type
     if (serviceType === 'transfer') {
       setValue('hours', '');
@@ -50,6 +51,7 @@ export function LocationStep({ clients, collaborators, formState, serviceType }:
               <RadioGroup
                 onValueChange={(value) => {
                   field.onChange(value);
+                  console.log('Service type selected:', value);
                 }}
                 defaultValue={field.value}
                 className="flex flex-col space-y-1"
@@ -138,6 +140,10 @@ export function LocationStep({ clients, collaborators, formState, serviceType }:
                     placeholder="4" 
                     {...field} 
                     className="w-full" 
+                    onChange={(e) => {
+                      field.onChange(e);
+                      console.log('Hours changed to:', e.target.value);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

@@ -33,6 +33,8 @@ const TransfersPage = () => {
     handleDeleteTransfer,
     handleDeleteMultipleTransfers,
     handleExpenseSubmit,
+    handlePrint,
+    handleExportTransfers,
     handleClosePrintDialog,
     handlePrintWithOptions
   } = useTransfersPage();
@@ -50,6 +52,8 @@ const TransfersPage = () => {
         onAddExpense={handleAddExpense}
         onViewSummary={handleViewSummary}
         onDeleteMultiple={handleDeleteMultipleTransfers}
+        onExportCSV={handleExportTransfers}
+        onPrint={handlePrint}
       />
 
       {/* Only render dialogs when needed */}

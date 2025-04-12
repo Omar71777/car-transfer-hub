@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Client } from '@/types/client';
@@ -22,11 +22,8 @@ export function BillClientSection({ form, clients, onClientChange }: BillClientS
         <FormItem>
           <FormLabel>Cliente</FormLabel>
           <Select 
-            onValueChange={(value) => {
-              field.onChange(value);
-              onClientChange(value);
-            }}
-            value={field.value} 
+            onValueChange={(value) => onClientChange(value)} 
+            defaultValue={field.value}
           >
             <FormControl>
               <SelectTrigger>
