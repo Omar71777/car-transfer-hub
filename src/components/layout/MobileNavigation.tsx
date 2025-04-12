@@ -36,10 +36,10 @@ export function MobileNavigation() {
           isActive={currentPath.startsWith('/clients')} 
         />
         <NavItem 
-          to="/profile" 
+          to="/settings" 
           icon={<Settings size={20} />} 
-          label="Perfil" 
-          isActive={currentPath.startsWith('/profile')} 
+          label="Ajustes" 
+          isActive={currentPath.startsWith('/settings') || currentPath.startsWith('/profile')} 
         />
       </div>
     </div>

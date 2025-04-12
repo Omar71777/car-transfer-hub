@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Menu, Search, BellRing } from 'lucide-react';
+import { ArrowLeft, Menu, Search, BellRing, UserCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/auth';
 import { useSidebar } from '@/components/ui/sidebar/sidebar-provider';
+import { Link } from 'react-router-dom';
 
 interface MobileHeaderProps {
   title?: string;
@@ -68,10 +69,21 @@ export function MobileHeader({
           <Button 
             variant="ghost" 
             size="icon" 
-            aria-label="Notifications"
+            aria-label="Search"
             className="touch-manipulation"
           >
-            <BellRing className="h-5 w-5" />
+            <Search className="h-5 w-5" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            aria-label="Profile"
+            className="touch-manipulation"
+            asChild
+          >
+            <Link to="/profile">
+              <UserCircle className="h-5 w-5" />
+            </Link>
           </Button>
         </div>
       </div>

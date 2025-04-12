@@ -1,115 +1,68 @@
 
-/* Enhanced touch interactions */
-@media (hover: none) and (pointer: coarse) {
-  /* Larger touch targets */
+/* Optimizations for touch devices */
+
+/* Improve touch targets */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* List item touch feedback */
+.touch-list-item {
+  transition: background-color 0.2s;
+}
+
+@media (pointer: coarse) {
+  /* Increase button sizes for touch devices */
+  .btn-touch {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Make list items respond to touch with visual feedback */
+  .touch-list-item:active {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Ensure touch targets are large enough */
   .touch-target {
-    @apply min-h-[44px] min-w-[44px];
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  /* Disable hover effects that can cause issues on touch */
-  .hover-effect {
-    @apply transition-none hover:bg-transparent active:bg-accent/20;
+  /* Optimized scrolling */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
   
-  /* Enhanced active states */
-  .touch-active {
-    @apply active:bg-accent/20;
+  /* Prevent text selection on touch interfaces */
+  .touch-no-select {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Active state visual feedback */
+.touch-active-feedback:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* Make form elements easier to interact with on touch devices */
+@media (pointer: coarse) {
+  input, 
+  select, 
+  textarea, 
+  button {
+    font-size: 16px; /* Prevents iOS zoom on focus */
   }
   
-  /* Better feedback for buttons */
-  button, 
-  [role="button"] {
-    @apply active:scale-95 transition-transform touch-manipulation;
-  }
-  
-  /* List item touch feedback */
-  .touch-list-item {
-    @apply active:bg-accent/10 transition-colors;
-  }
-  
-  /* Sidebar menu touch patterns */
-  [data-sidebar="menu-button"] {
-    @apply min-h-[44px];
-  }
-  
-  /* Improved touch targets for menu items */
-  .sidebar-menu-button {
-    @apply py-3;
-  }
-}
-
-/* Swipe gestures for cards */
-.swipeable-card {
-  @apply relative overflow-hidden;
-}
-
-.swipeable-card-content {
-  @apply transform transition-transform duration-200;
-}
-
-.swipeable-card-actions {
-  @apply absolute top-0 right-0 bottom-0 flex items-center;
-}
-
-.swipeable-card-action {
-  @apply h-full flex items-center justify-center px-4;
-}
-
-/* Pull to refresh indicator */
-.pull-indicator {
-  @apply absolute top-0 left-0 right-0 h-16 flex items-center justify-center transform -translate-y-full transition-transform;
-}
-
-.pull-indicator-icon {
-  @apply animate-spin h-6 w-6 text-primary;
-}
-
-/* Better scrolling for touch */
-.touch-scroll {
-  -webkit-overflow-scrolling: touch !important;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-}
-
-/* Fix iOS momentum scrolling */
-html, body {
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior-y: none;
-}
-
-main {
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior-y: contain;
-}
-
-/* Ensure large enough touch areas for inputs */
-input, 
-select, 
-textarea, 
-.touch-input {
-  @apply min-h-[44px] py-2;
-}
-
-/* Mobile sidebar modifications */
-@media (max-width: 768px) {
-  [data-sidebar="sidebar"] {
-    @apply rounded-none;
-  }
-  
-  /* Improved touch areas for sidebar items on mobile */
-  [data-sidebar="menu-button"] {
-    @apply min-h-[48px] px-4;
-  }
-  
-  /* Add visual feedback when pressing sidebar items */
-  [data-sidebar="menu-button"]:active {
-    @apply bg-sidebar-accent/30;
-  }
-  
-  /* Improved spacing for sidebar group labels */
-  [data-sidebar="group-label"] {
-    @apply mt-3 mb-1 px-4;
+  .input-touch,
+  .select-touch,
+  .textarea-touch {
+    padding: 12px 16px;
   }
 }

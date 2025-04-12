@@ -3,13 +3,17 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Transfer } from '@/types';
-import { MoreVertical, MapPin, Calendar, Clock, User } from 'lucide-react';
+import { 
+  MapPin, Calendar, Clock, User, DollarSign, 
+  Tag, CreditCard, Percent, CheckCircle, Timer
+} from 'lucide-react';
 import { formatCurrency } from '@/lib/format';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,6 +27,8 @@ interface TransferCardViewProps {
   onAddExpense: (transferId: string) => void;
   onViewSummary: (transferId: string) => void;
   onSelectRow?: (id: string, selected: boolean) => void;
+  onMarkAsPaid?: (transferId: string) => void;
+  onMarkAsBilled?: (transferId: string) => void;
   selectedRows?: string[];
 }
 
@@ -33,6 +39,8 @@ export function TransferCardView({
   onAddExpense,
   onViewSummary,
   onSelectRow,
+  onMarkAsPaid,
+  onMarkAsBilled,
   selectedRows = []
 }: TransferCardViewProps) {
   if (transfers.length === 0) {
@@ -53,111 +61,162 @@ export function TransferCardView({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {transfers.map((transfer) => (
         <Card 
           key={transfer.id} 
           className="overflow-hidden transition-all hover:border-primary/40"
         >
-          <CardContent className="p-4">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center gap-2">
+          <CardContent className="p-3">
+            {/* Header with status badges */}
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center gap-1.5">
                 {onSelectRow && (
                   <Checkbox
                     checked={selectedRows.includes(transfer.id)}
                     onCheckedChange={(checked) => {
                       onSelectRow(transfer.id, !!checked);
                     }}
-                    className="mr-2"
+                    className="mr-1"
                   />
                 )}
                 <Badge 
                   variant={transfer.serviceType === 'transfer' ? "default" : "secondary"}
-                  className="text-xs font-medium uppercase"
+                  className="text-xs font-medium uppercase px-1.5 py-0"
                 >
-                  {transfer.serviceType === 'transfer' ? 'Transfer' : 'Disposición'}
+                  {transfer.serviceType === 'transfer' ? 'Transfer' : 'Dispo'}
                 </Badge>
                 <Badge 
                   variant={transfer.paymentStatus === 'paid' ? "outline" : "secondary"}
-                  className={`text-xs ${transfer.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}
+                  className={`text-xs px-1.5 py-0 ${transfer.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}
                 >
                   {transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente'}
                 </Badge>
+                {transfer.billed && (
+                  <Badge variant="outline" className="text-xs px-1.5 py-0 bg-blue-100 text-blue-800">
+                    Facturado
+                  </Badge>
+                )}
               </div>
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Abrir menu</span>
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEdit(transfer)}>
-                      Editar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onViewSummary(transfer.id)}>
-                      Ver resumen
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onAddExpense(transfer.id)}>
-                      Añadir gasto
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      className="text-destructive focus:text-destructive" 
-                      onClick={() => onDelete(transfer.id)}
-                    >
-                      Eliminar
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              <TransferRowActions
+                transferId={transfer.id}
+                isMobile={true}
+                onEdit={() => onEdit(transfer)}
+                onDelete={() => onDelete(transfer.id)}
+                onAddExpense={() => onAddExpense(transfer.id)}
+                onViewSummary={() => onViewSummary(transfer.id)}
+                onMarkAsPaid={() => onMarkAsPaid && onMarkAsPaid(transfer.id)}
+                onMarkAsBilled={() => onMarkAsBilled && onMarkAsBilled(transfer.id)}
+              />
             </div>
             
-            <div className="space-y-3">
-              <div className="flex items-center text-sm">
-                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+            {/* Main content grid */}
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+              {/* Date and time */}
+              <div className="flex items-center col-span-2">
+                <Calendar className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
                 <span>{formatTransferDate(transfer.date)}</span>
                 {transfer.time && (
                   <>
-                    <Clock className="h-4 w-4 mx-2 text-muted-foreground" />
+                    <Clock className="h-3.5 w-3.5 mx-1.5 text-muted-foreground" />
                     <span>{transfer.time}</span>
+                  </>
+                )}
+                {transfer.serviceType === 'dispo' && transfer.hours && (
+                  <>
+                    <Timer className="h-3.5 w-3.5 mx-1.5 text-muted-foreground" />
+                    <span>{transfer.hours}h</span>
                   </>
                 )}
               </div>
               
-              <div className="flex items-start space-x-2 text-sm">
-                <MapPin className="h-4 w-4 mr-1 mt-0.5 text-muted-foreground" />
-                <div className="flex-1">
-                  <p className="font-medium">Origen:</p>
-                  <p className="text-muted-foreground truncate">{transfer.origin}</p>
-                  {transfer.serviceType === 'transfer' && (
-                    <>
-                      <p className="font-medium mt-1">Destino:</p>
-                      <p className="text-muted-foreground truncate">{transfer.destination}</p>
-                    </>
-                  )}
+              {/* Origin and destination */}
+              <div className="col-span-2">
+                <div className="flex items-start space-x-1.5">
+                  <MapPin className="h-3.5 w-3.5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="grid grid-cols-2 gap-x-2">
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground">Origen:</p>
+                        <p className="text-xs truncate">{transfer.origin}</p>
+                      </div>
+                      {transfer.serviceType === 'transfer' && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">Destino:</p>
+                          <p className="text-xs truncate">{transfer.destination}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex justify-between items-center mt-2 pt-2 border-t border-border/50">
-                <div className="flex items-center">
-                  <span className="font-medium">{formatCurrency(transfer.price)}</span>
-                  {transfer.serviceType === 'dispo' && transfer.hours && (
-                    <span className="text-xs text-muted-foreground ml-1">
-                      ({transfer.hours} horas)
-                    </span>
-                  )}
+              {/* Price information */}
+              <div className="flex items-center">
+                <DollarSign className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">Precio:</p>
+                  <p className="text-sm font-medium">{formatCurrency(transfer.price)}</p>
                 </div>
-                
-                {transfer.collaborator && transfer.collaborator !== 'none' && (
-                  <div className="flex items-center">
-                    <User className="h-4 w-4 mr-1 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      {transfer.collaborator}
-                    </span>
-                  </div>
+              </div>
+              
+              {/* Discount information */}
+              <div className="flex items-center">
+                {transfer.discountValue && transfer.discountValue > 0 ? (
+                  <>
+                    <Percent className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Descuento:</p>
+                      <p className="text-xs text-emerald-600 font-medium">
+                        {transfer.discountType === 'percentage' 
+                          ? `${transfer.discountValue}%` 
+                          : formatCurrency(Number(transfer.discountValue))}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Estado:</p>
+                      <p className="text-xs">
+                        {transfer.paymentStatus === 'paid' ? 'Pagado' : 'Pendiente'}
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
+              
+              {/* Collaborator information */}
+              {transfer.collaborator && transfer.collaborator !== 'none' && (
+                <div className="col-span-1 flex items-center">
+                  <User className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Colaborador:</p>
+                    <p className="text-xs truncate">
+                      {transfer.collaborator}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Commission information */}
+              {transfer.collaborator && 
+                transfer.collaborator !== 'none' && 
+                transfer.collaborator !== 'servicio propio' && 
+                transfer.commission && (
+                <div className="col-span-1 flex items-center">
+                  <Tag className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Comisión:</p>
+                    <p className="text-xs">
+                      {transfer.commissionType === 'percentage' 
+                        ? `${transfer.commission}%` 
+                        : formatCurrency(Number(transfer.commission))}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

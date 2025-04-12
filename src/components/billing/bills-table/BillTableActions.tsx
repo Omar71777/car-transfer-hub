@@ -1,13 +1,14 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Eye, Printer, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Eye, Printer, Edit, Trash2, MoreVertical, Send, CreditCard } from 'lucide-react';
 import { Bill } from '@/types/billing';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 
 interface BillTableActionsProps {
@@ -16,6 +17,8 @@ interface BillTableActionsProps {
   onEdit: (bill: Bill) => void;
   onPrint: (bill: Bill) => void;
   onDelete: (bill: Bill) => void;
+  onMarkAsSent?: (bill: Bill) => void;
+  onMarkAsPaid?: (bill: Bill) => void;
   isMobile?: boolean;
 }
 
@@ -25,6 +28,8 @@ export function BillTableActions({
   onEdit, 
   onPrint, 
   onDelete,
+  onMarkAsSent,
+  onMarkAsPaid,
   isMobile = false
 }: BillTableActionsProps) {
   const [open, setOpen] = useState(false);
@@ -69,13 +74,7 @@ export function BillTableActions({
               <Eye className="mr-2 h-4 w-4" />
               <span>Ver</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={(e) => {
-              e.preventDefault();
-              handleAction(e as unknown as React.MouseEvent, onEdit);
-            }}>
-              <Edit className="mr-2 h-4 w-4" />
-              <span>Editar</span>
-            </DropdownMenuItem>
+            
             <DropdownMenuItem onSelect={(e) => {
               e.preventDefault();
               handleAction(e as unknown as React.MouseEvent, onPrint);
@@ -83,6 +82,37 @@ export function BillTableActions({
               <Printer className="mr-2 h-4 w-4" />
               <span>Imprimir</span>
             </DropdownMenuItem>
+            
+            {onMarkAsSent && bill.status === 'draft' && (
+              <DropdownMenuItem onSelect={(e) => {
+                e.preventDefault();
+                handleAction(e as unknown as React.MouseEvent, onMarkAsSent);
+              }}>
+                <Send className="mr-2 h-4 w-4" />
+                <span>Marcar como enviada</span>
+              </DropdownMenuItem>
+            )}
+            
+            {onMarkAsPaid && (bill.status === 'draft' || bill.status === 'sent') && (
+              <DropdownMenuItem onSelect={(e) => {
+                e.preventDefault();
+                handleAction(e as unknown as React.MouseEvent, onMarkAsPaid);
+              }}>
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span>Marcar como pagada</span>
+              </DropdownMenuItem>
+            )}
+            
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem onSelect={(e) => {
+              e.preventDefault();
+              handleAction(e as unknown as React.MouseEvent, onEdit);
+            }}>
+              <Edit className="mr-2 h-4 w-4" />
+              <span>Editar</span>
+            </DropdownMenuItem>
+            
             <DropdownMenuItem onSelect={(e) => {
               e.preventDefault();
               handleAction(e as unknown as React.MouseEvent, onDelete);
@@ -107,15 +137,7 @@ export function BillTableActions({
         <span className="sr-only">Ver factura</span>
         <Eye className="h-4 w-4" />
       </Button>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        onClick={(e) => handleAction(e, onEdit)}
-        className="h-8 w-8"
-      >
-        <span className="sr-only">Editar factura</span>
-        <Edit className="h-4 w-4" />
-      </Button>
+      
       <Button 
         variant="ghost" 
         size="icon" 
@@ -125,6 +147,41 @@ export function BillTableActions({
         <span className="sr-only">Imprimir factura</span>
         <Printer className="h-4 w-4" />
       </Button>
+      
+      {onMarkAsSent && bill.status === 'draft' && (
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={(e) => handleAction(e, onMarkAsSent)}
+          className="h-8 w-8"
+        >
+          <span className="sr-only">Marcar como enviada</span>
+          <Send className="h-4 w-4" />
+        </Button>
+      )}
+      
+      {onMarkAsPaid && (bill.status === 'draft' || bill.status === 'sent') && (
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={(e) => handleAction(e, onMarkAsPaid)}
+          className="h-8 w-8"
+        >
+          <span className="sr-only">Marcar como pagada</span>
+          <CreditCard className="h-4 w-4" />
+        </Button>
+      )}
+      
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={(e) => handleAction(e, onEdit)}
+        className="h-8 w-8"
+      >
+        <span className="sr-only">Editar factura</span>
+        <Edit className="h-4 w-4" />
+      </Button>
+      
       <Button 
         variant="ghost" 
         size="icon" 

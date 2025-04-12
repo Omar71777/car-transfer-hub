@@ -1,12 +1,13 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Edit2, Trash2, Receipt, FileText, MoreVertical } from 'lucide-react';
+import { Edit2, Trash2, Receipt, FileText, MoreVertical, DollarSign, CheckCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 
 interface TransferRowActionsProps {
@@ -16,6 +17,8 @@ interface TransferRowActionsProps {
   onDelete: () => void;
   onAddExpense: () => void;
   onViewSummary: () => void;
+  onMarkAsPaid?: () => void;
+  onMarkAsBilled?: () => void;
 }
 
 export function TransferRowActions({
@@ -24,7 +27,9 @@ export function TransferRowActions({
   onEdit,
   onDelete,
   onAddExpense,
-  onViewSummary
+  onViewSummary,
+  onMarkAsPaid,
+  onMarkAsBilled
 }: TransferRowActionsProps) {
   return (
     <div className={`flex ${isMobile ? 'justify-end' : 'justify-center'}`}>
@@ -76,6 +81,34 @@ export function TransferRowActions({
             <Receipt className="h-4 w-4 mr-2" />
             Añadir gasto
           </DropdownMenuItem>
+          
+          {onMarkAsPaid && (
+            <DropdownMenuItem 
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkAsPaid();
+              }} 
+              className="cursor-pointer"
+            >
+              <DollarSign className="h-4 w-4 mr-2" />
+              Marcar como cobrado
+            </DropdownMenuItem>
+          )}
+          
+          {onMarkAsBilled && (
+            <DropdownMenuItem 
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkAsBilled();
+              }} 
+              className="cursor-pointer"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Marcar como facturado
+            </DropdownMenuItem>
+          )}
+          
+          <DropdownMenuSeparator />
           
           <DropdownMenuItem 
             onClick={(e) => {
