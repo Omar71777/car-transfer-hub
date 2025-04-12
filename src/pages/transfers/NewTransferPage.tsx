@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTransfers } from '@/hooks/useTransfers';
 import { useClients } from '@/hooks/useClients';
-import { ConversationalTransferForm } from '@/components/transfers/ConversationalTransferForm';
+import { TransferForm } from '@/components/transfers/TransferForm';
 import { useAuth } from '@/contexts/auth';
 import { CreateClientDto } from '@/types/client';
 import { MobileHeader } from '@/components/layout/MobileHeader';
+import { usePointerEventsCleanup } from './hooks/usePointerEventsCleanup';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
@@ -16,6 +17,9 @@ const NewTransferPage = () => {
   const { clients, createClient } = useClients();
   const { user } = useAuth();
   const [newClientId, setNewClientId] = useState<string | null>(null);
+  
+  // Apply pointer events cleanup
+  usePointerEventsCleanup();
   
   useEffect(() => {
     console.log('NewTransferPage mounted, user authentication state:', !!user);
@@ -127,12 +131,12 @@ const NewTransferPage = () => {
       
       <div className="py-4 px-0">
         <div className="mb-3">
-          <p className="text-muted-foreground text-sm">Completa el formulario paso a paso para registrar un nuevo servicio</p>
+          <p className="text-muted-foreground text-sm">Complete el formulario para registrar un nuevo servicio de transfer o disposición</p>
         </div>
         
-        <ConversationalTransferForm 
+        <TransferForm 
           onSubmit={handleSubmit} 
-          initialClientId={newClientId}
+          newClientId={newClientId}
         />
       </div>
     </MainLayout>

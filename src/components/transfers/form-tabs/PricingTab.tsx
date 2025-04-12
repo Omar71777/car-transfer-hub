@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FormProvider } from 'react-hook-form';
 import { PaymentStatusField } from '../form-fields/PaymentStatusField';
-import { PricingFields } from '../form-fields/PricingFields';
 import { TransferFormValues } from '../schema/transferSchema';
+import { Euro } from 'lucide-react';
 
 interface PricingTabProps {
   form: UseFormReturn<TransferFormValues>;
@@ -17,6 +17,7 @@ interface PricingTabProps {
 export function PricingTab({ form, serviceType }: PricingTabProps) {
   const hours = form.watch('hours');
   const price = form.watch('price');
+  const discountType = form.watch('discountType');
   
   // Calculate total price for dispo services
   const calculateTotalPrice = () => {
@@ -37,8 +38,9 @@ export function PricingTab({ form, serviceType }: PricingTabProps) {
                 <Input 
                   type="number" 
                   min="0" 
-                  step="0.01" 
-                  placeholder="120.00" 
+                  step="0.01"
+                  prefixSymbol="€"
+                  placeholder="120,00" 
                   {...field} 
                   className="w-full"
                 />
@@ -85,22 +87,25 @@ export function PricingTab({ form, serviceType }: PricingTabProps) {
             )}
           />
           
-          {form.watch('discountType') && (
+          {discountType && (
             <FormField
               control={form.control}
               name="discountValue"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input 
-                      type="number" 
-                      min="0" 
-                      max={form.watch('discountType') === 'percentage' ? "100" : undefined}
-                      step={form.watch('discountType') === 'percentage' ? "1" : "0.01"} 
-                      placeholder={form.watch('discountType') === 'percentage' ? "10" : "25.00"} 
-                      {...field} 
-                      className="w-full"
-                    />
+                    <div className="relative">
+                      <Input 
+                        type="number" 
+                        min="0" 
+                        max={discountType === 'percentage' ? "100" : undefined}
+                        step={discountType === 'percentage' ? "1" : "0.01"}
+                        prefixSymbol={discountType === 'fixed' ? "€" : undefined}
+                        placeholder={discountType === 'percentage' ? "10" : "25,00"} 
+                        {...field} 
+                        className="w-full"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -110,8 +115,6 @@ export function PricingTab({ form, serviceType }: PricingTabProps) {
         </div>
         
         <PaymentStatusField />
-        
-        <PricingFields serviceType={serviceType} />
       </div>
     </FormProvider>
   );

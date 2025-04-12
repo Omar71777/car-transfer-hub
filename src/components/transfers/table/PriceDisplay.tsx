@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { formatCurrency } from '@/lib/utils';
-import { calculateTotalPrice, calculateBasePrice } from '@/lib/calculations';
+import { calculateTotalPrice } from '@/lib/calculations';
 import { MinimalTransfer } from '@/lib/calculations';
 
 interface PriceDisplayProps {

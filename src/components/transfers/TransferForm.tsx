@@ -14,6 +14,7 @@ import { useExtraCharges } from './hooks/useExtraCharges';
 import { BasicInfoTab } from './form-tabs/BasicInfoTab';
 import { PricingTab } from './form-tabs/PricingTab';
 import { ExtraChargesTab } from './form-tabs/ExtraChargesTab';
+import { Car, Clock } from 'lucide-react';
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
@@ -34,7 +35,7 @@ export function TransferForm({
     fetchClients
   } = useClients();
 
-  const [serviceType, setServiceType] = useState<'transfer' | 'dispo'>(
+  const [activeTab, setActiveTab] = useState<'transfer' | 'dispo'>(
     initialValues?.serviceType || 'transfer'
   );
   
@@ -58,6 +59,7 @@ export function TransferForm({
     fetchClients();
   }, [fetchClients]);
 
+  // Function to get default values for the form based on initialValues
   const getDefaultValues = () => {
     if (initialValues) {
       return {
@@ -84,7 +86,7 @@ export function TransferForm({
     return {
       date: new Date().toISOString().split('T')[0],
       time: '',
-      serviceType: 'transfer' as const,
+      serviceType: activeTab,
       origin: '',
       destination: '',
       hours: '',
@@ -112,10 +114,28 @@ export function TransferForm({
     }
   }, [newClientId, form]);
 
+  // Update service type when tab changes
+  useEffect(() => {
+    form.setValue('serviceType', activeTab, { shouldValidate: true });
+  }, [activeTab, form]);
+
+  // Update form based on active tab
+  const handleTabChange = (value: string) => {
+    const newServiceType = value as 'transfer' | 'dispo';
+    setActiveTab(newServiceType);
+    
+    // Clear fields that are not relevant for the current service type
+    if (newServiceType === 'transfer') {
+      form.setValue('hours', '', { shouldValidate: false });
+    } else if (newServiceType === 'dispo') {
+      form.setValue('destination', 'N/A', { shouldValidate: false });
+    }
+  };
+
   function handleSubmit(values: TransferFormValues) {
     const processedValues = {
       ...values,
-      serviceType: serviceType,
+      serviceType: activeTab,
       price: Number(values.price),
       discountValue: values.discountValue ? Number(values.discountValue) : 0,
       commission: values.commission ? Number(values.commission) : 0,
@@ -144,34 +164,59 @@ export function TransferForm({
       <CardContent className="pt-4 px-3 md:px-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 md:space-y-6">
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="w-full grid grid-cols-3 mb-4">
-                <TabsTrigger value="basic">Información Básica</TabsTrigger>
-                <TabsTrigger value="pricing">Precio y Descuentos</TabsTrigger>
-                <TabsTrigger value="extras">Cargos Extra</TabsTrigger>
+            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+              <TabsList className="w-full grid grid-cols-2 mb-4">
+                <TabsTrigger value="transfer" className="flex items-center">
+                  <Car className="h-4 w-4 mr-2" />
+                  <span>Transfer</span>
+                </TabsTrigger>
+                <TabsTrigger value="dispo" className="flex items-center">
+                  <Clock className="h-4 w-4 mr-2" />
+                  <span>Disposición</span>
+                </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="basic" className="space-y-4">
-                <BasicInfoTab 
-                  form={form} 
-                  serviceType={serviceType} 
-                  setServiceType={setServiceType} 
-                  clients={clients}
-                />
-              </TabsContent>
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold">
+                  {activeTab === 'transfer' 
+                    ? 'Servicio de Transfer (punto a punto)' 
+                    : 'Servicio de Disposición (por horas)'}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {activeTab === 'transfer' 
+                    ? 'Complete los detalles del traslado de un punto a otro' 
+                    : 'Complete los detalles del servicio por horas'}
+                </p>
+              </div>
               
-              <TabsContent value="pricing" className="space-y-4">
-                <PricingTab form={form} serviceType={serviceType} />
-              </TabsContent>
-              
-              <TabsContent value="extras">
-                <ExtraChargesTab 
-                  extraCharges={extraCharges}
-                  onAddCharge={handleAddExtraCharge}
-                  onRemoveCharge={handleRemoveExtraCharge}
-                  onChangeCharge={handleExtraChargeChange}
-                />
-              </TabsContent>
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="w-full grid grid-cols-3 mb-4">
+                  <TabsTrigger value="basic">Información Básica</TabsTrigger>
+                  <TabsTrigger value="pricing">Precio</TabsTrigger>
+                  <TabsTrigger value="extras">Cargos Extra</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="basic" className="space-y-4">
+                  <BasicInfoTab 
+                    form={form} 
+                    serviceType={activeTab} 
+                    clients={clients}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="pricing" className="space-y-4">
+                  <PricingTab form={form} serviceType={activeTab} />
+                </TabsContent>
+                
+                <TabsContent value="extras">
+                  <ExtraChargesTab 
+                    extraCharges={extraCharges}
+                    onAddCharge={handleAddExtraCharge}
+                    onRemoveCharge={handleRemoveExtraCharge}
+                    onChangeCharge={handleExtraChargeChange}
+                  />
+                </TabsContent>
+              </Tabs>
             </Tabs>
 
             <Button type="submit" className="w-full mobile-btn">
