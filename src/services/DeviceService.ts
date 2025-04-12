@@ -146,6 +146,6 @@ export class DeviceService {
 
   // Network status
   static isNative(): boolean {
-    return window.Capacitor && window.Capacitor.isNative;
+    return window.Capacitor !== undefined && window.Capacitor.isNative;
   }
 }
