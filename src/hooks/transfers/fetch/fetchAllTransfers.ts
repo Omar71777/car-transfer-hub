@@ -10,7 +10,7 @@ export async function fetchAllTransfers(user: any) {
   try {
     console.log('Fetching transfers for user:', user.id);
     
-    // Fetch transfers
+    // Fetch transfers with all required fields
     const { data, error } = await supabase
       .from('transfers')
       .select(`
@@ -27,6 +27,8 @@ export async function fetchAllTransfers(user: any) {
         commission,
         commission_type,
         payment_status,
+        payment_method,
+        billed,
         client_id,
         hours,
         expenses (
@@ -61,7 +63,6 @@ export async function fetchAllTransfers(user: any) {
     let extraChargesMap: Record<string, any[]> = {};
     
     if (transferIds.length > 0) {
-      // We need to get extra charges separately
       const { data: allExtraCharges, error: extraChargesError } = await supabase
         .from('extra_charges')
         .select('*')
@@ -131,7 +132,7 @@ export async function fetchAllTransfers(user: any) {
         serviceType,
         origin,
         destination,
-        hours: transfer.hours !== null ? transfer.hours : undefined, // Keep as number from DB
+        hours: transfer.hours || undefined,
         price: Number(transfer.price),
         discountType: transfer.discount_type,
         discountValue: Number(transfer.discount_value) || 0,
@@ -139,6 +140,8 @@ export async function fetchAllTransfers(user: any) {
         commission: Number(transfer.commission) || 0,
         commissionType: transfer.commission_type || 'percentage',
         paymentStatus: transfer.payment_status || 'pending',
+        payment_method: transfer.payment_method || null,
+        billed: transfer.billed || false,
         clientId: transfer.client_id || '',
         client,
         expenses,

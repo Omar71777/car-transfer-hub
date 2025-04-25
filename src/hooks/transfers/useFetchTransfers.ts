@@ -1,7 +1,6 @@
-
 import { useState, useCallback } from 'react';
 import { Transfer, Expense } from '@/types';
-import { fetchAllTransfers, fetchTransferById } from './fetch';
+import { fetchAllTransfers } from './fetch';
 
 export function useFetchTransfers(user: any) {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -49,8 +48,9 @@ export function useFetchTransfers(user: any) {
   }, [user]);
 
   const fetchTransferByIdFunc = useCallback(async (id: string) => {
-    return fetchTransferById(id);
-  }, []);
+    return fetchAllTransfers(user)
+      .then(transfers => transfers.find(transfer => transfer.id === id) || null);
+  }, [user]);
 
   return { 
     transfers, 
