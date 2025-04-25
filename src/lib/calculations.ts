@@ -14,9 +14,7 @@ export interface MinimalTransfer {
   extraCharges?: ExtraCharge[];
   commission?: number;
   commissionType?: 'percentage' | 'fixed';
-  destination?: string;
-  origin?: string;
-  date?: string;
+  collaborator?: string;
 }
 
 /**
@@ -37,6 +35,8 @@ export const adaptExtraCharges = (extraCharges: any[]): ExtraCharge[] => {
  * @returns Base price (price * hours for dispo, just price for transfer)
  */
 export const calculateBasePrice = (transfer: MinimalTransfer): number => {
+  if (!transfer?.price) return 0;
+  
   if (transfer.serviceType === 'dispo' && transfer.hours) {
     const hours = typeof transfer.hours === 'string' ? parseFloat(transfer.hours) : transfer.hours;
     return transfer.price * (isNaN(hours) ? 1 : hours);
@@ -50,9 +50,10 @@ export const calculateBasePrice = (transfer: MinimalTransfer): number => {
  * @returns Discount amount in currency
  */
 export const calculateDiscountAmount = (transfer: MinimalTransfer): number => {
+  if (!transfer?.price) return 0;
+  
   const basePrice = calculateBasePrice(transfer);
   
-  // Calculate discount amount
   if (transfer.discountType && transfer.discountValue) {
     if (transfer.discountType === 'percentage') {
       return basePrice * (transfer.discountValue / 100);
@@ -82,16 +83,23 @@ export const calculateExtraChargesTotal = (extraCharges: ExtraCharge[] = []): nu
  * @returns Commission amount in currency
  */
 export const calculateCommissionAmount = (transfer: MinimalTransfer): number => {
-  if (!transfer.commission || !transfer.commissionType) return 0;
+  // If no commission or no collaborator, return 0
+  if (!transfer?.commission || !transfer.collaborator || transfer.collaborator === 'none' || transfer.collaborator === 'servicio propio') {
+    return 0;
+  }
 
   const basePrice = calculateBasePrice(transfer);
   const discountAmount = calculateDiscountAmount(transfer);
   const extraChargesTotal = calculateExtraChargesTotal(transfer.extraCharges);
+  
+  // Calculate subtotal before commission
   const subtotalBeforeCommission = basePrice - discountAmount + extraChargesTotal;
   
+  // Calculate commission amount based on type
   if (transfer.commissionType === 'percentage') {
-    return subtotalBeforeCommission * (transfer.commission / 100);
+    return (subtotalBeforeCommission * (transfer.commission / 100));
   } else {
+    // Fixed commission amount
     return transfer.commission;
   }
 };
@@ -102,6 +110,8 @@ export const calculateCommissionAmount = (transfer: MinimalTransfer): number => 
  * @returns Total price after all calculations
  */
 export const calculateTotalPrice = (transfer: MinimalTransfer): number => {
+  if (!transfer?.price) return 0;
+  
   const basePrice = calculateBasePrice(transfer);
   const discountAmount = calculateDiscountAmount(transfer);
   const extraChargesTotal = calculateExtraChargesTotal(transfer.extraCharges);
@@ -110,3 +120,4 @@ export const calculateTotalPrice = (transfer: MinimalTransfer): number => {
   // Calculate final price: base price - discount + extra charges - commission
   return basePrice - discountAmount + extraChargesTotal - commissionAmount;
 };
+
