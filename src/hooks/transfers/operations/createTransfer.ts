@@ -66,6 +66,7 @@ export async function createTransfer(user: any, transferData: any) {
       commission: transferData.commission || 0,
       commission_type: transferData.commissionType,
       payment_status: transferData.paymentStatus,
+      payment_method: transferData.payment_method || null,  // Explicitly handle payment method
       client_id: transferData.clientId,
       user_id: user.id // Explicitly set user_id for RLS
     };
@@ -104,16 +105,17 @@ export async function createTransfer(user: any, transferData: any) {
 
         console.log('Inserting extra charges:', extraChargesData);
         
-        // Insert extra charges one by one
-        for (const charge of extraChargesData) {
-          const { error: extraChargeError } = await supabase
-            .from('extra_charges')
-            .insert(charge);
-          
-          if (extraChargeError) {
-            console.error('Error adding extra charge:', extraChargeError);
-            // Continue with other charges even if one fails
-          }
+        // Insert all extra charges in a single operation
+        const { error: extraChargesError } = await supabase
+          .from('extra_charges')
+          .insert(extraChargesData);
+        
+        if (extraChargesError) {
+          console.error('Error adding extra charges:', extraChargesError);
+          toast.error(`Error al añadir cargos extra: ${extraChargesError.message}`);
+          // Continue anyway since the transfer was created
+        } else {
+          console.log('Extra charges added successfully');
         }
       }
     }

@@ -81,15 +81,18 @@ const NewTransferPage = () => {
         values.discountValue = 0;
       }
       
-      // Make sure extra charges is an array
-      if (!Array.isArray(values.extraCharges)) {
-        values.extraCharges = [];
-      }
-      
-      // Filter out invalid extra charges
-      values.extraCharges = values.extraCharges.filter((charge: any) => 
+      // Make sure extra charges is an array and properly formatted
+      const extraCharges = (values.extraCharges || []).filter((charge: any) => 
         charge && charge.name && charge.price && charge.name.trim() !== ''
-      );
+      ).map((charge: any) => ({
+        name: charge.name,
+        price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
+      }));
+      
+      // Update the values with the formatted extra charges
+      values.extraCharges = extraCharges;
+      
+      console.log('Processing extra charges:', extraCharges.length, 'charges found');
       
       // Set defaults for conditional fields
       if (values.serviceType === 'dispo') {
@@ -106,6 +109,13 @@ const NewTransferPage = () => {
         if (!values.hours || values.hours.trim() === '') {
           values.hours = null;
         }
+      }
+      
+      // Ensure payment method is set when paid
+      if (values.paymentStatus === 'paid' && !values.payment_method) {
+        values.payment_method = 'cash'; // Default to cash if not specified
+      } else if (values.paymentStatus === 'pending') {
+        values.payment_method = null;
       }
       
       console.log('Creating transfer with processed values:', values);

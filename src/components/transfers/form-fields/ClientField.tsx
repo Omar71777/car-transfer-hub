@@ -14,10 +14,13 @@ import { Label } from '@/components/ui/label';
 interface ClientFieldProps {
   form: UseFormReturn<TransferFormValues>;
   clients: Client[];
+  onNewClientCreated?: (client: Client) => void;
 }
 
-export function ClientField({ form, clients }: ClientFieldProps) {
+export function ClientField({ form, clients, onNewClientCreated }: ClientFieldProps) {
   const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
+  const [clientNameValue, setClientNameValue] = useState('');
+  const [clientEmailValue, setClientEmailValue] = useState('');
 
   // Handle setting a new client
   const handleAddNewClient = () => {
@@ -28,15 +31,23 @@ export function ClientField({ form, clients }: ClientFieldProps) {
   const handleNewClientSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const clientName = form.getValues('clientName');
-    
-    if (!clientName) {
+    if (!clientNameValue) {
       return;
     }
+    
+    // Update form values with new client data
+    form.setValue('clientName', clientNameValue);
+    form.setValue('clientEmail', clientEmailValue);
     
     // Set the client ID to 'new' to indicate it's a new client
     form.setValue('clientId', 'new', { shouldValidate: true });
     setIsNewClientDialogOpen(false);
+    
+    console.log('New client data set:', { 
+      clientId: 'new', 
+      clientName: clientNameValue, 
+      clientEmail: clientEmailValue 
+    });
   };
 
   return (
@@ -86,19 +97,29 @@ export function ClientField({ form, clients }: ClientFieldProps) {
             <DialogTitle>Nuevo Cliente</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleNewClientSubmit} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="clientName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre *</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Nombre del cliente" required />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="clientName">Nombre *</Label>
+                <Input 
+                  id="clientName" 
+                  value={clientNameValue} 
+                  onChange={(e) => setClientNameValue(e.target.value)}
+                  placeholder="Nombre del cliente" 
+                  required 
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="clientEmail">Email</Label>
+                <Input 
+                  id="clientEmail" 
+                  type="email" 
+                  value={clientEmailValue} 
+                  onChange={(e) => setClientEmailValue(e.target.value)}
+                  placeholder="Email del cliente" 
+                />
+              </div>
+            </div>
             
             <div className="flex justify-end space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={() => setIsNewClientDialogOpen(false)}>

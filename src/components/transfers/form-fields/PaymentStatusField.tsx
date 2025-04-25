@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -8,8 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PaymentMethodIcon } from '../PaymentMethodIcon';
 
 export function PaymentStatusField() {
-  const { control, watch } = useFormContext();
+  const { control, watch, setValue } = useFormContext();
   const paymentStatus = watch('paymentStatus');
+  
+  // Ensure payment method is cleared when changing to pending
+  useEffect(() => {
+    if (paymentStatus === 'pending') {
+      setValue('payment_method', null);
+    } else if (paymentStatus === 'paid' && !watch('payment_method')) {
+      // Set a default payment method when changing to paid
+      setValue('payment_method', 'cash');
+    }
+  }, [paymentStatus, setValue, watch]);
   
   return (
     <>

@@ -16,6 +16,7 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       commissionType, 
       clientId, 
       paymentStatus,
+      payment_method, // Make sure to handle the payment method
       hours,
       ...rest 
     } = transferData;
@@ -28,6 +29,7 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       discount_type: discountType,
       discount_value: discountValue,
       payment_status: paymentStatus,
+      payment_method: payment_status === 'paid' ? payment_method : null, // Only set payment method if paid
       client_id: clientId,
       // Convert hours to number for database if it exists
       hours: hours !== undefined ? Number(hours) : undefined,
@@ -44,12 +46,15 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       }
     });
     
+    console.log('Updating transfer with data:', dataForDb);
+    
     const { error } = await supabase
       .from('transfers')
       .update(dataForDb)
       .eq('id', id);
 
     if (error) {
+      console.error('Error updating transfer:', error);
       throw error;
     }
 
@@ -62,24 +67,33 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
         .eq('transfer_id', id);
         
       if (deleteError) {
+        console.error('Error deleting extra charges:', deleteError);
         throw deleteError;
       }
         
       // Then insert new ones
       if (extraCharges.length > 0) {
-        for (const charge of extraCharges) {
-          const extraChargeData = {
+        // Filter out invalid extra charges
+        const validExtraCharges = extraCharges.filter(charge => 
+          charge && charge.name && charge.price
+        );
+        
+        if (validExtraCharges.length > 0) {
+          const extraChargesData = validExtraCharges.map(charge => ({
             transfer_id: id,
             name: charge.name,
             price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
-          };
+          }));
+          
+          console.log('Inserting updated extra charges:', extraChargesData);
           
           const { error: insertError } = await supabase
             .from('extra_charges')
-            .insert(extraChargeData);
+            .insert(extraChargesData);
             
           if (insertError) {
-            console.error('Error inserting extra charge:', insertError);
+            console.error('Error inserting extra charges:', insertError);
+            throw insertError;
           }
         }
       }

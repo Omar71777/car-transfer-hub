@@ -225,6 +225,18 @@ export function TransferCardView({
                     </p>
                   </div>
                 )}
+                
+                {transfer.extraCharges && transfer.extraCharges.length > 0 && (
+                  <div className="col-span-2 mt-2 pt-2 border-t border-gray-100">
+                    <p className="text-xs font-medium text-muted-foreground">Cargos extra:</p>
+                    {transfer.extraCharges.map((charge, idx) => (
+                      <div key={idx} className="flex justify-between text-xs">
+                        <span className="text-slate-700">{charge.name}</span>
+                        <span className="text-slate-700">{formatCurrency(Number(charge.price))}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

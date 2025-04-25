@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Card, CardContent } from '@/components/ui/card';
@@ -31,7 +31,8 @@ export function TransferForm({
   const {
     clients,
     loading: loadingClients,
-    fetchClients
+    fetchClients,
+    getClient
   } = useClients();
 
   const { 
@@ -51,7 +52,8 @@ export function TransferForm({
     setExtraCharges, 
     handleAddExtraCharge, 
     handleRemoveExtraCharge, 
-    handleExtraChargeChange 
+    handleExtraChargeChange,
+    processExtraChargesForSubmission
   } = useExtraCharges(
     initialValues?.extraCharges 
       ? initialValues.extraCharges.map(charge => ({
@@ -68,16 +70,34 @@ export function TransferForm({
     fetchCollaborators,
   } = useCollaborators();
 
-  React.useEffect(() => {
+  // Set extra charges in the form whenever they change
+  useEffect(() => {
+    if (extraCharges.length > 0) {
+      form.setValue('extraCharges', extraCharges);
+    }
+  }, [extraCharges, form]);
+
+  useEffect(() => {
     fetchClients();
     fetchCollaborators();
   }, [fetchClients, fetchCollaborators]);
+
+  // Custom submit handler to process extra charges
+  const handleFormSubmit = (values: any) => {
+    const processedValues = {
+      ...values,
+      // Make sure extra charges are properly processed
+      extraCharges: processExtraChargesForSubmission()
+    };
+    
+    onSubmit(processedValues);
+  };
 
   return (
     <Card className="glass-card w-full max-full mx-auto">
       <CardContent className="pt-4 px-3 md:px-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
             <ServiceTypeSelector 
               activeTab={activeTab} 
               onTabChange={handleTabChange} 

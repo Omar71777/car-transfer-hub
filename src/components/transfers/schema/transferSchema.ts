@@ -1,3 +1,4 @@
+
 import * as z from 'zod';
 
 export const transferSchema = z.object({
@@ -50,7 +51,7 @@ export const transferSchema = z.object({
   extraCharges: z.array(
     z.object({
       id: z.string().optional(),
-      name: z.string().optional(),
+      name: z.string().min(1, { message: 'El nombre del cargo es requerido' }).optional(),
       price: z.union([z.string(), z.number()]).optional().transform(val => 
         typeof val === 'string' ? val : val?.toString()
       )

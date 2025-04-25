@@ -6,7 +6,7 @@ export interface Transfer {
   serviceType: 'transfer' | 'dispo';
   origin: string;
   destination?: string;
-  hours?: number | string;  // Update to accept either number or string
+  hours?: number | string;  // Can accept either number or string
   price: number;
   discountType?: 'percentage' | 'fixed' | null;
   discountValue?: number;
