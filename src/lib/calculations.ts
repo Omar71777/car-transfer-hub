@@ -80,27 +80,27 @@ export const calculateCommissionAmount = (transfer: MinimalTransfer): number => 
 
   const basePrice = calculateBasePrice(transfer);
   const discountAmount = calculateDiscountAmount(transfer);
-  const netPrice = basePrice - discountAmount;
+  const extraChargesTotal = calculateExtraChargesTotal(transfer.extraCharges);
+  const subtotalBeforeCommission = basePrice - discountAmount + extraChargesTotal;
   
   if (transfer.commissionType === 'percentage') {
-    return netPrice * (transfer.commission / 100);
+    return subtotalBeforeCommission * (transfer.commission / 100);
   } else {
     return transfer.commission;
   }
 };
 
 /**
- * Calculate the total price of a transfer including discounts and extra charges
+ * Calculate the total price of a transfer including discounts, extra charges, and commission
  * @param transfer Transfer object
  * @returns Total price after all calculations
  */
 export const calculateTotalPrice = (transfer: MinimalTransfer): number => {
   const basePrice = calculateBasePrice(transfer);
   const discountAmount = calculateDiscountAmount(transfer);
-  
-  // Sum up extra charges
   const extraChargesTotal = calculateExtraChargesTotal(transfer.extraCharges);
+  const commissionAmount = calculateCommissionAmount(transfer);
   
-  // Calculate final price
-  return basePrice - discountAmount + extraChargesTotal;
+  // Calculate final price: base price - discount + extra charges - commission
+  return basePrice - discountAmount + extraChargesTotal - commissionAmount;
 };
