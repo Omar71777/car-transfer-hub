@@ -16,6 +16,7 @@ export interface Transfer {
   expenses: Expense[];
   extraCharges: ExtraCharge[];
   paymentStatus: 'paid' | 'pending';
+  payment_method?: 'card' | 'cash' | 'bank_transfer' | null;
   clientId: string;
   client?: {
     id: string;
