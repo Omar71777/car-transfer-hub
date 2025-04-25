@@ -1,3 +1,4 @@
+
 /**
  * Calculations utility for transfers and billing
  */
@@ -21,8 +22,11 @@ export interface MinimalTransfer {
 /**
  * Adapts ExtraCharge[] to the format required by calculation functions
  */
-export const adaptExtraCharges = (extraCharges: any[]): { price: number }[] => {
+export const adaptExtraCharges = (extraCharges: any[]): ExtraCharge[] => {
   return extraCharges.map(charge => ({
+    id: charge.id || '',
+    transferId: charge.transfer_id || '',
+    name: charge.name || '',
     price: typeof charge.price === 'string' ? parseFloat(charge.price) : charge.price
   }));
 };
