@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Transfer } from '@/types';
 import { useClients } from '@/hooks/useClients';
 import { Separator } from '@/components/ui/separator';
-import { useExtraCharges } from './hooks/useExtraCharges';
+import { useExtraCharges, ExtraChargeForm } from './hooks/useExtraCharges';
 import { BasicInfoTab } from './form-tabs/BasicInfoTab';
 import { PricingTab } from './form-tabs/PricingTab';
 import { ExtraChargesTab } from './form-tabs/ExtraChargesTab';

@@ -52,10 +52,11 @@ export function useTransfersPage() {
     setIsEditDialogOpen
   );
   
-  // Initialize expense handlers hook
+  // Initialize expense handlers hook - make sure to return void instead of any[]
   const expenseHandlers = useExpenseHandlers(
     createExpense,
-    fetchTransfers,
+    // Wrap with a void function that calls fetchTransfers
+    () => { fetchTransfers(); return Promise.resolve(); },
     setIsExpenseDialogOpen
   );
   

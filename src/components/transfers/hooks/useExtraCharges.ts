@@ -1,14 +1,16 @@
 
 import { useState, useCallback } from 'react';
+import { ExtraCharge } from '@/types';
 
-interface ExtraCharge {
+// Define a type that matches what the form expects
+export interface ExtraChargeForm {
   id?: string;
   name: string;
   price: string | number;
 }
 
-export function useExtraCharges(initialCharges: ExtraCharge[] = []) {
-  const [extraCharges, setExtraCharges] = useState<ExtraCharge[]>(initialCharges || []);
+export function useExtraCharges(initialCharges: Partial<ExtraChargeForm>[] = []) {
+  const [extraCharges, setExtraCharges] = useState<Partial<ExtraChargeForm>[]>(initialCharges || []);
   
   // Add a new empty extra charge
   const handleAddExtraCharge = useCallback(() => {
@@ -25,7 +27,7 @@ export function useExtraCharges(initialCharges: ExtraCharge[] = []) {
   }, [extraCharges]);
   
   // Update a field in an extra charge
-  const handleExtraChargeChange = useCallback((index: number, field: keyof ExtraCharge, value: string) => {
+  const handleExtraChargeChange = useCallback((index: number, field: keyof ExtraChargeForm, value: string) => {
     const newCharges = [...extraCharges];
     newCharges[index] = {
       ...newCharges[index],

@@ -30,12 +30,12 @@ export interface ExtraCharge {
   id: string;
   transferId: string;
   name: string;
-  price: number | string;
+  price: string | number;  // Update to match both string and number
 }
 
 export interface Expense {
   id: string;
-  transferId: string;
+  transferId: string;  // Camel case format
   date: string;
   concept: string;
   amount: number;

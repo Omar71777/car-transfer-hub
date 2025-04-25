@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Transfer, Expense } from '@/types';
@@ -82,6 +83,15 @@ export function useTransfers() {
         expensesByTransferId[expense.transfer_id].push(expense);
       });
 
+      // Convert and transform expenses for state
+      const transformedExpenses: Expense[] = expensesData.map((expense: any) => ({
+        id: expense.id,
+        transferId: expense.transfer_id, // Map transfer_id to transferId
+        date: expense.date,
+        concept: expense.concept,
+        amount: expense.amount
+      }));
+
       // Add extra charges and expenses to each transfer
       const transfersWithRelatedData = transfersData.map((transfer: any) => ({
         ...transfer,
@@ -90,7 +100,7 @@ export function useTransfers() {
       }));
 
       setTransfers(transfersWithRelatedData);
-      setExpenses(expensesData);
+      setExpenses(transformedExpenses);
 
       return transfersWithRelatedData;
     } catch (error) {

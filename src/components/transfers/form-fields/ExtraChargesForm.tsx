@@ -5,10 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Trash2 } from 'lucide-react';
-import { ExtraCharge } from '@/types';
+import { ExtraChargeForm } from '../hooks/useExtraCharges';
 
 export interface ExtraChargesFormProps {
-  extraCharges: Partial<ExtraCharge>[];
+  extraCharges: Partial<ExtraChargeForm>[];
   onAddCharge: () => void;
   onRemoveCharge: (index: number) => void;
   onChangeCharge: (index: number, field: string, value: string) => void;

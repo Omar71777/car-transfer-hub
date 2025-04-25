@@ -1,13 +1,13 @@
 
 import React from 'react';
 import { ExtraChargesForm } from '../form-fields/ExtraChargesForm';
-import { ExtraCharge } from '@/types';
+import { ExtraChargeForm } from '../hooks/useExtraCharges';
 
 interface ExtraChargesTabProps {
-  extraCharges: Partial<ExtraCharge>[];
+  extraCharges: Partial<ExtraChargeForm>[];
   onAddCharge: () => void;
   onRemoveCharge: (index: number) => void;
-  onChangeCharge: (index: number, field: keyof ExtraCharge, value: any) => void;
+  onChangeCharge: (index: number, field: keyof ExtraChargeForm, value: any) => void;
 }
 
 export function ExtraChargesTab({ 

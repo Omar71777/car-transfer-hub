@@ -29,7 +29,7 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       discount_type: discountType,
       discount_value: discountValue,
       payment_status: paymentStatus,
-      payment_method: payment_status === 'paid' ? payment_method : null, // Only set payment method if paid
+      payment_method: paymentStatus === 'paid' ? payment_method : null, // Only set payment method if paid
       client_id: clientId,
       // Convert hours to number for database if it exists
       hours: hours !== undefined ? Number(hours) : undefined,
