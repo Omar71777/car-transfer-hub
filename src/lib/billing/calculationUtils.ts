@@ -1,3 +1,4 @@
+
 import { Transfer } from '@/types';
 import { Client } from '@/types/client';
 import { BillPreview, TaxApplicationType } from '@/types/billing';
@@ -84,13 +85,12 @@ export function formatTransferForCalculations(transfer: Transfer): MinimalTransf
     hours: transfer.hours,
     discountType: transfer.discountType,
     discountValue: transfer.discountValue,
-    // Add commission related fields that exist in MinimalTransfer
+    // Add commission related fields
     commission: transfer.commission,
     commissionType: transfer.commissionType,
-    // Other optional fields
-    destination: transfer.destination,
-    origin: transfer.origin,
-    date: transfer.date
+    collaborator: transfer.collaborator,
+    // Include extra charges if available
+    extraCharges: transfer.extraCharges
   };
 }
 
