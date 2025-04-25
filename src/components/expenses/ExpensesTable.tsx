@@ -24,9 +24,10 @@ interface ExpensesTableProps {
   expenses: Expense[];
   onEdit: (expense: Expense) => void;
   onDelete: (id: string) => void;
+  onAdd?: (expense: Partial<Expense>) => void;
 }
 
-export function ExpensesTable({ expenses, onEdit, onDelete }: ExpensesTableProps) {
+export function ExpensesTable({ expenses, onEdit, onDelete, onAdd }: ExpensesTableProps) {
   const isMobile = useIsMobile();
   
   return (
