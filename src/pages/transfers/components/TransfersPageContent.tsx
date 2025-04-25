@@ -39,15 +39,16 @@ export function TransfersPageContent({
     return <LoadingSpinner />;
   }
 
-  // Placeholder functions for expenses that will be implemented later
   const handleEditExpense = (expense: Expense) => {
     console.log("Edit expense:", expense);
-    // Implement expense editing functionality
   };
 
   const handleDeleteExpense = (id: string) => {
     console.log("Delete expense:", id);
-    // Implement expense deletion functionality
+  };
+
+  const handleAddExpense = (expense: Partial<Expense>) => {
+    console.log("Add expense:", expense);
   };
 
   return (
@@ -91,7 +92,8 @@ export function TransfersPageContent({
             <ExpensesTable 
               expenses={expenses}
               onEdit={handleEditExpense}
-              onDelete={handleDeleteExpense} 
+              onDelete={handleDeleteExpense}
+              onAdd={handleAddExpense}
             />
           </CardContent>
         </Card>
