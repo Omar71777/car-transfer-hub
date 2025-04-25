@@ -350,6 +350,7 @@ export type Database = {
           hours: number | null
           id: string
           origin: string
+          payment_method: string | null
           payment_status: string | null
           price: number
           service_type: string
@@ -371,6 +372,7 @@ export type Database = {
           hours?: number | null
           id?: string
           origin: string
+          payment_method?: string | null
           payment_status?: string | null
           price: number
           service_type?: string
@@ -392,6 +394,7 @@ export type Database = {
           hours?: number | null
           id?: string
           origin?: string
+          payment_method?: string | null
           payment_status?: string | null
           price?: number
           service_type?: string

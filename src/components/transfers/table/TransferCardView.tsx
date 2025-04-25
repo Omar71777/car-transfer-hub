@@ -9,7 +9,8 @@ import { es } from 'date-fns/locale';
 import { TransferRowActions } from './TransferRowActions';
 import { PaymentStatusBadge } from './PaymentStatusBadge';
 import { PriceDisplay } from './PriceDisplay';
-import { 
+import { PaymentMethodIcon } from '../PaymentMethodIcon';
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -53,6 +54,12 @@ export function TransferCardView({
     } catch (e) {
       return dateString;
     }
+  };
+
+  const paymentMethodLabels = {
+    card: 'Tarjeta',
+    cash: 'Efectivo',
+    bank_transfer: 'Transferencia'
   };
 
   return (
@@ -100,12 +107,27 @@ export function TransferCardView({
                       />
                     </div>
                   ) : (
-                    <Badge 
-                      variant={transfer.paymentStatus === 'paid' ? "success" : "secondary"}
-                      className="text-xs px-1.5 py-0"
-                    >
-                      {transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente'}
-                    </Badge>
+                    <div className="flex items-center gap-1">
+                      <Badge 
+                        variant={transfer.paymentStatus === 'paid' ? "success" : "secondary"}
+                        className="text-xs px-1.5 py-0"
+                      >
+                        {transfer.paymentStatus === 'paid' ? 'Cobrado' : 'Pendiente'}
+                      </Badge>
+                      {transfer.paymentStatus === 'paid' && transfer.payment_method && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <PaymentMethodIcon 
+                              method={transfer.payment_method} 
+                              className="h-4 w-4 text-muted-foreground"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Pagado con {paymentMethodLabels[transfer.payment_method]}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
                   )}
                   
                   {transfer.billed && (

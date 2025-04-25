@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import * as z from 'zod';
 import { Transfer } from '@/types';
 import { CollaboratorField } from './form-fields/CollaboratorField';
 import { PaymentStatusField } from './form-fields/PaymentStatusField';
+import { PaymentMethodIcon } from './PaymentMethodIcon';
 
 const editFormSchema = z.object({
   price: z.string().min(1, { message: 'El precio es requerido' }).refine(
@@ -18,6 +18,7 @@ const editFormSchema = z.object({
     { message: 'El precio debe ser un número positivo' }
   ),
   paymentStatus: z.enum(['paid', 'pending']),
+  payment_method: z.enum(['card', 'cash', 'bank_transfer']).nullable(),
   collaborator: z.string().optional(),
   commission: z.string().optional()
     .refine(
@@ -47,6 +48,7 @@ export function TransferEditDialog({
     defaultValues: {
       price: transfer.price.toString(),
       paymentStatus: transfer.paymentStatus || 'pending',
+      payment_method: transfer.payment_method || null,
       collaborator: transfer.collaborator || undefined,
       commission: transfer.commission ? transfer.commission.toString() : '',
       commissionType: transfer.commissionType || 'percentage',

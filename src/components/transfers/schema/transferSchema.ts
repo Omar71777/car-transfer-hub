@@ -1,4 +1,3 @@
-
 import * as z from 'zod';
 
 export const transferSchema = z.object({
@@ -10,10 +9,8 @@ export const transferSchema = z.object({
   origin: z.string().min(1, { message: 'El origen es requerido' }),
   destination: z.string().optional()
     .superRefine((val, ctx) => {
-      // Access the serviceType from the parent data
-      // We're getting the serviceType directly from the context object
       const serviceType = ctx.path.length > 0 
-        ? (ctx as any).data?.serviceType || 'transfer'  // Use type assertion to access data
+        ? (ctx as any).data?.serviceType || 'transfer' 
         : 'transfer';
         
       if (serviceType === 'transfer' && (!val || val.trim() === '')) {
@@ -27,10 +24,8 @@ export const transferSchema = z.object({
     }),
   hours: z.string().optional()
     .superRefine((val, ctx) => {
-      // Access the serviceType from the parent data
-      // We're getting the serviceType directly from the context object
       const serviceType = ctx.path.length > 0 
-        ? (ctx as any).data?.serviceType || 'transfer'  // Use type assertion to access data
+        ? (ctx as any).data?.serviceType || 'transfer' 
         : 'transfer';
         
       if (serviceType === 'dispo' && (!val || val.trim() === '')) {
@@ -70,6 +65,19 @@ export const transferSchema = z.object({
   paymentStatus: z.enum(['paid', 'pending'], {
     required_error: 'El estado de pago es requerido',
   }),
+  payment_method: z.enum(['card', 'cash', 'bank_transfer'])
+    .nullable()
+    .superRefine((val, ctx) => {
+      const paymentStatus = (ctx.path.length > 0 && (ctx as any).data?.paymentStatus) || 'pending';
+      if (paymentStatus === 'paid' && !val) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'El método de pago es requerido cuando el estado es cobrado'
+        });
+        return false;
+      }
+      return true;
+    }),
   clientId: z.string().min(1, { message: 'El cliente es requerido' }),
   clientName: z.string().optional(),
   clientEmail: z.string().optional(),
