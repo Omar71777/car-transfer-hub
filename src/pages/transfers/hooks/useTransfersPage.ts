@@ -57,7 +57,7 @@ export function useTransfersPage() {
     createExpense,
     async () => {
       await fetchTransfers();
-      return; // Explicitly return void
+      // No explicit return needed, void is implied
     },
     setIsExpenseDialogOpen
   );

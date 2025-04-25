@@ -25,7 +25,7 @@ export function useExpenseHandlers(
     if (expenseId) {
       setIsExpenseDialogOpen(false);
       toast.success("Gasto añadido al transfer");
-      fetchTransfers();
+      await fetchTransfers();
     }
   };
 
