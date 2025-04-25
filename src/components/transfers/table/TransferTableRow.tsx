@@ -41,8 +41,9 @@ export function TransferTableRow({
   };
 
   const handleTogglePaymentStatus = () => {
-    if (onMarkAsPaid && transfer.paymentStatus === 'pending') {
-      onMarkAsPaid(transfer.id);
+    if (onMarkAsPaid) {
+      const newStatus = transfer.paymentStatus === 'pending' ? undefined : 'pending';
+      onMarkAsPaid(transfer.id, newStatus);
     }
   };
 
@@ -72,7 +73,7 @@ export function TransferTableRow({
       <TableCell>
         <PaymentStatusCell 
           paymentStatus={transfer.paymentStatus} 
-          onToggle={handleTogglePaymentStatus}
+          onToggle={onMarkAsPaid ? handleTogglePaymentStatus : undefined}
         />
       </TableCell>
       <TableCell className="text-right">
