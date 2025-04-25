@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button';
 import { ClientInfoSection, ServiceDetailsSection, CollaboratorInfoSection, PricingDetailSection, ExpensesSection } from '@/components/transfers/wizard-steps/confirmation';
 import { calculateCommissionAmount, calculateTotalPrice } from '@/lib/calculations';
 import { printTransferSummary } from '@/lib/exports/transfer-summary';
+
 interface TransferSummaryDialogProps {
   isOpen: boolean;
   onClose: () => void;
   transferId: string | null;
 }
+
 export function TransferSummaryDialog({
   isOpen,
   onClose,
@@ -20,7 +22,6 @@ export function TransferSummaryDialog({
   const [transfer, setTransfer] = useState<Transfer | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Add body class when dialog is open
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('dialog-open');
@@ -28,13 +29,12 @@ export function TransferSummaryDialog({
       document.body.classList.remove('dialog-open');
     }
 
-    // Cleanup function to ensure body class is removed on unmount
     return () => {
       document.body.classList.remove('dialog-open');
-      // Ensure pointer events are restored
       document.body.style.pointerEvents = 'auto';
     };
   }, [isOpen]);
+
   useEffect(() => {
     async function fetchTransferDetails() {
       if (!transferId || !isOpen) return;
@@ -54,28 +54,27 @@ export function TransferSummaryDialog({
       fetchTransferDetails();
     }
   }, [transferId, isOpen]);
+
   const handlePrint = () => {
     if (transfer) {
-      // Ensure the body has pointer events before printing
       document.body.style.pointerEvents = 'auto';
       printTransferSummary(transfer);
 
-      // Set a timeout to ensure pointer events are restored after printing window opens
       setTimeout(() => {
         document.body.style.pointerEvents = 'auto';
       }, 100);
     }
   };
 
-  // Only render when needed
   if (!isOpen) return null;
-  return <Dialog open={isOpen} onOpenChange={open => {
-    if (!open) {
-      // Ensure pointer events are restored when dialog closes
-      document.body.style.pointerEvents = 'auto';
-      onClose();
-    }
-  }}>
+
+  return (
+    <Dialog open={isOpen} onOpenChange={open => {
+      if (!open) {
+        document.body.style.pointerEvents = 'auto';
+        onClose();
+      }
+    }}>
       <DialogContent className="max-w-[90vw] md:max-w-[600px] overflow-y-auto max-h-[90vh] z-50">
         <DialogHeader>
           <DialogTitle className="flex justify-between items-center">
@@ -94,12 +93,10 @@ export function TransferSummaryDialog({
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <span className="ml-2">Cargando detalles...</span>
           </div> : transfer ? <div className="space-y-6 py-2 animate-fade-in">
-            {/* Client Info */}
             {transfer.client && <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                 <ClientInfoSection client={transfer.client} />
               </div>}
             
-            {/* Service Details */}
             <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
               <ServiceDetailsSection values={{
             serviceType: transfer.serviceType,
@@ -112,7 +109,6 @@ export function TransferSummaryDialog({
           }} />
             </div>
             
-            {/* Collaborator Info */}
             {transfer.collaborator && <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                 <CollaboratorInfoSection values={{
             collaborator: transfer.collaborator,
@@ -124,13 +120,11 @@ export function TransferSummaryDialog({
           }).format(amount)} />
               </div>}
             
-            {/* Expenses */}
             {transfer.expenses && transfer.expenses.length > 0 && <ExpensesSection expenses={transfer.expenses} formatCurrency={amount => new Intl.NumberFormat('es-ES', {
           style: 'currency',
           currency: 'EUR'
         }).format(amount)} />}
             
-            {/* Pricing Details */}
             {(() => {
           const basePrice = transfer.serviceType === 'dispo' ? Number(transfer.price) * Number(transfer.hours || 1) : Number(transfer.price);
           const validExtraCharges = transfer.extraCharges || [];
@@ -168,5 +162,6 @@ export function TransferSummaryDialog({
             No se pudieron cargar los detalles del transfer
           </div>}
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 }

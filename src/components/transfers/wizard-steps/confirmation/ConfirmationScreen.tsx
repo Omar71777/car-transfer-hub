@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { ClientInfoSection } from './ClientInfoSection';
 import { ServiceDetailSection } from './ServiceDetailSection';
@@ -7,6 +6,7 @@ import { PricingDetailSection } from './PricingDetailSection';
 import { useTransferForm } from '../../context/TransferFormContext';
 import { formatCurrency } from '@/lib/format';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { calculateTotalPrice, calculateCommissionAmount, calculateBasePrice, calculateDiscountAmount, calculateExtraChargesTotal } from '@/lib/calculations';
 
 export interface ConfirmationScreenProps {
   formState: any;
@@ -20,14 +20,8 @@ export function ConfirmationScreen({ formState, clients }: ConfirmationScreenPro
   // Get client from the clients array
   const client = clients.find(c => c.id === formState.clientId);
   
-  // Calculate base price (price * hours for dispo)
-  const basePrice = useMemo(() => {
-    const price = Number(formState.price);
-    if (formState.serviceType === 'dispo' && formState.hours) {
-      return price * Number(formState.hours);
-    }
-    return price;
-  }, [formState.price, formState.serviceType, formState.hours]);
+  // Calculate base price
+  const basePrice = useMemo(() => calculateBasePrice(formState), [formState]);
   
   // Filter only valid extra charges
   const validExtraCharges = useMemo(() => {
@@ -37,25 +31,12 @@ export function ConfirmationScreen({ formState, clients }: ConfirmationScreenPro
   }, [formState.extraCharges]);
   
   // Calculate total extra charges
-  const totalExtraCharges = useMemo(() => {
-    return validExtraCharges.reduce(
-      (sum: number, charge: any) => sum + Number(charge.price), 
-      0
-    );
-  }, [validExtraCharges]);
+  const totalExtraCharges = useMemo(() => 
+    calculateExtraChargesTotal(validExtraCharges), [validExtraCharges]);
   
   // Calculate discount amount
-  const discountAmount = useMemo(() => {
-    if (!formState.discountType || !formState.discountValue) return 0;
-    
-    const discountValue = Number(formState.discountValue);
-    
-    if (formState.discountType === 'percentage') {
-      return (basePrice * discountValue) / 100;
-    } else {
-      return discountValue;
-    }
-  }, [formState.discountType, formState.discountValue, basePrice]);
+  const discountAmount = useMemo(() => 
+    calculateDiscountAmount(formState), [formState]);
   
   // Calculate subtotal (base price - discount + extra charges)
   const subtotalAfterDiscount = useMemo(() => {
@@ -63,23 +44,13 @@ export function ConfirmationScreen({ formState, clients }: ConfirmationScreenPro
   }, [basePrice, discountAmount, totalExtraCharges]);
   
   // Calculate commission amount in euros
-  const commissionAmountEuros = useMemo(() => {
-    if (!formState.commission) return 0;
-    
-    const commission = Number(formState.commission);
-    
-    if (formState.commissionType === 'percentage') {
-      return (subtotalAfterDiscount * commission) / 100;
-    } else {
-      return commission;
-    }
-  }, [formState.commission, formState.commissionType, subtotalAfterDiscount]);
+  const commissionAmountEuros = useMemo(() => 
+    calculateCommissionAmount(formState), [formState]);
   
-  // Calculate total price (subtotal - commission)
-  const totalPrice = useMemo(() => {
-    return subtotalAfterDiscount - commissionAmountEuros;
-  }, [subtotalAfterDiscount, commissionAmountEuros]);
-  
+  // Calculate total price using the unified calculation
+  const totalPrice = useMemo(() => 
+    calculateTotalPrice(formState), [formState]);
+
   return (
     <div className={`space-y-4 ${isMobile ? 'text-sm' : ''}`}>
       <div className="bg-secondary/30 p-3 rounded-lg">

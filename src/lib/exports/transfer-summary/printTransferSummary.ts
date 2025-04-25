@@ -1,6 +1,5 @@
-
 import { Transfer } from '@/types';
-import { calculateCommissionAmount, calculateTotalPrice } from '@/lib/calculations';
+import { calculateCommissionAmount, calculateTotalPrice, calculateBasePrice, calculateDiscountAmount, calculateExtraChargesTotal } from '@/lib/calculations';
 
 // Import component renderers
 import { getTransferSummaryStyles, formatDate } from './utils';
@@ -23,36 +22,14 @@ export function printTransferSummary(transfer: Transfer) {
     return;
   }
 
-  // Calculate financial data
-  const basePrice = transfer.serviceType === 'dispo'
-    ? Number(transfer.price) * Number(transfer.hours || 1)
-    : Number(transfer.price);
-  
-  // Calculate extras total
-  const validExtraCharges = transfer.extraCharges || [];
-  const totalExtraCharges = validExtraCharges.reduce((sum, charge) => {
-    return sum + (typeof charge.price === 'number' ? charge.price : Number(charge.price) || 0);
-  }, 0);
-  
-  // Calculate discount amount
-  let discountAmount = 0;
-  if (transfer.discountType && transfer.discountValue) {
-    if (transfer.discountType === 'percentage') {
-      discountAmount = basePrice * (Number(transfer.discountValue) / 100);
-    } else {
-      discountAmount = Number(transfer.discountValue);
-    }
-  }
-  
-  // Subtotal after discount
-  const subtotalAfterDiscount = basePrice + totalExtraCharges - discountAmount;
-  
-  // Calculate commission amount
+  // Calculate financial data using the unified calculation functions
+  const basePrice = calculateBasePrice(transfer);
+  const totalExtraCharges = calculateExtraChargesTotal(transfer.extraCharges);
+  const discountAmount = calculateDiscountAmount(transfer);
+  const subtotalAfterDiscount = basePrice - discountAmount + totalExtraCharges;
   const commissionAmountEuros = calculateCommissionAmount(transfer);
-  
-  // Final total
-  const totalPrice = calculateTotalPrice(transfer) - commissionAmountEuros;
-  
+  const totalPrice = calculateTotalPrice(transfer);
+
   // Render all sections
   const clientSection = renderClientSection(transfer);
   const serviceDetailsSection = renderServiceDetailsSection(transfer);

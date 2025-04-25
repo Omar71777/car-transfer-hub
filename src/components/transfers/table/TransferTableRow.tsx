@@ -1,15 +1,14 @@
-
 import React from 'react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Transfer } from '@/types';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { formatCurrency } from '@/lib/format';
 import { PaymentStatusCell } from './PaymentStatusCell';
 import { TruncatedCell } from './TruncatedCell';
 import { TransferRowActions } from './TransferRowActions';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { PriceDisplay } from './PriceDisplay';
 
 interface TransferTableRowProps {
   transfer: Transfer;
@@ -63,7 +62,7 @@ export function TransferTableRow({
       <TableCell><TruncatedCell text={transfer.origin} /></TableCell>
       <TableCell><TruncatedCell text={transfer.destination} /></TableCell>
       <TableCell className="font-medium">
-        {formatCurrency(transfer.price)}
+        <PriceDisplay transfer={transfer} />
         {transfer.serviceType === 'dispo' && transfer.hours && (
           <span className="text-xs text-muted-foreground ml-1">
             ({transfer.hours}h)
