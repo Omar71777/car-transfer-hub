@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Loader2, Printer } from 'lucide-react';
@@ -126,38 +127,59 @@ export function TransferSummaryDialog({
         }).format(amount)} />}
             
             {(() => {
-          const basePrice = transfer.serviceType === 'dispo' ? Number(transfer.price) * Number(transfer.hours || 1) : Number(transfer.price);
-          const validExtraCharges = transfer.extraCharges || [];
-          const totalExtraCharges = validExtraCharges.reduce((sum, charge) => {
-            return sum + (typeof charge.price === 'number' ? charge.price : Number(charge.price) || 0);
-          }, 0);
-          let discountAmount = 0;
-          if (transfer.discountType && transfer.discountValue) {
-            if (transfer.discountType === 'percentage') {
-              discountAmount = basePrice * (Number(transfer.discountValue) / 100);
-            } else {
-              discountAmount = Number(transfer.discountValue);
-            }
-          }
-          const subtotalAfterDiscount = basePrice + totalExtraCharges - discountAmount;
-          const commissionAmountEuros = calculateCommissionAmount(transfer);
-          const totalPrice = calculateTotalPrice(transfer) - commissionAmountEuros;
-          return <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
-                  <PricingDetailSection values={{
-              serviceType: transfer.serviceType,
-              price: transfer.price,
-              hours: transfer.hours,
-              discountType: transfer.discountType,
-              discountValue: transfer.discountValue,
-              collaborator: transfer.collaborator,
-              commission: transfer.commission,
-              commissionType: transfer.commissionType
-            }} basePrice={basePrice} validExtraCharges={validExtraCharges} totalExtraCharges={totalExtraCharges} discountAmount={discountAmount} subtotalAfterDiscount={subtotalAfterDiscount} commissionAmountEuros={commissionAmountEuros} totalPrice={totalPrice} formatCurrency={amount => new Intl.NumberFormat('es-ES', {
-              style: 'currency',
-              currency: 'EUR'
-            }).format(amount)} />
-                </div>;
-        })()}
+              const basePrice = transfer.serviceType === 'dispo' ? Number(transfer.price) * Number(transfer.hours || 1) : Number(transfer.price);
+              const validExtraCharges = transfer.extraCharges || [];
+              const totalExtraCharges = validExtraCharges.reduce((sum, charge) => {
+                return sum + (typeof charge.price === 'number' ? charge.price : Number(charge.price) || 0);
+              }, 0);
+              let discountAmount = 0;
+              if (transfer.discountType && transfer.discountValue) {
+                if (transfer.discountType === 'percentage') {
+                  discountAmount = basePrice * (Number(transfer.discountValue) / 100);
+                } else {
+                  discountAmount = Number(transfer.discountValue);
+                }
+              }
+              const subtotalAfterDiscount = basePrice + totalExtraCharges - discountAmount;
+              const commissionAmountEuros = calculateCommissionAmount(transfer);
+              // Remove the extra commission subtraction here - commission is already handled in calculateTotalPrice
+              const totalPrice = calculateTotalPrice(transfer);
+
+              console.log('Price calculation:', {
+                basePrice,
+                totalExtraCharges,
+                discountAmount,
+                subtotalAfterDiscount,
+                commissionAmountEuros,
+                totalPrice
+              });
+
+              return <div className="p-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <PricingDetailSection 
+                  values={{
+                    serviceType: transfer.serviceType,
+                    price: transfer.price,
+                    hours: transfer.hours,
+                    discountType: transfer.discountType,
+                    discountValue: transfer.discountValue,
+                    collaborator: transfer.collaborator,
+                    commission: transfer.commission,
+                    commissionType: transfer.commissionType
+                  }} 
+                  basePrice={basePrice}
+                  validExtraCharges={validExtraCharges}
+                  totalExtraCharges={totalExtraCharges}
+                  discountAmount={discountAmount}
+                  subtotalAfterDiscount={subtotalAfterDiscount}
+                  commissionAmountEuros={commissionAmountEuros}
+                  totalPrice={totalPrice}
+                  formatCurrency={amount => new Intl.NumberFormat('es-ES', {
+                    style: 'currency',
+                    currency: 'EUR'
+                  }).format(amount)}
+                />
+              </div>;
+            })()}
           </div> : <div className="py-8 text-center text-muted-foreground">
             No se pudieron cargar los detalles del transfer
           </div>}
