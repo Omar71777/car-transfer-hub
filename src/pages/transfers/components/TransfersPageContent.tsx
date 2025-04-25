@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TransfersTable } from '@/components/transfers/TransfersTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -53,7 +52,7 @@ export function TransfersPageContent({
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-center items-center mb-4">
         <TabsList>
           <TabsTrigger value="transfers">
             Traslados
