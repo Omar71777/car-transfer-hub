@@ -5,7 +5,7 @@ import { Transfer } from '@/types';
 import { ServiceTypeBadge } from './ServiceTypeBadge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatCurrency } from '@/lib/format';
-import { PaymentStatusBadge } from './PaymentStatusBadge';
+import { PaymentStatusCell } from './PaymentStatusCell';
 import { TruncatedCell } from './TruncatedCell';
 import { TransferRowActions } from './TransferRowActions';
 import { format } from 'date-fns';
@@ -19,7 +19,7 @@ interface TransferTableRowProps {
   onViewSummary: (transferId: string) => void;
   selected: boolean;
   onSelectRow: (id: string, selected: boolean) => void;
-  onMarkAsPaid?: (transferId: string) => void;
+  onMarkAsPaid?: (transferId: string, newStatus?: 'paid' | 'pending') => void;
 }
 
 export function TransferTableRow({
@@ -72,7 +72,7 @@ export function TransferTableRow({
       <TableCell>
         <PaymentStatusCell 
           paymentStatus={transfer.paymentStatus} 
-          onToggle={onMarkAsPaid ? handleTogglePaymentStatus : undefined}
+          onToggle={handleTogglePaymentStatus}
         />
       </TableCell>
       <TableCell className="text-right">

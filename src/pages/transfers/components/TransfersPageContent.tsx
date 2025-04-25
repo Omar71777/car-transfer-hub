@@ -39,6 +39,17 @@ export function TransfersPageContent({
     return <LoadingSpinner />;
   }
 
+  // Placeholder functions for expenses that will be implemented later
+  const handleEditExpense = (expense: Expense) => {
+    console.log("Edit expense:", expense);
+    // Implement expense editing functionality
+  };
+
+  const handleDeleteExpense = (id: string) => {
+    console.log("Delete expense:", id);
+    // Implement expense deletion functionality
+  };
+
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <div className="flex justify-between items-center mb-4">
@@ -77,7 +88,11 @@ export function TransfersPageContent({
             <CardTitle>Gastos</CardTitle>
           </CardHeader>
           <CardContent>
-            <ExpensesTable expenses={expenses} />
+            <ExpensesTable 
+              expenses={expenses}
+              onEdit={handleEditExpense}
+              onDelete={handleDeleteExpense} 
+            />
           </CardContent>
         </Card>
       </TabsContent>
