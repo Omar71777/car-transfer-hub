@@ -8,6 +8,13 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { TransferRowActions } from './TransferRowActions';
 import { PaymentStatusBadge } from './PaymentStatusBadge';
+import { PriceDisplay } from './PriceDisplay';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 interface TransferCardViewProps {
   transfers: Transfer[];
@@ -146,8 +153,18 @@ export function TransferCardView({
                 </div>
                 
                 <div className="mt-1">
-                  <p className="text-xs font-medium text-muted-foreground">Precio:</p>
-                  <p className="text-sm font-semibold text-emerald-700">{formatCurrency(transfer.price)}</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs font-medium text-muted-foreground">Precio Total:</p>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Incluye cargos extra, descuentos y comisiones</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <PriceDisplay transfer={transfer} />
                 </div>
                 
                 <div className="mt-1">
