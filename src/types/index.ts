@@ -30,7 +30,7 @@ export interface ExtraCharge {
   id: string;
   transferId: string;
   name: string;
-  price: string | number;  // Update to match both string and number
+  price: string | number;  // Can accept either string or number
 }
 
 export interface Expense {

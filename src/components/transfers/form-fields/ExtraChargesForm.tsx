@@ -11,7 +11,7 @@ export interface ExtraChargesFormProps {
   extraCharges: Partial<ExtraChargeForm>[];
   onAddCharge: () => void;
   onRemoveCharge: (index: number) => void;
-  onChangeCharge: (index: number, field: string, value: string) => void;
+  onChangeCharge: (index: number, field: keyof ExtraChargeForm, value: string) => void;
 }
 
 export function ExtraChargesForm({

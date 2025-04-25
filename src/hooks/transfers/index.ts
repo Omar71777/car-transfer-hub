@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Transfer, Expense } from '@/types';
@@ -16,7 +15,7 @@ export function useTransfers() {
   const fetchTransfers = useCallback(async () => {
     if (!user) {
       console.error('No authenticated user found');
-      return;
+      return [];
     }
 
     try {
@@ -184,7 +183,7 @@ export function useTransfers() {
     fetchTransferById,
     createTransfer: useCallback((transferData: any) => createTransfer(user, transferData), [user]),
     updateTransfer: useCallback((id: string, transferData: Partial<Transfer>) => updateTransfer(user, id, transferData), [user]),
-    deleteTransfer: useCallback((id: string) => deleteTransfer(user, id, fetchTransfers), [user, fetchTransfers]),
+    deleteTransfer: useCallback((id: string) => deleteTransfer(user, id), [user, fetchTransfers]),
     getTransfer
   };
 }

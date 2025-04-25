@@ -7,7 +7,7 @@ interface ExtraChargesTabProps {
   extraCharges: Partial<ExtraChargeForm>[];
   onAddCharge: () => void;
   onRemoveCharge: (index: number) => void;
-  onChangeCharge: (index: number, field: keyof ExtraChargeForm, value: any) => void;
+  onChangeCharge: (index: number, field: keyof ExtraChargeForm, value: string) => void;
 }
 
 export function ExtraChargesTab({ 

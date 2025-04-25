@@ -6,7 +6,7 @@ import { ExtraCharge } from '@/types';
 export interface ExtraChargeForm {
   id?: string;
   name: string;
-  price: string | number;
+  price: string;
 }
 
 export function useExtraCharges(initialCharges: Partial<ExtraChargeForm>[] = []) {

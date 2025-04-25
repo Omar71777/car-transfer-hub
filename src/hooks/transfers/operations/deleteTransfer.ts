@@ -2,40 +2,45 @@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+// Simplified delete function that doesn't call fetchTransfers after deletion
 export async function deleteTransfer(user: any, id: string) {
   if (!user) return false;
   
   try {
-    // Delete expenses first (if any)
-    const { error: expensesError } = await supabase
-      .from('expenses')
-      .delete()
-      .eq('transfer_id', id);
-
-    if (expensesError) {
-      throw expensesError;
-    }
-
-    // Delete extra charges (if any)
+    // First delete related extra charges
     const { error: extraChargesError } = await supabase
       .from('extra_charges')
       .delete()
       .eq('transfer_id', id);
-
+    
     if (extraChargesError) {
+      console.error('Error deleting extra charges:', extraChargesError);
       throw extraChargesError;
     }
-
-    // Finally delete the transfer
-    const { error } = await supabase
+    
+    // Then delete related expenses
+    const { error: expensesError } = await supabase
+      .from('expenses')
+      .delete()
+      .eq('transfer_id', id);
+    
+    if (expensesError) {
+      console.error('Error deleting expenses:', expensesError);
+      throw expensesError;
+    }
+    
+    // Finally delete the transfer itself
+    const { error: transferError } = await supabase
       .from('transfers')
       .delete()
       .eq('id', id);
-
-    if (error) {
-      throw error;
+    
+    if (transferError) {
+      console.error('Error deleting transfer:', transferError);
+      throw transferError;
     }
-
+    
+    toast.success('Transfer eliminado exitosamente');
     return true;
   } catch (error: any) {
     console.error('Error deleting transfer:', error);
