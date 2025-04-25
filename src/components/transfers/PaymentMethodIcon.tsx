@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Banknote, CreditCard, Bank } from 'lucide-react';
+import { Banknote, CreditCard, Ban } from 'lucide-react';
 
 type PaymentMethod = 'card' | 'cash' | 'bank_transfer';
 
@@ -16,7 +16,7 @@ export function PaymentMethodIcon({ method, className }: PaymentMethodIconProps)
     case 'cash':
       return <Banknote className={className} />;
     case 'bank_transfer':
-      return <Bank className={className} />;
+      return <Ban className={className} />; // Changed from Bank to Ban
     default:
       return null;
   }
