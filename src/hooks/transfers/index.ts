@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/auth';
 import { createTransfer } from './operations/createTransfer';
 import { updateTransfer } from './operations/updateTransfer';
 import { deleteTransfer } from './operations/deleteTransfer';
+import { fetchAllTransfers } from './fetch/fetchAllTransfers';
 
 export function useTransfers() {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -13,7 +14,7 @@ export function useTransfers() {
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useAuth();
 
-  const fetchTransfers = useCallback(async () => {
+  const fetchTransfersAndSetState = useCallback(async () => {
     if (!user) {
       console.error('No authenticated user found');
       return;
@@ -21,91 +22,21 @@ export function useTransfers() {
 
     try {
       setLoading(true);
-      console.log('Fetching transfers for user:', user.id);
-
-      // First, fetch the transfers
-      const { data: transfersData, error: transfersError } = await supabase
-        .from('transfers')
-        .select('*, client:clients(*)')
-        .order('date', { ascending: false });
-
-      if (transfersError) {
-        console.error('Error fetching transfers:', transfersError);
-        throw transfersError;
-      }
-
-      console.log(`Fetched ${transfersData.length} transfers`);
-
-      // Get all transfer IDs to fetch related data
-      const transferIds = transfersData.map((transfer: any) => transfer.id);
-
-      // Then, get all expenses related to these transfers
-      const { data: expensesData, error: expensesError } = await supabase
-        .from('expenses')
-        .select('*')
-        .in('transfer_id', transferIds);
-
-      if (expensesError) {
-        console.error('Error fetching expenses:', expensesError);
-        throw expensesError;
-      }
-
-      console.log(`Fetched ${expensesData.length} expenses`);
-
-      // Get all extra charges for these transfers
-      const { data: extraChargesData, error: extraChargesError } = await supabase
-        .from('extra_charges')
-        .select('*')
-        .in('transfer_id', transferIds);
-
-      if (extraChargesError) {
-        console.error('Error fetching extra charges:', extraChargesError);
-        throw extraChargesError;
-      }
-
-      console.log(`Fetched ${extraChargesData?.length || 0} extra charges`);
-
-      // Group extra charges by transfer ID
-      const extraChargesByTransferId: Record<string, any[]> = {};
-      extraChargesData?.forEach((charge) => {
-        if (!extraChargesByTransferId[charge.transfer_id]) {
-          extraChargesByTransferId[charge.transfer_id] = [];
-        }
-        extraChargesByTransferId[charge.transfer_id].push(charge);
-      });
-
-      // Group expenses by transfer ID
-      const expensesByTransferId: Record<string, any[]> = {};
-      expensesData.forEach((expense: any) => {
-        if (!expensesByTransferId[expense.transfer_id]) {
-          expensesByTransferId[expense.transfer_id] = [];
-        }
-        expensesByTransferId[expense.transfer_id].push(expense);
-      });
-
-      // Convert and transform expenses for state
-      const transformedExpenses: Expense[] = expensesData.map((expense: any) => ({
-        id: expense.id,
-        transferId: expense.transfer_id, // Map transfer_id to transferId
-        date: expense.date,
-        concept: expense.concept,
-        amount: expense.amount
-      }));
-
-      // Add extra charges and expenses to each transfer
-      const transfersWithRelatedData = transfersData.map((transfer: any) => ({
-        ...transfer,
-        expenses: expensesByTransferId[transfer.id] || [],
-        extraCharges: extraChargesByTransferId[transfer.id] || []
-      }));
-
-      setTransfers(transfersWithRelatedData);
-      setExpenses(transformedExpenses);
+      const data = await fetchAllTransfers(user);
       
-      // No explicit return to ensure Promise<void>
-    } catch (error) {
-      console.error('Error in fetchTransfers:', error);
-      // No explicit return to ensure Promise<void>
+      // Extract and format expenses
+      const transformedExpenses: Expense[] = data.flatMap(transfer => 
+        transfer.expenses.map(expense => ({
+          id: expense.id,
+          transferId: transfer.id,
+          date: expense.date,
+          concept: expense.concept,
+          amount: expense.amount
+        }))
+      );
+
+      setTransfers(data);
+      setExpenses(transformedExpenses);
     } finally {
       setLoading(false);
     }
@@ -114,18 +45,11 @@ export function useTransfers() {
   // Fetch transfers on mount and when user changes
   useEffect(() => {
     if (user) {
-      fetchTransfers();
+      fetchTransfersAndSetState();
     }
-  }, [user, fetchTransfers]);
-
-  const fetchTransfersInRange = useCallback(async (startDate: string, endDate: string) => {
-    // Implementation for fetching transfers in a specific date range
-    // This would be similar to fetchTransfers but with date filters
-    return [];
-  }, []);
+  }, [user, fetchTransfersAndSetState]);
 
   const fetchTransferById = useCallback(async (id: string) => {
-    // Implementation for fetching a single transfer by ID
     if (!user || !id) return null;
     
     try {
@@ -155,6 +79,7 @@ export function useTransfers() {
       
       return {
         ...data,
+        serviceType: data.service_type === 'dispo' ? 'dispo' : 'transfer',
         extraCharges: extraChargesData || [],
         expenses: expensesData || []
       };
@@ -164,28 +89,15 @@ export function useTransfers() {
     }
   }, [user]);
 
-  const getTransfer = useCallback(async (id: string) => {
-    if (!id) return null;
-    
-    // Check if we already have the transfer in state
-    const existingTransfer = transfers.find(t => t.id === id);
-    if (existingTransfer) return existingTransfer;
-    
-    // Otherwise fetch it
-    return fetchTransferById(id);
-  }, [transfers, fetchTransferById]);
-
   return {
     transfers,
     expenses,
     loading,
-    fetchTransfers,
-    fetchTransfersInRange,
+    fetchTransfers: fetchTransfersAndSetState,
     fetchTransferById,
     createTransfer: useCallback((transferData: any) => createTransfer(user, transferData), [user]),
     updateTransfer: useCallback((id: string, transferData: Partial<Transfer>) => updateTransfer(user, id, transferData), [user]),
-    deleteTransfer: useCallback((id: string) => deleteTransfer(user, id), [user]),
-    getTransfer
+    deleteTransfer: useCallback((id: string) => deleteTransfer(user, id), [user])
   };
 }
 

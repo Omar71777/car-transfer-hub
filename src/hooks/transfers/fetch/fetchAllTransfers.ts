@@ -93,8 +93,10 @@ export async function fetchAllTransfers(user: any) {
 
     // Map transfers with all related data
     const processedTransfers = data.map((transfer: any) => {
+      console.log('Processing transfer:', transfer);
+      
       // Handle potential undefined values
-      const serviceType = transfer.service_type || 'transfer';
+      const serviceType = transfer.service_type === 'dispo' ? 'dispo' : 'transfer';
       const origin = transfer.origin ? capitalizeFirstLetter(transfer.origin) : '';
       const destination = transfer.destination ? capitalizeFirstLetter(transfer.destination) : '';
       const collaborator = transfer.collaborator && transfer.collaborator !== 'none' ? 
