@@ -2,11 +2,11 @@
 import React from 'react';
 import { formatCurrency } from '@/lib/utils';
 import { calculateTotalPrice } from '@/lib/calculations';
-import { MinimalTransfer } from '@/lib/calculations';
+import { Transfer } from '@/types';
 import { cn } from '@/lib/utils';
 
 interface PriceDisplayProps {
-  transfer: MinimalTransfer;
+  transfer: Transfer;
   className?: string;
 }
 

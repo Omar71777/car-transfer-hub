@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Transfer } from '@/types';
@@ -51,9 +52,7 @@ export function TransferTableRow({
       <TableCell className="w-10">
         <Checkbox
           checked={selected}
-          onCheckedChange={(checked) => {
-            onSelectRow(transfer.id, !!checked);
-          }}
+          onCheckedChange={(checked) => onSelectRow(transfer.id, !!checked)}
         />
       </TableCell>
       <TableCell className="font-medium">{formatDate(transfer.date)}</TableCell>

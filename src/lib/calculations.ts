@@ -2,13 +2,15 @@
  * Calculations utility for transfers and billing
  */
 
+import { ExtraCharge } from '@/types';
+
 export interface MinimalTransfer {
   serviceType: 'transfer' | 'dispo';
   price: number;
   hours?: number | string;
   discountType?: 'percentage' | 'fixed' | null;
   discountValue?: number;
-  extraCharges?: { price: number | string }[];
+  extraCharges?: ExtraCharge[];
   commission?: number;
   commissionType?: 'percentage' | 'fixed';
   destination?: string;
@@ -63,7 +65,7 @@ export const calculateDiscountAmount = (transfer: MinimalTransfer): number => {
  * @param extraCharges Array of extra charges
  * @returns Sum of all extra charges
  */
-export const calculateExtraChargesTotal = (extraCharges: { price: number | string }[] = []): number => {
+export const calculateExtraChargesTotal = (extraCharges: ExtraCharge[] = []): number => {
   return extraCharges.reduce((sum, charge) => {
     const chargePrice = typeof charge.price === 'string' ? parseFloat(charge.price) : charge.price;
     return sum + (isNaN(chargePrice) ? 0 : chargePrice);
