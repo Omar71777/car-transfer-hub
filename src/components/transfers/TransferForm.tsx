@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -71,7 +70,6 @@ export function TransferForm({
     fetchCollaborators,
   } = useCollaborators();
 
-  // Set extra charges in the form whenever they change
   useEffect(() => {
     if (extraCharges.length > 0) {
       form.setValue('extraCharges', extraCharges);
@@ -83,7 +81,6 @@ export function TransferForm({
     fetchCollaborators();
   }, [fetchClients, fetchCollaborators]);
 
-  // Handle client list refresh
   const handleClientCreated = async () => {
     console.log('TransferForm: client created, refreshing clients list');
     if (onClientCreated) {
@@ -93,11 +90,9 @@ export function TransferForm({
     }
   };
 
-  // Custom submit handler to process extra charges
   const handleFormSubmit = (values: any) => {
     const processedValues = {
       ...values,
-      // Make sure extra charges are properly processed
       extraCharges: processExtraChargesForSubmission()
     };
     
@@ -114,7 +109,6 @@ export function TransferForm({
               onTabChange={handleTabChange} 
             />
             
-            {/* Section 1: Basic Information */}
             <div>
               <h3 className="text-base font-semibold mb-4">Información Básica</h3>
               <BasicInfoTab 
@@ -127,7 +121,6 @@ export function TransferForm({
             
             <Separator className="my-6" />
             
-            {/* Section 2: Pricing */}
             <div>
               <h3 className="text-base font-semibold mb-4">Precio y Pago</h3>
               <PricingTab form={form} serviceType={activeTab} />
@@ -135,7 +128,6 @@ export function TransferForm({
             
             <Separator className="my-6" />
             
-            {/* Section 3: Collaborator */}
             <div>
               <h3 className="text-base font-semibold mb-4">Información del Colaborador</h3>
               <CollaboratorField collaborators={collaborators} />
@@ -143,7 +135,6 @@ export function TransferForm({
             
             <Separator className="my-6" />
             
-            {/* Section 4: Extra Charges */}
             <div>
               <h3 className="text-base font-semibold mb-4">Cargos Extra</h3>
               <ExtraChargesTab 

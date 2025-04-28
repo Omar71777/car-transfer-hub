@@ -33,11 +33,10 @@ const NewTransferPage = () => {
     }
   }, [user, fetchClients]);
 
-  const handleClientCreated = async () => {
+  const handleClientCreated = async (): Promise<void> => {
     console.log('Client created, refreshing client list');
-    const updatedClients = await fetchClients();
-    console.log('Fetched updated clients:', updatedClients?.length || 0);
-    return updatedClients;
+    await fetchClients();
+    console.log('Fetched updated clients');
   };
 
   const handleSubmit = async (values: any) => {
