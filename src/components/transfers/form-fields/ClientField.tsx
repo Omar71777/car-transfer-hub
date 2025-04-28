@@ -78,89 +78,91 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
   };
 
   return (
-    <FormField
-      control={form.control}
-      name="clientId"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Cliente *</FormLabel>
-          <div className="flex gap-2">
-            <Select
-              onValueChange={field.onChange}
-              value={field.value}
-            >
-              <FormControl>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Seleccionar cliente" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {clients.map((client) => (
-                  <SelectItem key={client.id} value={client.id}>
-                    {client.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={handleAddNewClient}
-              className="flex-shrink-0"
-              disabled={isCreatingClient}
-            >
-              <PlusCircle className="h-4 w-4 mr-1" />
-              Nuevo
-            </Button>
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <>
+      <FormField
+        control={form.control}
+        name="clientId"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Cliente *</FormLabel>
+            <div className="flex gap-2">
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Seleccionar cliente" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {clients.map((client) => (
+                    <SelectItem key={client.id} value={client.id}>
+                      {client.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handleAddNewClient}
+                className="flex-shrink-0"
+                disabled={isCreatingClient}
+              >
+                <PlusCircle className="h-4 w-4 mr-1" />
+                Nuevo
+              </Button>
+            </div>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-    <Dialog open={isNewClientDialogOpen} onOpenChange={setIsNewClientDialogOpen}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Nuevo Cliente</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleNewClientSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="clientName">Nombre *</Label>
-            <Input 
-              id="clientName" 
-              value={clientNameValue} 
-              onChange={(e) => setClientNameValue(e.target.value)}
-              placeholder="Nombre del cliente" 
-              required 
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="clientEmail">Email</Label>
-            <Input 
-              id="clientEmail" 
-              type="email" 
-              value={clientEmailValue} 
-              onChange={(e) => setClientEmailValue(e.target.value)}
-              placeholder="Email del cliente" 
-            />
-          </div>
-          
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => setIsNewClientDialogOpen(false)}
-              disabled={isCreatingClient}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isCreatingClient}>
-              {isCreatingClient ? 'Creando...' : 'Añadir Cliente'}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <Dialog open={isNewClientDialogOpen} onOpenChange={setIsNewClientDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Nuevo Cliente</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleNewClientSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="clientName">Nombre *</Label>
+              <Input 
+                id="clientName" 
+                value={clientNameValue} 
+                onChange={(e) => setClientNameValue(e.target.value)}
+                placeholder="Nombre del cliente" 
+                required 
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="clientEmail">Email</Label>
+              <Input 
+                id="clientEmail" 
+                type="email" 
+                value={clientEmailValue} 
+                onChange={(e) => setClientEmailValue(e.target.value)}
+                placeholder="Email del cliente" 
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsNewClientDialogOpen(false)}
+                disabled={isCreatingClient}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isCreatingClient}>
+                {isCreatingClient ? 'Creando...' : 'Añadir Cliente'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
