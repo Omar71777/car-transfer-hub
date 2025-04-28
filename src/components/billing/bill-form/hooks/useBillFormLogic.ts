@@ -58,7 +58,7 @@ export function useBillFormLogic(onSubmit: (values: CreateBillDto) => Promise<vo
     form.setValue('clientId', clientId);
   };
 
-  const handleSubmit = async (values: z.infer<typeof billSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof billSchema>, selectedTransfers: string[]) => {
     if (selectedTransfers.length === 0) {
       form.setError('root', { 
         message: 'Debe seleccionar al menos un transfer para facturar' 

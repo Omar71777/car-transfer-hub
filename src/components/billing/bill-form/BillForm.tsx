@@ -45,11 +45,15 @@ export function BillForm({ onSubmit }: BillFormProps) {
     selectedClient
   );
 
+  const handleFormSubmit = form.handleSubmit((values) => {
+    handleSubmit(values, selectedTransfers);
+  });
+
   return (
     <Card className="glass-card w-full max-w-4xl mx-auto">
       <CardContent className="pt-4 px-4 md:px-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form onSubmit={handleFormSubmit} className="space-y-6">
             <FormContent 
               form={form}
               clients={clients}
