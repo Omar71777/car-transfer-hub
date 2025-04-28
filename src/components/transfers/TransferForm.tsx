@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -32,7 +31,6 @@ export function TransferForm({
     clients,
     loading: loadingClients,
     fetchClients,
-    getClient
   } = useClients();
 
   const { 

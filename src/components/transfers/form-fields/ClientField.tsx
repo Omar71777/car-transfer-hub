@@ -4,23 +4,27 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
-import { Client } from '@/types/client';
+import { Client, CreateClientDto } from '@/types/client';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useClients } from '@/hooks/useClients';
+import { toast } from 'sonner';
 
 interface ClientFieldProps {
   form: UseFormReturn<TransferFormValues>;
   clients: Client[];
-  onNewClientCreated?: (client: Client) => void;
 }
 
-export function ClientField({ form, clients, onNewClientCreated }: ClientFieldProps) {
+export function ClientField({ form, clients }: ClientFieldProps) {
   const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
   const [clientNameValue, setClientNameValue] = useState('');
   const [clientEmailValue, setClientEmailValue] = useState('');
+  const [isCreatingClient, setIsCreatingClient] = useState(false);
+  
+  const { createClient } = useClients();
 
   // Handle setting a new client
   const handleAddNewClient = () => {
@@ -28,26 +32,42 @@ export function ClientField({ form, clients, onNewClientCreated }: ClientFieldPr
   };
 
   // Handle new client submission
-  const handleNewClientSubmit = (e: React.FormEvent) => {
+  const handleNewClientSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!clientNameValue) {
+      toast.error('El nombre del cliente es requerido');
       return;
     }
-    
-    // Update form values with new client data
-    form.setValue('clientName', clientNameValue);
-    form.setValue('clientEmail', clientEmailValue);
-    
-    // Set the client ID to 'new' to indicate it's a new client
-    form.setValue('clientId', 'new', { shouldValidate: true });
-    setIsNewClientDialogOpen(false);
-    
-    console.log('New client data set:', { 
-      clientId: 'new', 
-      clientName: clientNameValue, 
-      clientEmail: clientEmailValue 
-    });
+
+    try {
+      setIsCreatingClient(true);
+      
+      // Create the new client
+      const newClientData: CreateClientDto = {
+        name: clientNameValue,
+        email: clientEmailValue || `${clientNameValue.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+      };
+      
+      const newClient = await createClient(newClientData);
+      
+      if (newClient) {
+        // Update form with new client
+        form.setValue('clientId', newClient.id, { shouldValidate: true });
+        
+        // Close dialog and reset form
+        setIsNewClientDialogOpen(false);
+        setClientNameValue('');
+        setClientEmailValue('');
+        
+        toast.success('Cliente creado exitosamente');
+      }
+    } catch (error) {
+      console.error('Error creating client:', error);
+      toast.error('Error al crear el cliente');
+    } finally {
+      setIsCreatingClient(false);
+    }
   };
 
   return (
@@ -74,14 +94,14 @@ export function ClientField({ form, clients, onNewClientCreated }: ClientFieldPr
                       {client.name}
                     </SelectItem>
                   ))}
-                  {field.value === 'new' && (
-                    <SelectItem value="new">
-                      Nuevo cliente: {form.getValues('clientName')}
-                    </SelectItem>
-                  )}
                 </SelectContent>
               </Select>
-              <Button type="button" variant="outline" onClick={handleAddNewClient} className="flex-shrink-0">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handleAddNewClient}
+                className="flex-shrink-0"
+              >
                 <PlusCircle className="h-4 w-4 mr-1" />
                 Nuevo
               </Button>
@@ -122,10 +142,17 @@ export function ClientField({ form, clients, onNewClientCreated }: ClientFieldPr
             </div>
             
             <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsNewClientDialogOpen(false)}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsNewClientDialogOpen(false)}
+                disabled={isCreatingClient}
+              >
                 Cancelar
               </Button>
-              <Button type="submit">Añadir Cliente</Button>
+              <Button type="submit" disabled={isCreatingClient}>
+                {isCreatingClient ? 'Creando...' : 'Añadir Cliente'}
+              </Button>
             </div>
           </form>
         </DialogContent>
