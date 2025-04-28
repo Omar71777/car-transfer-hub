@@ -80,6 +80,11 @@ export function TransferForm({
     fetchCollaborators();
   }, [fetchClients, fetchCollaborators]);
 
+  // Handle client list refresh
+  const handleClientCreated = async () => {
+    await fetchClients();
+  };
+
   // Custom submit handler to process extra charges
   const handleFormSubmit = (values: any) => {
     const processedValues = {
@@ -108,6 +113,7 @@ export function TransferForm({
                 form={form} 
                 serviceType={activeTab} 
                 clients={clients}
+                onClientCreated={handleClientCreated}
               />
             </div>
             
