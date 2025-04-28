@@ -44,7 +44,7 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
       
       const newClientData: CreateClientDto = {
         name: clientNameValue,
-        email: clientEmailValue || `${clientNameValue.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+        email: clientEmailValue || `${clientNameValue.toLowerCase().replace(/\\s+/g, '.')}@example.com`,
       };
       
       const newClient = await createClient(newClientData);
