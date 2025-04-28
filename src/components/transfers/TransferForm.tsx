@@ -82,6 +82,7 @@ export function TransferForm({
     fetchCollaborators();
   }, [fetchClients, fetchCollaborators]);
 
+  // Modified to match the expected Promise<void> return type
   const handleClientCreated = useCallback(async () => {
     console.log('TransferForm: client created, refreshing clients list');
     try {
@@ -91,10 +92,10 @@ export function TransferForm({
         await fetchClients();
       }
       console.log('TransferForm: clients list refreshed successfully');
-      return true;
+      // Removed boolean return
     } catch (error) {
       console.error('TransferForm: error refreshing clients list', error);
-      return false;
+      // Removed boolean return
     }
   }, [onClientCreated, fetchClients]);
 
@@ -149,7 +150,7 @@ export function TransferForm({
               <ExtraChargesTab 
                 extraCharges={extraCharges}
                 onAddCharge={handleAddExtraCharge}
-                onRemoveCharge={handleRemoveExtraCharge}
+                onRemoveCharge={handleRemoveCharge}
                 onChangeCharge={handleExtraChargeChange}
               />
             </div>
