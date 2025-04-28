@@ -8,9 +8,14 @@ export interface PaymentStatusCellProps {
 }
 
 export function PaymentStatusCell({ paymentStatus, onToggle }: PaymentStatusCellProps) {
+  const handleClick = onToggle ? (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggle();
+  } : undefined;
+
   return (
     <div className="flex justify-center">
-      <PaymentStatusBadge status={paymentStatus as 'paid' | 'pending'} onClick={onToggle} />
+      <PaymentStatusBadge status={paymentStatus as 'paid' | 'pending'} onClick={handleClick} />
     </div>
   );
 }
