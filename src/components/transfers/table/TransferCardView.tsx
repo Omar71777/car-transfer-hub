@@ -8,6 +8,8 @@ import { TransferPriceInfo } from './card-components/TransferPriceInfo';
 import { TransferCollaboratorInfo } from './card-components/TransferCollaboratorInfo';
 import { TransferExtraCharges } from './card-components/TransferExtraCharges';
 import { TransferRowActions } from './TransferRowActions';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { AlertCircle } from 'lucide-react';
 
 interface TransferCardViewProps {
   transfers: Transfer[];
@@ -19,6 +21,8 @@ interface TransferCardViewProps {
   onMarkAsPaid?: (transferId: string, newStatus?: 'paid' | 'pending') => void;
   onMarkAsBilled?: (transferId: string) => void;
   selectedRows?: string[];
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export function TransferCardView({
@@ -29,8 +33,26 @@ export function TransferCardView({
   onViewSummary,
   onSelectRow,
   onMarkAsPaid,
-  selectedRows = []
+  selectedRows = [],
+  isLoading = false,
+  error = null
 }: TransferCardViewProps) {
+  // Show loading state
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="p-4 text-center flex flex-col items-center justify-center text-red-500">
+        <AlertCircle className="h-8 w-8 mb-2" />
+        <p>Error al cargar los transfers: {error}</p>
+      </div>
+    );
+  }
+
+  // Show empty state
   if (transfers.length === 0) {
     return (
       <div className="p-4 text-center">

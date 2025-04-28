@@ -1,6 +1,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom'; // Import jest-dom for the matchers
 import { TransferPriceInfo } from '../TransferPriceInfo';
 import { mockTransfer } from './test-utils';
 

@@ -5,7 +5,7 @@ import { Transfer, ExtraCharge } from '@/types';
 
 export const mockTransfer: Transfer = {
   id: '1',
-  date: '2024-04-28',
+  date: '2023-05-01',
   time: '10:00',
   serviceType: 'transfer',
   origin: 'Airport',
@@ -14,6 +14,10 @@ export const mockTransfer: Transfer = {
   paymentStatus: 'pending',
   clientId: '1',
   billed: false,
+  collaborator: 'none',
+  commission: 0,
+  commissionType: 'percentage',
+  expenses: [],
   extraCharges: [
     {
       id: 'ec1',
@@ -24,6 +28,7 @@ export const mockTransfer: Transfer = {
   ]
 };
 
-export const renderWithProviders = (ui: React.ReactElement) => {
+// Helper for rendering components
+export const renderWithProvider = (ui: React.ReactElement) => {
   return render(ui);
 };

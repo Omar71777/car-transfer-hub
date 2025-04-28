@@ -8,6 +8,7 @@ interface TransferExtraChargesProps {
 }
 
 export function TransferExtraCharges({ extraCharges }: TransferExtraChargesProps) {
+  // Safe check for null/undefined extraCharges
   if (!extraCharges || extraCharges.length === 0) {
     return null;
   }

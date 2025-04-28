@@ -20,18 +20,24 @@ export function TransferCardBadges({
   onMarkAsPaid,
   isSelected 
 }: TransferCardBadgesProps) {
-  const paymentMethodLabels = {
+  const paymentMethodLabels: Record<string, string> = {
     card: 'Tarjeta',
     cash: 'Efectivo',
-    bank_transfer: 'Transferencia'
+    bank_transfer: 'Transferencia',
+    'unknown': 'Método desconocido'
   };
 
-  const handleTogglePaymentStatus = () => {
+  const handleTogglePaymentStatus = (e: React.MouseEvent) => {
     if (onMarkAsPaid) {
+      e.stopPropagation();
       const newStatus = transfer.paymentStatus === 'paid' ? 'pending' : 'paid';
       onMarkAsPaid(transfer.id, newStatus);
     }
   };
+
+  // Safe check for payment method
+  const paymentMethod = transfer.payment_method || 'unknown';
+  const paymentMethodLabel = paymentMethodLabels[paymentMethod] || paymentMethodLabels.unknown;
 
   return (
     <div className="flex items-center gap-1.5">
@@ -53,10 +59,7 @@ export function TransferCardBadges({
       </Badge>
       
       {onMarkAsPaid ? (
-        <div onClick={(e) => {
-          e.stopPropagation();
-          handleTogglePaymentStatus();
-        }}>
+        <div onClick={handleTogglePaymentStatus}>
           <PaymentStatusBadge 
             status={transfer.paymentStatus as 'paid' | 'pending'} 
             onClick={handleTogglePaymentStatus}
@@ -79,7 +82,7 @@ export function TransferCardBadges({
                 />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Pagado con {paymentMethodLabels[transfer.payment_method]}</p>
+                <p>Pagado con {paymentMethodLabel}</p>
               </TooltipContent>
             </Tooltip>
           )}

@@ -1,6 +1,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom'; // Import jest-dom for the matchers
 import { TransferCardView } from '../TransferCardView';
 import { mockTransfer } from '../card-components/__tests__/test-utils';
 

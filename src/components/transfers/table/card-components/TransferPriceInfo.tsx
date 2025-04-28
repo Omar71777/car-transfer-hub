@@ -11,6 +11,11 @@ interface TransferPriceInfoProps {
 }
 
 export function TransferPriceInfo({ transfer }: TransferPriceInfoProps) {
+  // Safe check for valid transfer pricing data
+  const hasDiscount = transfer.discountValue !== undefined && 
+                     transfer.discountValue !== null && 
+                     transfer.discountValue > 0;
+
   return (
     <div className="col-span-2 mt-1 grid grid-cols-2 gap-x-3">
       <div>
@@ -29,7 +34,7 @@ export function TransferPriceInfo({ transfer }: TransferPriceInfoProps) {
       </div>
       
       <div>
-        {transfer.discountValue && transfer.discountValue > 0 && (
+        {hasDiscount && (
           <>
             <p className="text-xs font-medium text-muted-foreground">Descuento:</p>
             <p className="text-xs text-emerald-600 font-medium">

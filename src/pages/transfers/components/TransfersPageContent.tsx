@@ -19,6 +19,7 @@ interface TransfersPageContentProps {
   onViewSummary: (transferId: string) => void;
   onDeleteMultiple: (ids: string[]) => void;
   onMarkAsPaid: (id: string, newStatus?: 'paid' | 'pending') => void;
+  error?: string | null;
 }
 
 export function TransfersPageContent({
@@ -32,9 +33,10 @@ export function TransfersPageContent({
   onAddExpense,
   onViewSummary,
   onDeleteMultiple,
-  onMarkAsPaid
+  onMarkAsPaid,
+  error = null
 }: TransfersPageContentProps) {
-  if (loading) {
+  if (loading && !activeTab) {
     return <LoadingSpinner />;
   }
 
@@ -77,6 +79,8 @@ export function TransfersPageContent({
               onViewSummary={onViewSummary}
               onDeleteMultiple={onDeleteMultiple}
               onMarkAsPaid={onMarkAsPaid}
+              isLoading={loading}
+              error={error}
             />
           </CardContent>
         </Card>
@@ -93,6 +97,8 @@ export function TransfersPageContent({
               onEdit={handleEditExpense}
               onDelete={handleDeleteExpense}
               onAdd={handleAddExpense}
+              isLoading={loading && activeTab === 'expenses'}
+              error={activeTab === 'expenses' ? error : null}
             />
           </CardContent>
         </Card>
