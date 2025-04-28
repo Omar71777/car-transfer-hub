@@ -1,17 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
 import { Client, CreateClientDto } from '@/types/client';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Loader } from 'lucide-react';
+import { PlusCircle, Loader, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useClients } from '@/hooks/useClients';
 import { toast } from 'sonner';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface ClientFieldProps {
   form: UseFormReturn<TransferFormValues>;
@@ -31,11 +32,83 @@ export function ClientField({
   const [clientEmailValue, setClientEmailValue] = useState('');
   const [isCreatingClient, setIsCreatingClient] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [isVerifyingClient, setIsVerifyingClient] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [newClientId, setNewClientId] = useState<string | null>(null);
   
   const { createClient } = useClients();
 
+  // Effect to handle client verification and retries
+  useEffect(() => {
+    let timeoutId: number;
+    
+    const verifyAndUpdateClient = async () => {
+      if (!newClientId || !isVerifyingClient) return;
+      
+      console.log(`Verifying client existence (attempt ${retryCount + 1})...`);
+      
+      const clientExists = clients.some(c => c.id === newClientId);
+      
+      if (clientExists) {
+        console.log('Client found in list, updating form value');
+        form.setValue('clientId', newClientId, { 
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true
+        });
+        
+        // Reset states
+        setNewClientId(null);
+        setIsVerifyingClient(false);
+        setRetryCount(0);
+        toast.success('Cliente creado exitosamente');
+        setIsNewClientDialogOpen(false);
+      } else if (retryCount < 3) {
+        console.log(`Client not found in list, retrying (${retryCount + 1}/3)...`);
+        setRetryCount(prev => prev + 1);
+        
+        // Trigger another client list refresh
+        if (onClientCreated) {
+          try {
+            await onClientCreated();
+            console.log('Client list refreshed, checking again in 500ms');
+            
+            // Wait a short time for state to update
+            timeoutId = window.setTimeout(verifyAndUpdateClient, 500);
+          } catch (error) {
+            console.error('Error refreshing client list:', error);
+            setCreateError('Error al actualizar la lista de clientes');
+            setIsVerifyingClient(false);
+          }
+        }
+      } else {
+        console.error('Maximum retry attempts reached, client not found');
+        setCreateError('Cliente creado pero no aparece en la lista. Intente cerrar y volver a abrir el formulario.');
+        setIsVerifyingClient(false);
+        setRetryCount(0);
+        
+        // Even though verification failed, still use the ID
+        form.setValue('clientId', newClientId, { 
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true
+        });
+      }
+    };
+    
+    if (isVerifyingClient && newClientId) {
+      verifyAndUpdateClient();
+    }
+    
+    return () => {
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [clients, newClientId, isVerifyingClient, retryCount, form, onClientCreated]);
+
   const handleAddNewClient = () => {
     setCreateError(null);
+    setClientNameValue('');
+    setClientEmailValue('');
     setIsNewClientDialogOpen(true);
   };
 
@@ -66,32 +139,19 @@ export function ClientField({
         setClientNameValue('');
         setClientEmailValue('');
         
-        // Refresh the clients list first
+        // Store the new client ID for verification
+        setNewClientId(newClient.id);
+        
+        // First refresh the clients list
         if (onClientCreated) {
           console.log('Refreshing client list...');
           await onClientCreated();
-          console.log('Client list refreshed');
+          console.log('Initial client list refresh completed');
         }
         
-        // Verify the client exists in the updated list
-        const clientExists = clients.some(c => c.id === newClient.id);
-        if (!clientExists) {
-          console.log('New client not found in list, retrying refresh...');
-          if (onClientCreated) {
-            await onClientCreated();
-          }
-        }
-        
-        // Update form with new client ID
-        console.log('Setting form value to new client ID:', newClient.id);
-        form.setValue('clientId', newClient.id, { 
-          shouldValidate: true,
-          shouldDirty: true,
-          shouldTouch: true
-        });
-        
-        toast.success('Cliente creado exitosamente');
-        setIsNewClientDialogOpen(false);
+        // Start verification process
+        setIsVerifyingClient(true);
+        setRetryCount(0);
       }
     } catch (error: any) {
       console.error('Error creating client:', error);
@@ -102,7 +162,8 @@ export function ClientField({
     }
   };
 
-  const isSelectDisabled = isClientsLoading || isCreatingClient;
+  const isSelectDisabled = isClientsLoading || isCreatingClient || isVerifyingClient;
+  const dialogStatus = isCreatingClient ? 'creating' : isVerifyingClient ? 'verifying' : 'idle';
 
   return (
     <>
@@ -120,7 +181,14 @@ export function ClientField({
               >
                 <FormControl>
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder={isClientsLoading ? "Cargando clientes..." : "Seleccionar cliente"} />
+                    {isClientsLoading ? (
+                      <div className="flex items-center space-x-2">
+                        <Loader className="h-4 w-4 animate-spin" />
+                        <span>Cargando clientes...</span>
+                      </div>
+                    ) : (
+                      <SelectValue placeholder="Seleccionar cliente" />
+                    )}
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -136,9 +204,9 @@ export function ClientField({
                 variant="outline" 
                 onClick={handleAddNewClient}
                 className="flex-shrink-0"
-                disabled={isCreatingClient}
+                disabled={isCreatingClient || isVerifyingClient}
               >
-                {isCreatingClient ? (
+                {isCreatingClient || isVerifyingClient ? (
                   <Loader className="h-4 w-4 animate-spin" />
                 ) : (
                   <PlusCircle className="h-4 w-4 mr-1" />
@@ -152,11 +220,18 @@ export function ClientField({
       />
 
       <Dialog open={isNewClientDialogOpen} onOpenChange={(open) => {
-        if (!isCreatingClient) {
+        // Only allow closing if not in the middle of an operation
+        if (!isCreatingClient && !isVerifyingClient) {
           setIsNewClientDialogOpen(open);
           if (!open) {
             setCreateError(null);
+            setNewClientId(null);
+            setRetryCount(0);
+            setIsVerifyingClient(false);
           }
+        } else if (!open) {
+          // Show message that operation is in progress
+          toast.info('Por favor espere a que se complete la operación');
         }
       }}>
         <DialogContent className="sm:max-w-[500px]">
@@ -172,11 +247,14 @@ export function ClientField({
                 onChange={(e) => setClientNameValue(e.target.value)}
                 placeholder="Nombre del cliente" 
                 required 
-                disabled={isCreatingClient}
+                disabled={isCreatingClient || isVerifyingClient}
                 className={createError ? 'border-destructive' : ''}
               />
               {createError && (
-                <p className="text-sm text-destructive mt-1">{createError}</p>
+                <div className="flex items-center gap-2 text-sm text-destructive mt-1">
+                  <AlertCircle className="h-4 w-4" />
+                  <p>{createError}</p>
+                </div>
               )}
             </div>
             
@@ -188,24 +266,43 @@ export function ClientField({
                 value={clientEmailValue} 
                 onChange={(e) => setClientEmailValue(e.target.value)}
                 placeholder="Email del cliente"
-                disabled={isCreatingClient}
+                disabled={isCreatingClient || isVerifyingClient}
               />
             </div>
+            
+            {(isCreatingClient || isVerifyingClient) && (
+              <div className="py-2">
+                <div className="flex items-center justify-center gap-2">
+                  <Loader className="h-5 w-5 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">
+                    {dialogStatus === 'creating' ? 'Creando cliente...' : 'Verificando cliente...'}
+                  </p>
+                </div>
+              </div>
+            )}
             
             <div className="flex justify-end space-x-2 pt-4">
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => setIsNewClientDialogOpen(false)}
-                disabled={isCreatingClient}
+                disabled={isCreatingClient || isVerifyingClient}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isCreatingClient}>
+              <Button 
+                type="submit" 
+                disabled={isCreatingClient || isVerifyingClient}
+              >
                 {isCreatingClient ? (
                   <>
                     <Loader className="h-4 w-4 mr-2 animate-spin" />
                     Creando...
+                  </>
+                ) : isVerifyingClient ? (
+                  <>
+                    <Loader className="h-4 w-4 mr-2 animate-spin" />
+                    Verificando...
                   </>
                 ) : 'Añadir Cliente'}
               </Button>

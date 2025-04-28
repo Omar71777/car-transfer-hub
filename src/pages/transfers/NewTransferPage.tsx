@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/auth';
 import { CreateClientDto } from '@/types/client';
 import { MobileHeader } from '@/components/layout/MobileHeader';
 import { usePointerEventsCleanup } from './hooks/usePointerEventsCleanup';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
@@ -17,27 +18,45 @@ const NewTransferPage = () => {
   const { clients, fetchClients, createClient, loading: clientsLoading } = useClients();
   const { user } = useAuth();
   const [newClientId, setNewClientId] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
   
   // Apply pointer events cleanup
   usePointerEventsCleanup();
   
-  useEffect(() => {
-    console.log('NewTransferPage mounted, user authentication state:', !!user);
-    
-    // Initial fetch of clients
-    if (user) {
-      fetchClients();
-    } else {
-      console.warn('No authenticated user detected');
-      toast.warning('Debe iniciar sesión para crear un transfer');
+  const initializeData = useCallback(async () => {
+    try {
+      if (user) {
+        console.log('NewTransferPage: initializing, fetching clients');
+        setIsInitializing(true);
+        await fetchClients();
+        console.log('NewTransferPage: clients fetched successfully');
+      } else {
+        console.warn('No authenticated user detected');
+        toast.warning('Debe iniciar sesión para crear un transfer');
+      }
+    } catch (error) {
+      console.error('Error initializing data:', error);
+      toast.error('Error al cargar los datos iniciales');
+    } finally {
+      setIsInitializing(false);
     }
   }, [user, fetchClients]);
+  
+  useEffect(() => {
+    console.log('NewTransferPage mounted, user authentication state:', !!user);
+    initializeData();
+  }, [user, initializeData]);
 
-  const handleClientCreated = async (): Promise<void> => {
-    console.log('Client created, refreshing client list');
-    await fetchClients();
-    console.log('Fetched updated clients');
-  };
+  const handleClientCreated = useCallback(async (): Promise<void> => {
+    console.log('NewTransferPage: client created, refreshing client list');
+    try {
+      await fetchClients();
+      console.log('NewTransferPage: updated client list fetched');
+    } catch (error) {
+      console.error('Error refreshing client list:', error);
+      toast.error('Error al actualizar la lista de clientes');
+    }
+  }, [fetchClients]);
 
   const handleSubmit = async (values: any) => {
     console.log('New transfer form submitted with values:', values);
@@ -153,11 +172,18 @@ const NewTransferPage = () => {
           <p className="text-muted-foreground text-sm">Complete el formulario para registrar un nuevo servicio de transfer o disposición</p>
         </div>
         
-        <TransferForm 
-          onSubmit={handleSubmit} 
-          newClientId={newClientId}
-          onClientCreated={handleClientCreated}
-        />
+        {isInitializing ? (
+          <div className="flex justify-center items-center py-10">
+            <LoadingSpinner />
+            <p className="text-muted-foreground ml-2">Cargando datos...</p>
+          </div>
+        ) : (
+          <TransferForm 
+            onSubmit={handleSubmit} 
+            newClientId={newClientId}
+            onClientCreated={handleClientCreated}
+          />
+        )}
       </div>
     </MainLayout>
   );

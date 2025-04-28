@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Card, CardContent } from '@/components/ui/card';
@@ -82,14 +82,21 @@ export function TransferForm({
     fetchCollaborators();
   }, [fetchClients, fetchCollaborators]);
 
-  const handleClientCreated = async () => {
+  const handleClientCreated = useCallback(async () => {
     console.log('TransferForm: client created, refreshing clients list');
-    if (onClientCreated) {
-      await onClientCreated();
-    } else {
-      await fetchClients();
+    try {
+      if (onClientCreated) {
+        await onClientCreated();
+      } else {
+        await fetchClients();
+      }
+      console.log('TransferForm: clients list refreshed successfully');
+      return true;
+    } catch (error) {
+      console.error('TransferForm: error refreshing clients list', error);
+      return false;
     }
-  };
+  }, [onClientCreated, fetchClients]);
 
   const handleFormSubmit = (values: any) => {
     const processedValues = {
