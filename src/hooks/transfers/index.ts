@@ -7,6 +7,7 @@ import { createTransfer } from './operations/createTransfer';
 import { updateTransfer } from './operations/updateTransfer';
 import { deleteTransfer } from './operations/deleteTransfer';
 import { fetchAllTransfers } from './fetch/fetchAllTransfers';
+import { getTransfer } from './operations/getTransfer';
 
 export function useTransfers() {
   const [transfers, setTransfers] = useState<Transfer[]>([]);
@@ -97,7 +98,8 @@ export function useTransfers() {
     fetchTransferById,
     createTransfer: useCallback((transferData: any) => createTransfer(user, transferData), [user]),
     updateTransfer: useCallback((id: string, transferData: Partial<Transfer>) => updateTransfer(user, id, transferData), [user]),
-    deleteTransfer: useCallback((id: string) => deleteTransfer(user, id), [user])
+    deleteTransfer: useCallback((id: string) => deleteTransfer(user, id), [user]),
+    getTransfer: useCallback((id: string) => getTransfer(id), [])
   };
 }
 

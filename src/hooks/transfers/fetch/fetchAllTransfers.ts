@@ -93,8 +93,6 @@ export async function fetchAllTransfers(user: any) {
 
     // Map transfers with all related data
     const processedTransfers = data.map((transfer: any) => {
-      console.log('Processing transfer:', transfer);
-      
       // Handle potential undefined values
       const serviceType = transfer.service_type === 'dispo' ? 'dispo' : 'transfer';
       const origin = transfer.origin ? capitalizeFirstLetter(transfer.origin) : '';
@@ -126,12 +124,12 @@ export async function fetchAllTransfers(user: any) {
         email: clientsMap[transfer.client_id].email
       } : undefined;
       
-      // Return formatted transfer
+      // Return formatted transfer with explicit type casting for serviceType
       return {
         id: transfer.id,
         date: transfer.date,
         time: transfer.time || '',
-        serviceType,
+        serviceType: serviceType as 'transfer' | 'dispo',
         origin,
         destination,
         hours: transfer.hours || undefined,
@@ -152,7 +150,7 @@ export async function fetchAllTransfers(user: any) {
     });
 
     console.log('Processed transfers:', processedTransfers.length);
-    return processedTransfers;
+    return processedTransfers as Transfer[];
   } catch (error: any) {
     console.error('Error processing transfers:', error);
     toast.error(`Error al cargar los transfers: ${error.message}`);

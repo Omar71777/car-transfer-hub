@@ -11,5 +11,5 @@ export interface UseTransfersResult {
   createTransfer: (transferData: any) => Promise<string | null>;
   updateTransfer: (id: string, transferData: Partial<Transfer>) => Promise<boolean>;
   deleteTransfer: (id: string) => Promise<boolean>;
-  getTransfer: (id: string) => Promise<any>;
+  getTransfer: (id: string) => Promise<Transfer | null>;
 }
