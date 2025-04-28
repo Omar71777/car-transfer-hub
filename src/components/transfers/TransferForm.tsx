@@ -1,4 +1,3 @@
-
 import React, { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -82,7 +81,6 @@ export function TransferForm({
     fetchCollaborators();
   }, [fetchClients, fetchCollaborators]);
 
-  // Modified to match the expected Promise<void> return type
   const handleClientCreated = useCallback(async () => {
     console.log('TransferForm: client created, refreshing clients list');
     try {
@@ -92,10 +90,8 @@ export function TransferForm({
         await fetchClients();
       }
       console.log('TransferForm: clients list refreshed successfully');
-      // Removed boolean return
     } catch (error) {
       console.error('TransferForm: error refreshing clients list', error);
-      // Removed boolean return
     }
   }, [onClientCreated, fetchClients]);
 
@@ -150,7 +146,7 @@ export function TransferForm({
               <ExtraChargesTab 
                 extraCharges={extraCharges}
                 onAddCharge={handleAddExtraCharge}
-                onRemoveCharge={handleRemoveCharge}
+                onRemoveCharge={handleRemoveExtraCharge}
                 onChangeCharge={handleExtraChargeChange}
               />
             </div>
