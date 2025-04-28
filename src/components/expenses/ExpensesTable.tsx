@@ -19,16 +19,42 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { AlertCircle } from 'lucide-react';
 
 interface ExpensesTableProps {
   expenses: Expense[];
   onEdit: (expense: Expense) => void;
   onDelete: (id: string) => void;
   onAdd?: (expense: Partial<Expense>) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
-export function ExpensesTable({ expenses, onEdit, onDelete, onAdd }: ExpensesTableProps) {
+export function ExpensesTable({ 
+  expenses, 
+  onEdit, 
+  onDelete, 
+  onAdd, 
+  isLoading = false, 
+  error = null 
+}: ExpensesTableProps) {
   const isMobile = useIsMobile();
+  
+  // Show loading state
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="p-4 text-center flex flex-col items-center justify-center text-red-500">
+        <AlertCircle className="h-8 w-8 mb-2" />
+        <p>Error al cargar los gastos: {error}</p>
+      </div>
+    );
+  }
   
   return (
     <div className="rounded-md border overflow-hidden glass-card">

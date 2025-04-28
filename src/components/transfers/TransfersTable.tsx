@@ -20,6 +20,8 @@ interface TransfersTableProps {
   onViewSummary: (transferId: string) => void;
   onDeleteMultiple?: (ids: string[]) => void;
   onMarkAsPaid?: (transferId: string, newStatus?: 'paid' | 'pending') => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export function TransfersTable({
@@ -29,7 +31,9 @@ export function TransfersTable({
   onAddExpense,
   onViewSummary,
   onDeleteMultiple = (ids) => ids.forEach(onDelete),
-  onMarkAsPaid
+  onMarkAsPaid,
+  isLoading = false,
+  error = null
 }: TransfersTableProps) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [filteredTransfers, setFilteredTransfers] = useState<Transfer[]>(transfers);
@@ -118,6 +122,8 @@ export function TransfersTable({
           onSelectRow={handleSelectRow}
           onMarkAsPaid={onMarkAsPaid}
           selectedRows={selectedRows}
+          isLoading={isLoading}
+          error={error}
         />
       ) : (
         <div className="table-container bg-card rounded-md border shadow-sm mx-auto">

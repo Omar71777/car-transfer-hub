@@ -62,7 +62,8 @@ export function TransferCardBadges({
         <div onClick={handleTogglePaymentStatus}>
           <PaymentStatusBadge 
             status={transfer.paymentStatus as 'paid' | 'pending'} 
-            onClick={handleTogglePaymentStatus}
+            /* Fix: Change the onClick handler to accept an event parameter */
+            onClick={(e?: React.MouseEvent) => handleTogglePaymentStatus(e || new MouseEvent('click'))}
           />
         </div>
       ) : (
