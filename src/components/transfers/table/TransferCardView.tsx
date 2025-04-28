@@ -190,20 +190,13 @@ export function TransferCardView({
                 </div>
                 
                 <div className="mt-1">
-                  {transfer.discountValue && transfer.discountValue > 0 ? (
+                  {transfer.discountValue && transfer.discountValue > 0 && (
                     <>
                       <p className="text-xs font-medium text-muted-foreground">Descuento:</p>
                       <p className="text-xs text-emerald-600 font-medium">
                         {transfer.discountType === 'percentage' 
                           ? `${transfer.discountValue}%` 
                           : formatCurrency(Number(transfer.discountValue))}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-xs font-medium text-muted-foreground">Estado:</p>
-                      <p className={`text-xs font-medium ${transfer.paymentStatus === 'paid' ? 'text-green-600' : 'text-amber-600'}`}>
-                        {transfer.paymentStatus === 'paid' ? 'Pagado' : 'Pendiente'}
                       </p>
                     </>
                   )}
