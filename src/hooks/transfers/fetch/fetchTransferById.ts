@@ -83,6 +83,10 @@ export async function fetchTransferById(id: string): Promise<Transfer | null> {
     // Properly handle commission_type to match "percentage" | "fixed"
     const commissionType: 'percentage' | 'fixed' = 
       transfer.commission_type === 'fixed' ? 'fixed' : 'percentage';
+    
+    // Ensure paymentStatus is properly typed as 'paid' | 'pending'
+    const paymentStatus: 'paid' | 'pending' = 
+      transfer.payment_status === 'paid' ? 'paid' : 'pending';
 
     return {
       id: transfer.id,
@@ -98,7 +102,7 @@ export async function fetchTransferById(id: string): Promise<Transfer | null> {
       collaborator: transfer.collaborator && transfer.collaborator !== 'none' ? capitalizeFirstLetter(transfer.collaborator) : '',
       commission: Number(transfer.commission) || 0,
       commissionType: commissionType,
-      paymentStatus: transfer.payment_status || 'pending',
+      paymentStatus: paymentStatus,
       clientId: transfer.client_id || '',
       client: client ? {
         id: client.id,
