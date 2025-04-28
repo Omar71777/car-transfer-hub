@@ -11,9 +11,11 @@ import { CreateClientDto } from '@/types/client';
 import { MobileHeader } from '@/components/layout/MobileHeader';
 import { usePointerEventsCleanup } from './hooks/usePointerEventsCleanup';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useQueryClient } from '@tanstack/react-query';
 
 const NewTransferPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { createTransfer } = useTransfers();
   const { clients, fetchClients, createClient, loading: clientsLoading } = useClients();
   const { user } = useAuth();
@@ -50,13 +52,15 @@ const NewTransferPage = () => {
   const handleClientCreated = useCallback(async (): Promise<void> => {
     console.log('NewTransferPage: client created, refreshing client list');
     try {
+      // Force a refresh of the clients query
+      await queryClient.invalidateQueries({ queryKey: ['clients'] });
       await fetchClients();
       console.log('NewTransferPage: updated client list fetched');
     } catch (error) {
       console.error('Error refreshing client list:', error);
       toast.error('Error al actualizar la lista de clientes');
     }
-  }, [fetchClients]);
+  }, [fetchClients, queryClient]);
 
   const handleSubmit = async (values: any) => {
     console.log('New transfer form submitted with values:', values);

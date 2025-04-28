@@ -7,6 +7,7 @@ import { useClients } from '@/hooks/useClients';
 import { toast } from 'sonner';
 import { ClientSelect } from './ClientSelect';
 import { CreateClientDialog } from './CreateClientDialog';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ClientFieldProps {
   form: UseFormReturn<TransferFormValues>;
@@ -24,10 +25,10 @@ export function ClientField({
   const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
   const [clientNameValue, setClientNameValue] = useState('');
   const [clientEmailValue, setClientEmailValue] = useState('');
-  const [isCreatingClient, setIsCreatingClient] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   
-  const { createClient } = useClients();
+  const queryClient = useQueryClient();
+  const { createClient, isCreatingClient } = useClients();
 
   const handleAddNewClient = () => {
     setCreateError(null);
@@ -45,7 +46,6 @@ export function ClientField({
     }
 
     try {
-      setIsCreatingClient(true);
       setCreateError(null);
       console.log('Creating client:', clientNameValue);
       
@@ -63,39 +63,44 @@ export function ClientField({
         setClientNameValue('');
         setClientEmailValue('');
         
-        // Update client list
+        // Refresh client list
         if (onClientCreated) {
-          console.log('Refreshing client list...');
+          console.log('Calling onClientCreated callback');
           await onClientCreated();
-          console.log('Client list refreshed');
         }
         
-        // Verify the client exists in the updated list
-        const clientExists = clients.some(c => c.id === newClient.id);
-        if (!clientExists) {
-          console.log('New client not found in list, retrying refresh...');
-          if (onClientCreated) {
-            await onClientCreated();
-          }
-        }
+        // Force a refresh of the clients query
+        await queryClient.invalidateQueries({ queryKey: ['clients'] });
         
-        // Update form with new client ID
-        console.log('Setting form value to new client ID:', newClient.id);
-        form.setValue('clientId', newClient.id, { 
-          shouldValidate: true,
-          shouldDirty: true,
-          shouldTouch: true
-        });
-        
-        toast.success('Cliente creado exitosamente');
-        setIsNewClientDialogOpen(false);
+        // Wait a moment to ensure the client list has updated
+        setTimeout(() => {
+          // Update form with new client ID
+          console.log('Setting form value to new client ID:', newClient.id);
+          form.setValue('clientId', newClient.id, { 
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true
+          });
+          
+          toast.success('Cliente creado exitosamente');
+          setIsNewClientDialogOpen(false);
+        }, 300);
+      } else {
+        throw new Error('Error al crear el cliente');
       }
     } catch (error: any) {
       console.error('Error creating client:', error);
       setCreateError(error.message || 'Error al crear el cliente');
       toast.error('Error al crear el cliente');
-    } finally {
-      setIsCreatingClient(false);
+    }
+  };
+
+  const onDialogOpenChange = (open: boolean) => {
+    if (!isCreatingClient) {
+      setIsNewClientDialogOpen(open);
+      if (!open) {
+        setCreateError(null);
+      }
     }
   };
 
@@ -111,14 +116,7 @@ export function ClientField({
       
       <CreateClientDialog
         isOpen={isNewClientDialogOpen}
-        onOpenChange={(open) => {
-          if (!isCreatingClient) {
-            setIsNewClientDialogOpen(open);
-            if (!open) {
-              setCreateError(null);
-            }
-          }
-        }}
+        onOpenChange={onDialogOpenChange}
         onSubmit={handleNewClientSubmit}
         clientName={clientNameValue}
         onClientNameChange={setClientNameValue}

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -13,6 +14,8 @@ import { ServiceTypeSelector } from './components/ServiceTypeSelector';
 import { useTransferForm } from './hooks/useTransferForm';
 import { CollaboratorField } from './form-fields/CollaboratorField';
 import { useCollaborators } from '@/hooks/useCollaborators';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface TransferFormProps {
   onSubmit: (values: any) => void;
@@ -29,6 +32,8 @@ export function TransferForm({
   newClientId = null,
   onClientCreated
 }: TransferFormProps) {
+  const queryClient = useQueryClient();
+  
   const {
     clients,
     loading: loadingClients,
@@ -84,16 +89,21 @@ export function TransferForm({
   const handleClientCreated = useCallback(async () => {
     console.log('TransferForm: client created, refreshing clients list');
     try {
+      // Invalidate and refresh clients query
+      await queryClient.invalidateQueries({ queryKey: ['clients'] });
+      
       if (onClientCreated) {
         await onClientCreated();
       } else {
         await fetchClients();
       }
       console.log('TransferForm: clients list refreshed successfully');
+      toast.success('Lista de clientes actualizada');
     } catch (error) {
       console.error('TransferForm: error refreshing clients list', error);
+      toast.error('Error al actualizar la lista de clientes');
     }
-  }, [onClientCreated, fetchClients]);
+  }, [onClientCreated, fetchClients, queryClient]);
 
   const handleFormSubmit = (values: any) => {
     const processedValues = {
