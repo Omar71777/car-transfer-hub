@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useAuth } from '@/contexts/auth';
 import { useFetchTransfers } from './useFetchTransfers';
 import { useTransferOperations } from './useTransferOperations';
+import { Transfer } from '@/types';
 
 export function useTransfers() {
   const { user } = useAuth();

@@ -19,7 +19,7 @@ export function useTransferOperations(user: any) {
     return deleteTransferUtil(user, id);
   }, [user]);
 
-  const getTransfer = useCallback(async (id: string) => {
+  const getTransfer = useCallback(async (id: string): Promise<Transfer | null> => {
     return getTransferUtil(id);
   }, []);
 

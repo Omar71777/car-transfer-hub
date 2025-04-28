@@ -2,8 +2,9 @@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { capitalizeFirstLetter } from '@/lib/utils';
+import { Transfer } from '@/types';
 
-export async function fetchTransferById(id: string) {
+export async function fetchTransferById(id: string): Promise<Transfer | null> {
   if (!id) return null;
   
   try {
@@ -78,6 +79,10 @@ export async function fetchTransferById(id: string) {
     } else if (transfer.discount_type === 'fixed') {
       discountType = 'fixed';
     }
+    
+    // Properly handle commission_type to match "percentage" | "fixed"
+    const commissionType: 'percentage' | 'fixed' = 
+      transfer.commission_type === 'fixed' ? 'fixed' : 'percentage';
 
     return {
       id: transfer.id,
@@ -92,7 +97,7 @@ export async function fetchTransferById(id: string) {
       discountValue: Number(transfer.discount_value) || 0,
       collaborator: transfer.collaborator && transfer.collaborator !== 'none' ? capitalizeFirstLetter(transfer.collaborator) : '',
       commission: Number(transfer.commission) || 0,
-      commissionType: transfer.commission_type === 'fixed' ? 'fixed' : 'percentage',
+      commissionType: commissionType,
       paymentStatus: transfer.payment_status || 'pending',
       clientId: transfer.client_id || '',
       client: client ? {
