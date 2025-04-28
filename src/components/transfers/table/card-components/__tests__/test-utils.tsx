@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Transfer } from '@/types';
+import { Transfer, ExtraCharge } from '@/types';
 
 export const mockTransfer: Transfer = {
   id: '1',
@@ -15,7 +15,12 @@ export const mockTransfer: Transfer = {
   clientId: '1',
   billed: false,
   extraCharges: [
-    { name: 'Extra Luggage', price: 20 }
+    {
+      id: 'ec1',
+      name: 'Extra Luggage',
+      price: 20,
+      transferId: '1'
+    }
   ]
 };
 
