@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { AppProviders } from '@/components/providers/AppProviders';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -8,8 +9,10 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <AppProviders>
-      {children}
-    </AppProviders>
+    <QueryProvider>
+      <AppProviders>
+        {children}
+      </AppProviders>
+    </QueryProvider>
   );
 }
