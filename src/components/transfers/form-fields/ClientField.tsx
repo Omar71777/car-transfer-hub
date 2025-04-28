@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
@@ -18,13 +18,13 @@ interface ClientFieldProps {
   clients: Client[];
 }
 
-export function ClientField({ form, clients }: ClientFieldProps) {
+export function ClientField({ form, clients: initialClients }: ClientFieldProps) {
   const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
   const [clientNameValue, setClientNameValue] = useState('');
   const [clientEmailValue, setClientEmailValue] = useState('');
   const [isCreatingClient, setIsCreatingClient] = useState(false);
   
-  const { createClient } = useClients();
+  const { createClient, fetchClients } = useClients();
 
   // Handle setting a new client
   const handleAddNewClient = () => {
@@ -54,6 +54,9 @@ export function ClientField({ form, clients }: ClientFieldProps) {
       if (newClient) {
         // Update form with new client
         form.setValue('clientId', newClient.id, { shouldValidate: true });
+        
+        // Refresh the clients list
+        await fetchClients();
         
         // Close dialog and reset form
         setIsNewClientDialogOpen(false);
@@ -89,7 +92,7 @@ export function ClientField({ form, clients }: ClientFieldProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {clients.map((client) => (
+                  {initialClients.map((client) => (
                     <SelectItem key={client.id} value={client.id}>
                       {client.name}
                     </SelectItem>
