@@ -50,24 +50,37 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
       const newClient = await createClient(newClientData);
       
       if (newClient) {
-        // First notify parent to refresh clients list
-        if (onClientCreated) {
-          await onClientCreated();
-        }
-        
-        // Then update the form with the new client ID
-        form.setValue('clientId', newClient.id, { 
-          shouldValidate: true,
-          shouldDirty: true,
-          shouldTouch: true
-        });
-        
-        // Clear form and close dialog
+        // Clear form and close dialog first to provide immediate feedback
         setClientNameValue('');
         setClientEmailValue('');
         setIsNewClientDialogOpen(false);
         
-        toast.success('Cliente creado exitosamente');
+        // Then notify parent to refresh clients list
+        if (onClientCreated) {
+          await onClientCreated();
+          
+          // Wait a small delay to ensure the client list has been updated
+          // before setting the selected client
+          setTimeout(() => {
+            // Then update the form with the new client ID
+            form.setValue('clientId', newClient.id, { 
+              shouldValidate: true,
+              shouldDirty: true,
+              shouldTouch: true
+            });
+            
+            toast.success('Cliente creado exitosamente');
+          }, 100);
+        } else {
+          // If no callback provided, just set the value immediately
+          form.setValue('clientId', newClient.id, { 
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true
+          });
+          
+          toast.success('Cliente creado exitosamente');
+        }
       }
     } catch (error) {
       console.error('Error creating client:', error);

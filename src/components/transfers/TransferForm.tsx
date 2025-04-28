@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -19,13 +20,15 @@ interface TransferFormProps {
   initialValues?: Transfer;
   isEditing?: boolean;
   newClientId?: string | null;
+  onClientCreated?: () => Promise<void>;
 }
 
 export function TransferForm({
   onSubmit,
   initialValues,
   isEditing = false,
-  newClientId = null
+  newClientId = null,
+  onClientCreated
 }: TransferFormProps) {
   const {
     clients,
@@ -82,7 +85,12 @@ export function TransferForm({
 
   // Handle client list refresh
   const handleClientCreated = async () => {
-    await fetchClients();
+    console.log('TransferForm: client created, refreshing clients list');
+    if (onClientCreated) {
+      await onClientCreated();
+    } else {
+      await fetchClients();
+    }
   };
 
   // Custom submit handler to process extra charges

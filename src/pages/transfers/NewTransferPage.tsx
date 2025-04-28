@@ -14,7 +14,7 @@ import { usePointerEventsCleanup } from './hooks/usePointerEventsCleanup';
 const NewTransferPage = () => {
   const navigate = useNavigate();
   const { createTransfer } = useTransfers();
-  const { clients, createClient } = useClients();
+  const { clients, fetchClients, createClient } = useClients();
   const { user } = useAuth();
   const [newClientId, setNewClientId] = useState<string | null>(null);
   
@@ -24,11 +24,21 @@ const NewTransferPage = () => {
   useEffect(() => {
     console.log('NewTransferPage mounted, user authentication state:', !!user);
     
-    if (!user) {
+    // Initial fetch of clients
+    if (user) {
+      fetchClients();
+    } else {
       console.warn('No authenticated user detected');
       toast.warning('Debe iniciar sesión para crear un transfer');
     }
-  }, [user]);
+  }, [user, fetchClients]);
+
+  const handleClientCreated = async () => {
+    console.log('Client created, refreshing client list');
+    const updatedClients = await fetchClients();
+    console.log('Fetched updated clients:', updatedClients?.length || 0);
+    return updatedClients;
+  };
 
   const handleSubmit = async (values: any) => {
     console.log('New transfer form submitted with values:', values);
@@ -147,6 +157,7 @@ const NewTransferPage = () => {
         <TransferForm 
           onSubmit={handleSubmit} 
           newClientId={newClientId}
+          onClientCreated={handleClientCreated}
         />
       </div>
     </MainLayout>
