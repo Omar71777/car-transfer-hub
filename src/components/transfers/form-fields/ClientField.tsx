@@ -6,7 +6,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
 import { Client, CreateClientDto } from '@/types/client';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Loader } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,9 +17,10 @@ interface ClientFieldProps {
   form: UseFormReturn<TransferFormValues>;
   clients: Client[];
   onClientCreated?: () => Promise<void>;
+  isClientsLoading?: boolean;
 }
 
-export function ClientField({ form, clients, onClientCreated }: ClientFieldProps) {
+export function ClientField({ form, clients, onClientCreated, isClientsLoading = false }: ClientFieldProps) {
   const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
   const [clientNameValue, setClientNameValue] = useState('');
   const [clientEmailValue, setClientEmailValue] = useState('');
@@ -41,46 +42,40 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
 
     try {
       setIsCreatingClient(true);
+      console.log('Creating client:', clientNameValue);
       
       const newClientData: CreateClientDto = {
         name: clientNameValue,
-        email: clientEmailValue || `${clientNameValue.toLowerCase().replace(/\\s+/g, '.')}@example.com`,
+        email: clientEmailValue || `${clientNameValue.toLowerCase().replace(/\s+/g, '.')}@example.com`,
       };
       
       const newClient = await createClient(newClientData);
       
       if (newClient) {
-        // Clear form and close dialog first to provide immediate feedback
+        console.log('Client created successfully with ID:', newClient.id);
+        toast.success('Cliente creado exitosamente');
+        
+        // Clear form values
         setClientNameValue('');
         setClientEmailValue('');
+        
+        // Refresh the clients list first
+        if (onClientCreated) {
+          console.log('Refreshing client list...');
+          await onClientCreated();
+          console.log('Client list refreshed');
+        }
+        
+        // Close dialog after client list is refreshed
         setIsNewClientDialogOpen(false);
         
-        // Then notify parent to refresh clients list
-        if (onClientCreated) {
-          await onClientCreated();
-          
-          // Wait a small delay to ensure the client list has been updated
-          // before setting the selected client
-          setTimeout(() => {
-            // Then update the form with the new client ID
-            form.setValue('clientId', newClient.id, { 
-              shouldValidate: true,
-              shouldDirty: true,
-              shouldTouch: true
-            });
-            
-            toast.success('Cliente creado exitosamente');
-          }, 100);
-        } else {
-          // If no callback provided, just set the value immediately
-          form.setValue('clientId', newClient.id, { 
-            shouldValidate: true,
-            shouldDirty: true,
-            shouldTouch: true
-          });
-          
-          toast.success('Cliente creado exitosamente');
-        }
+        // Now update the form with the new client ID
+        console.log('Setting form value to new client ID:', newClient.id);
+        form.setValue('clientId', newClient.id, { 
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true
+        });
       }
     } catch (error) {
       console.error('Error creating client:', error);
@@ -102,10 +97,11 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
+                disabled={isClientsLoading}
               >
                 <FormControl>
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar cliente" />
+                    <SelectValue placeholder={isClientsLoading ? "Cargando clientes..." : "Seleccionar cliente"} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -132,7 +128,11 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
         )}
       />
 
-      <Dialog open={isNewClientDialogOpen} onOpenChange={setIsNewClientDialogOpen}>
+      <Dialog open={isNewClientDialogOpen} onOpenChange={(open) => {
+        if (!isCreatingClient) {
+          setIsNewClientDialogOpen(open);
+        }
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Nuevo Cliente</DialogTitle>
@@ -146,6 +146,7 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
                 onChange={(e) => setClientNameValue(e.target.value)}
                 placeholder="Nombre del cliente" 
                 required 
+                disabled={isCreatingClient}
               />
             </div>
             
@@ -156,7 +157,8 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
                 type="email" 
                 value={clientEmailValue} 
                 onChange={(e) => setClientEmailValue(e.target.value)}
-                placeholder="Email del cliente" 
+                placeholder="Email del cliente"
+                disabled={isCreatingClient}
               />
             </div>
             
@@ -170,7 +172,12 @@ export function ClientField({ form, clients, onClientCreated }: ClientFieldProps
                 Cancelar
               </Button>
               <Button type="submit" disabled={isCreatingClient}>
-                {isCreatingClient ? 'Creando...' : 'Añadir Cliente'}
+                {isCreatingClient ? (
+                  <>
+                    <Loader className="h-4 w-4 mr-2 animate-spin" />
+                    Creando...
+                  </>
+                ) : 'Añadir Cliente'}
               </Button>
             </div>
           </form>

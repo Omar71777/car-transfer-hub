@@ -14,7 +14,7 @@ import { usePointerEventsCleanup } from './hooks/usePointerEventsCleanup';
 const NewTransferPage = () => {
   const navigate = useNavigate();
   const { createTransfer } = useTransfers();
-  const { clients, fetchClients, createClient } = useClients();
+  const { clients, fetchClients, createClient, loading: clientsLoading } = useClients();
   const { user } = useAuth();
   const [newClientId, setNewClientId] = useState<string | null>(null);
   

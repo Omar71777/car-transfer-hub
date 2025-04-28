@@ -12,13 +12,15 @@ interface BasicInfoTabProps {
   serviceType: 'transfer' | 'dispo';
   clients: Client[];
   onClientCreated?: () => Promise<void>;
+  isClientsLoading?: boolean;
 }
 
 export function BasicInfoTab({ 
   form, 
   serviceType, 
   clients,
-  onClientCreated 
+  onClientCreated,
+  isClientsLoading = false
 }: BasicInfoTabProps) {
   return (
     <div className="space-y-6">
@@ -26,6 +28,7 @@ export function BasicInfoTab({
         form={form} 
         clients={clients}
         onClientCreated={onClientCreated}
+        isClientsLoading={isClientsLoading}
       />
       <DateTimeFields form={form} />
       <LocationFields form={form} serviceType={serviceType} />
