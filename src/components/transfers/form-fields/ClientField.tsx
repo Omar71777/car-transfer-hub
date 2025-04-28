@@ -52,11 +52,15 @@ export function ClientField({ form, clients: initialClients }: ClientFieldProps)
       const newClient = await createClient(newClientData);
       
       if (newClient) {
-        // Update form with new client
-        form.setValue('clientId', newClient.id, { shouldValidate: true });
-        
-        // Refresh the clients list
+        // First refresh the clients list so the new client is available
         await fetchClients();
+        
+        // Then update the form with the new client ID
+        form.setValue('clientId', newClient.id, { 
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true
+        });
         
         // Close dialog and reset form
         setIsNewClientDialogOpen(false);
@@ -85,6 +89,7 @@ export function ClientField({ form, clients: initialClients }: ClientFieldProps)
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
+                defaultValue={field.value}
               >
                 <FormControl>
                   <SelectTrigger className="flex-1">
@@ -104,6 +109,7 @@ export function ClientField({ form, clients: initialClients }: ClientFieldProps)
                 variant="outline" 
                 onClick={handleAddNewClient}
                 className="flex-shrink-0"
+                disabled={isCreatingClient}
               >
                 <PlusCircle className="h-4 w-4 mr-1" />
                 Nuevo
