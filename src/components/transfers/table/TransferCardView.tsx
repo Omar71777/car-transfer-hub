@@ -174,32 +174,34 @@ export function TransferCardView({
                   </div>
                 </div>
                 
-                <div className="mt-1">
-                  <div className="flex items-center gap-1">
-                    <p className="text-xs font-medium text-muted-foreground">Precio Total:</p>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info className="h-3 w-3 text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Incluye cargos extra, descuentos y comisiones</p>
-                      </TooltipContent>
-                    </Tooltip>
+                <div className="col-span-2 mt-1 grid grid-cols-2 gap-x-3">
+                  <div>
+                    <div className="flex items-center gap-1">
+                      <p className="text-xs font-medium text-muted-foreground">Precio Total:</p>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="h-3 w-3 text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">Incluye cargos extra, descuentos y comisiones</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <PriceDisplay transfer={transfer} />
                   </div>
-                  <PriceDisplay transfer={transfer} />
-                </div>
-                
-                <div className="mt-1">
-                  {transfer.discountValue && transfer.discountValue > 0 && (
-                    <>
-                      <p className="text-xs font-medium text-muted-foreground">Descuento:</p>
-                      <p className="text-xs text-emerald-600 font-medium">
-                        {transfer.discountType === 'percentage' 
-                          ? `${transfer.discountValue}%` 
-                          : formatCurrency(Number(transfer.discountValue))}
-                      </p>
-                    </>
-                  )}
+                  
+                  <div>
+                    {transfer.discountValue && transfer.discountValue > 0 && (
+                      <>
+                        <p className="text-xs font-medium text-muted-foreground">Descuento:</p>
+                        <p className="text-xs text-emerald-600 font-medium">
+                          {transfer.discountType === 'percentage' 
+                            ? `${transfer.discountValue}%` 
+                            : formatCurrency(Number(transfer.discountValue))}
+                        </p>
+                      </>
+                    )}
+                  </div>
                 </div>
                 
                 {transfer.collaborator && transfer.collaborator !== 'none' && (
