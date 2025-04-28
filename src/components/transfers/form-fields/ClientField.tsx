@@ -20,15 +20,22 @@ interface ClientFieldProps {
   isClientsLoading?: boolean;
 }
 
-export function ClientField({ form, clients, onClientCreated, isClientsLoading = false }: ClientFieldProps) {
+export function ClientField({ 
+  form, 
+  clients, 
+  onClientCreated, 
+  isClientsLoading = false 
+}: ClientFieldProps) {
   const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
   const [clientNameValue, setClientNameValue] = useState('');
   const [clientEmailValue, setClientEmailValue] = useState('');
   const [isCreatingClient, setIsCreatingClient] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   
   const { createClient } = useClients();
 
   const handleAddNewClient = () => {
+    setCreateError(null);
     setIsNewClientDialogOpen(true);
   };
 
@@ -36,12 +43,13 @@ export function ClientField({ form, clients, onClientCreated, isClientsLoading =
     e.preventDefault();
     
     if (!clientNameValue) {
-      toast.error('El nombre del cliente es requerido');
+      setCreateError('El nombre del cliente es requerido');
       return;
     }
 
     try {
       setIsCreatingClient(true);
+      setCreateError(null);
       console.log('Creating client:', clientNameValue);
       
       const newClientData: CreateClientDto = {
@@ -53,7 +61,6 @@ export function ClientField({ form, clients, onClientCreated, isClientsLoading =
       
       if (newClient) {
         console.log('Client created successfully with ID:', newClient.id);
-        toast.success('Cliente creado exitosamente');
         
         // Clear form values
         setClientNameValue('');
@@ -66,24 +73,36 @@ export function ClientField({ form, clients, onClientCreated, isClientsLoading =
           console.log('Client list refreshed');
         }
         
-        // Close dialog after client list is refreshed
-        setIsNewClientDialogOpen(false);
+        // Verify the client exists in the updated list
+        const clientExists = clients.some(c => c.id === newClient.id);
+        if (!clientExists) {
+          console.log('New client not found in list, retrying refresh...');
+          if (onClientCreated) {
+            await onClientCreated();
+          }
+        }
         
-        // Now update the form with the new client ID
+        // Update form with new client ID
         console.log('Setting form value to new client ID:', newClient.id);
         form.setValue('clientId', newClient.id, { 
           shouldValidate: true,
           shouldDirty: true,
           shouldTouch: true
         });
+        
+        toast.success('Cliente creado exitosamente');
+        setIsNewClientDialogOpen(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating client:', error);
+      setCreateError(error.message || 'Error al crear el cliente');
       toast.error('Error al crear el cliente');
     } finally {
       setIsCreatingClient(false);
     }
   };
+
+  const isSelectDisabled = isClientsLoading || isCreatingClient;
 
   return (
     <>
@@ -97,7 +116,7 @@ export function ClientField({ form, clients, onClientCreated, isClientsLoading =
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
-                disabled={isClientsLoading}
+                disabled={isSelectDisabled}
               >
                 <FormControl>
                   <SelectTrigger className="flex-1">
@@ -119,7 +138,11 @@ export function ClientField({ form, clients, onClientCreated, isClientsLoading =
                 className="flex-shrink-0"
                 disabled={isCreatingClient}
               >
-                <PlusCircle className="h-4 w-4 mr-1" />
+                {isCreatingClient ? (
+                  <Loader className="h-4 w-4 animate-spin" />
+                ) : (
+                  <PlusCircle className="h-4 w-4 mr-1" />
+                )}
                 Nuevo
               </Button>
             </div>
@@ -131,6 +154,9 @@ export function ClientField({ form, clients, onClientCreated, isClientsLoading =
       <Dialog open={isNewClientDialogOpen} onOpenChange={(open) => {
         if (!isCreatingClient) {
           setIsNewClientDialogOpen(open);
+          if (!open) {
+            setCreateError(null);
+          }
         }
       }}>
         <DialogContent className="sm:max-w-[500px]">
@@ -147,7 +173,11 @@ export function ClientField({ form, clients, onClientCreated, isClientsLoading =
                 placeholder="Nombre del cliente" 
                 required 
                 disabled={isCreatingClient}
+                className={createError ? 'border-destructive' : ''}
               />
+              {createError && (
+                <p className="text-sm text-destructive mt-1">{createError}</p>
+              )}
             </div>
             
             <div>
