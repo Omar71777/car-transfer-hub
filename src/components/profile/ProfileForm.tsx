@@ -18,7 +18,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 interface ProfileFormProps {
   defaultValues: ProfileFormValues;
-  onSubmit: (values: ProfileFormValues) => Promise<void>;
+  onSubmit: (values: ProfileFormValues) => Promise<{success: boolean, data?: any, error?: any}>;
 }
 
 export function ProfileForm({ defaultValues, onSubmit }: ProfileFormProps) {

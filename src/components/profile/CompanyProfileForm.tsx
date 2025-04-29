@@ -21,7 +21,7 @@ type CompanyProfileFormValues = z.infer<typeof companyProfileSchema>;
 
 interface CompanyProfileFormProps {
   defaultValues: CompanyProfileFormValues;
-  onSubmit: (values: CompanyProfileFormValues) => Promise<void>;
+  onSubmit: (values: CompanyProfileFormValues) => Promise<{success: boolean, data?: any, error?: any}>;
 }
 
 export function CompanyProfileForm({ defaultValues, onSubmit }: CompanyProfileFormProps) {
