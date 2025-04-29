@@ -14,6 +14,19 @@ interface UseClientCreationProps {
 export function useClientCreation({ form, onSuccess }: UseClientCreationProps = {}) {
   const { isCreatingClient } = useClients();
   
+  // Create a dialog hook instance
+  const {
+    isNewClientDialogOpen,
+    setIsNewClientDialogOpen,
+    handleAddNewClient,
+    closeDialog,
+    dialogStatus
+  } = useClientDialog({
+    isCreatingClient: false, // We'll update this with the combined state
+    isVerifyingClient: false // We'll update this with the combined state
+  });
+  
+  // Create a client verification hook instance with the closeDialog function
   const {
     isVerifyingClient,
     setIsVerifyingClient,
@@ -22,8 +35,13 @@ export function useClientCreation({ form, onSuccess }: UseClientCreationProps = 
     retryCount,
     setRetryCount,
     verifyClientCreation
-  } = useClientVerification({ form, onSuccess });
+  } = useClientVerification({ 
+    form, 
+    onSuccess,
+    closeDialog // Pass the closeDialog function
+  });
 
+  // Create a client submission hook instance
   const {
     clientNameValue,
     setClientNameValue,
@@ -37,15 +55,10 @@ export function useClientCreation({ form, onSuccess }: UseClientCreationProps = 
     setNewClientId,
     onSuccess
   });
-
-  const {
-    isNewClientDialogOpen,
-    setIsNewClientDialogOpen,
-    handleAddNewClient,
-    closeDialog,
-    dialogStatus
-  } = useClientDialog({
-    isCreatingClient,
+  
+  // Update the dialog hooks with the actual state values
+  const updatedDialogHooks = useClientDialog({
+    isCreatingClient: isCreatingClient || false,
     isVerifyingClient
   });
   
@@ -60,7 +73,7 @@ export function useClientCreation({ form, onSuccess }: UseClientCreationProps = 
   return {
     // Dialog state
     isNewClientDialogOpen,
-    setIsNewClientDialogOpen,
+    setIsNewClientDialogOpen: updatedDialogHooks.setIsNewClientDialogOpen,
     
     // Client form values
     clientNameValue,
@@ -76,9 +89,9 @@ export function useClientCreation({ form, onSuccess }: UseClientCreationProps = 
     // Actions
     handleAddNewClient: handleAddNewClientWithReset,
     handleNewClientSubmit,
-    closeDialog,
+    closeDialog: updatedDialogHooks.closeDialog,
     
     // Status
-    dialogStatus
+    dialogStatus: updatedDialogHooks.dialogStatus
   };
 }

@@ -8,9 +8,14 @@ import { UseFormReturn } from 'react-hook-form';
 interface UseClientVerificationProps {
   form?: UseFormReturn<any>;
   onSuccess?: () => Promise<void>;
+  closeDialog?: () => void; // New prop to close dialog
 }
 
-export function useClientVerification({ form, onSuccess }: UseClientVerificationProps = {}) {
+export function useClientVerification({ 
+  form, 
+  onSuccess,
+  closeDialog 
+}: UseClientVerificationProps = {}) {
   const [isVerifyingClient, setIsVerifyingClient] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [newClientId, setNewClientId] = useState<string | null>(null);
@@ -43,6 +48,11 @@ export function useClientVerification({ form, onSuccess }: UseClientVerification
         setIsVerifyingClient(false);
         setRetryCount(0);
         toast.success('Cliente creado exitosamente');
+        
+        // Close dialog after successful verification
+        if (closeDialog) {
+          closeDialog();
+        }
         
         return true;
       } else if (retryCount < 3) {
@@ -77,13 +87,18 @@ export function useClientVerification({ form, onSuccess }: UseClientVerification
           });
         }
         
+        // Close dialog even if verification failed but client ID was set
+        if (closeDialog) {
+          closeDialog();
+        }
+        
         return false;
       }
     };
     
     // Start the verification process
     checkClientExists();
-  }, [queryClient, retryCount, form, onSuccess]);
+  }, [queryClient, retryCount, form, onSuccess, closeDialog]);
 
   return {
     isVerifyingClient,
