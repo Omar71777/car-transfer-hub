@@ -3,10 +3,9 @@ import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../../schema/transferSchema';
 import { Client } from '@/types/client';
-import { useClients } from '@/hooks/useClients';
-import { ClientSelect } from './ClientSelect';
-import { CreateClientDialog } from './CreateClientDialog';
-import { useClientCreation } from '@/hooks/useClientCreation';
+import { ClientSelectField } from './components/ClientSelectField';
+import { CreateClientDialog } from './components/CreateClientDialog';
+import { useClientSelection } from './hooks/useClientSelection';
 
 interface ClientFieldProps {
   form: UseFormReturn<TransferFormValues>;
@@ -29,22 +28,25 @@ export function ClientField({
     clientEmailValue,
     setClientEmailValue,
     isCreatingClient,
+    isSelectDisabled,
     createError,
     handleAddNewClient,
     handleNewClientSubmit,
-    closeDialog
-  } = useClientCreation({ 
+    closeDialog,
+    dialogStatus
+  } = useClientSelection({ 
     form, 
-    onSuccess: onClientCreated
+    clients,
+    onClientCreated
   });
 
   return (
     <>
-      <ClientSelect
+      <ClientSelectField
         form={form}
         clients={clients}
         isLoading={isClientsLoading}
-        isCreating={isCreatingClient}
+        isSelectDisabled={isSelectDisabled}
         onAddNew={handleAddNewClient}
       />
       
@@ -58,6 +60,7 @@ export function ClientField({
         onClientEmailChange={setClientEmailValue}
         isCreating={isCreatingClient}
         error={createError}
+        dialogStatus={dialogStatus}
       />
     </>
   );

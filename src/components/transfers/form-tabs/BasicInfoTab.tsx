@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ClientField } from '../form-fields/client-field/ClientField';
+import { ClientField } from '../form-fields/client-field';
 import { DateTimeFields } from '../form-fields/DateTimeFields';
 import { LocationFields } from '../form-fields/LocationFields';
 import { UseFormReturn } from 'react-hook-form';
