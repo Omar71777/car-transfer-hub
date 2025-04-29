@@ -1,49 +1,32 @@
 
-import React, { useEffect } from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Client } from '@/types/client';
+import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import * as z from 'zod';
+import { Client } from '@/types/client';
+import { ClientField } from '@/components/transfers/form-fields/client-field';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Define the schema type using the parent schema
 interface BillClientSectionProps {
   form: UseFormReturn<any>;
   clients: Client[];
   onClientChange: (clientId: string) => void;
+  loadingClients?: boolean;
 }
 
-export function BillClientSection({ form, clients, onClientChange }: BillClientSectionProps) {
+export function BillClientSection({ form, clients, onClientChange, loadingClients = false }: BillClientSectionProps) {
+  const queryClient = useQueryClient();
+  
+  const handleClientCreated = async () => {
+    // Invalidate and refresh clients query
+    await queryClient.invalidateQueries({ queryKey: ['clients'] });
+  };
+  
   return (
-    <FormField
-      control={form.control}
-      name="clientId"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Cliente</FormLabel>
-          <Select 
-            onValueChange={(value) => {
-              field.onChange(value);
-              onClientChange(value);
-            }}
-            value={field.value} 
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar cliente" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {clients.map((client) => (
-                <SelectItem key={client.id} value={client.id}>
-                  {client.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      )}
+    <ClientField
+      form={form}
+      clients={clients}
+      onClientCreated={handleClientCreated}
+      isClientsLoading={loadingClients}
     />
   );
 }

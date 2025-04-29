@@ -1,13 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Client } from '@/types/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { PlusCircle, UserCircle } from 'lucide-react';
+import { UserCircle } from 'lucide-react';
+import { ClientField } from '@/components/transfers/form-fields/client-field';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ClientStepProps {
   clients: Client[];
@@ -16,28 +13,13 @@ interface ClientStepProps {
 }
 
 export function ClientStep({ clients, collaborators, formState }: ClientStepProps) {
-  const { control, setValue, getValues, watch } = useFormContext();
-  const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
+  const form = useFormContext();
+  const queryClient = useQueryClient();
   
-  const clientId = watch('clientId');
-
-  const handleAddNewClient = () => {
-    setIsNewClientDialogOpen(true);
-  };
-
-  const handleNewClientSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const clientName = getValues('clientName');
-    
-    if (!clientName) {
-      return;
-    }
-    
-    // Set the client ID to 'new' to indicate it's a new client
-    setValue('clientId', 'new', { shouldValidate: true });
-    setIsNewClientDialogOpen(false);
-  };
+  const handleClientCreated = useCallback(async () => {
+    // Invalidate and refresh clients query
+    await queryClient.invalidateQueries({ queryKey: ['clients'] });
+  }, [queryClient]);
 
   return (
     <div className="space-y-6">
@@ -49,89 +31,12 @@ export function ClientStep({ clients, collaborators, formState }: ClientStepProp
         </p>
       </div>
 
-      <FormField
-        control={control}
-        name="clientId"
-        render={({ field }) => (
-          <FormItem>
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar cliente" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.name}
-                      </SelectItem>
-                    ))}
-                    {clientId === 'new' && (
-                      <SelectItem value="new">
-                        Nuevo cliente: {getValues('clientName')}
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="button" variant="outline" onClick={handleAddNewClient} className="flex-shrink-0">
-                <PlusCircle className="h-4 w-4 mr-1" />
-                Nuevo
-              </Button>
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
+      <ClientField
+        form={form}
+        clients={clients}
+        onClientCreated={handleClientCreated}
+        isClientsLoading={false}
       />
-
-      <Dialog open={isNewClientDialogOpen} onOpenChange={setIsNewClientDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Nuevo Cliente</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleNewClientSubmit} className="space-y-4">
-            <FormField
-              control={control}
-              name="clientName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre *</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Nombre del cliente" required />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={control}
-              name="clientEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email (opcional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="email" placeholder="Email del cliente" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsNewClientDialogOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit">Añadir Cliente</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

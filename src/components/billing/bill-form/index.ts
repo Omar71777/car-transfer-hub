@@ -1,3 +1,3 @@
 
-// Re-export the main BillForm component
 export { BillForm } from './BillForm';
+export { useBillFormLogic } from './hooks/useBillFormLogic';

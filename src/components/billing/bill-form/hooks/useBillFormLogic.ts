@@ -9,6 +9,7 @@ import { CreateBillDto, TaxApplicationType } from '@/types/billing';
 import { toast } from 'sonner';
 import { useClients } from '@/hooks/useClients';
 import { useTransfers } from '@/hooks/useTransfers';
+import { useQueryClient } from '@tanstack/react-query';
 
 const billSchema = z.object({
   clientId: z.string().min(1, { message: 'El cliente es requerido' }),
@@ -22,6 +23,7 @@ const billSchema = z.object({
 });
 
 export function useBillFormLogic(onSubmit: (values: CreateBillDto) => Promise<void>) {
+  const queryClient = useQueryClient();
   const { clients, loading: loadingClients, fetchClients } = useClients();
   const { transfers, fetchTransfers } = useTransfers();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,6 +58,17 @@ export function useBillFormLogic(onSubmit: (values: CreateBillDto) => Promise<vo
 
   const handleClientChange = (clientId: string) => {
     form.setValue('clientId', clientId);
+  };
+
+  const handleClientCreated = async () => {
+    try {
+      // Invalidate and refresh clients query
+      await queryClient.invalidateQueries({ queryKey: ['clients'] });
+      await fetchClients();
+      toast.success('Cliente creado exitosamente');
+    } catch (error) {
+      console.error('Error refreshing clients after creation:', error);
+    }
   };
 
   const handleSubmit = async (values: z.infer<typeof billSchema>, selectedTransfers: string[]) => {
@@ -104,6 +117,7 @@ export function useBillFormLogic(onSubmit: (values: CreateBillDto) => Promise<vo
     isSubmitting,
     transfers,
     handleClientChange,
+    handleClientCreated,
     handleSubmit,
     formatCurrency
   };
