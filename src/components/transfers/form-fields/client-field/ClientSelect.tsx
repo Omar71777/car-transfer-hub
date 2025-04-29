@@ -25,17 +25,6 @@ export function ClientSelect({
 }: ClientSelectProps) {
   const isSelectDisabled = isLoading || isCreating;
 
-  // Log client selection changes to help debug
-  React.useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === 'clientId') {
-        console.log('ClientSelect: clientId changed to:', value.clientId);
-      }
-    });
-    
-    return () => subscription.unsubscribe();
-  }, [form]);
-
   return (
     <FormField
       control={form.control}
@@ -51,18 +40,6 @@ export function ClientSelect({
               }}
               value={field.value}
               disabled={isSelectDisabled}
-              onOpenChange={(open) => {
-                // When opening the select, check if the value is still valid
-                // This helps refresh the view after a new client is added
-                if (open && field.value) {
-                  const clientExists = clients.some(c => c.id === field.value);
-                  console.log('ClientSelect: checking if selected client exists:', clientExists);
-                  if (!clientExists) {
-                    // Reset the value if the client doesn't exist anymore
-                    field.onChange('');
-                  }
-                }
-              }}
             >
               <FormControl>
                 <SelectTrigger className="flex-1">

@@ -7,7 +7,6 @@ import { useTransfers } from '@/hooks/useTransfers';
 import { useClients } from '@/hooks/useClients';
 import { TransferForm } from '@/components/transfers/TransferForm';
 import { useAuth } from '@/contexts/auth';
-import { CreateClientDto } from '@/types/client';
 import { MobileHeader } from '@/components/layout/MobileHeader';
 import { usePointerEventsCleanup } from './hooks/usePointerEventsCleanup';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -17,7 +16,7 @@ const NewTransferPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { createTransfer } = useTransfers();
-  const { clients, fetchClients, createClient, loading: clientsLoading } = useClients();
+  const { clients, fetchClients, loading: clientsLoading } = useClients();
   const { user } = useAuth();
   const [newClientId, setNewClientId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
@@ -54,8 +53,8 @@ const NewTransferPage = () => {
     try {
       // Force a refresh of the clients query
       await queryClient.invalidateQueries({ queryKey: ['clients'] });
-      await fetchClients();
-      console.log('NewTransferPage: updated client list fetched');
+      const newClients = await fetchClients();
+      console.log('NewTransferPage: updated client list fetched', newClients.length);
     } catch (error) {
       console.error('Error refreshing client list:', error);
       toast.error('Error al actualizar la lista de clientes');
@@ -72,36 +71,6 @@ const NewTransferPage = () => {
     }
     
     try {
-      // Check if we need to create a new client
-      if (values.clientId === 'new' && values.clientName) {
-        // Create new client with just the name
-        // Generate a temporary email if needed
-        const clientEmail = values.clientEmail || `${values.clientName.toLowerCase().replace(/\s+/g, '.')}@example.com`;
-        
-        console.log('Creating new client:', { name: values.clientName, email: clientEmail });
-        
-        // Create client data that conforms to CreateClientDto
-        const newClientData: CreateClientDto = {
-          name: values.clientName,
-          email: clientEmail,
-        };
-        
-        const newClient = await createClient(newClientData);
-        
-        if (newClient) {
-          // Update the clientId with the newly created client ID
-          values.clientId = newClient.id;
-          // Store the new client ID to update the form
-          setNewClientId(newClient.id);
-          console.log('Client created successfully with ID:', newClient.id);
-          toast.success('Cliente creado exitosamente');
-        } else {
-          console.error('Failed to create client');
-          toast.error('No se pudo crear el cliente');
-          return;
-        }
-      }
-      
       // Process commission value
       if (values.commission === '' || values.commission === undefined) {
         values.commission = 0;

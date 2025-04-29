@@ -16,6 +16,7 @@ interface CreateClientDialogProps {
   onClientEmailChange: (value: string) => void;
   isCreating: boolean;
   error: string | null;
+  dialogStatus?: 'idle' | 'creating' | 'verifying';
 }
 
 export function CreateClientDialog({
@@ -27,10 +28,17 @@ export function CreateClientDialog({
   clientEmail,
   onClientEmailChange,
   isCreating,
-  error
+  error,
+  dialogStatus = 'idle'
 }: CreateClientDialogProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!isCreating) {
+        onOpenChange(open);
+      } else if (!open) {
+        // Show message that operation is in progress via tooltip or disabled button
+      }
+    }}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Nuevo Cliente</DialogTitle>
@@ -67,6 +75,19 @@ export function CreateClientDialog({
             />
           </div>
           
+          {isCreating && (
+            <div className="py-2">
+              <div className="flex items-center justify-center gap-2">
+                <Loader className="h-5 w-5 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">
+                  {dialogStatus === 'creating' ? 'Creando cliente...' : 
+                   dialogStatus === 'verifying' ? 'Verificando cliente...' : 
+                   'Procesando...'}
+                </p>
+              </div>
+            </div>
+          )}
+          
           <div className="flex justify-end space-x-2 pt-4">
             <Button 
               type="button" 
@@ -83,7 +104,9 @@ export function CreateClientDialog({
               {isCreating ? (
                 <>
                   <Loader className="h-4 w-4 mr-2 animate-spin" />
-                  Creando...
+                  {dialogStatus === 'creating' ? 'Creando...' : 
+                   dialogStatus === 'verifying' ? 'Verificando...' : 
+                   'Procesando...'}
                 </>
               ) : 'Añadir Cliente'}
             </Button>
