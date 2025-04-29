@@ -2,7 +2,7 @@
 import { useCallback, useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../../../schema/transferSchema';
-import { useClientCreation } from '@/hooks/useClientCreation';
+import { useClientCreation } from '@/hooks/client/useClientCreation';
 import { Client } from '@/types/client';
 
 interface UseClientSelectionProps {
