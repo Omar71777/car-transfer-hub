@@ -79,6 +79,10 @@ export function useCollaboratorCreation({
     createError,
     
     // Action handlers
-    handleNewCollaboratorSubmit
+    handleNewCollaboratorSubmit,
+    // Alias properties to match what CollaboratorDialog expects
+    isOpen: dialogHooks.isNewCollaboratorDialogOpen,
+    setIsOpen: dialogHooks.setIsNewCollaboratorDialogOpen,
+    isCreating: isCreatingCollaborator
   };
 }
