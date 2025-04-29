@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,7 @@ export function TransferEditContent({
   onClose: () => void;
   transfer: Transfer;
 }) {
-  const { clients } = useClients();
+  const { clients, fetchClients } = useClients();
   const { collaborators } = useCollaborators();
   
   const { 
@@ -66,6 +65,11 @@ export function TransferEditContent({
       form.setValue('extraCharges', extraCharges);
     }
   }, [extraCharges, form]);
+
+  // Add a client created handler for BasicInfoTab
+  const handleClientCreated = async () => {
+    await fetchClients();
+  };
 
   return (
     <>
@@ -112,6 +116,8 @@ export function TransferEditContent({
                 form={form} 
                 serviceType={activeTab}
                 clients={clients}
+                onClientCreated={handleClientCreated}
+                isClientsLoading={false}
               />
             </TabsContent>
             
