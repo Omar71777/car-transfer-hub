@@ -3,11 +3,11 @@ import React, { useEffect } from 'react';
 import { useDialog } from '@/components/ui/dialog-service';
 import { Transfer } from '@/types';
 import { 
-  openTransferExpenseDialog, 
-  TransferExpenseDialog 
+  openTransferExpenseDialog
 } from '@/components/transfers/TransferExpenseDialog';
-import { TransferEditDialog } from '@/components/transfers/TransferEditDialog';
+import { openTransferEditDialog } from '@/components/transfers/TransferEditDialog';
 import { TransferPrintDialog, PrintOptions } from '@/components/transfers/TransferPrintDialog';
+import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
 
 interface TransferDialogsProps {
   isExpenseDialogOpen: boolean;
@@ -40,6 +40,9 @@ export function TransferDialogs({
 }: TransferDialogsProps) {
   const dialogService = useDialog();
   
+  // Apply the pointer events fix hook
+  usePointerEventsFix();
+  
   // Handle expense dialog with the new dialog service
   useEffect(() => {
     if (isExpenseDialogOpen && selectedTransferId) {
@@ -54,18 +57,23 @@ export function TransferDialogs({
     }
   }, [isExpenseDialogOpen, selectedTransferId, dialogService]);
 
+  // Handle edit dialog with the new dialog service
+  useEffect(() => {
+    if (isEditDialogOpen && editingTransfer) {
+      openTransferEditDialog(
+        dialogService,
+        (values) => {
+          onEditSubmit(values);
+          setIsEditDialogOpen(false);
+        },
+        editingTransfer
+      );
+    }
+  }, [isEditDialogOpen, editingTransfer, dialogService]);
+
   return (
     <>
       {/* Legacy dialog components for backward compatibility */}
-      {isEditDialogOpen && editingTransfer && (
-        <TransferEditDialog
-          isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
-          onSubmit={onEditSubmit}
-          transfer={editingTransfer}
-        />
-      )}
-      
       {isPrintDialogOpen && (
         <TransferPrintDialog 
           isOpen={isPrintDialogOpen}

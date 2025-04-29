@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Transfer } from '@/types';
 import { CollaboratorField } from './form-fields/CollaboratorField';
 import { PaymentStatusField } from './form-fields/PaymentStatusField';
 import { PaymentMethodIcon } from './PaymentMethodIcon';
+import { useDialog } from '@/components/ui/dialog-service';
 
 const editFormSchema = z.object({
   price: z.string().min(1, { message: 'El precio es requerido' }).refine(
@@ -30,19 +32,16 @@ const editFormSchema = z.object({
 
 type EditFormValues = z.infer<typeof editFormSchema>;
 
-interface TransferEditDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (values: EditFormValues) => void;
-  transfer: Transfer;
-}
-
-export function TransferEditDialog({
-  isOpen,
-  onClose,
+// Component for the edit dialog content
+export function TransferEditContent({
   onSubmit,
+  onClose,
   transfer
-}: TransferEditDialogProps) {
+}: {
+  onSubmit: (values: EditFormValues) => void;
+  onClose: () => void;
+  transfer: Transfer;
+}) {
   const form = useForm<EditFormValues>({
     resolver: zodResolver(editFormSchema),
     defaultValues: {
@@ -56,94 +55,142 @@ export function TransferEditDialog({
   });
 
   const handleSubmit = (values: EditFormValues) => {
-    // Pass the string values directly to onSubmit (no conversion to numbers)
     onSubmit(values);
+    onClose();
   };
 
   const paymentStatus = form.watch('paymentStatus');
   const hasCollaborator = !!form.watch('collaborator') && form.watch('collaborator') !== 'none';
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Editar Transfer</DialogTitle>
-          <DialogDescription>
-            Modifica los detalles del transfer seleccionado.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <DialogHeader>
+        <DialogTitle>Editar Transfer</DialogTitle>
+        <DialogDescription>
+          Modifica los detalles del transfer seleccionado.
+        </DialogDescription>
+      </DialogHeader>
 
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <FormProvider {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Precio</FormLabel>
+                  <FormControl>
+                    <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <PaymentStatusField />
+          </div>
+
+          <CollaboratorField collaborators={[]} />
+
+          {hasCollaborator && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="price"
+                name="commission"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Precio</FormLabel>
+                    <FormLabel>Comisión</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
+                      <Input type="number" step="0.1" min="0" max="100" placeholder="0.00" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <PaymentStatusField />
-            </div>
-
-            <CollaboratorField collaborators={[]} />
-
-            {hasCollaborator && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="commission"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Comisión</FormLabel>
+              <FormField
+                control={form.control}
+                name="commissionType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Comisión</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <Input type="number" step="0.1" min="0" max="100" placeholder="0.00" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona tipo" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                      <SelectContent>
+                        <SelectItem value="percentage">Porcentaje (%)</SelectItem>
+                        <SelectItem value="fixed">Cantidad fija (€)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
 
-                <FormField
-                  control={form.control}
-                  name="commissionType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tipo de Comisión</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona tipo" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="percentage">Porcentaje (%)</SelectItem>
-                          <SelectItem value="fixed">Cantidad fija (€)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
-
-            <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancelar
-              </Button>
-              <Button type="submit">Guardar Cambios</Button>
-            </DialogFooter>
-          </form>
-        </FormProvider>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter className="pt-4">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button type="submit">Guardar Cambios</Button>
+          </DialogFooter>
+        </form>
+      </FormProvider>
+    </>
   );
+}
+
+// Function to open the dialog using the dialog service
+export function openTransferEditDialog(
+  dialogService: ReturnType<typeof useDialog>,
+  onSubmit: (values: EditFormValues) => void,
+  transfer: Transfer
+) {
+  const { openDialog, closeDialog } = dialogService;
+  
+  openDialog(
+    <TransferEditContent
+      onSubmit={onSubmit}
+      onClose={closeDialog}
+      transfer={transfer}
+    />,
+    {
+      width: 'md',
+      preventOutsideClose: false,
+      onClose: () => {
+        console.log('Edit dialog closed');
+        document.body.style.pointerEvents = 'auto';
+      }
+    }
+  );
+}
+
+// Legacy component for backward compatibility
+interface TransferEditDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (values: EditFormValues) => void;
+  transfer: Transfer;
+}
+
+export function TransferEditDialog({
+  isOpen,
+  onClose,
+  onSubmit,
+  transfer
+}: TransferEditDialogProps) {
+  const dialogService = useDialog();
+  
+  React.useEffect(() => {
+    if (isOpen && transfer) {
+      openTransferEditDialog(dialogService, onSubmit, transfer);
+    }
+  }, [isOpen, transfer, dialogService]);
+  
+  return null;
 }

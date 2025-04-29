@@ -3,6 +3,7 @@ import { useDialog } from '@/components/ui/dialog-service';
 import { useDrawer } from '@/components/ui/drawer-service';
 import { Transfer } from '@/types';
 import { openTransferExpenseDialog } from '@/components/transfers/TransferExpenseDialog';
+import { openTransferEditDialog } from '@/components/transfers/TransferEditDialog';
 import { PrintOptions } from '@/components/transfers/TransferPrintDialog';
 
 // Type definitions for transfer service functions
@@ -30,9 +31,13 @@ export function useTransferService(props: TransferServiceProps) {
   
   // Open edit dialog using the dialog service
   const openEditDialog = (transfer: Transfer) => {
-    // This will be implemented when the TransferEditDialog is refactored
-    // For now, return a placeholder
-    console.log("Edit dialog not yet refactored to use dialog service", transfer);
+    if (!transfer) return;
+    
+    openTransferEditDialog(
+      dialogService,
+      props.onEditSubmit,
+      transfer
+    );
   };
   
   // Open print dialog using the dialog service
