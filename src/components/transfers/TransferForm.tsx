@@ -105,6 +105,20 @@ export function TransferForm({
     }
   }, [onClientCreated, fetchClients, queryClient]);
 
+  const handleCollaboratorCreated = useCallback(async () => {
+    console.log('TransferForm: collaborator created, refreshing collaborators list');
+    try {
+      // Invalidate and refresh collaborators query
+      await queryClient.invalidateQueries({ queryKey: ['collaborators'] });
+      await fetchCollaborators();
+      console.log('TransferForm: collaborators list refreshed successfully');
+      toast.success('Lista de colaboradores actualizada');
+    } catch (error) {
+      console.error('TransferForm: error refreshing collaborators list', error);
+      toast.error('Error al actualizar la lista de colaboradores');
+    }
+  }, [fetchCollaborators, queryClient]);
+
   const handleFormSubmit = (values: any) => {
     const processedValues = {
       ...values,
@@ -146,7 +160,10 @@ export function TransferForm({
             
             <div>
               <h3 className="text-base font-semibold mb-4">Información del Colaborador</h3>
-              <CollaboratorField collaborators={collaborators} />
+              <CollaboratorField 
+                collaborators={collaborators} 
+                onCollaboratorCreated={handleCollaboratorCreated}
+              />
             </div>
             
             <Separator className="my-6" />

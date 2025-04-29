@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDialog } from '@/components/ui/dialog-service';
 import { Transfer } from '@/types';
 import { 
@@ -40,13 +40,17 @@ export function TransferDialogs({
   transfers = []
 }: TransferDialogsProps) {
   const dialogService = useDialog();
+  const prevIsEditDialogOpen = useRef(isEditDialogOpen);
+  const prevIsExpenseDialogOpen = useRef(isExpenseDialogOpen);
+  const prevIsPrintDialogOpen = useRef(isPrintDialogOpen);
   
   // Apply the pointer events fix hook
   usePointerEventsFix();
   
   // Handle expense dialog with the dialog service
   useEffect(() => {
-    if (isExpenseDialogOpen && selectedTransferId) {
+    // Only open dialog when state changes from false to true
+    if (isExpenseDialogOpen && !prevIsExpenseDialogOpen.current && selectedTransferId) {
       openTransferExpenseDialog(
         dialogService,
         (values) => {
@@ -56,11 +60,14 @@ export function TransferDialogs({
         selectedTransferId
       );
     }
+    
+    prevIsExpenseDialogOpen.current = isExpenseDialogOpen;
   }, [isExpenseDialogOpen, selectedTransferId, dialogService]);
 
   // Handle edit dialog with the dialog service
   useEffect(() => {
-    if (isEditDialogOpen && editingTransfer) {
+    // Only open dialog when state changes from false to true
+    if (isEditDialogOpen && !prevIsEditDialogOpen.current && editingTransfer) {
       openTransferEditDialog(
         dialogService,
         (values) => {
@@ -70,11 +77,14 @@ export function TransferDialogs({
         editingTransfer
       );
     }
+    
+    prevIsEditDialogOpen.current = isEditDialogOpen;
   }, [isEditDialogOpen, editingTransfer, dialogService]);
   
   // Handle print dialog with the dialog service
   useEffect(() => {
-    if (isPrintDialogOpen && transfers.length > 0) {
+    // Only open dialog when state changes from false to true
+    if (isPrintDialogOpen && !prevIsPrintDialogOpen.current && transfers.length > 0) {
       openTransferPrintDialog(
         dialogService,
         (options) => {
@@ -84,6 +94,8 @@ export function TransferDialogs({
         transfers
       );
     }
+    
+    prevIsPrintDialogOpen.current = isPrintDialogOpen;
   }, [isPrintDialogOpen, transfers, dialogService]);
 
   // No need to render any legacy components as all dialogs are now using the dialog service

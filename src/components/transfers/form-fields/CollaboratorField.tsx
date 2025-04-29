@@ -1,33 +1,55 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collaborator } from '@/hooks/useCollaborators';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, UserPlus, BadgePercent, DollarSign } from 'lucide-react';
+import { PlusCircle, BadgePercent, DollarSign } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { CollaboratorForm } from '@/components/collaborators/CollaboratorForm';
+import { CollaboratorForm, CollaboratorFormValues } from '@/components/collaborators/CollaboratorForm';
 import { useFormContext } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { useCollaboratorCreation } from '@/hooks/collaborator/useCollaboratorCreation';
+import { useTransferForm } from '../context/TransferFormContext';
 
 export interface CollaboratorFieldProps {
   collaborators: Collaborator[];
+  onCollaboratorCreated?: () => Promise<void>;
 }
 
-export function CollaboratorField({ collaborators }: CollaboratorFieldProps) {
+export function CollaboratorField({ collaborators, onCollaboratorCreated }: CollaboratorFieldProps) {
   const form = useFormContext();
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const { setIsServicioPropio } = useTransferForm();
+  
+  const {
+    isNewCollaboratorDialogOpen,
+    setIsNewCollaboratorDialogOpen,
+    collaboratorName,
+    setCollaboratorName,
+    collaboratorPhone,
+    setCollaboratorPhone,
+    collaboratorEmail,
+    setCollaboratorEmail,
+    isCreatingCollaborator,
+    createError,
+    handleAddNewCollaborator,
+    handleNewCollaboratorSubmit,
+    dialogStatus
+  } = useCollaboratorCreation({
+    onSuccess: onCollaboratorCreated
+  });
   
   const collaboratorValue = form.watch('collaborator');
   const commissionType = form.watch('commissionType');
 
-  const handleAddCollaborator = async (values: any) => {
-    // This is just a placeholder since we don't have access to addCollaborator here
-    console.log('Adding collaborator:', values);
-    form.setValue('collaborator', values.name);
-    setIsAddDialogOpen(false);
+  const handleCollaboratorChange = (value: string) => {
+    if (value === 'servicio propio') {
+      setIsServicioPropio(true);
+    } else {
+      setIsServicioPropio(false);
+    }
   };
 
   return (
@@ -43,7 +65,7 @@ export function CollaboratorField({ collaborators }: CollaboratorFieldProps) {
                 <Button 
                   type="button" 
                   variant="link" 
-                  onClick={() => setIsAddDialogOpen(true)} 
+                  onClick={handleAddNewCollaborator} 
                   className="p-0 h-auto text-xs"
                 >
                   <PlusCircle className="h-3.5 w-3.5 mr-1" />
@@ -51,7 +73,10 @@ export function CollaboratorField({ collaborators }: CollaboratorFieldProps) {
                 </Button>
               </div>
               <Select 
-                onValueChange={field.onChange} 
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  handleCollaboratorChange(value);
+                }} 
                 defaultValue={field.value}
                 value={field.value || "none"}
               >
@@ -147,12 +172,30 @@ export function CollaboratorField({ collaborators }: CollaboratorFieldProps) {
         </div>
       )}
 
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+      <Dialog open={isNewCollaboratorDialogOpen} onOpenChange={setIsNewCollaboratorDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Nuevo Colaborador</DialogTitle>
           </DialogHeader>
-          <CollaboratorForm onSubmit={handleAddCollaborator} initialValues={null} isEditing={false} />
+          {dialogStatus === 'idle' ? (
+            <CollaboratorForm 
+              onSubmit={handleNewCollaboratorSubmit}
+              initialValues={{
+                name: collaboratorName,
+                phone: collaboratorPhone,
+                email: collaboratorEmail
+              }} 
+              isEditing={false} 
+            />
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-2">Creando colaborador...</span>
+            </div>
+          )}
+          {createError && (
+            <div className="text-destructive text-sm mt-2">{createError}</div>
+          )}
         </DialogContent>
       </Dialog>
     </>

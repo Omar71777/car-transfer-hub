@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
@@ -186,11 +186,26 @@ export function TransferEditDialog({
 }: TransferEditDialogProps) {
   const dialogService = useDialog();
   
+  // Only open the dialog once when isOpen changes from false to true
+  // This prevents reopening the dialog if isOpen is still true but the component rerenders
   React.useEffect(() => {
-    if (isOpen && transfer) {
-      openTransferEditDialog(dialogService, onSubmit, transfer);
+    let mounted = true;
+    
+    if (isOpen && transfer && mounted) {
+      openTransferEditDialog(
+        dialogService, 
+        (values) => {
+          if (mounted) {
+            onSubmit(values);
+            onClose();
+          }
+        },
+        transfer
+      );
     }
-  }, [isOpen, transfer, dialogService]);
+    
+    return () => { mounted = false; };
+  }, [isOpen, transfer]);
   
   return null;
 }
