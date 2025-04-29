@@ -109,7 +109,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         }}
       >
         <DialogContent 
-          className={`dialog-content overflow-y-auto max-h-[85vh] ${getWidthClass()} ${dialogOptions.className || ''}`}
+          className={`dialog-content dialog-animation-enter dialog-glass overflow-y-auto max-h-[85vh] ${getWidthClass()} ${dialogOptions.className || ''}`}
           onPointerDownOutside={(e) => {
             if (dialogOptions.preventOutsideClose) {
               e.preventDefault();

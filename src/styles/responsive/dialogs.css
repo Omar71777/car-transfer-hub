@@ -1,229 +1,73 @@
 
 /* Dialog responsive styles */
 
-/* Core dialog styles */
-.dialog-content {
-  max-height: 85vh;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
-/* Improved dialog container styles */
-[role="dialog"],
-[role="alertdialog"] {
-  z-index: 50;
-}
-
-/* Print optimization */
-@media print {
-  .dialog-content {
-    overflow: visible !important;
-  }
-  
-  /* Print format for A4 */
-  @page {
-    size: A4;
-    margin: 10mm;
-  }
-  
-  body {
-    width: 210mm;
-    height: 297mm;
-    margin: 0;
-    padding: 0;
-  }
-}
-
-/* Mobile optimizations */
+/* Dialog size adjustments for mobile */
 @media (max-width: 768px) {
-  /* Better dialog sizing for mobile */
-  [role="dialog"] .dialog-content, 
-  [role="alertdialog"] .dialog-content {
-    max-width: 92vw;
-    max-height: 85vh;
-    padding: 1rem;
-  }
-  
-  /* Dialog fits better on mobile screens */
   .dialog-content {
-    max-width: min(800px, 92vw);
-    max-height: 85vh;
+    @apply p-3 max-w-[92vw] w-full;
   }
   
-  /* Fix for mobile dialogs */
-  [role="dialog"] {
-    padding: 0.5rem;
+  /* Dialog headers on mobile */
+  .dialog-header {
+    @apply px-3 py-2 flex items-center justify-between;
   }
   
-  /* Improve dialog scrolling */
-  [role="dialog"] .overflow-y-auto,
-  [role="alertdialog"] .overflow-y-auto {
-    max-height: 70vh;
-    -webkit-overflow-scrolling: touch;
+  /* Dialog titles on mobile */
+  .dialog-title {
+    @apply text-base font-medium;
   }
   
-  /* Mobile dialog header adjustments */
-  [role="dialog"] [class*="DialogHeader"] {
-    margin-bottom: 0.5rem;
+  /* Dialog content on mobile */
+  .dialog-body {
+    @apply p-3 pt-0;
   }
   
-  /* Mobile dialog footer adjustments */
-  [role="dialog"] [class*="DialogFooter"] {
-    margin-top: 0.5rem;
-    flex-direction: column;
+  /* Dialog footer on mobile */
+  .dialog-footer {
+    @apply mt-2 flex items-center justify-end p-3 gap-2;
   }
   
-  /* Dialog footer buttons on mobile */
-  [role="dialog"] [class*="DialogFooter"] button {
-    width: 100%;
-    margin-top: 0.5rem;
+  /* Dialog actions on mobile - better touch targets */
+  .dialog-actions {
+    @apply flex gap-2;
+  }
+  
+  .dialog-actions button {
+    @apply min-h-[44px];
+  }
+  
+  /* Full width buttons in dialog on mobile */
+  .dialog-btn-full {
+    @apply w-full;
+  }
+  
+  /* Dialog form elements on mobile */
+  .dialog-form {
+    @apply space-y-3;
   }
 }
 
-/* Ensuring the dialog overlay is behind the content but above everything else */
-[role="dialog"] + .fixed.inset-0,
-[role="alertdialog"] + .fixed.inset-0 {
-  z-index: 49;
-  backdrop-filter: blur(4px);
-  transition: backdrop-filter 0.2s ease;
+/* Improve dialog backdrop contrast */
+.dialog-backdrop {
+  @apply bg-foreground/20 backdrop-blur-sm;
 }
 
-/* Dialog animations */
-@keyframes dialog-open {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -48%) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+/* Center dialogs better */
+.dialog-centered {
+  @apply flex items-center justify-center;
 }
 
-@keyframes dialog-close {
-  from {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translate(-50%, -48%) scale(0.96);
-  }
+/* Improved animation for dialogs */
+.dialog-animation-enter {
+  @apply animate-in fade-in zoom-in-95 duration-300;
 }
 
-[role="dialog"] [data-state="open"],
-[role="alertdialog"] [data-state="open"] {
-  animation: dialog-open 0.2s ease-out;
+.dialog-animation-exit {
+  @apply animate-out fade-out zoom-out-95 duration-200;
 }
 
-[role="dialog"] [data-state="closed"],
-[role="alertdialog"] [data-state="closed"] {
-  animation: dialog-close 0.2s ease-in;
+/* Glass effect for dialogs */
+.dialog-glass {
+  @apply bg-background/80 backdrop-blur-md border border-border/40;
 }
 
-/* Dialog content fade-in animation */
-.dialog-fade-in {
-  animation: dialog-fade-in 0.3s ease-out;
-}
-
-@keyframes dialog-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Ensure dropdowns appear above dialogs */
-[data-radix-popper-content-wrapper] {
-  z-index: 999 !important;
-}
-
-/* Dropdown menu specific z-index fixes */
-.radix-dropdown-content,
-[data-radix-dropdown-menu-content] {
-  z-index: 999;
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Fix the dropdown content to appear properly */
-[data-radix-dropdown-menu-content=""] {
-  background-color: var(--background);
-}
-
-/* Ensure dropdown menu items are visible */
-[data-radix-dropdown-menu-content] [role="menuitem"] {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-[data-radix-dropdown-menu-content] [role="menuitem"]:hover {
-  background-color: var(--accent);
-}
-
-/* Prevent body from losing pointer events when dialogs or print windows are open */
-body.dialog-open {
-  pointer-events: auto !important;
-}
-
-/* Support proper handling of interactive elements inside dialogs */
-.dialog-content button:focus-visible,
-.dialog-content a:focus-visible,
-.dialog-content input:focus-visible,
-.dialog-content select:focus-visible,
-.dialog-content textarea:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* Improved keyboard navigation indicators */
-.keyboard-focus {
-  outline: 2px solid var(--primary) !important;
-  outline-offset: 2px !important;
-}
-
-/* Print window specific styles */
-.print-window-container {
-  width: 210mm;
-  margin: 0 auto;
-  background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 10mm;
-}
-
-.print-actions {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  border-radius: 0.25rem;
-}
-
-.print-actions button {
-  background-color: var(--primary, #3498db);
-  color: white;
-  border: none;
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
-
-.print-actions button.btn-secondary {
-  background-color: var(--secondary, #2ecc71);
-}
-
-@media print {
-  .print-actions {
-    display: none !important;
-  }
-}

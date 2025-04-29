@@ -1,13 +1,17 @@
+
 import React from 'react';
 import { Bill } from '@/types/billing';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatDateForBill } from '@/lib/billing/calculationUtils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BillItemsTableProps {
   bill: Bill;
 }
 
 export function BillItemsTable({ bill }: BillItemsTableProps) {
+  const isMobile = useIsMobile();
+  
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount);
   };
@@ -70,10 +74,91 @@ export function BillItemsTable({ bill }: BillItemsTableProps) {
     }))
   });
 
+  // Mobile card view for bill items
+  if (isMobile) {
+    return (
+      <Card className="glass-card shadow-card hover:shadow-hover">
+        <CardContent className="p-4">
+          <h3 className="font-medium mb-3 text-primary">Detalles de la factura</h3>
+          <div className="space-y-3">
+            {bill.items && bill.items.length > 0 ? (
+              <>
+                {bill.items.map((item, index) => {
+                  const discount = calculateDiscount(item);
+                  
+                  return (
+                    <div 
+                      key={item.id || index} 
+                      className={`p-3 rounded-lg border ${item.is_extra_charge ? "bg-muted/10 border-muted/30" : "bg-card border-border/40"}`}
+                    >
+                      <div className="space-y-2">
+                        <div className={`text-sm ${item.is_extra_charge ? "text-muted-foreground italic" : "font-medium text-primary/90"}`}>
+                          {formatItemDescription(item)}
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div>
+                            <span className="text-xs text-muted-foreground">Cantidad:</span>
+                            <div>{item.quantity}</div>
+                          </div>
+                          <div>
+                            <span className="text-xs text-muted-foreground">Precio:</span>
+                            <div>{formatCurrency(item.unit_price)}</div>
+                          </div>
+                          {discount > 0 && (
+                            <div>
+                              <span className="text-xs text-muted-foreground">Descuento:</span>
+                              <div className="text-emerald-600">{formatCurrency(discount)}</div>
+                            </div>
+                          )}
+                          <div className={discount > 0 ? '' : 'col-span-2'}>
+                            <span className="text-xs text-muted-foreground">Total:</span>
+                            <div className="font-medium">{formatCurrency(item.total_price)}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                <div className="mt-4 pt-4 border-t border-border/30 space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm">Subtotal:</span>
+                    <span className="font-medium">{formatCurrency(bill.sub_total)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">IVA ({bill.tax_rate}%) {bill.tax_application === 'included' ? '(incluido)' : ''}:</span>
+                    <span className="font-medium">{formatCurrency(bill.tax_amount)}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t border-border/20">
+                    <span className="text-base font-bold text-primary">Total:</span>
+                    <span className="text-base font-bold text-primary">{formatCurrency(bill.total)}</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="p-4 text-center text-muted-foreground bg-muted/10 rounded-lg border border-muted/20">
+                No hay elementos en esta factura
+              </div>
+            )}
+          </div>
+          
+          {bill.notes && (
+            <div className="mt-4 p-3 bg-muted/20 rounded-md border border-muted/30">
+              <h4 className="text-sm font-medium mb-1 text-primary/90">Notas:</h4>
+              <p className="text-sm text-muted-foreground">{bill.notes}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Desktop table view
   return (
-    <Card>
+    <Card className="glass-card shadow-card hover:shadow-hover">
       <CardContent className="p-4">
-        <h3 className="font-medium mb-3">Detalles de la factura</h3>
+        <h3 className="font-medium mb-3 text-primary">Detalles de la factura</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead>

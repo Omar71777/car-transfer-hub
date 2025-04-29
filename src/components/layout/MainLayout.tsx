@@ -48,9 +48,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
           )}
           
           <main className="flex-grow overflow-auto pb-16 animate-fade-in">
-            <div className={`mx-auto pt-2 pb-8 px-2 ${fullWidth ? 'w-full' : 'container'}`}>
+            <div className={`mx-auto pt-2 pb-8 px-2 sm:px-4 ${fullWidth ? 'w-full' : 'container'}`}>
               <OfflineStatus className="mb-4" />
-              {children}
+              <div className={isMobile ? 'mobile-stack space-y-4' : ''}>
+                {children}
+              </div>
             </div>
           </main>
           

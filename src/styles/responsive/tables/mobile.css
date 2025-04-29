@@ -84,4 +84,26 @@
   .mobile-card-table .table-cell-value {
     @apply block;
   }
+
+  /* Visual indicators for scrollable tables */
+  .table-scroll-indicator {
+    @apply relative;
+  }
+  
+  .table-scroll-indicator::after {
+    content: '';
+    @apply absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-r from-transparent to-background/50 pointer-events-none;
+  }
+  
+  /* Improved spacing in mobile tables */
+  .mobile-table-spacing th,
+  .mobile-table-spacing td {
+    @apply py-2 px-2;
+  }
+  
+  /* Better touch targets in tables */
+  .touch-table td,
+  .touch-table th {
+    @apply min-h-[44px];
+  }
 }
