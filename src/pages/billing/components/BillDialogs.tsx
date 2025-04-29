@@ -64,8 +64,8 @@ export function BillDialogs({
               Rellena el formulario para crear una nueva factura.
             </DialogDescription>
           </DialogHeader>
-          <BillForm onSubmit={(values) => {
-            handleFormSubmit(values);
+          <BillForm onSubmit={async (values) => {
+            await handleFormSubmit(values);
             setIsFormDialogOpen(false);
           }} />
         </>,
@@ -79,7 +79,7 @@ export function BillDialogs({
         }
       );
     }
-  }, [isFormDialogOpen, dialogService]);
+  }, [isFormDialogOpen, dialogService, handleFormSubmit, setIsFormDialogOpen]);
   
   // Handle view dialog with the dialog service
   useEffect(() => {
@@ -119,7 +119,7 @@ export function BillDialogs({
         }
       );
     }
-  }, [isViewDialogOpen, viewBill, dialogService]);
+  }, [isViewDialogOpen, viewBill, dialogService, setIsViewDialogOpen, handleEditBill, handlePrintBill, handleDownloadBill, handleStatusChange]);
   
   // Handle edit dialog with the dialog service
   useEffect(() => {
@@ -134,8 +134,8 @@ export function BillDialogs({
           </DialogHeader>
           <BillEditForm 
             bill={selectedBill} 
-            onSubmit={(data, addedTransferIds, removedTransferIds) => {
-              handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds);
+            onSubmit={async (data, addedTransferIds, removedTransferIds) => {
+              await handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds);
               setIsEditDialogOpen(false);
             }} 
           />
@@ -150,7 +150,7 @@ export function BillDialogs({
         }
       );
     }
-  }, [isEditDialogOpen, selectedBill, dialogService]);
+  }, [isEditDialogOpen, selectedBill, dialogService, handleEditSubmit, setIsEditDialogOpen]);
   
   // Return only the AlertDialog for deletion confirmation
   // All other dialogs are handled through the dialog service
@@ -174,7 +174,7 @@ export function BillDialogs({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground">
+          <AlertDialogAction onClick={() => handleConfirmDelete()} className="bg-destructive text-destructive-foreground">
             Eliminar
           </AlertDialogAction>
         </AlertDialogFooter>
