@@ -1,0 +1,20 @@
+
+/* Dialog scrolling fixes */
+.dialog-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Tab navigation for small screens */
+@media (max-width: 640px) {
+  .tabs-list-compact [data-radix-collection-item] {
+    padding: 8px;
+  }
+}
+
+/* Form inside dialog */
+.dialog-form {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}

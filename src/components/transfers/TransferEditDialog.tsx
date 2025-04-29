@@ -2,35 +2,23 @@
 import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { Form, FormProvider } from '@/components/ui/form';
 import { Transfer } from '@/types';
+import { useDialog } from '@/components/ui/dialog-service';
+import { useTransferForm } from './hooks/useTransferForm';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, Clock, MapPin, User, Banknote, Receipt } from 'lucide-react';
+import { ServiceTypeSelector } from './components/ServiceTypeSelector';
+import { DateTimeFields } from './form-fields/DateTimeFields';
+import { LocationFields } from './form-fields/LocationFields';
 import { CollaboratorField } from './form-fields/CollaboratorField';
 import { PaymentStatusField } from './form-fields/PaymentStatusField';
-import { PaymentMethodIcon } from './PaymentMethodIcon';
-import { useDialog } from '@/components/ui/dialog-service';
-
-const editFormSchema = z.object({
-  price: z.string().min(1, { message: 'El precio es requerido' }).refine(
-    (val) => !isNaN(Number(val)) && Number(val) > 0, 
-    { message: 'El precio debe ser un número positivo' }
-  ),
-  paymentStatus: z.enum(['paid', 'pending']),
-  payment_method: z.enum(['card', 'cash', 'bank_transfer']).nullable(),
-  collaborator: z.string().optional(),
-  commission: z.string().optional()
-    .refine(
-      (val) => val === undefined || val === '' || (!isNaN(Number(val)) && Number(val) >= 0), 
-      { message: 'La comisión debe ser un número positivo o cero' }
-    ),
-  commissionType: z.enum(['percentage', 'fixed']).optional(),
-});
-
-type EditFormValues = z.infer<typeof editFormSchema>;
+import { PricingFields } from './form-fields/PricingFields';
+import { useClients } from '@/hooks/useClients';
+import { useCollaborators } from '@/hooks/useCollaborators';
+import { ClientSelect } from '@/components/clients/ClientSelect';
+import { ExtraChargesForm } from './form-fields/ExtraChargesForm';
+import { useExtraCharges } from './hooks/useExtraCharges';
 
 // Component for the edit dialog content
 export function TransferEditContent({
@@ -38,29 +26,48 @@ export function TransferEditContent({
   onClose,
   transfer
 }: {
-  onSubmit: (values: EditFormValues) => void;
+  onSubmit: (values: any) => void;
   onClose: () => void;
   transfer: Transfer;
 }) {
-  const form = useForm<EditFormValues>({
-    resolver: zodResolver(editFormSchema),
-    defaultValues: {
-      price: transfer.price.toString(),
-      paymentStatus: transfer.paymentStatus || 'pending',
-      payment_method: transfer.payment_method || null,
-      collaborator: transfer.collaborator || undefined,
-      commission: transfer.commission ? transfer.commission.toString() : '',
-      commissionType: transfer.commissionType || 'percentage',
+  const { clients } = useClients();
+  const { collaborators } = useCollaborators();
+  
+  const { 
+    form, 
+    activeTab, 
+    handleTabChange, 
+    handleSubmit 
+  } = useTransferForm({
+    onSubmit: (values) => {
+      // Include the transfer ID in the submitted values
+      onSubmit({ ...values, id: transfer.id });
+      onClose();
     },
+    initialValues: transfer,
+    isEditing: true
   });
-
-  const handleSubmit = (values: EditFormValues) => {
-    onSubmit(values);
-    onClose();
-  };
-
-  const paymentStatus = form.watch('paymentStatus');
-  const hasCollaborator = !!form.watch('collaborator') && form.watch('collaborator') !== 'none';
+  
+  const { 
+    extraCharges, 
+    handleAddExtraCharge, 
+    handleRemoveExtraCharge, 
+    handleExtraChargeChange
+  } = useExtraCharges(
+    transfer.extraCharges 
+      ? transfer.extraCharges.map(charge => ({
+          id: charge.id,
+          name: charge.name,
+          price: typeof charge.price === 'number' ? charge.price.toString() : charge.price
+        }))
+      : []
+  );
+  
+  useEffect(() => {
+    if (extraCharges.length > 0) {
+      form.setValue('extraCharges', extraCharges);
+    }
+  }, [extraCharges, form]);
 
   return (
     <>
@@ -72,67 +79,73 @@ export function TransferEditContent({
       </DialogHeader>
 
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Precio</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <PaymentStatusField />
-          </div>
-
-          <CollaboratorField collaborators={[]} />
-
-          {hasCollaborator && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="commission"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Comisión</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="0.1" min="0" max="100" placeholder="0.00" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-4 max-h-[70vh] overflow-y-auto pr-2">
+          <ServiceTypeSelector 
+            activeTab={activeTab} 
+            onTabChange={handleTabChange} 
+          />
+          
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid grid-cols-5 mb-4">
+              <TabsTrigger value="basic" className="text-xs">
+                <Calendar className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Básico</span>
+              </TabsTrigger>
+              <TabsTrigger value="location" className="text-xs">
+                <MapPin className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Ubicación</span>
+              </TabsTrigger>
+              <TabsTrigger value="pricing" className="text-xs">
+                <Banknote className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Precio</span>
+              </TabsTrigger>
+              <TabsTrigger value="collaborator" className="text-xs">
+                <User className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Colaborador</span>
+              </TabsTrigger>
+              <TabsTrigger value="extras" className="text-xs">
+                <Receipt className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Extras</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="basic" className="space-y-4">
+              <h3 className="text-base font-medium">Información básica</h3>
+              <DateTimeFields form={form} />
+              <ClientSelect 
+                control={form.control} 
+                clients={clients} 
+                label="Cliente *"
               />
-
-              <FormField
-                control={form.control}
-                name="commissionType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Comisión</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="percentage">Porcentaje (%)</SelectItem>
-                        <SelectItem value="fixed">Cantidad fija (€)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <PaymentStatusField />
+            </TabsContent>
+            
+            <TabsContent value="location" className="space-y-4">
+              <h3 className="text-base font-medium">Ubicación</h3>
+              <LocationFields form={form} serviceType={activeTab} />
+            </TabsContent>
+            
+            <TabsContent value="pricing" className="space-y-4">
+              <h3 className="text-base font-medium">Precio y descuentos</h3>
+              <PricingFields serviceType={activeTab} />
+            </TabsContent>
+            
+            <TabsContent value="collaborator" className="space-y-4">
+              <h3 className="text-base font-medium">Colaborador</h3>
+              <CollaboratorField collaborators={collaborators} />
+            </TabsContent>
+            
+            <TabsContent value="extras" className="space-y-4">
+              <h3 className="text-base font-medium">Cargos extras</h3>
+              <ExtraChargesForm 
+                extraCharges={extraCharges}
+                onAddCharge={handleAddExtraCharge}
+                onRemoveCharge={handleRemoveExtraCharge}
+                onChangeCharge={handleExtraChargeChange}
               />
-            </div>
-          )}
-
+            </TabsContent>
+          </Tabs>
+          
           <DialogFooter className="pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
@@ -148,7 +161,7 @@ export function TransferEditContent({
 // Function to open the dialog using the dialog service
 export function openTransferEditDialog(
   dialogService: ReturnType<typeof useDialog>,
-  onSubmit: (values: EditFormValues) => void,
+  onSubmit: (values: any) => void,
   transfer: Transfer
 ) {
   const { openDialog, closeDialog } = dialogService;
@@ -160,7 +173,7 @@ export function openTransferEditDialog(
       transfer={transfer}
     />,
     {
-      width: 'md',
+      width: 'lg',
       preventOutsideClose: false,
       onClose: () => {
         console.log('Edit dialog closed');
@@ -174,7 +187,7 @@ export function openTransferEditDialog(
 interface TransferEditDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: EditFormValues) => void;
+  onSubmit: (values: any) => void;
   transfer: Transfer;
 }
 
@@ -187,7 +200,6 @@ export function TransferEditDialog({
   const dialogService = useDialog();
   
   // Only open the dialog once when isOpen changes from false to true
-  // This prevents reopening the dialog if isOpen is still true but the component rerenders
   React.useEffect(() => {
     let mounted = true;
     
@@ -205,7 +217,7 @@ export function TransferEditDialog({
     }
     
     return () => { mounted = false; };
-  }, [isOpen, transfer]);
+  }, [isOpen, transfer, dialogService, onSubmit, onClose]);
   
   return null;
 }

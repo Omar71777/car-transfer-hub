@@ -1,4 +1,3 @@
-
 import { useCallback, useState } from 'react';
 import { Transfer } from '@/types';
 import { toast } from 'sonner';
@@ -13,7 +12,25 @@ export function useTransferOperations(
   
   const handleEditSubmit = useCallback(async (values: any) => {
     try {
-      const success = await updateTransfer(values.id, values);
+      console.log('Submitting edited transfer:', values);
+      
+      // Process form values for submission
+      const processedValues = {
+        ...values,
+        price: Number(values.price),
+        commission: values.commission ? Number(values.commission) : 0,
+        discountValue: values.discountValue ? Number(values.discountValue) : 0,
+        extraCharges: (values.extraCharges || [])
+          .filter((charge: any) => charge && charge.name && charge.price)
+          .map((charge: any) => ({
+            id: charge.id,
+            name: charge.name,
+            price: typeof charge.price === 'string' ? Number(charge.price) : charge.price
+          })),
+        hours: values.hours ? Number(values.hours) : undefined
+      };
+      
+      const success = await updateTransfer(values.id, processedValues);
       if (success) {
         toast.success('Transfer actualizado correctamente');
         setIsEditDialogOpen(false);

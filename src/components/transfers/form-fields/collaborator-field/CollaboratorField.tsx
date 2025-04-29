@@ -1,65 +1,113 @@
 
 import React from 'react';
-import { Collaborator } from '@/hooks/useCollaborators';
 import { useFormContext } from 'react-hook-form';
-import { useCollaboratorCreation } from '@/hooks/collaborator/useCollaboratorCreation';
-import { useTransferForm } from '../../context/TransferFormContext';
-import { CollaboratorSelect } from './CollaboratorSelect';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { Collaborator } from '@/hooks/useCollaborators';
 import { CommissionSection } from './CommissionSection';
 import { CollaboratorDialog } from './CollaboratorDialog';
+import { useCollaboratorDialog } from '@/hooks/collaborator/useCollaboratorDialog';
 
 export interface CollaboratorFieldProps {
-  collaborators: Collaborator[];
+  collaborators?: Array<Collaborator>;
   onCollaboratorCreated?: () => Promise<void>;
 }
 
-export function CollaboratorField({ collaborators, onCollaboratorCreated }: CollaboratorFieldProps) {
-  const form = useFormContext();
-  const { setIsServicioPropio } = useTransferForm();
+export function CollaboratorField({ 
+  collaborators = [], 
+  onCollaboratorCreated
+}: CollaboratorFieldProps) {
+  const { control, watch, setValue } = useFormContext();
+  const collaboratorValue = watch('collaborator');
   
-  const creationHooks = useCollaboratorCreation({
-    onSuccess: onCollaboratorCreated
-  });
-  
-  const collaboratorValue = form.watch('collaborator');
+  const {
+    isOpen,
+    setIsOpen,
+    createError,
+    isCreating,
+    handleCreateCollaborator,
+    dialogStatus
+  } = useCollaboratorDialog(onCollaboratorCreated);
 
-  const handleCollaboratorChange = (value: string) => {
-    if (value === 'servicio propio') {
-      setIsServicioPropio(true);
+  const hasCollaborator = !!collaboratorValue && collaboratorValue !== 'none';
+  const isServicioPropio = collaboratorValue === 'servicio propio';
+
+  // Handle "Servicio Propio" selection
+  const handleServicioPropioChange = (isChecked: boolean) => {
+    if (isChecked) {
+      setValue('collaborator', 'servicio propio');
+      setValue('commission', '0');
     } else {
-      setIsServicioPropio(false);
+      setValue('collaborator', '');
     }
   };
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <CollaboratorSelect 
-          collaborators={collaborators} 
-          onAddNew={creationHooks.handleAddNewCollaborator} 
-          onChange={handleCollaboratorChange}
-        />
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <FormLabel>Colaborador</FormLabel>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsOpen(true)}
+          className="h-8 px-2 text-xs"
+        >
+          <Plus className="h-3 w-3 mr-1" />
+          Nuevo colaborador
+        </Button>
       </div>
 
-      {/* Commission Section - only display if a collaborator is selected and it's not "none" and not "servicio propio" */}
-      {collaboratorValue && collaboratorValue !== 'none' && collaboratorValue !== 'servicio propio' && (
+      <FormField
+        control={control}
+        name="collaborator"
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Select
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  // Reset commission when switching collaborators
+                  if (value !== field.value) {
+                    setValue('commission', '');
+                  }
+                }}
+                value={field.value || ''}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar colaborador" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sin colaborador</SelectItem>
+                  <SelectItem value="servicio propio">Servicio propio</SelectItem>
+                  {collaborators.map((collaborator) => (
+                    <SelectItem key={collaborator.id} value={collaborator.id}>
+                      {collaborator.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {hasCollaborator && !isServicioPropio && (
         <CommissionSection />
       )}
 
       <CollaboratorDialog
-        isOpen={creationHooks.isNewCollaboratorDialogOpen}
-        setIsOpen={creationHooks.setIsNewCollaboratorDialogOpen}
-        onSubmit={creationHooks.handleNewCollaboratorSubmit}
-        isCreating={creationHooks.isCreatingCollaborator}
-        createError={creationHooks.createError}
-        initialValues={{
-          id: '',
-          name: creationHooks.collaboratorName,
-          phone: creationHooks.collaboratorPhone,
-          email: creationHooks.collaboratorEmail
-        }}
-        dialogStatus={creationHooks.dialogStatus}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        onSubmit={handleCreateCollaborator}
+        isCreating={isCreating}
+        createError={createError}
+        initialValues={{}}
+        dialogStatus={dialogStatus}
       />
-    </>
+    </div>
   );
 }

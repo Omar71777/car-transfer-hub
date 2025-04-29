@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,6 +36,7 @@ export function useTransferForm({
         commissionType: initialValues.commissionType || 'percentage',
         commission: initialValues.commission?.toString() || '',
         paymentStatus: initialValues.paymentStatus as 'paid' | 'pending',
+        payment_method: initialValues.payment_method || null,
         clientId: initialValues.clientId || newClientId || '',
         extraCharges: initialValues.extraCharges 
           ? initialValues.extraCharges.map(charge => ({
@@ -68,7 +68,8 @@ export function useTransferForm({
 
   const form = useForm<TransferFormValues>({
     resolver: zodResolver(transferSchema),
-    defaultValues: getDefaultValues()
+    defaultValues: getDefaultValues(),
+    mode: 'onChange'
   });
 
   // Update client ID when it changes externally
@@ -81,6 +82,15 @@ export function useTransferForm({
   // Update service type when tab changes
   useEffect(() => {
     form.setValue('serviceType', activeTab, { shouldValidate: true });
+    
+    // Handle special case for dispo service type
+    if (activeTab === 'dispo') {
+      // For disposiciones, if destination is empty, set it to N/A
+      const destination = form.getValues('destination');
+      if (!destination || destination.trim() === '') {
+        form.setValue('destination', 'N/A', { shouldValidate: false });
+      }
+    }
   }, [activeTab, form]);
 
   // Handle tab change

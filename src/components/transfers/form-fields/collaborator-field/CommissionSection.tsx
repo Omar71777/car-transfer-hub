@@ -1,70 +1,46 @@
 
 import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { BadgePercent, DollarSign } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export function CommissionSection() {
-  const form = useFormContext();
-  const commissionType = form.watch('commissionType');
+  const { control } = useFormContext();
   
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormField
-        control={form.control}
-        name="commissionType"
+        control={control}
+        name="commission"
         render={({ field }) => (
-          <FormItem className="space-y-3">
-            <FormLabel>Tipo de comisión</FormLabel>
+          <FormItem>
+            <FormLabel>Comisión</FormLabel>
             <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="flex flex-col space-y-1"
-                value={field.value}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="percentage" id="percentage" />
-                  <Label htmlFor="percentage" className="flex items-center">
-                    <BadgePercent className="h-4 w-4 mr-1.5" />
-                    Porcentaje (%)
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="fixed" id="fixed" />
-                  <Label htmlFor="fixed" className="flex items-center">
-                    <DollarSign className="h-4 w-4 mr-1.5" />
-                    Cantidad fija (€)
-                  </Label>
-                </div>
-              </RadioGroup>
+              <Input type="number" step="0.1" min="0" max="100" placeholder="0.00" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
+
       <FormField
-        control={form.control}
-        name="commission"
+        control={control}
+        name="commissionType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>
-              Valor de comisión ({commissionType === 'percentage' ? '%' : '€'})
-            </FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                min="0"
-                step={commissionType === 'percentage' ? "1" : "0.01"}
-                placeholder={commissionType === 'percentage' ? "10" : "25.00"}
-                {...field}
-                className="w-full"
-              />
-            </FormControl>
+            <FormLabel>Tipo de Comisión</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona tipo" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="percentage">Porcentaje (%)</SelectItem>
+                <SelectItem value="fixed">Cantidad fija (€)</SelectItem>
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}
