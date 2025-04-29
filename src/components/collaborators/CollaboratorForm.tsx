@@ -28,7 +28,7 @@ export type CollaboratorFormValues = z.infer<typeof collaboratorSchema>;
 
 interface CollaboratorFormProps {
   onSubmit: (values: CollaboratorFormValues) => void;
-  initialValues?: Collaborator | null;
+  initialValues?: Partial<Collaborator> | null;  // Make it Partial<Collaborator> to allow partial initialization
   isEditing: boolean;
 }
 

@@ -5,13 +5,15 @@ interface UseCollaboratorDialogProps {
   isCreatingCollaborator: boolean;
 }
 
+export type CollaboratorDialogStatus = 'creating' | 'idle';
+
 export function useCollaboratorDialog({
   isCreatingCollaborator
 }: UseCollaboratorDialogProps) {
   const [isNewCollaboratorDialogOpen, setIsNewCollaboratorDialogOpen] = useState(false);
   
   // Calculate dialog status based on current state
-  const dialogStatus = isCreatingCollaborator ? 'creating' as const : 'idle' as const;
+  const dialogStatus: CollaboratorDialogStatus = isCreatingCollaborator ? 'creating' : 'idle';
   
   // Handle opening the new collaborator dialog
   const handleAddNewCollaborator = useCallback(() => {

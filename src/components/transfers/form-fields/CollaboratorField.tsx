@@ -181,10 +181,11 @@ export function CollaboratorField({ collaborators, onCollaboratorCreated }: Coll
             <CollaboratorForm 
               onSubmit={handleNewCollaboratorSubmit}
               initialValues={{
+                id: '', // Add the id property to satisfy the type requirement
                 name: collaboratorName,
                 phone: collaboratorPhone,
                 email: collaboratorEmail
-              }} 
+              }}
               isEditing={false} 
             />
           ) : (

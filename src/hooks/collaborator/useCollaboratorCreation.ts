@@ -1,8 +1,9 @@
 
 import { useState, useCallback } from 'react';
 import { useCollaborators } from '@/hooks/useCollaborators';
-import { useCollaboratorDialog } from './useCollaboratorDialog';
+import { useCollaboratorDialog, CollaboratorDialogStatus } from './useCollaboratorDialog';
 import { toast } from 'sonner';
+import { CollaboratorFormValues } from '@/components/collaborators/CollaboratorForm';
 
 export function useCollaboratorCreation({ 
   onSuccess 
@@ -19,11 +20,7 @@ export function useCollaboratorCreation({
 
   const dialogHooks = useCollaboratorDialog({ isCreatingCollaborator });
 
-  const handleNewCollaboratorSubmit = useCallback(async (values: {
-    name: string;
-    phone?: string;
-    email?: string;
-  }) => {
+  const handleNewCollaboratorSubmit = useCallback(async (values: CollaboratorFormValues) => {
     try {
       setIsCreatingCollaborator(true);
       setCreateError(null);
