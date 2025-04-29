@@ -17,11 +17,14 @@ export function ExtraChargesTab({
   onChangeCharge 
 }: ExtraChargesTabProps) {
   return (
-    <ExtraChargesForm
-      extraCharges={extraCharges}
-      onAddCharge={onAddCharge}
-      onRemoveCharge={onRemoveCharge}
-      onChangeCharge={onChangeCharge}
-    />
+    <div className="space-y-4">
+      <h3 className="text-base font-medium">Cargos extras</h3>
+      <ExtraChargesForm 
+        extraCharges={extraCharges}
+        onAddCharge={onAddCharge}
+        onRemoveCharge={onRemoveCharge}
+        onChangeCharge={onChangeCharge}
+      />
+    </div>
   );
 }

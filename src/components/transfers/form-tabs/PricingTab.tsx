@@ -1,13 +1,8 @@
 
 import React from 'react';
+import { PricingFields } from '../form-fields/PricingFields';
 import { UseFormReturn } from 'react-hook-form';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FormProvider } from 'react-hook-form';
-import { PaymentStatusField } from '../form-fields/PaymentStatusField';
 import { TransferFormValues } from '../schema/transferSchema';
-import { Euro } from 'lucide-react';
 
 interface PricingTabProps {
   form: UseFormReturn<TransferFormValues>;
@@ -15,107 +10,10 @@ interface PricingTabProps {
 }
 
 export function PricingTab({ form, serviceType }: PricingTabProps) {
-  const hours = form.watch('hours');
-  const price = form.watch('price');
-  const discountType = form.watch('discountType');
-  
-  // Calculate total price for dispo services
-  const calculateTotalPrice = () => {
-    if (serviceType !== 'dispo' || !hours || !price) return price;
-    return (Number(price) * Number(hours)).toFixed(2);
-  };
-
   return (
-    <FormProvider {...form}>
-      <div className="space-y-4">
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Precio{serviceType === 'dispo' ? ' por hora' : ''} (€) *</FormLabel>
-              <FormControl>
-                <Input 
-                  type="number" 
-                  min="0" 
-                  step="0.01"
-                  prefixSymbol="€"
-                  placeholder="120,00" 
-                  {...field} 
-                  className="w-full"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        {serviceType === 'dispo' && hours && price && (
-          <div className="text-sm text-muted-foreground">
-            <p>
-              Precio total para {hours} horas: €{calculateTotalPrice()}
-            </p>
-          </div>
-        )}
-        
-        <div className="space-y-3">
-          <FormLabel>Descuento (opcional)</FormLabel>
-          <FormField
-            control={form.control}
-            name="discountType"
-            render={({ field }) => (
-              <FormItem>
-                <Select 
-                  onValueChange={(value) => {
-                    field.onChange(value === "no-discount" ? null : value);
-                  }} 
-                  value={field.value || "no-discount"} 
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar tipo de descuento" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="no-discount">Sin descuento</SelectItem>
-                    <SelectItem value="percentage">Porcentaje (%)</SelectItem>
-                    <SelectItem value="fixed">Monto fijo (€)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {discountType && (
-            <FormField
-              control={form.control}
-              name="discountValue"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="relative">
-                      <Input 
-                        type="number" 
-                        min="0" 
-                        max={discountType === 'percentage' ? "100" : undefined}
-                        step={discountType === 'percentage' ? "1" : "0.01"}
-                        prefixSymbol={discountType === 'fixed' ? "€" : undefined}
-                        placeholder={discountType === 'percentage' ? "10" : "25,00"} 
-                        {...field} 
-                        className="w-full"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-        </div>
-        
-        <PaymentStatusField />
-      </div>
-    </FormProvider>
+    <div className="space-y-4">
+      <h3 className="text-base font-medium">Precio y descuentos</h3>
+      <PricingFields serviceType={serviceType} />
+    </div>
   );
 }

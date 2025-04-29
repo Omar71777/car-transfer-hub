@@ -7,18 +7,16 @@ import { Transfer } from '@/types';
 import { useDialog } from '@/components/ui/dialog-service';
 import { useTransferForm } from './hooks/useTransferForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, MapPin, User, Banknote, Receipt } from 'lucide-react';
+import { Calendar, MapPin, User, Banknote, Receipt } from 'lucide-react';
 import { ServiceTypeSelector } from './components/ServiceTypeSelector';
-import { DateTimeFields } from './form-fields/DateTimeFields';
-import { LocationFields } from './form-fields/LocationFields';
-import { CollaboratorField } from './form-fields/CollaboratorField';
-import { PaymentStatusField } from './form-fields/PaymentStatusField';
-import { PricingFields } from './form-fields/PricingFields';
 import { useClients } from '@/hooks/useClients';
 import { useCollaborators } from '@/hooks/useCollaborators';
-import { ClientSelect } from '@/components/clients/ClientSelect';
-import { ExtraChargesForm } from './form-fields/ExtraChargesForm';
 import { useExtraCharges } from './hooks/useExtraCharges';
+import { BasicInfoTab } from './form-tabs/BasicInfoTab';
+import { LocationTab } from './form-tabs/LocationTab';
+import { PricingTab } from './form-tabs/PricingTab';
+import { CollaboratorTab } from './form-tabs/CollaboratorTab';
+import { ExtraChargesTab } from './form-tabs/ExtraChargesTab';
 
 // Component for the edit dialog content
 export function TransferEditContent({
@@ -109,35 +107,34 @@ export function TransferEditContent({
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="basic" className="space-y-4">
-              <h3 className="text-base font-medium">Información básica</h3>
-              <DateTimeFields form={form} />
-              <ClientSelect 
-                control={form.control} 
-                clients={clients} 
-                label="Cliente *"
+            <TabsContent value="basic">
+              <BasicInfoTab 
+                form={form} 
+                serviceType={activeTab}
+                clients={clients}
               />
-              <PaymentStatusField />
             </TabsContent>
             
-            <TabsContent value="location" className="space-y-4">
-              <h3 className="text-base font-medium">Ubicación</h3>
-              <LocationFields form={form} serviceType={activeTab} />
+            <TabsContent value="location">
+              <LocationTab 
+                form={form} 
+                serviceType={activeTab}
+              />
             </TabsContent>
             
-            <TabsContent value="pricing" className="space-y-4">
-              <h3 className="text-base font-medium">Precio y descuentos</h3>
-              <PricingFields serviceType={activeTab} />
+            <TabsContent value="pricing">
+              <PricingTab 
+                form={form} 
+                serviceType={activeTab}
+              />
             </TabsContent>
             
-            <TabsContent value="collaborator" className="space-y-4">
-              <h3 className="text-base font-medium">Colaborador</h3>
-              <CollaboratorField collaborators={collaborators} />
+            <TabsContent value="collaborator">
+              <CollaboratorTab collaborators={collaborators} />
             </TabsContent>
             
-            <TabsContent value="extras" className="space-y-4">
-              <h3 className="text-base font-medium">Cargos extras</h3>
-              <ExtraChargesForm 
+            <TabsContent value="extras">
+              <ExtraChargesTab 
                 extraCharges={extraCharges}
                 onAddCharge={handleAddExtraCharge}
                 onRemoveCharge={handleRemoveExtraCharge}

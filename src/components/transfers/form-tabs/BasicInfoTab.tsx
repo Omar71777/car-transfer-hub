@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { ClientField } from '../form-fields/client-field';
 import { DateTimeFields } from '../form-fields/DateTimeFields';
 import { LocationFields } from '../form-fields/LocationFields';
+import { PaymentStatusField } from '../form-fields/PaymentStatusField';
+import { ClientSelect } from '@/components/clients/ClientSelect';
 import { UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
 import { Client } from '@/types/client';
@@ -11,27 +12,19 @@ interface BasicInfoTabProps {
   form: UseFormReturn<TransferFormValues>;
   serviceType: 'transfer' | 'dispo';
   clients: Client[];
-  onClientCreated?: () => Promise<void>;
-  isClientsLoading?: boolean;
 }
 
-export function BasicInfoTab({ 
-  form, 
-  serviceType, 
-  clients,
-  onClientCreated,
-  isClientsLoading = false
-}: BasicInfoTabProps) {
+export function BasicInfoTab({ form, serviceType, clients }: BasicInfoTabProps) {
   return (
-    <div className="space-y-6">
-      <ClientField 
-        form={form} 
-        clients={clients}
-        onClientCreated={onClientCreated}
-        isClientsLoading={isClientsLoading}
-      />
+    <div className="space-y-4">
+      <h3 className="text-base font-medium">Información básica</h3>
       <DateTimeFields form={form} />
-      <LocationFields form={form} serviceType={serviceType} />
+      <ClientSelect 
+        control={form.control} 
+        clients={clients} 
+        label="Cliente *"
+      />
+      <PaymentStatusField />
     </div>
   );
 }
