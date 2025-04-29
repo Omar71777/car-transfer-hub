@@ -45,6 +45,17 @@
     width: 100%;
     margin-top: 0.5rem;
   }
+  
+  /* Improve dialog transitions */
+  [role="dialog"] [data-state="open"],
+  [role="alertdialog"] [data-state="open"] {
+    animation: dialog-open 0.2s ease-out;
+  }
+  
+  [role="dialog"] [data-state="closed"],
+  [role="alertdialog"] [data-state="closed"] {
+    animation: dialog-close 0.2s ease-in;
+  }
 }
 
 /* Set proper z-index for dialog components */
@@ -60,6 +71,29 @@
 [role="dialog"] + .fixed.inset-0,
 [role="alertdialog"] + .fixed.inset-0 {
   z-index: 49;
+}
+
+/* Dialog animations */
+@keyframes dialog-open {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes dialog-close {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
 }
 
 /* Ensure dropdowns appear above dialogs */
@@ -97,4 +131,25 @@
 /* Prevent body from losing pointer events when dialogs or print windows are open */
 body.dialog-open {
   pointer-events: auto !important;
+}
+
+/* Dialog content fade-in animation */
+.dialog-fade-in {
+  animation: dialog-fade-in 0.3s ease-out;
+}
+
+@keyframes dialog-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dialog backdrop blur enhancement */
+[role="dialog"] + .fixed.inset-0,
+[role="alertdialog"] + .fixed.inset-0 {
+  backdrop-filter: blur(4px);
+  transition: backdrop-filter 0.2s ease;
 }

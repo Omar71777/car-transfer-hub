@@ -31,6 +31,26 @@
   .form-group {
     @apply space-y-1.5;
   }
+  
+  /* Button sizes for mobile forms */
+  form button {
+    @apply h-9 min-h-9 px-3 py-1.5 text-sm;
+  }
+  
+  /* Better touch targets for form elements */
+  form input, form select, form textarea, form button {
+    @apply min-h-[44px] touch-manipulation;
+  }
+  
+  /* Better label spacing on mobile */
+  form label {
+    @apply mb-1 block text-sm;
+  }
+  
+  /* Form field stack on mobile */
+  .mobile-stack-fields > * + * {
+    @apply mt-3;
+  }
 }
 
 /* Consistent form field spacing for all screen sizes */
@@ -51,4 +71,51 @@
 /* Form validation errors */
 .form-error {
   @apply mt-1 text-xs text-destructive;
+}
+
+/* Form field transitions and focus states */
+.form-field-animate input,
+.form-field-animate select,
+.form-field-animate textarea {
+  @apply transition-all duration-200 focus:ring-1 focus:ring-primary/30 focus:border-primary/50;
+}
+
+/* Form sections */
+.form-section {
+  @apply mb-6;
+}
+
+.form-section-title {
+  @apply text-lg font-medium mb-3;
+}
+
+/* Form grid layouts */
+.form-grid {
+  @apply grid gap-4;
+}
+
+.form-grid-2 {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.form-grid-3 {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+}
+
+.form-grid-4 {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+/* Form success messages */
+.form-success {
+  @apply mt-1 text-xs text-green-600 dark:text-green-500;
+}
+
+/* Focus within highlighting for form groups */
+.form-group-highlight {
+  @apply rounded-md transition-all duration-200;
+}
+
+.form-group-highlight:focus-within {
+  @apply bg-accent/5 p-2 -m-2;
 }

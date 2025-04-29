@@ -45,7 +45,8 @@ export function MobileNavigation() {
           onClick={handleOpenSidebar}
           className={cn(
             "flex flex-col items-center justify-center px-3 py-1 rounded-lg touch-manipulation",
-            "text-muted-foreground active:text-foreground active:bg-accent/30"
+            "text-muted-foreground active:text-foreground active:bg-accent/30",
+            "transition-all duration-200 hover:bg-accent/10"
           )}
         >
           <div className="flex items-center justify-center w-10 h-10 rounded-full mb-0.5">
@@ -71,18 +72,27 @@ function NavItem({ to, icon, label, isActive }: NavItemProps) {
       to={to}
       className={cn(
         "flex flex-col items-center justify-center px-3 py-1 rounded-lg touch-manipulation",
+        "transition-all duration-200",
         isActive 
-          ? "text-primary" 
-          : "text-muted-foreground active:text-foreground active:bg-accent/30"
+          ? "text-primary scale-105" 
+          : "text-muted-foreground active:text-foreground active:bg-accent/30 hover:bg-accent/10"
       )}
     >
       <div className={cn(
-        "flex items-center justify-center w-10 h-10 rounded-full mb-0.5",
-        isActive && "bg-primary/10"
+        "flex items-center justify-center w-10 h-10 rounded-full mb-0.5 transition-all duration-200",
+        isActive ? "bg-primary/10 scale-105" : ""
       )}>
         {icon}
       </div>
-      <span className="text-xs">{label}</span>
+      <span className={cn(
+        "text-xs transition-all",
+        isActive ? "font-medium" : ""
+      )}>
+        {label}
+      </span>
+      {isActive && (
+        <div className="absolute -bottom-2 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+      )}
     </Link>
   );
 }

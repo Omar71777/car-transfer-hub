@@ -1,9 +1,13 @@
 
-import React from 'react';
-import { TransferExpenseDialog } from '@/components/transfers/TransferExpenseDialog';
+import React, { useEffect } from 'react';
+import { useDialog } from '@/components/ui/dialog-service';
+import { Transfer } from '@/types';
+import { 
+  openTransferExpenseDialog, 
+  TransferExpenseDialog 
+} from '@/components/transfers/TransferExpenseDialog';
 import { TransferEditDialog } from '@/components/transfers/TransferEditDialog';
 import { TransferPrintDialog, PrintOptions } from '@/components/transfers/TransferPrintDialog';
-import { Transfer } from '@/types';
 
 interface TransferDialogsProps {
   isExpenseDialogOpen: boolean;
@@ -34,17 +38,25 @@ export function TransferDialogs({
   onEditSubmit,
   transfers = []
 }: TransferDialogsProps) {
+  const dialogService = useDialog();
+  
+  // Handle expense dialog with the new dialog service
+  useEffect(() => {
+    if (isExpenseDialogOpen && selectedTransferId) {
+      openTransferExpenseDialog(
+        dialogService,
+        (values) => {
+          onExpenseSubmit(values);
+          setIsExpenseDialogOpen(false);
+        },
+        selectedTransferId
+      );
+    }
+  }, [isExpenseDialogOpen, selectedTransferId, dialogService]);
+
   return (
     <>
-      {isExpenseDialogOpen && (
-        <TransferExpenseDialog
-          isOpen={isExpenseDialogOpen}
-          onClose={() => setIsExpenseDialogOpen(false)}
-          onSubmit={onExpenseSubmit}
-          transferId={selectedTransferId}
-        />
-      )}
-      
+      {/* Legacy dialog components for backward compatibility */}
       {isEditDialogOpen && editingTransfer && (
         <TransferEditDialog
           isOpen={isEditDialogOpen}

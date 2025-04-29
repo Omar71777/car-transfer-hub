@@ -10,9 +10,22 @@ import { AppSidebar } from './AppSidebar';
 interface MainLayoutProps {
   children: React.ReactNode;
   hideNavigation?: boolean;
+  title?: string;
+  backButton?: boolean;
+  headerActions?: React.ReactNode;
+  transparent?: boolean;
+  fullWidth?: boolean;
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ children, hideNavigation = false }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({ 
+  children, 
+  hideNavigation = false,
+  title,
+  backButton,
+  headerActions,
+  transparent = false,
+  fullWidth = false
+}) => {
   const isMobile = useIsMobile();
   
   return (
@@ -21,10 +34,17 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, hideNavigation
         {!isMobile && <AppSidebar />}
         
         <div className="flex flex-col flex-grow min-h-screen w-full relative">
-          {isMobile && <MobileHeader />}
+          {isMobile && (
+            <MobileHeader 
+              title={title}
+              backButton={backButton}
+              actions={headerActions}
+              transparent={transparent}
+            />
+          )}
           
-          <main className="flex-grow overflow-auto pb-16">
-            <div className="container mx-auto pt-2 pb-8 px-2 animate-fade-in">
+          <main className="flex-grow overflow-auto pb-16 animate-fade-in">
+            <div className={`mx-auto pt-2 pb-8 px-2 ${fullWidth ? 'w-full' : 'container'}`}>
               <OfflineStatus className="mb-4" />
               {children}
             </div>

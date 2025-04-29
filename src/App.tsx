@@ -16,15 +16,15 @@ import AuthPage from './pages/auth/AuthPage';
 import NotFound from './pages/NotFound';
 import { DeviceService } from '@/services/DeviceService';
 import { SidebarProvider } from '@/components/ui/sidebar/sidebar-provider';
-import { usePointerEventsCleanup } from './pages/transfers/hooks/usePointerEventsCleanup';
 import { MobileSidebar } from '@/components/layout/MobileSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DialogProvider } from '@/components/ui/dialog-service';
 import { DrawerProvider } from '@/components/ui/drawer-service';
+import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
 
 // Global component to handle pointer-events cleanup
-function PointerEventsCleanup() {
-  usePointerEventsCleanup();
+function GlobalEventsFix() {
+  usePointerEventsFix();
   return null;
 }
 
@@ -57,7 +57,7 @@ function App() {
         <DialogProvider>
           <DrawerProvider>
             <SidebarProvider>
-              <PointerEventsCleanup />
+              <GlobalEventsFix />
               <BrowserRouter>
                 {/* Render MobileSidebar once for the entire app */}
                 {isMobile && <MobileSidebar />}
