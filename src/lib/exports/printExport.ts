@@ -5,6 +5,7 @@
 import { Transfer, Expense } from '@/types';
 import { prepareProfitDataForExport } from './profitExport';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { printHtmlContent } from '@/lib/print/printService';
 
 // Print function
@@ -27,7 +28,7 @@ export function printProfitReport(
   const { summaryData } = prepareProfitDataForExport(transfers, expenses, stats);
   
   // Get current month and year in Spanish
-  const currentMonth = format(new Date(), 'MMMM yyyy', { locale: { code: 'es-ES' } });
+  const currentMonth = format(new Date(), 'MMMM yyyy', { locale: es });
   
   // Create the HTML content
   const htmlContent = `

@@ -1,167 +1,173 @@
 
-import { useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import { useState, useCallback } from 'react';
+import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { UserProfile } from '@/types';
 import { toast } from 'sonner';
-import { UserProfile } from './types';
 
 export function useAuthOperations() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchUserProfile = async (userId: string) => {
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  // Fetch user profile from Supabase
+  const fetchUserProfile = useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
-
+      
       if (error) {
         console.error('Error fetching user profile:', error);
-        return;
+        return null;
       }
-
-      setProfile(data as UserProfile);
-      setIsAdmin(data?.role === 'admin');
-    } catch (error) {
-      console.error('Error in fetchUserProfile:', error);
-    }
-  };
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-      toast.success('Inicio de sesión exitoso');
-    } catch (error: any) {
-      toast.error(`Error: ${error.message}`);
-      throw error;
-    }
-  };
-
-  const signUp = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-      toast.success('Registro exitoso. Por favor verifica tu email.');
-    } catch (error: any) {
-      toast.error(`Error: ${error.message}`);
-      throw error;
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      console.log('Signing out user...');
-      // First clear state before making the API call
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      setIsAdmin(false);
       
-      // Then call signOut
+      setProfile(data);
+      setIsAdmin(data?.role === 'admin');
+      return data;
+    } catch (error) {
+      console.error('Exception fetching user profile:', error);
+      return null;
+    }
+  }, []);
+  
+  // Sign in with email and password
+  const signIn = useCallback(async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return { success: true, data };
+    } catch (error: any) {
+      console.error('Error signing in:', error.message);
+      return { success: false, error: error.message };
+    }
+  }, []);
+  
+  // Sign up with email and password
+  const signUp = useCallback(async (email: string, password: string, metadata?: Record<string, any>) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      return { success: true, data };
+    } catch (error: any) {
+      console.error('Error signing up:', error.message);
+      return { success: false, error: error.message };
+    }
+  }, []);
+  
+  // Sign out
+  const signOut = useCallback(async () => {
+    try {
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error('Error signing out:', error);
         throw error;
       }
       
-      console.log('User signed out successfully');
-      toast.success('Sesión cerrada con éxito');
-      
-      // Force page reload to ensure all state is cleared
-      setTimeout(() => {
-        window.location.href = '/auth';
-      }, 100);
-      
-    } catch (error: any) {
-      console.error('SignOut error full details:', error);
-      toast.error(`Error al cerrar sesión: ${error.message}`);
-      throw error;
-    }
-  };
-
-  const updateUserProfile = async (data: Partial<UserProfile>) => {
-    if (!user) return;
-    
-    try {
-      console.log('Actualizando perfil con datos:', data);
-      
-      // Asegurarse de que los datos de empresa están incluidos correctamente
-      const updateData: Partial<UserProfile> = {...data};
-      
-      const { error } = await supabase
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
-
-      if (error) throw error;
-      
-      // Actualizar el estado local con los nuevos datos
-      setProfile(prev => prev ? { ...prev, ...updateData } : null);
-      
-      toast.success('Perfil actualizado con éxito');
-    } catch (error: any) {
-      console.error('Error al actualizar el perfil:', error);
-      toast.error(`Error al actualizar el perfil: ${error.message}`);
-      throw error;
-    }
-  };
-
-  const deleteAccount = async (): Promise<boolean> => {
-    if (!user || !session) return false;
-    
-    try {
-      console.log('Deleting account for user:', user.id);
-      const { data, error } = await supabase.functions.invoke('delete-account', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-      
-      if (error) {
-        console.error('Error from delete-account function:', error);
-        throw error;
-      }
-      
-      console.log('Account deletion response:', data);
-      
-      await supabase.auth.signOut();
-      
-      setUser(null);
+      // Clear local state
       setSession(null);
+      setUser(null);
       setProfile(null);
       setIsAdmin(false);
       
-      toast.success('Cuenta eliminada con éxito');
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error signing out:', error.message);
+      return { success: false, error: error.message };
+    }
+  }, []);
+  
+  // Update user profile
+  const updateUserProfile = useCallback(async (profileData: Partial<UserProfile>) => {
+    try {
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', user.id)
+        .select()
+        .single();
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Update profile state
+      setProfile(prev => prev ? { ...prev, ...data } : data);
+      
+      // Update admin state if role changed
+      if (profileData.role) {
+        setIsAdmin(profileData.role === 'admin');
+      }
+      
+      toast.success('Profile updated successfully');
+      return { success: true, data };
+    } catch (error: any) {
+      console.error('Error updating profile:', error.message);
+      toast.error(`Failed to update profile: ${error.message}`);
+      return { success: false, error: error.message };
+    }
+  }, [user]);
+  
+  // Delete account
+  const deleteAccount = useCallback(async () => {
+    try {
+      const { error } = await supabase.functions.invoke('delete-account', {
+        method: 'POST'
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Clear local state
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+      setIsAdmin(false);
+      
+      toast.success('Account deleted successfully');
       return true;
     } catch (error: any) {
       console.error('Error deleting account:', error);
-      toast.error(`Error al eliminar la cuenta: ${error.message}`);
+      toast.error(`Failed to delete account: ${error.message || 'Unknown error'}`);
       return false;
     }
-  };
-
+  }, []);
+  
   return {
     session,
     setSession,
     user,
     setUser,
     profile,
+    setProfile,
     isAdmin,
+    setIsAdmin,
     isLoading,
     setIsLoading,
     fetchUserProfile,

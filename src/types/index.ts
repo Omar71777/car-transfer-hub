@@ -18,12 +18,16 @@ export interface Transfer {
   paymentStatus: 'paid' | 'pending';
   payment_method?: 'card' | 'cash' | 'bank_transfer' | null;
   clientId: string;
-  client?: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  client?: Client;
   billed?: boolean;
+}
+
+export interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
 }
 
 export interface ExtraCharge {

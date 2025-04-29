@@ -1,5 +1,4 @@
-
-import { Transfer } from '@/types';
+import { Transfer, Client } from '@/types';
 import { PrintOptions } from '@/components/transfers/TransferPrintDialog';
 import { calculateCommissionAmount, calculateTotalPrice } from '@/lib/calculations';
 import { formatCurrency } from '@/lib/utils';
