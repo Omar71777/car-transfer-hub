@@ -5,16 +5,27 @@
   overflow-y: auto;
 }
 
-/* Tab navigation for small screens */
-@media (max-width: 640px) {
-  .tabs-list-compact [data-radix-collection-item] {
-    padding: 8px;
-  }
-}
-
 /* Form inside dialog */
 .dialog-form {
   max-height: 70vh;
   overflow-y: auto;
   padding-right: 0.5rem;
+}
+
+/* Ensure dialogs are visible and clickable */
+[role="dialog"],
+[role="alertdialog"],
+.dialog-content {
+  pointer-events: auto !important;
+  z-index: 50 !important; 
+}
+
+/* Ensure the body has pointer events when a dialog is open */
+body.dialog-open {
+  pointer-events: auto !important;
+}
+
+/* Fix for dialog backdrops */
+.dialog-overlay {
+  z-index: 40 !important;
 }

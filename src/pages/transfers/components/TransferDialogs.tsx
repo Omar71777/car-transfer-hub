@@ -6,7 +6,6 @@ import { openTransferExpenseDialog } from '@/components/transfers/TransferExpens
 import { openTransferEditDialog } from '@/components/transfers/TransferEditDialog';
 import { openTransferPrintDialog } from '@/components/transfers/TransferPrintDialogContent';
 import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
-import { PrintOptions } from '@/components/transfers/TransferPrintDialog';
 
 interface TransferDialogsProps {
   isExpenseDialogOpen: boolean;
@@ -15,7 +14,7 @@ interface TransferDialogsProps {
   setIsEditDialogOpen: (open: boolean) => void;
   isPrintDialogOpen?: boolean;
   onClosePrintDialog?: () => void;
-  onPrintWithOptions?: (options: PrintOptions) => void;
+  onPrintWithOptions?: (options: any) => void;
   selectedTransferId: string | null;
   editingTransfer: Transfer | null;
   onExpenseSubmit: (values: any) => void;
@@ -38,86 +37,129 @@ export function TransferDialogs({
   transfers = []
 }: TransferDialogsProps) {
   const dialogService = useDialog();
-  const prevIsEditDialogOpen = useRef(isEditDialogOpen);
-  const prevIsExpenseDialogOpen = useRef(isExpenseDialogOpen);
-  const prevIsPrintDialogOpen = useRef(isPrintDialogOpen);
-  const dialogOpenedRef = useRef({ edit: false, expense: false, print: false });
+  const prevIsEditDialogOpen = useRef(false);
+  const prevIsExpenseDialogOpen = useRef(false);
+  const prevIsPrintDialogOpen = useRef(false);
+  const isDialogOpenedRef = useRef({
+    edit: false,
+    expense: false,
+    print: false
+  });
   
   // Apply the pointer events fix hook
   usePointerEventsFix();
   
   // Handle expense dialog with the dialog service
   useEffect(() => {
-    // Only open dialog when state changes from false to true
-    if (isExpenseDialogOpen && !prevIsExpenseDialogOpen.current && selectedTransferId && !dialogOpenedRef.current.expense) {
-      dialogOpenedRef.current.expense = true;
+    if (!selectedTransferId) return;
+    
+    console.log('Expense dialog state:', { 
+      isOpen: isExpenseDialogOpen, 
+      wasOpen: prevIsExpenseDialogOpen.current,
+      isAlreadyOpened: isDialogOpenedRef.current.expense 
+    });
+    
+    // Only open dialog when state changes from false to true and dialog not already opened
+    if (isExpenseDialogOpen && !prevIsExpenseDialogOpen.current && !isDialogOpenedRef.current.expense) {
+      console.log('Opening expense dialog for transfer:', selectedTransferId);
+      isDialogOpenedRef.current.expense = true;
       
       openTransferExpenseDialog(
         dialogService,
         (values) => {
           onExpenseSubmit(values);
           setIsExpenseDialogOpen(false);
-          dialogOpenedRef.current.expense = false;
+          // Don't reset isDialogOpenedRef here, wait until dialog is actually closed
         },
         selectedTransferId
       );
-    } else if (!isExpenseDialogOpen) {
-      dialogOpenedRef.current.expense = false;
+    }
+    
+    // When the dialog is closed, reset the opened state
+    if (!isExpenseDialogOpen && prevIsExpenseDialogOpen.current) {
+      // Give time for animations to complete
+      setTimeout(() => {
+        isDialogOpenedRef.current.expense = false;
+      }, 300);
     }
     
     prevIsExpenseDialogOpen.current = isExpenseDialogOpen;
-  }, [isExpenseDialogOpen, selectedTransferId, dialogService]);
+  }, [isExpenseDialogOpen, selectedTransferId, dialogService, onExpenseSubmit, setIsExpenseDialogOpen]);
 
   // Handle edit dialog with the dialog service
   useEffect(() => {
-    console.log('Edit dialog state:', isEditDialogOpen, prevIsEditDialogOpen.current, editingTransfer, dialogOpenedRef.current.edit);
+    if (!editingTransfer) return;
     
-    // Only open dialog when state changes from false to true
-    if (isEditDialogOpen && !prevIsEditDialogOpen.current && editingTransfer && !dialogOpenedRef.current.edit) {
-      dialogOpenedRef.current.edit = true;
+    console.log('Edit dialog state:', { 
+      isOpen: isEditDialogOpen, 
+      wasOpen: prevIsEditDialogOpen.current,
+      isAlreadyOpened: isDialogOpenedRef.current.edit,
+      transfer: editingTransfer?.id 
+    });
+    
+    // Only open dialog when state changes from false to true and dialog not already opened
+    if (isEditDialogOpen && !prevIsEditDialogOpen.current && !isDialogOpenedRef.current.edit) {
+      console.log('Opening edit dialog for transfer:', editingTransfer.id);
+      isDialogOpenedRef.current.edit = true;
       
       openTransferEditDialog(
         dialogService,
         (values) => {
           onEditSubmit(values);
           setIsEditDialogOpen(false);
-          dialogOpenedRef.current.edit = false;
+          // Don't reset isDialogOpenedRef here, wait until dialog is actually closed
         },
         editingTransfer
       );
-    } else if (!isEditDialogOpen) {
-      dialogOpenedRef.current.edit = false;
+    }
+    
+    // When the dialog is closed, reset the opened state
+    if (!isEditDialogOpen && prevIsEditDialogOpen.current) {
+      // Give time for animations to complete
+      setTimeout(() => {
+        isDialogOpenedRef.current.edit = false;
+      }, 300);
     }
     
     prevIsEditDialogOpen.current = isEditDialogOpen;
-  }, [isEditDialogOpen, editingTransfer, dialogService]);
+  }, [isEditDialogOpen, editingTransfer, dialogService, onEditSubmit, setIsEditDialogOpen]);
   
   // Handle print dialog with the dialog service
   useEffect(() => {
-    // Only open dialog when state changes from false to true
-    if (isPrintDialogOpen && !prevIsPrintDialogOpen.current && transfers.length > 0 && !dialogOpenedRef.current.print) {
-      dialogOpenedRef.current.print = true;
+    if (transfers.length === 0) return;
+    
+    // Only open dialog when state changes from false to true and dialog not already opened
+    if (isPrintDialogOpen && !prevIsPrintDialogOpen.current && !isDialogOpenedRef.current.print) {
+      console.log('Opening print dialog for transfers:', transfers.length);
+      isDialogOpenedRef.current.print = true;
       
       openTransferPrintDialog(
         dialogService,
         (options) => {
           onPrintWithOptions(options);
           onClosePrintDialog();
-          dialogOpenedRef.current.print = false;
+          // Don't reset isDialogOpenedRef here, wait until dialog is actually closed
         },
         transfers
       );
-    } else if (!isPrintDialogOpen) {
-      dialogOpenedRef.current.print = false;
+    }
+    
+    // When the dialog is closed, reset the opened state
+    if (!isPrintDialogOpen && prevIsPrintDialogOpen.current) {
+      // Give time for animations to complete
+      setTimeout(() => {
+        isDialogOpenedRef.current.print = false;
+      }, 300);
     }
     
     prevIsPrintDialogOpen.current = isPrintDialogOpen;
-  }, [isPrintDialogOpen, transfers, dialogService]);
+  }, [isPrintDialogOpen, transfers, dialogService, onPrintWithOptions, onClosePrintDialog]);
 
   // Reset dialog state when component unmounts
   useEffect(() => {
     return () => {
-      dialogOpenedRef.current = { edit: false, expense: false, print: false };
+      console.log('TransferDialogs component unmounting, resetting state');
+      isDialogOpenedRef.current = { edit: false, expense: false, print: false };
     };
   }, []);
 

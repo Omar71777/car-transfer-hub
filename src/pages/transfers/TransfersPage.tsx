@@ -74,23 +74,21 @@ const TransfersPage = () => {
         onMarkAsPaid={handleMarkAsPaid}
       />
 
-      {/* Only render dialogs when needed */}
-      {(isExpenseDialogOpen || isEditDialogOpen || isPrintDialogOpen) && (
-        <TransferDialogs
-          isExpenseDialogOpen={isExpenseDialogOpen}
-          setIsExpenseDialogOpen={setIsExpenseDialogOpen}
-          isEditDialogOpen={isEditDialogOpen}
-          setIsEditDialogOpen={setIsEditDialogOpen}
-          isPrintDialogOpen={isPrintDialogOpen}
-          onClosePrintDialog={handleClosePrintDialog}
-          onPrintWithOptions={handlePrintWithOptions}
-          selectedTransferId={selectedTransferId}
-          editingTransfer={editingTransfer}
-          onExpenseSubmit={handleExpenseSubmit}
-          onEditSubmit={handleEditSubmit}
-          transfers={transfers}
-        />
-      )}
+      {/* Always render TransferDialogs to maintain consistent hooks */}
+      <TransferDialogs
+        isExpenseDialogOpen={isExpenseDialogOpen}
+        setIsExpenseDialogOpen={setIsExpenseDialogOpen}
+        isEditDialogOpen={isEditDialogOpen}
+        setIsEditDialogOpen={setIsEditDialogOpen}
+        isPrintDialogOpen={isPrintDialogOpen}
+        onClosePrintDialog={handleClosePrintDialog}
+        onPrintWithOptions={handlePrintWithOptions}
+        selectedTransferId={selectedTransferId}
+        editingTransfer={editingTransfer}
+        onExpenseSubmit={handleExpenseSubmit}
+        onEditSubmit={handleEditSubmit}
+        transfers={transfers}
+      />
 
       <TransferSummaryDialogContainer
         isOpen={isSummaryDialogOpen}

@@ -7,16 +7,14 @@ export function useDialogEffects(
   isSummaryDialogOpen: boolean,
   setSummaryTransferId: (id: string | null) => void
 ) {
-  // Reset state when dialogs close
+  // Reset summary transfer ID only when all dialogs are closed and summary dialog is not open
   useEffect(() => {
     if (!isEditDialogOpen && !isExpenseDialogOpen && !isSummaryDialogOpen) {
       // Give time for animations to complete before clearing state
       const timeout = setTimeout(() => {
-        if (!isEditDialogOpen && !isExpenseDialogOpen && !isSummaryDialogOpen) {
-          // No need to clear summaryTransferId if the summary dialog is still open
-          if (!isSummaryDialogOpen) {
-            setSummaryTransferId(null);
-          }
+        // Double-check all dialogs are still closed before clearing state
+        if (!isSummaryDialogOpen) {
+          setSummaryTransferId(null);
         }
       }, 300);
       
