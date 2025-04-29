@@ -60,7 +60,7 @@ export function ClientField({
         onClientEmailChange={setClientEmailValue}
         isCreating={isCreatingClient}
         error={createError}
-        dialogStatus={dialogStatus}
+        dialogStatus={dialogStatus as 'idle' | 'creating' | 'verifying'}
       />
     </>
   );

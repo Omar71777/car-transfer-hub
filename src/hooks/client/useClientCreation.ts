@@ -92,6 +92,6 @@ export function useClientCreation({ form, onSuccess }: UseClientCreationProps = 
     closeDialog: updatedDialogHooks.closeDialog,
     
     // Status
-    dialogStatus: updatedDialogHooks.dialogStatus
+    dialogStatus: updatedDialogHooks.dialogStatus as 'idle' | 'creating' | 'verifying'
   };
 }

@@ -13,7 +13,7 @@ export function useClientDialog({
   const [isNewClientDialogOpen, setIsNewClientDialogOpen] = useState(false);
   
   // Calculate dialog status based on current state
-  const dialogStatus = isVerifyingClient ? 'verifying' : isCreatingClient ? 'creating' : 'idle';
+  const dialogStatus = isVerifyingClient ? 'verifying' as const : isCreatingClient ? 'creating' as const : 'idle' as const;
   
   // Handle opening the new client dialog
   const handleAddNewClient = useCallback(() => {

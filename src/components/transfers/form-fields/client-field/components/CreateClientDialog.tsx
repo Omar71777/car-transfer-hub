@@ -16,7 +16,7 @@ interface CreateClientDialogProps {
   onClientEmailChange: (value: string) => void;
   isCreating: boolean;
   error: string | null;
-  dialogStatus?: 'idle' | 'creating' | 'verifying';
+  dialogStatus: 'idle' | 'creating' | 'verifying';
 }
 
 export function CreateClientDialog({

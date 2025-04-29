@@ -57,7 +57,7 @@ export function useClientSelection({
     // Status flags
     isCreatingClient,
     isSelectDisabled,
-    dialogStatus,
+    dialogStatus: dialogStatus as 'idle' | 'creating' | 'verifying',
     
     // Error handling
     createError,
