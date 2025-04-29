@@ -1,12 +1,24 @@
+
 import React from 'react';
 import { BillPreview } from '@/types/billing';
+import { Loader } from 'lucide-react';
 
 interface BillPreviewPanelProps {
   billPreview: BillPreview | null;
+  isCalculating: boolean;
   formatCurrency: (amount: number) => string;
 }
 
-export function BillPreviewPanel({ billPreview, formatCurrency }: BillPreviewPanelProps) {
+export function BillPreviewPanel({ billPreview, isCalculating, formatCurrency }: BillPreviewPanelProps) {
+  if (isCalculating) {
+    return (
+      <div className="mt-4 border rounded-md p-8 flex items-center justify-center">
+        <Loader className="h-6 w-6 text-primary animate-spin mr-2" />
+        <span>Calculando resumen...</span>
+      </div>
+    );
+  }
+  
   if (!billPreview) return null;
   
   const formatItemDescription = (item: any) => {

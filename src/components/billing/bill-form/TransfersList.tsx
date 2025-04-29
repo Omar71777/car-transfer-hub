@@ -10,22 +10,22 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { calculateBasePrice } from '@/lib/calculations';
 
 interface TransfersListProps {
-  filteredTransfers: Transfer[];
+  transfers: Transfer[];
   selectedTransfers: string[];
   onTransferToggle: (transferId: string) => void;
-  onSelectAllTransfers: () => void;
-  transferFilter: string;
-  onTransferFilterChange: (value: string) => void;
+  onSelectAll: () => void;
+  filter: string;
+  onFilterChange: (filter: string) => void;
   formatCurrency: (amount: number) => string;
 }
 
 export function TransfersList({
-  filteredTransfers,
+  transfers,
   selectedTransfers,
   onTransferToggle,
-  onSelectAllTransfers,
-  transferFilter,
-  onTransferFilterChange,
+  onSelectAll,
+  filter,
+  onFilterChange,
   formatCurrency
 }: TransfersListProps) {
   const isMobile = useIsMobile();
@@ -39,11 +39,11 @@ export function TransfersList({
             type="button" 
             variant="outline" 
             size="sm" 
-            onClick={onSelectAllTransfers}
-            disabled={filteredTransfers.length === 0}
+            onClick={onSelectAll}
+            disabled={transfers.length === 0}
             className={isMobile ? "text-xs px-2" : ""}
           >
-            {selectedTransfers.length === filteredTransfers.length && filteredTransfers.length > 0 
+            {selectedTransfers.length === transfers.length && transfers.length > 0 
               ? (isMobile ? 'Deseleccionar' : 'Deseleccionar todos')
               : (isMobile ? 'Seleccionar' : 'Seleccionar todos')}
           </Button>
@@ -57,20 +57,20 @@ export function TransfersList({
         <Input
           type="text"
           placeholder={isMobile ? "Filtrar transfers..." : "Filtrar transfers por origen o destino..."}
-          value={transferFilter}
-          onChange={(e) => onTransferFilterChange(e.target.value)}
+          value={filter}
+          onChange={(e) => onFilterChange(e.target.value)}
           className="pl-10 mobile-input"
         />
       </div>
 
-      {filteredTransfers.length === 0 ? (
+      {transfers.length === 0 ? (
         <div className="text-center p-4 border rounded-md bg-muted/20">
           <p className="text-muted-foreground">No hay transfers disponibles para facturar</p>
         </div>
       ) : (
         <div className="border rounded-md overflow-hidden max-h-[300px] overflow-y-auto">
           <div className="divide-y">
-            {filteredTransfers.map((transfer) => (
+            {transfers.map((transfer) => (
               <div key={transfer.id} className="p-3 hover:bg-accent/10">
                 <div className="flex items-start space-x-2">
                   <Checkbox
