@@ -4,6 +4,8 @@ import { useDrawer } from '@/components/ui/drawer-service';
 import { Transfer } from '@/types';
 import { openTransferExpenseDialog } from '@/components/transfers/TransferExpenseDialog';
 import { openTransferEditDialog } from '@/components/transfers/TransferEditDialog';
+import { openTransferPrintDialog } from '@/components/transfers/TransferPrintDialogContent';
+import { openTransferSummaryDialog } from '@/components/transfers/TransferSummaryDialogContent';
 import { PrintOptions } from '@/components/transfers/TransferPrintDialog';
 
 // Type definitions for transfer service functions
@@ -11,6 +13,7 @@ export interface TransferServiceProps {
   onExpenseSubmit: (values: any) => void;
   onEditSubmit: (values: any) => void;
   onPrintWithOptions: (options: PrintOptions) => void;
+  onSummaryClose?: () => void;
 }
 
 // Service hook for managing transfer operations
@@ -42,15 +45,27 @@ export function useTransferService(props: TransferServiceProps) {
   
   // Open print dialog using the dialog service
   const openPrintDialog = (transfers: Transfer[]) => {
-    // This will be implemented when the TransferPrintDialog is refactored
-    // For now, return a placeholder
-    console.log("Print dialog not yet refactored to use dialog service", transfers);
+    openTransferPrintDialog(
+      dialogService,
+      props.onPrintWithOptions,
+      transfers
+    );
+  };
+  
+  // Open summary dialog using the dialog service
+  const openSummaryDialog = (transferId: string) => {
+    openTransferSummaryDialog(
+      dialogService,
+      transferId,
+      props.onSummaryClose
+    );
   };
   
   // Return the service functions
   return {
     openExpenseDialog,
     openEditDialog,
-    openPrintDialog
+    openPrintDialog,
+    openSummaryDialog
   };
 }

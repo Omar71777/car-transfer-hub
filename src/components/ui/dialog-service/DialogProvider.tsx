@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 interface DialogContextType {
@@ -12,6 +12,7 @@ interface DialogOptions {
   preventOutsideClose?: boolean;
   width?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   onClose?: () => void;
+  focusFirst?: boolean;
 }
 
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
@@ -20,8 +21,13 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<ReactNode | null>(null);
   const [dialogOptions, setDialogOptions] = useState<DialogOptions>({});
-
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  
   const openDialog = (content: ReactNode, options: DialogOptions = {}) => {
+    // Store currently focused element before opening dialog
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    
     setDialogContent(content);
     setDialogOptions(options);
     setIsOpen(true);
@@ -37,7 +43,31 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     if (dialogOptions.onClose) {
       dialogOptions.onClose();
     }
+    
+    // Return focus to the element that was focused before the dialog opened
+    setTimeout(() => {
+      if (previousFocusRef.current && 'focus' in previousFocusRef.current) {
+        previousFocusRef.current.focus();
+      }
+    }, 10);
   };
+  
+  // Focus first focusable element when dialog opens
+  useEffect(() => {
+    if (!isOpen || !dialogRef.current || dialogOptions.focusFirst === false) return;
+    
+    const timer = setTimeout(() => {
+      const focusableElements = dialogRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      
+      if (focusableElements && focusableElements.length > 0) {
+        (focusableElements[0] as HTMLElement).focus();
+      }
+    }, 50);
+    
+    return () => clearTimeout(timer);
+  }, [isOpen, dialogOptions.focusFirst]);
 
   const getWidthClass = () => {
     switch (dialogOptions.width) {
@@ -64,6 +94,20 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         <DialogContent 
           className={`dialog-content overflow-y-auto max-h-[85vh] ${getWidthClass()} ${dialogOptions.className || ''}`}
           onPointerDownOutside={(e) => {
+            if (dialogOptions.preventOutsideClose) {
+              e.preventDefault();
+            }
+          }}
+          onEscapeKeyDown={(e) => {
+            if (!dialogOptions.preventOutsideClose) {
+              closeDialog();
+            } else {
+              e.preventDefault();
+            }
+          }}
+          ref={dialogRef}
+          onInteractOutside={(e) => {
+            // Prevent interaction outside if configured
             if (dialogOptions.preventOutsideClose) {
               e.preventDefault();
             }

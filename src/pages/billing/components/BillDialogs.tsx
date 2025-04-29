@@ -1,12 +1,13 @@
 
 import React, { useEffect } from 'react';
 import { Bill, CreateBillDto } from '@/types/billing';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useDialog } from '@/components/ui/dialog-service';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { BillForm } from '@/components/billing/BillForm';
 import { BillEditForm } from '@/components/billing/BillEditForm';
 import { BillDetail } from '@/components/billing/BillDetail';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
 
 interface BillDialogsProps {
   isFormDialogOpen: boolean;
@@ -47,142 +48,137 @@ export function BillDialogs({
   handleDownloadBill,
   handleStatusChange,
 }: BillDialogsProps) {
-  const isMobile = useIsMobile();
+  const dialogService = useDialog();
   
-  // Ensure pointer events are enabled when dialog opens
+  // Apply the pointer events fix hook
+  usePointerEventsFix();
+  
+  // Handle form dialog with the dialog service
   useEffect(() => {
-    if (isViewDialogOpen || isEditDialogOpen || isFormDialogOpen || isDeleteDialogOpen) {
-      document.body.style.pointerEvents = 'auto';
-    }
-  }, [isViewDialogOpen, isEditDialogOpen, isFormDialogOpen, isDeleteDialogOpen]);
-  
-  return (
-    <>
-      <Dialog 
-        open={isFormDialogOpen} 
-        onOpenChange={(open) => {
-          // Only allow closure through our state setter
-          if (!open) {
-            document.body.style.pointerEvents = 'auto';
-            setIsFormDialogOpen(false);
-          }
-        }}
-      >
-        <DialogContent className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]" onPointerDownOutside={(e) => {
-          // Prevent dialog from closing on outside click
-          e.preventDefault();
-        }}>
+    if (isFormDialogOpen) {
+      dialogService.openDialog(
+        <>
           <DialogHeader>
             <DialogTitle>Crear Nueva Factura</DialogTitle>
             <DialogDescription>
               Rellena el formulario para crear una nueva factura.
             </DialogDescription>
           </DialogHeader>
-          <BillForm onSubmit={handleFormSubmit} />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog 
-        open={isViewDialogOpen} 
-        onOpenChange={(open) => {
-          // Only allow closure through our state setter
-          if (!open) {
+          <BillForm onSubmit={(values) => {
+            handleFormSubmit(values);
+            setIsFormDialogOpen(false);
+          }} />
+        </>,
+        {
+          width: 'full',
+          preventOutsideClose: true,
+          onClose: () => {
             document.body.style.pointerEvents = 'auto';
-            setIsViewDialogOpen(false);
+            setIsFormDialogOpen(false);
           }
-        }}
-      >
-        <DialogContent 
-          className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]"
-          onPointerDownOutside={(e) => {
-            // Prevent dialog from closing on outside click
-            e.preventDefault();
-          }}
-        >
+        }
+      );
+    }
+  }, [isFormDialogOpen, dialogService]);
+  
+  // Handle view dialog with the dialog service
+  useEffect(() => {
+    if (isViewDialogOpen && viewBill) {
+      dialogService.openDialog(
+        <>
           <DialogHeader>
             <DialogTitle>Detalle de Factura</DialogTitle>
             <DialogDescription>
               Vista detallada de la factura seleccionada.
             </DialogDescription>
           </DialogHeader>
-          {viewBill && (
-            <BillDetail
-              bill={viewBill}
-              onEdit={() => {
-                // Explicitly set view dialog to false before opening edit dialog
-                setIsViewDialogOpen(false);
-                // Add a short delay to ensure view dialog closes first
-                setTimeout(() => {
-                  handleEditBill(viewBill);
-                }, 50);
-              }}
-              onPrint={handlePrintBill}
-              onDownload={() => handleDownloadBill(viewBill)}
-              onStatusChange={handleStatusChange}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <Dialog 
-        open={isEditDialogOpen} 
-        onOpenChange={(open) => {
-          // Only allow closure through our state setter
-          if (!open) {
+          <BillDetail
+            bill={viewBill}
+            onEdit={() => {
+              // Close view dialog before opening edit dialog
+              dialogService.closeDialog();
+              setIsViewDialogOpen(false);
+              
+              // Add a short delay to ensure view dialog closes first
+              setTimeout(() => {
+                handleEditBill(viewBill);
+              }, 50);
+            }}
+            onPrint={handlePrintBill}
+            onDownload={() => handleDownloadBill(viewBill)}
+            onStatusChange={handleStatusChange}
+          />
+        </>,
+        {
+          width: 'full',
+          preventOutsideClose: true,
+          onClose: () => {
             document.body.style.pointerEvents = 'auto';
-            setIsEditDialogOpen(false);
+            setIsViewDialogOpen(false);
           }
-        }}
-      >
-        <DialogContent 
-          className="dialog-content w-full max-w-[min(800px,90vw)] overflow-y-auto max-h-[85vh]"
-          onPointerDownOutside={(e) => {
-            // Prevent dialog from closing on outside click
-            e.preventDefault();
-          }}
-        >
+        }
+      );
+    }
+  }, [isViewDialogOpen, viewBill, dialogService]);
+  
+  // Handle edit dialog with the dialog service
+  useEffect(() => {
+    if (isEditDialogOpen && selectedBill) {
+      dialogService.openDialog(
+        <>
           <DialogHeader>
             <DialogTitle>Editar Factura</DialogTitle>
             <DialogDescription>
               Modifica los detalles de la factura seleccionada.
             </DialogDescription>
           </DialogHeader>
-          {selectedBill && (
-            <BillEditForm 
-              bill={selectedBill} 
-              onSubmit={(data, addedTransferIds, removedTransferIds) => 
-                handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds)
-              } 
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      <AlertDialog 
-        open={isDeleteDialogOpen} 
-        onOpenChange={(open) => {
-          if (!open) {
+          <BillEditForm 
+            bill={selectedBill} 
+            onSubmit={(data, addedTransferIds, removedTransferIds) => {
+              handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds);
+              setIsEditDialogOpen(false);
+            }} 
+          />
+        </>,
+        {
+          width: 'full',
+          preventOutsideClose: true,
+          onClose: () => {
             document.body.style.pointerEvents = 'auto';
-            setIsDeleteDialogOpen(false);
+            setIsEditDialogOpen(false);
           }
-        }}
-      >
-        <AlertDialogContent className="max-w-[min(450px,90vw)]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente la factura{' '}
-              <strong>{selectedBill?.number}</strong> del sistema.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground">
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+        }
+      );
+    }
+  }, [isEditDialogOpen, selectedBill, dialogService]);
+  
+  // Return only the AlertDialog for deletion confirmation
+  // All other dialogs are handled through the dialog service
+  return (
+    <AlertDialog 
+      open={isDeleteDialogOpen} 
+      onOpenChange={(open) => {
+        if (!open) {
+          document.body.style.pointerEvents = 'auto';
+          setIsDeleteDialogOpen(false);
+        }
+      }}
+    >
+      <AlertDialogContent className="max-w-[min(450px,90vw)]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta acción no se puede deshacer. Se eliminará permanentemente la factura{' '}
+            <strong>{selectedBill?.number}</strong> del sistema.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground">
+            Eliminar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

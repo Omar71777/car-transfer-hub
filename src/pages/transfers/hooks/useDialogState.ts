@@ -1,38 +1,39 @@
 
-import { useState, useEffect } from 'react';
-import { Transfer } from '@/types';
+import { useState, useCallback } from 'react';
+import { useDialog } from '@/components/ui/dialog-service';
+import { openTransferSummaryDialog } from '@/components/transfers/TransferSummaryDialogContent';
 
 export function useDialogState() {
   const [isSummaryDialogOpen, setIsSummaryDialogOpen] = useState(false);
   const [summaryTransferId, setSummaryTransferId] = useState<string | null>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
-  
-  useEffect(() => {
-    if (!isSummaryDialogOpen) {
-      // Give time for animations to complete before clearing state
-      const timeout = setTimeout(() => {
-        if (!isSummaryDialogOpen) {
-          setSummaryTransferId(null);
-        }
-      }, 300);
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [isSummaryDialogOpen]);
+  const dialogService = useDialog();
 
-  const handleViewSummary = (transferId: string) => {
+  const handleViewSummary = useCallback((transferId: string) => {
     // Ensure pointer events are enabled
     document.body.style.pointerEvents = 'auto';
     setSummaryTransferId(transferId);
     setIsSummaryDialogOpen(true);
-  };
+    
+    // Use the dialog service to open the summary dialog
+    openTransferSummaryDialog(
+      dialogService, 
+      transferId, 
+      () => {
+        setIsSummaryDialogOpen(false);
+        // We'll delay clearing the ID to allow for animations
+        setTimeout(() => setSummaryTransferId(null), 300);
+      }
+    );
+  }, [dialogService]);
 
-  const handleCloseSummary = () => {
+  const handleCloseSummary = useCallback(() => {
     // Ensure pointer events are enabled
     document.body.style.pointerEvents = 'auto';
     setIsSummaryDialogOpen(false);
-    // We'll let the useEffect handle clearing summaryTransferId after animation completes
-  };
+    // We'll delay clearing the ID to allow for animations
+    setTimeout(() => setSummaryTransferId(null), 300);
+  }, []);
 
   return {
     isSummaryDialogOpen,

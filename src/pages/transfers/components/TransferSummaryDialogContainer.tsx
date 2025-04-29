@@ -1,6 +1,7 @@
 
-import React from 'react';
-import { TransferSummaryDialog } from '@/components/transfers/TransferSummaryDialog';
+import React, { useEffect } from 'react';
+import { useDialog } from '@/components/ui/dialog-service';
+import { openTransferSummaryDialog } from '@/components/transfers/TransferSummaryDialogContent';
 
 interface TransferSummaryDialogContainerProps {
   isOpen: boolean;
@@ -13,13 +14,13 @@ export function TransferSummaryDialogContainer({
   onClose,
   transferId
 }: TransferSummaryDialogContainerProps) {
-  if (!transferId) return null;
+  const dialogService = useDialog();
   
-  return (
-    <TransferSummaryDialog
-      isOpen={isOpen}
-      onClose={onClose}
-      transferId={transferId}
-    />
-  );
+  useEffect(() => {
+    if (isOpen && transferId) {
+      openTransferSummaryDialog(dialogService, transferId, onClose);
+    }
+  }, [isOpen, transferId, dialogService, onClose]);
+  
+  return null;
 }

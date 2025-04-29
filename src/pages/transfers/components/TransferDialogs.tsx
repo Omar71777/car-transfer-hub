@@ -6,8 +6,9 @@ import {
   openTransferExpenseDialog
 } from '@/components/transfers/TransferExpenseDialog';
 import { openTransferEditDialog } from '@/components/transfers/TransferEditDialog';
-import { TransferPrintDialog, PrintOptions } from '@/components/transfers/TransferPrintDialog';
+import { openTransferPrintDialog } from '@/components/transfers/TransferPrintDialogContent';
 import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
+import { PrintOptions } from '@/components/transfers/TransferPrintDialog';
 
 interface TransferDialogsProps {
   isExpenseDialogOpen: boolean;
@@ -43,7 +44,7 @@ export function TransferDialogs({
   // Apply the pointer events fix hook
   usePointerEventsFix();
   
-  // Handle expense dialog with the new dialog service
+  // Handle expense dialog with the dialog service
   useEffect(() => {
     if (isExpenseDialogOpen && selectedTransferId) {
       openTransferExpenseDialog(
@@ -57,7 +58,7 @@ export function TransferDialogs({
     }
   }, [isExpenseDialogOpen, selectedTransferId, dialogService]);
 
-  // Handle edit dialog with the new dialog service
+  // Handle edit dialog with the dialog service
   useEffect(() => {
     if (isEditDialogOpen && editingTransfer) {
       openTransferEditDialog(
@@ -70,18 +71,21 @@ export function TransferDialogs({
       );
     }
   }, [isEditDialogOpen, editingTransfer, dialogService]);
+  
+  // Handle print dialog with the dialog service
+  useEffect(() => {
+    if (isPrintDialogOpen && transfers.length > 0) {
+      openTransferPrintDialog(
+        dialogService,
+        (options) => {
+          onPrintWithOptions(options);
+          onClosePrintDialog();
+        },
+        transfers
+      );
+    }
+  }, [isPrintDialogOpen, transfers, dialogService]);
 
-  return (
-    <>
-      {/* Legacy dialog components for backward compatibility */}
-      {isPrintDialogOpen && (
-        <TransferPrintDialog 
-          isOpen={isPrintDialogOpen}
-          onClose={onClosePrintDialog}
-          onPrint={onPrintWithOptions}
-          transfers={transfers}
-        />
-      )}
-    </>
-  );
+  // No need to render any legacy components as all dialogs are now using the dialog service
+  return null;
 }
