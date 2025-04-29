@@ -44,7 +44,7 @@ export function useCollaboratorCreation({
         setCollaboratorPhone('');
         setCollaboratorEmail('');
         
-        // Close dialog
+        // Close dialog using the property from dialogHooks
         dialogHooks.closeDialog();
 
         // Call onSuccess if provided

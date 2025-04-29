@@ -1,7 +1,8 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { FormProvider, UseFormReturn, useFormContext } from 'react-hook-form';
+import { useFormContext, UseFormReturn } from 'react-hook-form';
 import { TransferFormValues } from '../schema/transferSchema';
+import { Form } from '@/components/ui/form';
 
 // Create context type
 type TransferFormContextType = {
@@ -52,11 +53,11 @@ export const TransferFormProvider: React.FC<TransferFormProviderProps> = ({
   };
 
   return (
-    <FormProvider {...methods}>
+    <Form {...methods}>
       <TransferFormContext.Provider value={contextValue}>
         {children}
       </TransferFormContext.Provider>
-    </FormProvider>
+    </Form>
   );
 };
 

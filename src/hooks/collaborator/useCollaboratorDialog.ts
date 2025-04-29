@@ -1,15 +1,14 @@
 
 import { useState, useCallback } from 'react';
 
-interface UseCollaboratorDialogProps {
+export interface UseCollaboratorDialogProps {
   isCreatingCollaborator: boolean;
 }
 
 export type CollaboratorDialogStatus = 'creating' | 'idle';
 
-export function useCollaboratorDialog({
-  isCreatingCollaborator
-}: UseCollaboratorDialogProps) {
+export function useCollaboratorDialog(props: UseCollaboratorDialogProps) {
+  const { isCreatingCollaborator } = props;
   const [isNewCollaboratorDialogOpen, setIsNewCollaboratorDialogOpen] = useState(false);
   
   // Calculate dialog status based on current state

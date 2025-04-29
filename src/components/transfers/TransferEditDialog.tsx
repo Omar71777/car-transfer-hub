@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Form, FormProvider } from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { Transfer } from '@/types';
 import { useDialog } from '@/components/ui/dialog-service';
 import { useTransferForm } from './hooks/useTransferForm';
@@ -78,7 +78,7 @@ export function TransferEditContent({
         </DialogDescription>
       </DialogHeader>
 
-      <FormProvider {...form}>
+      <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-4 max-h-[70vh] overflow-y-auto pr-2">
           <ServiceTypeSelector 
             activeTab={activeTab} 
@@ -153,7 +153,7 @@ export function TransferEditContent({
             <Button type="submit">Guardar Cambios</Button>
           </DialogFooter>
         </form>
-      </FormProvider>
+      </Form>
     </>
   );
 }

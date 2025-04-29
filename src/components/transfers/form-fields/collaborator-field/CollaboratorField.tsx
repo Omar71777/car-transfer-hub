@@ -8,7 +8,7 @@ import { Plus } from 'lucide-react';
 import { Collaborator } from '@/hooks/useCollaborators';
 import { CommissionSection } from './CommissionSection';
 import { CollaboratorDialog } from './CollaboratorDialog';
-import { useCollaboratorDialog } from '@/hooks/collaborator/useCollaboratorDialog';
+import { useCollaboratorCreation } from '@/hooks/collaborator/useCollaboratorCreation';
 
 export interface CollaboratorFieldProps {
   collaborators?: Array<Collaborator>;
@@ -23,13 +23,13 @@ export function CollaboratorField({
   const collaboratorValue = watch('collaborator');
   
   const {
-    isOpen,
-    setIsOpen,
+    isNewCollaboratorDialogOpen,
+    setIsNewCollaboratorDialogOpen,
     createError,
-    isCreating,
-    handleCreateCollaborator,
+    isCreatingCollaborator,
+    handleNewCollaboratorSubmit,
     dialogStatus
-  } = useCollaboratorDialog(onCollaboratorCreated);
+  } = useCollaboratorCreation({ onSuccess: onCollaboratorCreated });
 
   const hasCollaborator = !!collaboratorValue && collaboratorValue !== 'none';
   const isServicioPropio = collaboratorValue === 'servicio propio';
@@ -52,7 +52,7 @@ export function CollaboratorField({
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => setIsOpen(true)}
+          onClick={() => setIsNewCollaboratorDialogOpen(true)}
           className="h-8 px-2 text-xs"
         >
           <Plus className="h-3 w-3 mr-1" />
@@ -100,10 +100,10 @@ export function CollaboratorField({
       )}
 
       <CollaboratorDialog
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        onSubmit={handleCreateCollaborator}
-        isCreating={isCreating}
+        isOpen={isNewCollaboratorDialogOpen}
+        setIsOpen={setIsNewCollaboratorDialogOpen}
+        onSubmit={handleNewCollaboratorSubmit}
+        isCreating={isCreatingCollaborator}
         createError={createError}
         initialValues={{}}
         dialogStatus={dialogStatus}
