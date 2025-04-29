@@ -1,0 +1,53 @@
+
+/**
+ * Dialog fix CSS to ensure proper pointer events behavior
+ * and fix common dialog animation issues
+ */
+
+/* Ensure dialogs always have pointer events enabled during and after animations */
+.dialog-content,
+[role="dialog"],
+[role="alertdialog"] {
+  pointer-events: auto !important;
+}
+
+/* Ensure the body has pointer events when a dialog is open */
+body.dialog-open {
+  pointer-events: auto !important;
+}
+
+/* Fix for iOS to prevent body scrolling behind dialogs */
+body.dialog-open {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Ensure dialog content has proper z-index and is clickable */
+.dialog-content {
+  z-index: 51 !important; /* Above overlay */
+}
+
+/* Improve animation performance */
+.dialog-animation-enter,
+.dialog-animation-exit {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+/* Ensure dialog overlay is always below content but above everything else */
+.dialog-overlay,
+[role="dialog"]::before,
+[role="alertdialog"]::before {
+  z-index: 50 !important;
+}
+
+/* Ensure that touch events work properly on mobile devices */
+@media (hover: none) {
+  .dialog-content,
+  [role="dialog"],
+  [role="alertdialog"] {
+    touch-action: auto !important;
+  }
+}

@@ -87,3 +87,6 @@
     opacity: 0.9;
   }
 }
+
+/* Import dialog fix CSS to ensure proper pointer events behavior */
+@import './dialog-fix.css';

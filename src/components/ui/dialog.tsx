@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -32,29 +33,66 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const combinedRef = React.useMemo(
+    () => (node: HTMLDivElement) => {
+      // Apply both the forwarded ref and our local ref
+      if (typeof ref === 'function') ref(node);
+      else if (ref) ref.current = node;
+      contentRef.current = node;
+    },
+    [ref]
+  );
   
+  // Handle dialog opening and closing
   React.useEffect(() => {
-    document.body.classList.add('dialog-open');
+    // Safety check to ensure pointer events are enabled
     document.body.style.pointerEvents = 'auto';
     
+    // Lock scroll when dialog is open
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('dialog-open');
+    
+    // Cleanup function to ensure proper state restoration
+    return () => {
+      document.body.style.pointerEvents = 'auto';
+      
+      // Only restore scroll if this is the last dialog
+      const hasOtherDialogs = document.querySelectorAll('[role="dialog"], [role="alertdialog"]').length > 1;
+      if (!hasOtherDialogs) {
+        document.body.style.overflow = originalOverflow;
+        document.body.classList.remove('dialog-open');
+      }
+    };
+  }, []);
+  
+  // Handle animation completion to ensure pointer events
+  React.useEffect(() => {
+    const contentElement = contentRef.current;
+    if (!contentElement) return;
+    
+    const handleAnimationEnd = () => {
+      // Ensure pointer events are enabled after animation
+      document.body.style.pointerEvents = 'auto';
+    };
+    
+    contentElement.addEventListener('animationend', handleAnimationEnd);
     
     return () => {
-      document.body.classList.remove('dialog-open');
-      document.body.style.pointerEvents = 'auto';
-      document.body.style.overflow = originalOverflow;
+      contentElement.removeEventListener('animationend', handleAnimationEnd);
     };
   }, []);
   
   return (
     <DialogPortal>
       <DialogOverlay onClick={(e) => {
+        // Prevent click propagation to avoid unexpected behavior
         e.stopPropagation();
       }}/>
       <DialogPrimitive.Content
-        ref={ref}
+        ref={combinedRef}
         className={cn(
           "fixed left-[50%] top-[50%] z-50 grid w-full max-h-[90vh] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-card shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-xl overflow-y-auto",
           isMobile 
@@ -63,9 +101,21 @@ const DialogContent = React.forwardRef<
           className
         )}
         aria-describedby={props['aria-describedby'] || 'dialog-description'}
+        onOpenAutoFocus={(e) => {
+          // Handle custom focus logic to prevent jumps
+          e.preventDefault();
+          document.body.style.pointerEvents = 'auto';
+          
+          // Let our useDialogManagement handle focus
+          if (props.onOpenAutoFocus) {
+            props.onOpenAutoFocus(e);
+          }
+        }}
         onCloseAutoFocus={(e) => {
           e.preventDefault();
           document.body.style.pointerEvents = 'auto';
+          
+          // Defer actual focus changes to avoid race conditions
           if (props.onCloseAutoFocus) {
             props.onCloseAutoFocus(e);
           }
@@ -77,14 +127,16 @@ const DialogContent = React.forwardRef<
           }
         }}
         onPointerDownOutside={(e) => {
+          document.body.style.pointerEvents = 'auto';
           if (props.onPointerDownOutside) {
             props.onPointerDownOutside(e);
-          } else {
-            e.preventDefault();
           }
         }}
         onClick={(e) => {
+          // Prevent click propagation and ensure pointer events
+          document.body.style.pointerEvents = 'auto';
           e.stopPropagation();
+          
           if (props.onClick) {
             props.onClick(e);
           }

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MobileNavigation } from './MobileNavigation';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { OfflineStatus } from '@/components/ui/offline-status';
@@ -32,12 +32,28 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
   // Apply the pointer events fix
   usePointerEventsFix();
   
+  // Ensure pointer events are always enabled when main layout renders or updates
+  useEffect(() => {
+    document.body.style.pointerEvents = 'auto';
+    
+    // If there are no open dialogs, reset overflow style
+    const hasOpenDialog = document.querySelector('[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]');
+    if (!hasOpenDialog && document.body.style.overflow === 'hidden') {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      // Safety cleanup to ensure pointer events stay enabled
+      document.body.style.pointerEvents = 'auto';
+    };
+  }, []);
+  
   return (
     <TooltipProvider>
       <div className="flex w-full bg-background">
         {!isMobile && <AppSidebar />}
         
-        <div className="flex flex-col flex-grow min-h-screen w-full relative">
+        <div className="flex flex-col flex-grow min-h-screen w-full relative" id="main-content">
           {isMobile && (
             <MobileHeader 
               title={title}

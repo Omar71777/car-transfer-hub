@@ -7,6 +7,8 @@ import { DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/di
 import { BillForm } from '@/components/billing/BillForm';
 import { BillEditForm } from '@/components/billing/BillEditForm';
 import { BillDetail } from '@/components/billing/BillDetail';
+import { Loader } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface BillDialogsProps {
   isFormDialogOpen: boolean;
@@ -49,110 +51,247 @@ export function BillDialogs({
 }: BillDialogsProps) {
   const { openDialog, closeDialog } = useDialogOpener();
   
+  // Track dialog opening state to prevent multiple dialog opens
+  const isOpeningDialog = React.useRef(false);
+  
+  // Safety timeouts for dialog operations
+  const safetyTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  
+  // Clean up timeouts on unmount
+  React.useEffect(() => {
+    return () => {
+      if (safetyTimeoutRef.current) {
+        clearTimeout(safetyTimeoutRef.current);
+      }
+    };
+  }, []);
+  
   // Handle form dialog with enhanced dialog opener
   useEffect(() => {
     if (isFormDialogOpen) {
-      openDialog({
-        content: (
-          <>
-            <DialogHeader>
-              <DialogTitle id="dialog-title">Crear Nueva Factura</DialogTitle>
-              <DialogDescription>
-                Rellena el formulario para crear una nueva factura.
-              </DialogDescription>
-            </DialogHeader>
-            <BillForm onSubmit={async (values) => {
-              await handleFormSubmit(values);
-              setIsFormDialogOpen(false);
-            }} />
-          </>
-        ),
-        width: 'full',
-        preventOutsideClose: true,
-        onClose: () => {
+      // Prevent multiple dialog opens
+      if (isOpeningDialog.current) return;
+      isOpeningDialog.current = true;
+      
+      // Force pointer events to be enabled
+      document.body.style.pointerEvents = 'auto';
+      
+      // Clear any existing safety timeout
+      if (safetyTimeoutRef.current) {
+        clearTimeout(safetyTimeoutRef.current);
+        safetyTimeoutRef.current = null;
+      }
+      
+      try {
+        openDialog({
+          content: (
+            <>
+              <DialogHeader>
+                <DialogTitle id="dialog-title">Crear Nueva Factura</DialogTitle>
+                <DialogDescription>
+                  Rellena el formulario para crear una nueva factura.
+                </DialogDescription>
+              </DialogHeader>
+              <BillForm onSubmit={async (values) => {
+                // Force pointer events to be enabled during submission
+                document.body.style.pointerEvents = 'auto';
+                
+                try {
+                  await handleFormSubmit(values);
+                  closeDialog();
+                  setIsFormDialogOpen(false);
+                } catch (error) {
+                  console.error('Error submitting bill form:', error);
+                  toast.error('Error al crear la factura.');
+                  document.body.style.pointerEvents = 'auto';
+                }
+              }} />
+            </>
+          ),
+          width: 'full',
+          preventOutsideClose: true,
+          onClose: () => {
+            // Force pointer events to be enabled when closing
+            document.body.style.pointerEvents = 'auto';
+            setIsFormDialogOpen(false);
+            
+            // Reset opening flag after a delay to prevent rapid reopening
+            setTimeout(() => {
+              isOpeningDialog.current = false;
+            }, 300);
+          },
+          ariaLabel: "Crear nueva factura",
+          role: 'dialog'
+        });
+        
+        // Add safety timeout to reset opening flag if dialog never opens
+        safetyTimeoutRef.current = setTimeout(() => {
+          isOpeningDialog.current = false;
           document.body.style.pointerEvents = 'auto';
-          setIsFormDialogOpen(false);
-        },
-        ariaLabel: "Crear nueva factura",
-        role: 'dialog'
-      });
+          safetyTimeoutRef.current = null;
+        }, 1000);
+      } catch (error) {
+        console.error('Error opening form dialog:', error);
+        // Reset opening flag and ensure pointer events on error
+        isOpeningDialog.current = false;
+        document.body.style.pointerEvents = 'auto';
+      }
+    } else {
+      // If dialog is closed, reset opening flag
+      isOpeningDialog.current = false;
     }
-  }, [isFormDialogOpen, handleFormSubmit, setIsFormDialogOpen, openDialog]);
+  }, [isFormDialogOpen, handleFormSubmit, setIsFormDialogOpen, openDialog, closeDialog]);
   
   // Handle view dialog with enhanced dialog opener
   useEffect(() => {
     if (isViewDialogOpen && viewBill) {
-      openDialog({
-        content: (
-          <>
-            <DialogHeader>
-              <DialogTitle id="dialog-title">Detalle de Factura</DialogTitle>
-              <DialogDescription>
-                Vista detallada de la factura seleccionada.
-              </DialogDescription>
-            </DialogHeader>
-            <BillDetail
-              bill={viewBill}
-              onEdit={() => {
-                // Close view dialog before opening edit dialog
-                closeDialog();
-                setIsViewDialogOpen(false);
-                
-                // Add a short delay to ensure view dialog closes first
-                setTimeout(() => {
-                  handleEditBill(viewBill);
-                }, 50);
-              }}
-              onPrint={handlePrintBill}
-              onDownload={() => handleDownloadBill(viewBill)}
-              onStatusChange={handleStatusChange}
-            />
-          </>
-        ),
-        width: 'full',
-        preventOutsideClose: true,
-        onClose: () => {
-          document.body.style.pointerEvents = 'auto';
-          setIsViewDialogOpen(false);
-        },
-        ariaLabel: "Detalle de factura",
-        role: 'dialog'
-      });
+      // Prevent multiple dialog opens
+      if (isOpeningDialog.current) return;
+      isOpeningDialog.current = true;
+      
+      // Force pointer events to be enabled
+      document.body.style.pointerEvents = 'auto';
+      
+      try {
+        openDialog({
+          content: (
+            <>
+              <DialogHeader>
+                <DialogTitle id="dialog-title">Detalle de Factura</DialogTitle>
+                <DialogDescription>
+                  Vista detallada de la factura seleccionada.
+                </DialogDescription>
+              </DialogHeader>
+              <BillDetail
+                bill={viewBill}
+                onEdit={() => {
+                  // Force pointer events to be enabled
+                  document.body.style.pointerEvents = 'auto';
+                  
+                  // Close view dialog before opening edit dialog
+                  closeDialog();
+                  setIsViewDialogOpen(false);
+                  
+                  // Add a short delay to ensure view dialog closes first
+                  setTimeout(() => {
+                    isOpeningDialog.current = false; // Allow next dialog to open
+                    handleEditBill(viewBill);
+                  }, 300);
+                }}
+                onPrint={async (bill) => {
+                  // Force pointer events to be enabled
+                  document.body.style.pointerEvents = 'auto';
+                  await handlePrintBill(bill);
+                }}
+                onDownload={async () => {
+                  // Force pointer events to be enabled
+                  document.body.style.pointerEvents = 'auto';
+                  await handleDownloadBill(viewBill);
+                }}
+                onStatusChange={async (status) => {
+                  // Force pointer events to be enabled
+                  document.body.style.pointerEvents = 'auto';
+                  await handleStatusChange(status);
+                }}
+              />
+            </>
+          ),
+          width: 'full',
+          preventOutsideClose: true,
+          onClose: () => {
+            // Force pointer events to be enabled when closing
+            document.body.style.pointerEvents = 'auto';
+            setIsViewDialogOpen(false);
+            
+            // Reset opening flag after a delay to prevent rapid reopening
+            setTimeout(() => {
+              isOpeningDialog.current = false;
+            }, 300);
+          },
+          ariaLabel: "Detalle de factura",
+          role: 'dialog'
+        });
+      } catch (error) {
+        console.error('Error opening view dialog:', error);
+        // Reset opening flag and ensure pointer events on error
+        isOpeningDialog.current = false;
+        document.body.style.pointerEvents = 'auto';
+      }
+    } else {
+      // If view is not open, allow other dialogs to open
+      if (isViewDialogOpen) {
+        isOpeningDialog.current = false;
+      }
     }
   }, [isViewDialogOpen, viewBill, setIsViewDialogOpen, handleEditBill, handlePrintBill, handleDownloadBill, handleStatusChange, openDialog, closeDialog]);
   
   // Handle edit dialog with enhanced dialog opener
   useEffect(() => {
     if (isEditDialogOpen && selectedBill) {
-      openDialog({
-        content: (
-          <>
-            <DialogHeader>
-              <DialogTitle id="dialog-title">Editar Factura</DialogTitle>
-              <DialogDescription>
-                Modifica los detalles de la factura seleccionada.
-              </DialogDescription>
-            </DialogHeader>
-            <BillEditForm 
-              bill={selectedBill} 
-              onSubmit={async (data, addedTransferIds, removedTransferIds) => {
-                await handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds);
-                setIsEditDialogOpen(false);
-              }} 
-            />
-          </>
-        ),
-        width: 'full',
-        preventOutsideClose: true,
-        onClose: () => {
-          document.body.style.pointerEvents = 'auto';
-          setIsEditDialogOpen(false);
-        },
-        ariaLabel: "Editar factura",
-        role: 'dialog'
-      });
+      // Prevent multiple dialog opens
+      if (isOpeningDialog.current) return;
+      isOpeningDialog.current = true;
+      
+      // Force pointer events to be enabled
+      document.body.style.pointerEvents = 'auto';
+      
+      try {
+        openDialog({
+          content: (
+            <>
+              <DialogHeader>
+                <DialogTitle id="dialog-title">Editar Factura</DialogTitle>
+                <DialogDescription>
+                  Modifica los detalles de la factura seleccionada.
+                </DialogDescription>
+              </DialogHeader>
+              <BillEditForm 
+                bill={selectedBill} 
+                onSubmit={async (data, addedTransferIds, removedTransferIds) => {
+                  // Force pointer events to be enabled during submission
+                  document.body.style.pointerEvents = 'auto';
+                  
+                  try {
+                    await handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds);
+                    closeDialog();
+                    setIsEditDialogOpen(false);
+                  } catch (error) {
+                    console.error('Error submitting edit form:', error);
+                    toast.error('Error al actualizar la factura.');
+                    document.body.style.pointerEvents = 'auto';
+                  }
+                }} 
+              />
+            </>
+          ),
+          width: 'full',
+          preventOutsideClose: true,
+          onClose: () => {
+            // Force pointer events to be enabled when closing
+            document.body.style.pointerEvents = 'auto';
+            setIsEditDialogOpen(false);
+            
+            // Reset opening flag after a delay to prevent rapid reopening
+            setTimeout(() => {
+              isOpeningDialog.current = false;
+            }, 300);
+          },
+          ariaLabel: "Editar factura",
+          role: 'dialog'
+        });
+      } catch (error) {
+        console.error('Error opening edit dialog:', error);
+        // Reset opening flag and ensure pointer events on error
+        isOpeningDialog.current = false;
+        document.body.style.pointerEvents = 'auto';
+      }
+    } else {
+      // If edit is not open, allow other dialogs to open
+      if (isEditDialogOpen) {
+        isOpeningDialog.current = false;
+      }
     }
-  }, [isEditDialogOpen, selectedBill, handleEditSubmit, setIsEditDialogOpen, openDialog]);
+  }, [isEditDialogOpen, selectedBill, handleEditSubmit, setIsEditDialogOpen, openDialog, closeDialog]);
   
   // Return only the AlertDialog for deletion confirmation
   // All other dialogs are handled through the dialog service
@@ -161,6 +300,7 @@ export function BillDialogs({
       open={isDeleteDialogOpen} 
       onOpenChange={(open) => {
         if (!open) {
+          // Force pointer events to be enabled when closing
           document.body.style.pointerEvents = 'auto';
           setIsDeleteDialogOpen(false);
         }
@@ -175,8 +315,24 @@ export function BillDialogs({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={() => handleConfirmDelete()} className="bg-destructive text-destructive-foreground">
+          <AlertDialogCancel onClick={() => {
+            // Force pointer events to be enabled when cancelling
+            document.body.style.pointerEvents = 'auto';
+          }}>
+            Cancelar
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={async () => {
+            // Force pointer events to be enabled during deletion
+            document.body.style.pointerEvents = 'auto';
+            
+            try {
+              await handleConfirmDelete();
+            } catch (error) {
+              console.error('Error deleting bill:', error);
+              toast.error('Error al eliminar la factura.');
+              document.body.style.pointerEvents = 'auto';
+            }
+          }} className="bg-destructive text-destructive-foreground">
             Eliminar
           </AlertDialogAction>
         </AlertDialogFooter>

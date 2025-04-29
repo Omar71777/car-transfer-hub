@@ -20,6 +20,7 @@ const SheetOverlay = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
+    ref={ref}
     className={cn(
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
@@ -28,7 +29,6 @@ const SheetOverlay = React.forwardRef<
       e.stopPropagation();
     }}
     {...props}
-    ref={ref}
   />
 ))
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
@@ -61,12 +61,63 @@ const SheetContent = React.forwardRef<
   SheetContentProps
 >(({ side = "right", className, children, ...props }, ref) => {
   const isMobile = useIsMobile()
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const combinedRef = React.useMemo(
+    () => (node: HTMLDivElement) => {
+      // Apply both the forwarded ref and our local ref
+      if (typeof ref === 'function') ref(node);
+      else if (ref) ref.current = node;
+      contentRef.current = node;
+    },
+    [ref]
+  );
+  
+  // Handle sheet opening and closing
+  React.useEffect(() => {
+    // Safety check to ensure pointer events are enabled
+    document.body.style.pointerEvents = 'auto';
+    
+    // Lock scroll when sheet is open
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
+    // Cleanup function to ensure proper state restoration
+    return () => {
+      document.body.style.pointerEvents = 'auto';
+      
+      // Only restore scroll if this is the last dialog/sheet
+      const hasOtherOverlays = document.querySelectorAll('[role="dialog"], [role="alertdialog"]').length > 1;
+      if (!hasOtherOverlays) {
+        document.body.style.overflow = originalOverflow;
+      }
+    };
+  }, []);
+  
+  // Handle animation completion to ensure pointer events
+  React.useEffect(() => {
+    const contentElement = contentRef.current;
+    if (!contentElement) return;
+    
+    const handleAnimationEnd = () => {
+      // Ensure pointer events are enabled after animation
+      document.body.style.pointerEvents = 'auto';
+    };
+    
+    contentElement.addEventListener('animationend', handleAnimationEnd);
+    
+    return () => {
+      contentElement.removeEventListener('animationend', handleAnimationEnd);
+    };
+  }, []);
   
   return (
     <SheetPortal>
-      <SheetOverlay />
+      <SheetOverlay onClick={(e) => {
+        // Prevent click propagation
+        e.stopPropagation();
+      }}/>
       <SheetPrimitive.Content
-        ref={ref}
+        ref={combinedRef}
         className={cn(
           sheetVariants({ side }), 
           isMobile && (side === "right" || side === "left") ? "w-[85%]" : "",
@@ -75,9 +126,33 @@ const SheetContent = React.forwardRef<
         )}
         onClick={(e) => {
           e.stopPropagation();
+          // Ensure pointer events are enabled when clicking content
+          document.body.style.pointerEvents = 'auto';
           
           if (props.onClick) {
             props.onClick(e);
+          }
+        }}
+        onOpenAutoFocus={(e) => {
+          // Handle custom focus logic
+          document.body.style.pointerEvents = 'auto';
+          
+          if (props.onOpenAutoFocus) {
+            props.onOpenAutoFocus(e);
+          }
+        }}
+        onCloseAutoFocus={(e) => {
+          document.body.style.pointerEvents = 'auto';
+          
+          if (props.onCloseAutoFocus) {
+            props.onCloseAutoFocus(e);
+          }
+        }}
+        onEscapeKeyDown={(e) => {
+          document.body.style.pointerEvents = 'auto';
+          
+          if (props.onEscapeKeyDown) {
+            props.onEscapeKeyDown(e);
           }
         }}
         {...props}
