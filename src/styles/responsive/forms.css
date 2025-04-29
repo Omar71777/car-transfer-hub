@@ -21,4 +21,34 @@
   input, select, textarea {
     @apply max-w-full;
   }
+  
+  /* Form controls on mobile */
+  .form-control {
+    @apply w-full;
+  }
+  
+  /* Form groups for mobile */
+  .form-group {
+    @apply space-y-1.5;
+  }
+}
+
+/* Consistent form field spacing for all screen sizes */
+.form-field {
+  @apply mb-4;
+}
+
+/* Better form labels */
+.form-label {
+  @apply mb-1.5 block text-sm font-medium;
+}
+
+/* Form help text */
+.form-help-text {
+  @apply mt-1 text-xs text-muted-foreground;
+}
+
+/* Form validation errors */
+.form-error {
+  @apply mt-1 text-xs text-destructive;
 }

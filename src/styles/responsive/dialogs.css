@@ -28,6 +28,23 @@
   [role="alertdialog"] .overflow-y-auto {
     max-height: 70vh;
   }
+  
+  /* Mobile dialog header adjustments */
+  [role="dialog"] [class*="DialogHeader"] {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Mobile dialog footer adjustments */
+  [role="dialog"] [class*="DialogFooter"] {
+    margin-top: 0.5rem;
+    flex-direction: column;
+  }
+  
+  /* Dialog footer buttons on mobile */
+  [role="dialog"] [class*="DialogFooter"] button {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
 }
 
 /* Set proper z-index for dialog components */

@@ -19,6 +19,8 @@ import { SidebarProvider } from '@/components/ui/sidebar/sidebar-provider';
 import { usePointerEventsCleanup } from './pages/transfers/hooks/usePointerEventsCleanup';
 import { MobileSidebar } from '@/components/layout/MobileSidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { DialogProvider } from '@/components/ui/dialog-service';
+import { DrawerProvider } from '@/components/ui/drawer-service';
 
 // Global component to handle pointer-events cleanup
 function PointerEventsCleanup() {
@@ -52,27 +54,31 @@ function App() {
   return (
     <React.StrictMode>
       <Providers>
-        <SidebarProvider>
-          <PointerEventsCleanup />
-          <BrowserRouter>
-            {/* Render MobileSidebar once for the entire app */}
-            {isMobile && <MobileSidebar />}
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/transfers" element={<TransfersPage />} />
-              <Route path="/transfers/new" element={<NewTransferPage />} />
-              <Route path="/expenses" element={<ExpensesPage />} />
-              <Route path="/admin/users" element={<UsersPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/profits" element={<ProfitsPage />} />
-              <Route path="/collaborators" element={<CollaboratorsPage />} />
-              <Route path="/clients" element={<ClientsPage />} />
-              <Route path="/billing" element={<BillingPage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </SidebarProvider>
+        <DialogProvider>
+          <DrawerProvider>
+            <SidebarProvider>
+              <PointerEventsCleanup />
+              <BrowserRouter>
+                {/* Render MobileSidebar once for the entire app */}
+                {isMobile && <MobileSidebar />}
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/transfers" element={<TransfersPage />} />
+                  <Route path="/transfers/new" element={<NewTransferPage />} />
+                  <Route path="/expenses" element={<ExpensesPage />} />
+                  <Route path="/admin/users" element={<UsersPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/profits" element={<ProfitsPage />} />
+                  <Route path="/collaborators" element={<CollaboratorsPage />} />
+                  <Route path="/clients" element={<ClientsPage />} />
+                  <Route path="/billing" element={<BillingPage />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </SidebarProvider>
+          </DrawerProvider>
+        </DialogProvider>
       </Providers>
     </React.StrictMode>
   );

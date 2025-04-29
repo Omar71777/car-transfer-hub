@@ -4,6 +4,8 @@
 @import './cards.css';
 @import './mobile-card.css';
 @import './tables/mobile.css';
+@import './dialogs.css';
+@import './forms.css';
 @import './touch.css';
 
 /* General responsive utilities */
