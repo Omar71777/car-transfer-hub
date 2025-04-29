@@ -128,8 +128,8 @@ export const exportToA4Pdf = async (
     console.error('Error exporting to PDF:', error);
     
     // Clear loading state and show error
-    if (loadingCallback) loadingCallback(false);
-    if (showToasts) {
+    if (options.loadingCallback) options.loadingCallback(false);
+    if (options.showToasts) {
       toast.dismiss();
       toast.error('Error al generar PDF. Inténtalo de nuevo.');
     }

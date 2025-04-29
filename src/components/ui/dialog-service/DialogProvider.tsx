@@ -30,6 +30,30 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   const [dialogOptions, setDialogOptions] = useState<DialogOptions>({});
   const initialFocusRef = useRef<HTMLElement>(null);
   
+  // Define closeDialog function before it's used
+  const closeDialog = () => {
+    setIsOpen(false);
+    document.body.classList.remove('dialog-open');
+    
+    // Restore scroll position if needed
+    if (dialogOptions.preserveScrollPosition) {
+      setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      }, 50);
+    }
+    
+    // Remove aria-hidden from main content
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.removeAttribute('aria-hidden');
+    }
+    
+    // Execute onClose callback if provided
+    if (dialogOptions.onClose) {
+      dialogOptions.onClose();
+    }
+  };
+  
   const { dialogRef } = useDialogManagement({
     isOpen,
     onClose: dialogOptions.preventOutsideClose ? undefined : closeDialog,
@@ -55,29 +79,6 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     const mainContent = document.getElementById('main-content');
     if (mainContent) {
       mainContent.setAttribute('aria-hidden', 'true');
-    }
-  };
-
-  const closeDialog = () => {
-    setIsOpen(false);
-    document.body.classList.remove('dialog-open');
-    
-    // Restore scroll position if needed
-    if (dialogOptions.preserveScrollPosition) {
-      setTimeout(() => {
-        window.scrollTo(0, scrollPositionRef.current);
-      }, 50);
-    }
-    
-    // Remove aria-hidden from main content
-    const mainContent = document.getElementById('main-content');
-    if (mainContent) {
-      mainContent.removeAttribute('aria-hidden');
-    }
-    
-    // Execute onClose callback if provided
-    if (dialogOptions.onClose) {
-      dialogOptions.onClose();
     }
   };
 
