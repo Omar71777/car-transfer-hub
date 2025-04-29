@@ -1,13 +1,12 @@
 
 import React, { useEffect } from 'react';
 import { Bill, CreateBillDto } from '@/types/billing';
-import { useDialog } from '@/components/ui/dialog-service';
+import { useDialogOpener } from '@/hooks/use-dialog-opener';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { BillForm } from '@/components/billing/BillForm';
 import { BillEditForm } from '@/components/billing/BillEditForm';
 import { BillDetail } from '@/components/billing/BillDetail';
-import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
 
 interface BillDialogsProps {
   isFormDialogOpen: boolean;
@@ -48,109 +47,112 @@ export function BillDialogs({
   handleDownloadBill,
   handleStatusChange,
 }: BillDialogsProps) {
-  const dialogService = useDialog();
+  const { openDialog, closeDialog } = useDialogOpener();
   
-  // Apply the pointer events fix hook
-  usePointerEventsFix();
-  
-  // Handle form dialog with the dialog service
+  // Handle form dialog with enhanced dialog opener
   useEffect(() => {
     if (isFormDialogOpen) {
-      dialogService.openDialog(
-        <>
-          <DialogHeader>
-            <DialogTitle>Crear Nueva Factura</DialogTitle>
-            <DialogDescription>
-              Rellena el formulario para crear una nueva factura.
-            </DialogDescription>
-          </DialogHeader>
-          <BillForm onSubmit={async (values) => {
-            await handleFormSubmit(values);
-            setIsFormDialogOpen(false);
-          }} />
-        </>,
-        {
-          width: 'full',
-          preventOutsideClose: true,
-          onClose: () => {
-            document.body.style.pointerEvents = 'auto';
-            setIsFormDialogOpen(false);
-          }
-        }
-      );
+      openDialog({
+        content: (
+          <>
+            <DialogHeader>
+              <DialogTitle id="dialog-title">Crear Nueva Factura</DialogTitle>
+              <DialogDescription>
+                Rellena el formulario para crear una nueva factura.
+              </DialogDescription>
+            </DialogHeader>
+            <BillForm onSubmit={async (values) => {
+              await handleFormSubmit(values);
+              setIsFormDialogOpen(false);
+            }} />
+          </>
+        ),
+        width: 'full',
+        preventOutsideClose: true,
+        onClose: () => {
+          document.body.style.pointerEvents = 'auto';
+          setIsFormDialogOpen(false);
+        },
+        ariaLabel: "Crear nueva factura",
+        role: 'dialog'
+      });
     }
-  }, [isFormDialogOpen, dialogService, handleFormSubmit, setIsFormDialogOpen]);
+  }, [isFormDialogOpen, handleFormSubmit, setIsFormDialogOpen, openDialog]);
   
-  // Handle view dialog with the dialog service
+  // Handle view dialog with enhanced dialog opener
   useEffect(() => {
     if (isViewDialogOpen && viewBill) {
-      dialogService.openDialog(
-        <>
-          <DialogHeader>
-            <DialogTitle>Detalle de Factura</DialogTitle>
-            <DialogDescription>
-              Vista detallada de la factura seleccionada.
-            </DialogDescription>
-          </DialogHeader>
-          <BillDetail
-            bill={viewBill}
-            onEdit={() => {
-              // Close view dialog before opening edit dialog
-              dialogService.closeDialog();
-              setIsViewDialogOpen(false);
-              
-              // Add a short delay to ensure view dialog closes first
-              setTimeout(() => {
-                handleEditBill(viewBill);
-              }, 50);
-            }}
-            onPrint={handlePrintBill}
-            onDownload={() => handleDownloadBill(viewBill)}
-            onStatusChange={handleStatusChange}
-          />
-        </>,
-        {
-          width: 'full',
-          preventOutsideClose: true,
-          onClose: () => {
-            document.body.style.pointerEvents = 'auto';
-            setIsViewDialogOpen(false);
-          }
-        }
-      );
+      openDialog({
+        content: (
+          <>
+            <DialogHeader>
+              <DialogTitle id="dialog-title">Detalle de Factura</DialogTitle>
+              <DialogDescription>
+                Vista detallada de la factura seleccionada.
+              </DialogDescription>
+            </DialogHeader>
+            <BillDetail
+              bill={viewBill}
+              onEdit={() => {
+                // Close view dialog before opening edit dialog
+                closeDialog();
+                setIsViewDialogOpen(false);
+                
+                // Add a short delay to ensure view dialog closes first
+                setTimeout(() => {
+                  handleEditBill(viewBill);
+                }, 50);
+              }}
+              onPrint={handlePrintBill}
+              onDownload={() => handleDownloadBill(viewBill)}
+              onStatusChange={handleStatusChange}
+            />
+          </>
+        ),
+        width: 'full',
+        preventOutsideClose: true,
+        onClose: () => {
+          document.body.style.pointerEvents = 'auto';
+          setIsViewDialogOpen(false);
+        },
+        ariaLabel: "Detalle de factura",
+        role: 'dialog'
+      });
     }
-  }, [isViewDialogOpen, viewBill, dialogService, setIsViewDialogOpen, handleEditBill, handlePrintBill, handleDownloadBill, handleStatusChange]);
+  }, [isViewDialogOpen, viewBill, setIsViewDialogOpen, handleEditBill, handlePrintBill, handleDownloadBill, handleStatusChange, openDialog, closeDialog]);
   
-  // Handle edit dialog with the dialog service
+  // Handle edit dialog with enhanced dialog opener
   useEffect(() => {
     if (isEditDialogOpen && selectedBill) {
-      dialogService.openDialog(
-        <>
-          <DialogHeader>
-            <DialogTitle>Editar Factura</DialogTitle>
-            <DialogDescription>
-              Modifica los detalles de la factura seleccionada.
-            </DialogDescription>
-          </DialogHeader>
-          <BillEditForm 
-            bill={selectedBill} 
-            onSubmit={async (data, addedTransferIds, removedTransferIds) => {
-              await handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds);
-              setIsEditDialogOpen(false);
-            }} 
-          />
-        </>,
-        {
-          width: 'full',
-          preventOutsideClose: true,
-          onClose: () => {
-            document.body.style.pointerEvents = 'auto';
-            setIsEditDialogOpen(false);
-          }
-        }
-      );
+      openDialog({
+        content: (
+          <>
+            <DialogHeader>
+              <DialogTitle id="dialog-title">Editar Factura</DialogTitle>
+              <DialogDescription>
+                Modifica los detalles de la factura seleccionada.
+              </DialogDescription>
+            </DialogHeader>
+            <BillEditForm 
+              bill={selectedBill} 
+              onSubmit={async (data, addedTransferIds, removedTransferIds) => {
+                await handleEditSubmit(selectedBill.id, data, addedTransferIds, removedTransferIds);
+                setIsEditDialogOpen(false);
+              }} 
+            />
+          </>
+        ),
+        width: 'full',
+        preventOutsideClose: true,
+        onClose: () => {
+          document.body.style.pointerEvents = 'auto';
+          setIsEditDialogOpen(false);
+        },
+        ariaLabel: "Editar factura",
+        role: 'dialog'
+      });
     }
-  }, [isEditDialogOpen, selectedBill, dialogService, handleEditSubmit, setIsEditDialogOpen]);
+  }, [isEditDialogOpen, selectedBill, handleEditSubmit, setIsEditDialogOpen, openDialog]);
   
   // Return only the AlertDialog for deletion confirmation
   // All other dialogs are handled through the dialog service

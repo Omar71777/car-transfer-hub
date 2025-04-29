@@ -1,18 +1,25 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useDialogManagement } from '@/hooks/use-dialog-management';
 
 interface DialogContextType {
   openDialog: (content: ReactNode, options?: DialogOptions) => void;
   closeDialog: () => void;
 }
 
-interface DialogOptions {
+export interface DialogOptions {
   className?: string;
   preventOutsideClose?: boolean;
   width?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   onClose?: () => void;
   focusFirst?: boolean;
+  initialFocusRef?: React.RefObject<HTMLElement>;
+  finalFocusRef?: React.RefObject<HTMLElement>;
+  preserveScrollPosition?: boolean;
+  role?: 'dialog' | 'alertdialog';
+  ariaLabel?: string;
+  ariaDescribedby?: string;
 }
 
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
@@ -21,53 +28,58 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<ReactNode | null>(null);
   const [dialogOptions, setDialogOptions] = useState<DialogOptions>({});
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const initialFocusRef = useRef<HTMLElement>(null);
+  
+  const { dialogRef } = useDialogManagement({
+    isOpen,
+    onClose: dialogOptions.preventOutsideClose ? undefined : closeDialog,
+    initialFocusRef: dialogOptions.initialFocusRef,
+    finalFocusRef: dialogOptions.finalFocusRef
+  });
+
+  // Save scroll position if needed
+  const scrollPositionRef = useRef(0);
   
   const openDialog = (content: ReactNode, options: DialogOptions = {}) => {
-    // Store currently focused element before opening dialog
-    previousFocusRef.current = document.activeElement as HTMLElement;
+    // Store scroll position if enabled
+    if (options.preserveScrollPosition) {
+      scrollPositionRef.current = window.scrollY;
+    }
     
     setDialogContent(content);
     setDialogOptions(options);
     setIsOpen(true);
     document.body.classList.add('dialog-open');
-    document.body.style.pointerEvents = 'auto';
+    
+    // Set aria-hidden on main content for accessibility
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.setAttribute('aria-hidden', 'true');
+    }
   };
 
   const closeDialog = () => {
     setIsOpen(false);
     document.body.classList.remove('dialog-open');
     
+    // Restore scroll position if needed
+    if (dialogOptions.preserveScrollPosition) {
+      setTimeout(() => {
+        window.scrollTo(0, scrollPositionRef.current);
+      }, 50);
+    }
+    
+    // Remove aria-hidden from main content
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.removeAttribute('aria-hidden');
+    }
+    
     // Execute onClose callback if provided
     if (dialogOptions.onClose) {
       dialogOptions.onClose();
     }
-    
-    // Return focus to the element that was focused before the dialog opened
-    setTimeout(() => {
-      if (previousFocusRef.current && 'focus' in previousFocusRef.current) {
-        previousFocusRef.current.focus();
-      }
-    }, 10);
   };
-  
-  // Focus first focusable element when dialog opens
-  useEffect(() => {
-    if (!isOpen || !dialogRef.current || dialogOptions.focusFirst === false) return;
-    
-    const timer = setTimeout(() => {
-      const focusableElements = dialogRef.current?.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      
-      if (focusableElements && focusableElements.length > 0) {
-        (focusableElements[0] as HTMLElement).focus();
-      }
-    }, 50);
-    
-    return () => clearTimeout(timer);
-  }, [isOpen, dialogOptions.focusFirst]);
 
   const getWidthClass = () => {
     switch (dialogOptions.width) {
@@ -79,6 +91,10 @@ export function DialogProvider({ children }: { children: ReactNode }) {
       default: return 'max-w-[min(800px,90vw)]';
     }
   };
+
+  // Match dialog container to role for ARIA
+  const dialogRole = dialogOptions.role || 'dialog';
+  const describedBy = dialogOptions.ariaDescribedby || 'dialog-description';
 
   return (
     <DialogContext.Provider value={{ openDialog, closeDialog }}>
@@ -99,10 +115,10 @@ export function DialogProvider({ children }: { children: ReactNode }) {
             }
           }}
           onEscapeKeyDown={(e) => {
-            if (!dialogOptions.preventOutsideClose) {
-              closeDialog();
-            } else {
+            if (dialogOptions.preventOutsideClose) {
               e.preventDefault();
+            } else {
+              closeDialog();
             }
           }}
           ref={dialogRef}
@@ -112,8 +128,15 @@ export function DialogProvider({ children }: { children: ReactNode }) {
               e.preventDefault();
             }
           }}
+          aria-labelledby={dialogOptions.ariaLabel ? undefined : 'dialog-title'}
+          aria-label={dialogOptions.ariaLabel}
+          aria-describedby={describedBy}
+          role={dialogRole}
         >
           {dialogContent}
+          <div id="dialog-description" className="sr-only">
+            Dialog content
+          </div>
         </DialogContent>
       </Dialog>
     </DialogContext.Provider>

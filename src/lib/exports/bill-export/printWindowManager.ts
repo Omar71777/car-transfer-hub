@@ -50,12 +50,50 @@ export const setupPrintWindowEvents = (printWindow: Window, bill: Bill): void =>
     const printContent = printWindow.document.getElementById('print-content');
     if (printContent) {
       printContent.style.opacity = '1';
+      
+      // Add A4 page format for proper printing
+      const style = printWindow.document.createElement('style');
+      style.textContent = `
+        @page {
+          size: A4;
+          margin: 10mm;
+        }
+        
+        @media print {
+          html, body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0;
+          }
+          #print-content {
+            width: 190mm;
+            padding: 10mm 0;
+            margin: 0 auto;
+          }
+          .no-print {
+            display: none !important;
+          }
+          #print-actions {
+            display: none !important;
+          }
+        }
+      `;
+      printWindow.document.head.appendChild(style);
     }
     
     // Add pdf export functionality
     printWindow.document.getElementById('export-pdf-btn')?.addEventListener('click', () => {
       handlePdfExport(printWindow, bill.number);
     });
+    
+    // Add print instruction
+    const printInfo = printWindow.document.createElement('div');
+    printInfo.className = 'text-center text-sm text-gray-500 mt-4 no-print';
+    printInfo.innerHTML = `
+      Para obtener el mejor resultado, seleccione A4 como tamaño de papel y deshabilite encabezados y pies de página.
+    `;
+    printWindow.document.body.appendChild(printInfo);
   };
 };
 
@@ -78,7 +116,7 @@ const handlePdfExport = async (printWindow: Window, billNumber: string): Promise
   await new Promise(resolve => setTimeout(resolve, 100));
   
   try {
-    // Export to PDF
+    // Export to PDF with A4 format
     const success = await exportHtmlToPdf(
       contentDiv, 
       `Factura_${billNumber.replace(/\//g, '-')}.pdf`,

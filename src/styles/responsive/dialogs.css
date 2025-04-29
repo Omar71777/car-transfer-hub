@@ -1,21 +1,53 @@
 
 /* Dialog responsive styles */
 
+/* Core dialog styles */
+.dialog-content {
+  max-height: 85vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Improved dialog container styles */
+[role="dialog"],
+[role="alertdialog"] {
+  z-index: 50;
+}
+
+/* Print optimization */
+@media print {
+  .dialog-content {
+    overflow: visible !important;
+  }
+  
+  /* Print format for A4 */
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+  
+  body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
   /* Better dialog sizing for mobile */
   [role="dialog"] .dialog-content, 
   [role="alertdialog"] .dialog-content {
     max-width: 92vw;
     max-height: 85vh;
-    overflow-y: auto;
-    padding: 0.75rem;
+    padding: 1rem;
   }
   
   /* Dialog fits better on mobile screens */
   .dialog-content {
     max-width: min(800px, 92vw);
     max-height: 85vh;
-    overflow-y: auto;
   }
   
   /* Fix for mobile dialogs */
@@ -23,10 +55,11 @@
     padding: 0.5rem;
   }
   
-  /* Improve dialog sizing and scrolling */
+  /* Improve dialog scrolling */
   [role="dialog"] .overflow-y-auto,
   [role="alertdialog"] .overflow-y-auto {
     max-height: 70vh;
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Mobile dialog header adjustments */
@@ -45,32 +78,14 @@
     width: 100%;
     margin-top: 0.5rem;
   }
-  
-  /* Improve dialog transitions */
-  [role="dialog"] [data-state="open"],
-  [role="alertdialog"] [data-state="open"] {
-    animation: dialog-open 0.2s ease-out;
-  }
-  
-  [role="dialog"] [data-state="closed"],
-  [role="alertdialog"] [data-state="closed"] {
-    animation: dialog-close 0.2s ease-in;
-  }
 }
 
-/* Set proper z-index for dialog components */
-[role="dialog"] {
-  z-index: 50;
-}
-
-[role="alertdialog"] {
-  z-index: 51;
-}
-
-/* Ensure the dialog overlay is behind the content but above everything else */
+/* Ensuring the dialog overlay is behind the content but above everything else */
 [role="dialog"] + .fixed.inset-0,
 [role="alertdialog"] + .fixed.inset-0 {
   z-index: 49;
+  backdrop-filter: blur(4px);
+  transition: backdrop-filter 0.2s ease;
 }
 
 /* Dialog animations */
@@ -93,6 +108,30 @@
   to {
     opacity: 0;
     transform: translate(-50%, -48%) scale(0.96);
+  }
+}
+
+[role="dialog"] [data-state="open"],
+[role="alertdialog"] [data-state="open"] {
+  animation: dialog-open 0.2s ease-out;
+}
+
+[role="dialog"] [data-state="closed"],
+[role="alertdialog"] [data-state="closed"] {
+  animation: dialog-close 0.2s ease-in;
+}
+
+/* Dialog content fade-in animation */
+.dialog-fade-in {
+  animation: dialog-fade-in 0.3s ease-out;
+}
+
+@keyframes dialog-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -133,23 +172,58 @@ body.dialog-open {
   pointer-events: auto !important;
 }
 
-/* Dialog content fade-in animation */
-.dialog-fade-in {
-  animation: dialog-fade-in 0.3s ease-out;
+/* Support proper handling of interactive elements inside dialogs */
+.dialog-content button:focus-visible,
+.dialog-content a:focus-visible,
+.dialog-content input:focus-visible,
+.dialog-content select:focus-visible,
+.dialog-content textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-@keyframes dialog-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Improved keyboard navigation indicators */
+.keyboard-focus {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 2px !important;
 }
 
-/* Dialog backdrop blur enhancement */
-[role="dialog"] + .fixed.inset-0,
-[role="alertdialog"] + .fixed.inset-0 {
-  backdrop-filter: blur(4px);
-  transition: backdrop-filter 0.2s ease;
+/* Print window specific styles */
+.print-window-container {
+  width: 210mm;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10mm;
+}
+
+.print-actions {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 0.25rem;
+}
+
+.print-actions button {
+  background-color: var(--primary, #3498db);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.print-actions button.btn-secondary {
+  background-color: var(--secondary, #2ecc71);
+}
+
+@media print {
+  .print-actions {
+    display: none !important;
+  }
 }

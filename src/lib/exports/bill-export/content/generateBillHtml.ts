@@ -8,6 +8,7 @@ import { generateStyles } from './styles';
 
 /**
  * Generates the complete HTML content for printing a bill
+ * Optimized for A4 paper format
  */
 export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string => {
   // Ensure bill has items array (defensive programming)
@@ -40,10 +41,64 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="color-scheme" content="light">
       ${stylesHTML}
+      <style>
+        /* A4 Paper specific styles */
+        @page {
+          size: A4;
+          margin: 10mm;
+        }
+        
+        @media print {
+          html, body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0;
+          }
+          
+          #print-content {
+            width: 190mm;
+            margin: 0 auto;
+            padding: 10mm 0;
+            box-sizing: border-box;
+          }
+          
+          .page-break {
+            page-break-before: always;
+          }
+          
+          /* Ensure tables don't break across pages */
+          table {
+            page-break-inside: avoid;
+          }
+          
+          /* If a table must break, ensure it has proper headers */
+          table.items-table {
+            page-break-inside: auto;
+          }
+          
+          table.items-table thead {
+            display: table-header-group;
+          }
+          
+          table.items-table tfoot {
+            display: table-footer-group;
+          }
+          
+          table.items-table tr {
+            page-break-inside: avoid;
+          }
+          
+          /* Keep certain elements together */
+          .keep-together {
+            page-break-inside: avoid;
+          }
+        }
+      </style>
     </head>
     <body>
       <div id="print-content" class="print-container">
-        <div class="document-header">
+        <div class="document-header keep-together">
           <div class="header-left">
             <h1 class="header-title">FACTURA</h1>
             <p class="header-subtitle">Nº ${bill.number}</p>
@@ -53,7 +108,7 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
           </div>
         </div>
         
-        <div class="details-row">
+        <div class="details-row keep-together">
           <div class="detail-card">
             <h3>Empresa</h3>
             ${companyInfo.logo ? `<img src="${companyInfo.logo}" class="company-logo" alt="Logo" />` : ''}
@@ -98,7 +153,7 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
           </table>
         </div>
         
-        <div class="totals-section">
+        <div class="totals-section keep-together">
           <table class="totals-table">
             <tr>
               <td>Subtotal:</td>
@@ -116,7 +171,7 @@ export const generateBillHtml = (bill: Bill, companyInfo: CompanyInfo): string =
         </div>
         
         ${bill.notes ? `
-          <div class="notes-section">
+          <div class="notes-section keep-together">
             <h3 class="notes-title">Notas</h3>
             <p>${bill.notes}</p>
           </div>

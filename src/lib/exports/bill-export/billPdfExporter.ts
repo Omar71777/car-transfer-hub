@@ -1,10 +1,10 @@
 
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import { Bill } from '@/types/billing';
 import { toast } from 'sonner';
+import { exportToA4Pdf } from '../pdf-export/a4PdfExporter';
 
 /**
- * Exports HTML content to PDF using html2canvas and jsPDF
+ * Exports HTML content to PDF using improved A4 PDF exporter
  */
 export const exportHtmlToPdf = async (
   contentElement: HTMLElement,
@@ -12,94 +12,13 @@ export const exportHtmlToPdf = async (
   loadingCallback?: (isLoading: boolean) => void
 ): Promise<boolean> => {
   try {
-    if (loadingCallback) loadingCallback(true);
-    
-    // Use the same content as the print view - don't clone or modify the DOM
-    // This ensures styling consistency between print and PDF
-    
-    // Convert to canvas with better quality settings
-    const canvas = await html2canvas(contentElement, {
-      scale: 2.5, // Higher scale for better quality
-      logging: false,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: 'white',
-      imageTimeout: 15000,
-      removeContainer: false
-    });
-    
-    // Calculate dimensions
-    const imgData = canvas.toDataURL('image/png', 1.0);
-    const pdf = new jsPDF({
+    return await exportToA4Pdf(contentElement, {
+      fileName,
+      loadingCallback,
+      showToasts: true,
+      quality: 2.5,
       orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
     });
-    
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const canvasRatio = canvas.height / canvas.width;
-    const pdfImgWidth = pdfWidth - 20; // Wider margins for better look
-    const pdfImgHeight = pdfImgWidth * canvasRatio;
-    
-    // If image is longer than a page, use multiple pages
-    if (pdfImgHeight > pdfHeight - 30) { // More margin for cleaner look
-      // Calculate how many pages needed
-      const numPages = Math.ceil(pdfImgHeight / (pdfHeight - 30));
-      let heightLeft = pdfImgHeight;
-      let position = 0;
-      
-      // Add each canvas part to its own page
-      for (let i = 0; i < numPages; i++) {
-        // Add new page except for first page
-        if (i > 0) {
-          pdf.addPage();
-        }
-        
-        // Calculate the portion of canvas to use for this page
-        const heightToPrint = Math.min(pdfHeight - 30, heightLeft);
-        const ratio = heightToPrint / pdfImgHeight;
-        const canvasSliceHeight = canvas.height * ratio;
-        
-        // Create a new canvas for the slice
-        const sliceCanvas = document.createElement('canvas');
-        sliceCanvas.width = canvas.width;
-        sliceCanvas.height = canvasSliceHeight;
-        const ctx = sliceCanvas.getContext('2d');
-        
-        if (ctx) {
-          // Draw the slice of the original canvas
-          ctx.fillStyle = 'white';
-          ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
-          ctx.drawImage(
-            canvas, 
-            0, position * canvas.height, 
-            canvas.width, canvasSliceHeight,
-            0, 0, 
-            sliceCanvas.width, sliceCanvas.height
-          );
-          
-          // Add to PDF with margins
-          const sliceImgData = sliceCanvas.toDataURL('image/png', 1.0);
-          pdf.addImage(sliceImgData, 'PNG', 10, 15, pdfImgWidth, heightToPrint);
-          
-          // Update for next page
-          heightLeft -= heightToPrint;
-          position += ratio;
-        }
-      }
-    } else {
-      // Just add the whole image if it fits on one page
-      pdf.addImage(imgData, 'PNG', 10, 15, pdfImgWidth, pdfImgHeight);
-    }
-    
-    // Save PDF with modern filename convention
-    pdf.save(fileName);
-    
-    toast.success('PDF exportado correctamente');
-    
-    if (loadingCallback) loadingCallback(false);
-    return true;
   } catch (error) {
     console.error('Error exporting to PDF:', error);
     toast.error('Error al generar PDF. Inténtalo de nuevo.');

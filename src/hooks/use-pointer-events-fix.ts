@@ -2,34 +2,53 @@
 import { useEffect } from 'react';
 
 /**
- * Hook to fix pointer events related issues in the application.
- * This is needed to prevent pointer-events: none from being applied
- * to the body, which breaks interaction especially after dialogs open.
+ * A hook to fix pointer events issues that occur in dialogs
+ * and during transitions between dialog states.
+ * 
+ * This ensures that pointer events are always enabled when needed
+ * and helps prevent UI interactions from being blocked.
  */
 export function usePointerEventsFix() {
   useEffect(() => {
-    const fixPointerEvents = () => {
-      // Ensure body always has pointer events enabled
+    // Force pointer events to be enabled when the component mounts
+    document.body.style.pointerEvents = 'auto';
+    
+    // Also ensure scroll is enabled
+    document.body.style.overflow = '';
+    
+    return () => {
+      // When component unmounts, ensure pointer events are still enabled
+      setTimeout(() => {
+        document.body.style.pointerEvents = 'auto';
+        document.body.style.overflow = '';
+      }, 50);
+    };
+  }, []);
+  
+  // Listen for dialog transitions
+  useEffect(() => {
+    const handleDialogTransition = () => {
+      // Re-enable pointer events after dialog animations
       document.body.style.pointerEvents = 'auto';
     };
     
-    // Run immediately
-    fixPointerEvents();
+    // Check for dialog state changes
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.attributeName === 'data-state') {
+          handleDialogTransition();
+        }
+      }
+    });
     
-    // Set up interval to ensure it stays fixed
-    const intervalId = setInterval(fixPointerEvents, 1000);
+    // Observe dialog elements for state changes
+    const dialogElements = document.querySelectorAll('[role="dialog"], [role="alertdialog"]');
+    dialogElements.forEach(dialog => {
+      observer.observe(dialog, { attributes: true });
+    });
     
-    // Set up event listeners for common actions that might affect pointer events
-    document.addEventListener('click', fixPointerEvents);
-    document.addEventListener('touchstart', fixPointerEvents);
-    document.addEventListener('mousemove', fixPointerEvents);
-    
-    // Clean up
     return () => {
-      clearInterval(intervalId);
-      document.removeEventListener('click', fixPointerEvents);
-      document.removeEventListener('touchstart', fixPointerEvents);
-      document.removeEventListener('mousemove', fixPointerEvents);
+      observer.disconnect();
     };
   }, []);
 }

@@ -22,5 +22,6 @@ export function TransferSummaryDialogContainer({
     }
   }, [isOpen, transferId, dialogService, onClose]);
   
+  // Empty render since content is managed by the dialog service
   return null;
 }
