@@ -21,9 +21,9 @@ export type AuthContextType = {
   profile: UserProfile | null;
   isAdmin: boolean;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateUserProfile: (data: Partial<UserProfile>) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{success: boolean, data?: any, error?: any}>;
+  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{success: boolean, data?: any, error?: any}>;
+  signOut: () => Promise<{success: boolean, error?: any}>;
+  updateUserProfile: (data: Partial<UserProfile>) => Promise<{success: boolean, data?: any, error?: any}>;
   deleteAccount: () => Promise<boolean>;
 };
