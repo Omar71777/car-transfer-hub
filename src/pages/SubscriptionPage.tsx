@@ -169,7 +169,7 @@ const SubscriptionPage = () => {
                       </div>
                     ) : (
                       <Button 
-                        variant={subscription.tier === 'basic' ? "outline" : "default"} 
+                        variant="default" 
                         className="w-full mt-8" 
                         onClick={() => handleSelectPlan('basic')}
                         disabled={isLoading.basic}
@@ -249,7 +249,7 @@ const SubscriptionPage = () => {
                       </div>
                     ) : (
                       <Button 
-                        variant={subscription.tier === 'premium' ? "outline" : "default"} 
+                        variant="default" 
                         className="w-full mt-8" 
                         onClick={() => handleSelectPlan('premium')}
                         disabled={isLoading.premium}
