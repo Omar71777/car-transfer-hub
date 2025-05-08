@@ -15,7 +15,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     profile,
     setProfile,
     isAdmin,
-    setIsAdmin,
+    isDriver,
+    isCompanyMember,
     isLoading,
     setIsLoading,
     fetchUserProfile,
@@ -53,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // When user signs out, clear all user data
         else if (event === 'SIGNED_OUT') {
           setProfile(null);
-          setIsAdmin(false);
+          setIsLoading(false);
           profileFetchAttempted.current = false;
         }
       }
@@ -112,6 +113,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     profile,
     isAdmin,
+    isDriver,
+    isCompanyMember,
     isLoading,
     signIn,
     signUp,

@@ -10,6 +10,8 @@ export function useAuthOperations() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isDriver, setIsDriver] = useState<boolean>(false);
+  const [isCompanyMember, setIsCompanyMember] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
   // Fetch user profile from Supabase
@@ -17,7 +19,7 @@ export function useAuthOperations() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, companies:company_id(name)')
         .eq('id', userId)
         .single();
       
@@ -26,9 +28,19 @@ export function useAuthOperations() {
         return null;
       }
       
-      setProfile(data);
-      setIsAdmin(data?.role === 'admin');
-      return data;
+      // Process the profile data
+      const profileWithCompanyName = {
+        ...data,
+        company_name: data.companies?.name || null
+      };
+
+      delete profileWithCompanyName.companies;
+      
+      setProfile(profileWithCompanyName);
+      setIsAdmin(profileWithCompanyName?.role === 'admin');
+      setIsDriver(profileWithCompanyName?.user_subtype === 'driver');
+      setIsCompanyMember(!!profileWithCompanyName?.company_id);
+      return profileWithCompanyName;
     } catch (error) {
       console.error('Exception fetching user profile:', error);
       return null;
@@ -50,6 +62,7 @@ export function useAuthOperations() {
       return { success: true, data };
     } catch (error: any) {
       console.error('Error signing in:', error.message);
+      toast.error(`Error al iniciar sesión: ${error.message}`);
       return { success: false, error: error.message };
     }
   }, []);
@@ -90,6 +103,8 @@ export function useAuthOperations() {
       setUser(null);
       setProfile(null);
       setIsAdmin(false);
+      setIsDriver(false);
+      setIsCompanyMember(false);
       
       return { success: true };
     } catch (error: any) {
@@ -123,6 +138,16 @@ export function useAuthOperations() {
       if (profileData.role) {
         setIsAdmin(profileData.role === 'admin');
       }
+
+      // Update driver state if subtype changed
+      if (profileData.user_subtype) {
+        setIsDriver(profileData.user_subtype === 'driver');
+      }
+
+      // Update company state if company_id changed
+      if ('company_id' in profileData) {
+        setIsCompanyMember(!!profileData.company_id);
+      }
       
       toast.success('Profile updated successfully');
       return { success: true, data };
@@ -149,6 +174,8 @@ export function useAuthOperations() {
       setUser(null);
       setProfile(null);
       setIsAdmin(false);
+      setIsDriver(false);
+      setIsCompanyMember(false);
       
       toast.success('Account deleted successfully');
       return true;
@@ -168,6 +195,10 @@ export function useAuthOperations() {
     setProfile,
     isAdmin,
     setIsAdmin,
+    isDriver,
+    setIsDriver,
+    isCompanyMember,
+    setIsCompanyMember,
     isLoading,
     setIsLoading,
     fetchUserProfile,

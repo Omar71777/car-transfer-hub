@@ -18,6 +18,7 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       paymentStatus,
       payment_method, // Make sure to handle the payment method
       hours,
+      vehicle_id, // Add vehicle_id
       ...rest 
     } = transferData;
     
@@ -31,6 +32,7 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
       payment_status: paymentStatus,
       payment_method: paymentStatus === 'paid' ? payment_method : null, // Only set payment method if paid
       client_id: clientId,
+      vehicle_id: vehicle_id, // Include vehicle_id
       // Convert hours to number for database if it exists
       hours: hours !== undefined ? Number(hours) : undefined,
       origin: rest.origin?.toLowerCase(),

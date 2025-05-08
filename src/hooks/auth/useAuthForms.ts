@@ -39,6 +39,9 @@ export const useAuthForms = () => {
   async function onRegisterSubmit(values: RegisterFormValues) {
     setIsSubmitting(true);
     try {
+      // Process the form values
+      const { is_company_account, user_subtype, ...userData } = values;
+      
       // Sign up with Supabase
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
@@ -64,12 +67,49 @@ export const useAuthForms = () => {
             first_name: values.first_name,
             last_name: values.last_name,
             role: 'user', // Default role
+            user_subtype: values.user_subtype || 'standard',
           });
           
         if (profileError) {
           console.error('Profile creation error:', profileError);
           toast.error('Error al crear el perfil');
         } else {
+          // If user is registering as company, create company record
+          if (is_company_account) {
+            const { error: companyError } = await supabase
+              .from('companies')
+              .insert({
+                name: `${values.first_name} ${values.last_name} Company`,
+                user_id: data.user.id,
+              });
+            
+            if (companyError) {
+              console.error('Company creation error:', companyError);
+              toast.error('Error al crear la empresa');
+            } else {
+              // Get the created company ID
+              const { data: companyData, error: fetchCompanyError } = await supabase
+                .from('companies')
+                .select('id')
+                .eq('user_id', data.user.id)
+                .single();
+              
+              if (fetchCompanyError) {
+                console.error('Error fetching company:', fetchCompanyError);
+              } else if (companyData) {
+                // Update the user's profile with the company ID
+                const { error: updateProfileError } = await supabase
+                  .from('profiles')
+                  .update({ company_id: companyData.id })
+                  .eq('id', data.user.id);
+                
+                if (updateProfileError) {
+                  console.error('Error updating profile with company ID:', updateProfileError);
+                }
+              }
+            }
+          }
+          
           toast.success('Registro exitoso. Por favor verifica tu email.');
         }
       }

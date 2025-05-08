@@ -211,6 +211,45 @@ export type Database = {
         }
         Relationships: []
       }
+      companies: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          id: string
+          logo: string | null
+          name: string
+          phone: string | null
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo?: string | null
+          name: string
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo?: string | null
+          name?: string
+          phone?: string | null
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -291,6 +330,7 @@ export type Database = {
         Row: {
           company_address: string | null
           company_email: string | null
+          company_id: string | null
           company_logo: string | null
           company_name: string | null
           company_phone: string | null
@@ -302,10 +342,12 @@ export type Database = {
           last_name: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
+          user_subtype: string | null
         }
         Insert: {
           company_address?: string | null
           company_email?: string | null
+          company_id?: string | null
           company_logo?: string | null
           company_name?: string | null
           company_phone?: string | null
@@ -317,10 +359,12 @@ export type Database = {
           last_name?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
+          user_subtype?: string | null
         }
         Update: {
           company_address?: string | null
           company_email?: string | null
+          company_id?: string | null
           company_logo?: string | null
           company_name?: string | null
           company_phone?: string | null
@@ -332,8 +376,17 @@ export type Database = {
           last_name?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
+          user_subtype?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transfers: {
         Row: {
@@ -357,6 +410,7 @@ export type Database = {
           time: string | null
           updated_at: string
           user_id: string
+          vehicle_id: string | null
         }
         Insert: {
           billed?: boolean | null
@@ -379,6 +433,7 @@ export type Database = {
           time?: string | null
           updated_at?: string
           user_id?: string
+          vehicle_id?: string | null
         }
         Update: {
           billed?: boolean | null
@@ -401,6 +456,7 @@ export type Database = {
           time?: string | null
           updated_at?: string
           user_id?: string
+          vehicle_id?: string | null
         }
         Relationships: [
           {
@@ -408,6 +464,66 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicles: {
+        Row: {
+          capacity: number | null
+          company_id: string
+          created_at: string
+          id: string
+          license_plate: string
+          make: string
+          model: string
+          status: string | null
+          updated_at: string
+          user_id: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+          year: number | null
+        }
+        Insert: {
+          capacity?: number | null
+          company_id: string
+          created_at?: string
+          id?: string
+          license_plate: string
+          make: string
+          model: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"]
+          year?: number | null
+        }
+        Update: {
+          capacity?: number | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          license_plate?: string
+          make?: string
+          model?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"]
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -428,6 +544,7 @@ export type Database = {
     }
     Enums: {
       user_role: "admin" | "user"
+      vehicle_type: "sedan" | "suv" | "van" | "bus" | "minibus" | "luxury"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -544,6 +661,7 @@ export const Constants = {
   public: {
     Enums: {
       user_role: ["admin", "user"],
+      vehicle_type: ["sedan", "suv", "van", "bus", "minibus", "luxury"],
     },
   },
 } as const

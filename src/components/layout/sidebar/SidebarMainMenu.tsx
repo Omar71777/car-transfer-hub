@@ -1,35 +1,62 @@
+
 import React from 'react';
-import { SidebarMenu } from './SidebarMenu';
-import { SidebarMenuButton } from './SidebarMenuButton';
-import {
-  LayoutDashboard,
-  Bus,
-  Receipt,
-  Users,
-  BarChart3,
-  UserRound,
-  FileText,
+import { 
+  Home, 
+  CalendarClock, 
+  Car,
+  Building2,
+  FileSpreadsheet, 
+  Users, 
+  BadgeDollarSign,
+  ChevronRight
 } from 'lucide-react';
+import { SidebarMenu, SidebarMenuItem, SidebarMenuHeader } from '@/components/ui/sidebar';
+import { useAuth } from '@/contexts/auth';
 
 export const SidebarMainMenu = () => {
+  const { isAdmin, isCompanyMember } = useAuth();
+  
   return (
-    <SidebarMenu title="General">
-      <SidebarMenuButton label="Dashboard" icon={LayoutDashboard} url="/" end />
-      <SidebarMenuButton label="Transfers" icon={Bus} url="/transfers" />
-      <SidebarMenuButton label="Gastos" icon={Receipt} url="/expenses" />
-      <SidebarMenuButton label="Colaboradores" icon={Users} url="/collaborators" />
-      <SidebarMenuButton label="Clientes" icon={UserRound} url="/clients" />
-      <SidebarMenuButton label="Facturación" icon={FileText} url="/billing" />
-      <SidebarMenuButton label="Informes" icon={BarChart3} url="/profits" />
-    </SidebarMenu>
-  );
-};
-
-export const SidebarAdminMenu = () => {
-  return (
-    <SidebarMenu title="Admin">
-      <SidebarMenuButton label="Usuarios" icon={Users} url="/admin/users" />
-      <SidebarMenuButton label="Informes" icon={BarChart3} url="/admin/reports/analytics" />
+    <SidebarMenu>
+      <SidebarMenuHeader>Principal</SidebarMenuHeader>
+      
+      <SidebarMenuItem href="/" icon={<Home />}>
+        Inicio
+      </SidebarMenuItem>
+      
+      <SidebarMenuItem href="/transfers" icon={<CalendarClock />}>
+        Transfers
+        <ChevronRight className="ml-auto h-4 w-4" />
+      </SidebarMenuItem>
+      
+      {isCompanyMember && (
+        <>
+          <SidebarMenuItem href="/vehicles" icon={<Car />}>
+            Vehículos
+            <ChevronRight className="ml-auto h-4 w-4" />
+          </SidebarMenuItem>
+          
+          <SidebarMenuItem href="/companies" icon={<Building2 />}>
+            Empresas
+            <ChevronRight className="ml-auto h-4 w-4" />
+          </SidebarMenuItem>
+        </>
+      )}
+      
+      <SidebarMenuItem href="/billing" icon={<FileSpreadsheet />}>
+        Facturación
+        <ChevronRight className="ml-auto h-4 w-4" />
+      </SidebarMenuItem>
+      
+      <SidebarMenuItem href="/clients" icon={<Users />}>
+        Clientes
+        <ChevronRight className="ml-auto h-4 w-4" />
+      </SidebarMenuItem>
+      
+      <SidebarMenuItem href="/profits" icon={<BadgeDollarSign />}>
+        Rentabilidad
+        <ChevronRight className="ml-auto h-4 w-4" />
+      </SidebarMenuItem>
     </SidebarMenu>
   );
 };

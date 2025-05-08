@@ -68,6 +68,7 @@ export async function createTransfer(user: any, transferData: any) {
       payment_status: transferData.paymentStatus,
       payment_method: transferData.payment_method || null,  // Explicitly handle payment method
       client_id: transferData.clientId,
+      vehicle_id: transferData.vehicle_id || null,  // Add vehicle ID
       user_id: user.id // Explicitly set user_id for RLS
     };
 

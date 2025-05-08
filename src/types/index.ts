@@ -19,6 +19,7 @@ export interface Transfer {
   payment_method?: 'card' | 'cash' | 'bank_transfer' | null;
   clientId: string;
   client?: Client;
+  vehicle_id?: string;
   billed?: boolean;
 }
 
@@ -51,6 +52,8 @@ export interface UserProfile {
   first_name: string | null;
   last_name: string | null;
   role: 'admin' | 'user';
+  user_subtype: string | null;
+  company_id: string | null;
   company_name: string | null;
   company_address: string | null;
   company_tax_id: string | null;
@@ -58,3 +61,7 @@ export interface UserProfile {
   company_email: string | null;
   company_logo: string | null;
 }
+
+export * from './client';
+export * from './company';
+export * from './vehicle';

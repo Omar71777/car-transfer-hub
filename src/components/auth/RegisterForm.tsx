@@ -1,17 +1,22 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 const registerSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
   password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
   first_name: z.string().min(2, { message: 'El nombre debe tener al menos 2 caracteres' }),
   last_name: z.string().min(2, { message: 'El apellido debe tener al menos 2 caracteres' }),
+  is_company_account: z.boolean().optional().default(false),
+  user_subtype: z.string().optional(),
 });
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -23,6 +28,8 @@ interface RegisterFormProps {
 }
 
 export const RegisterForm = ({ onSubmit, isSubmitting, selectedPlan }: RegisterFormProps) => {
+  const [isCompanyAccount, setIsCompanyAccount] = useState(false);
+  
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -30,8 +37,16 @@ export const RegisterForm = ({ onSubmit, isSubmitting, selectedPlan }: RegisterF
       password: '',
       first_name: '',
       last_name: '',
+      is_company_account: false,
+      user_subtype: 'standard',
     },
   });
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setIsCompanyAccount(checked);
+    form.setValue('is_company_account', checked);
+    form.setValue('user_subtype', checked ? 'company_admin' : 'standard');
+  };
 
   return (
     <Form {...form}>
@@ -93,6 +108,26 @@ export const RegisterForm = ({ onSubmit, isSubmitting, selectedPlan }: RegisterF
             </FormItem>
           )}
         />
+
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="is_company" 
+            checked={isCompanyAccount}
+            onCheckedChange={handleCheckboxChange}
+          />
+          <Label htmlFor="is_company">Registrarse como empresa</Label>
+        </div>
+        
+        {isCompanyAccount && (
+          <div className="p-4 bg-primary/10 rounded-md">
+            <p className="text-sm mb-2">
+              Al registrarse como empresa, podrá gestionar vehículos y conductores.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Después de registrarse, podrá configurar los detalles de su empresa en su perfil.
+            </p>
+          </div>
+        )}
         
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? 'Procesando...' : 'Registrarse'}

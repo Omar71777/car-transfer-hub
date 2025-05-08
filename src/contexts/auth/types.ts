@@ -7,6 +7,8 @@ export type UserProfile = {
   first_name: string | null;
   last_name: string | null;
   role: 'admin' | 'user';
+  user_subtype: string | null;
+  company_id: string | null;
   company_name: string | null;
   company_address: string | null;
   company_tax_id: string | null;
@@ -20,6 +22,8 @@ export type AuthContextType = {
   user: User | null;
   profile: UserProfile | null;
   isAdmin: boolean;
+  isDriver: boolean;
+  isCompanyMember: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{success: boolean, data?: any, error?: any}>;
   signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{success: boolean, data?: any, error?: any}>;

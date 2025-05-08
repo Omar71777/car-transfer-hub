@@ -1,92 +1,63 @@
 
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Providers } from './contexts/providers';
-import Index from './pages/Index';
+import { ErrorBoundary } from './components/error-handling/ErrorBoundary';
+
+// Import pages
+import IndexPage from './pages/Index';
 import TransfersPage from './pages/transfers/TransfersPage';
 import NewTransferPage from './pages/transfers/NewTransferPage';
+import AuthPage from './pages/auth/AuthPage';
+import ProfilePage from './pages/profile/ProfilePage';
+import ClientsPage from './pages/clients/ClientsPage';
+import CollaboratorsPage from './pages/collaborators/CollaboratorsPage';
+import BillingPage from './pages/billing/BillingPage';
 import ExpensesPage from './pages/expenses/ExpensesPage';
 import UsersPage from './pages/admin/UsersPage';
-import ProfilePage from './pages/profile/ProfilePage';
 import ProfitsPage from './pages/profits/ProfitsPage';
-import CollaboratorsPage from './pages/collaborators/CollaboratorsPage';
-import ClientsPage from './pages/clients/ClientsPage';
-import BillingPage from './pages/billing/BillingPage';
-import AuthPage from './pages/auth/AuthPage';
 import NotFound from './pages/NotFound';
-import { DeviceService } from '@/services/DeviceService';
-import { SidebarProvider } from '@/components/ui/sidebar/sidebar-provider';
-import { MobileSidebar } from '@/components/layout/MobileSidebar';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { DialogProvider } from '@/components/ui/dialog-service';
-import { DrawerProvider } from '@/components/ui/drawer-service';
-import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
-import LandingPage from './pages/LandingPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
+import LandingPage from './pages/LandingPage';
+import CompaniesPage from './pages/companies/CompaniesPage';
+import VehiclesPage from './pages/vehicles/VehiclesPage';
 
-// Global component to handle pointer-events cleanup
-function GlobalEventsFix() {
-  usePointerEventsFix();
-  return null;
-}
+// import styles
+import './styles/index.css';
+import './styles/responsive/index.css';
+import './styles/components/sidebar.css';
+import './styles/components/scroll.css';
+import './styles/dialog-fix.css';
+import './styles/dialog-fixes.css';
 
 function App() {
-  const isMobile = useIsMobile();
-  
-  // Initialize device-specific features when the app starts
-  useEffect(() => {
-    if (DeviceService.isNative()) {
-      console.log('Running in native app environment');
-      
-      // Initialize device features
-      DeviceService.initializePushNotifications()
-        .catch(err => console.error('Failed to initialize push notifications:', err));
-        
-      // Set status bar style for iOS
-      if (window.Capacitor && window.Capacitor.isNative) {
-        // This would require importing StatusBar from @capacitor/status-bar
-        // StatusBar.setStyle({ style: Style.Dark });
-        // StatusBar.setBackgroundColor({ color: '#000000' });
-      }
-    } else {
-      console.log('Running in web environment');
-    }
-  }, []);
-
   return (
-    <React.StrictMode>
+    <ErrorBoundary>
       <Providers>
-        <DialogProvider>
-          <DrawerProvider>
-            <SidebarProvider>
-              <GlobalEventsFix />
-              <BrowserRouter>
-                {/* Render MobileSidebar once for the entire app */}
-                {isMobile && <MobileSidebar />}
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/landing" element={<LandingPage />} />
-                  <Route path="/transfers" element={<TransfersPage />} />
-                  <Route path="/transfers/new" element={<NewTransferPage />} />
-                  <Route path="/expenses" element={<ExpensesPage />} />
-                  <Route path="/admin/users" element={<UsersPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/profits" element={<ProfitsPage />} />
-                  <Route path="/collaborators" element={<CollaboratorsPage />} />
-                  <Route path="/clients" element={<ClientsPage />} />
-                  <Route path="/billing" element={<BillingPage />} />
-                  <Route path="/auth" element={<AuthPage />} />
-                  <Route path="/subscription" element={<SubscriptionPage />} />
-                  <Route path="/subscription-success" element={<SubscriptionSuccessPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </SidebarProvider>
-          </DrawerProvider>
-        </DialogProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<IndexPage />} />
+            <Route path="/landing" element={<LandingPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/transfers" element={<TransfersPage />} />
+            <Route path="/transfers/new" element={<NewTransferPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/collaborators" element={<CollaboratorsPage />} />
+            <Route path="/billing" element={<BillingPage />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
+            <Route path="/admin/users" element={<UsersPage />} />
+            <Route path="/profits" element={<ProfitsPage />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
+            <Route path="/subscription/success" element={<SubscriptionSuccessPage />} />
+            <Route path="/companies" element={<CompaniesPage />} />
+            <Route path="/vehicles" element={<VehiclesPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
       </Providers>
-    </React.StrictMode>
+    </ErrorBoundary>
   );
 }
 
