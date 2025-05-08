@@ -40,8 +40,21 @@ export * from './switch';
 export * from './table';
 export * from './tabs';
 export * from './textarea';
-// Export toast without re-exporting Toaster to avoid ambiguity
-export { toast, useToast } from './toast';
+// Re-export from toast.tsx all components except Toaster (which comes from sonner)
+export { 
+  Toast,
+  ToastAction, 
+  ToastClose, 
+  ToastDescription, 
+  ToastProvider, 
+  ToastTitle, 
+  ToastViewport,
+  type ToastActionElement,
+  type ToastProps
+} from './toast';
+// Export the useToast and toast functions from the hooks folder
+export { toast, useToast } from '@/hooks/use-toast';
+// Export toaster component
 export * from './toaster';
 export * from './toggle';
 export * from './toggle-group';
