@@ -19,6 +19,19 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    // Ensure proper handling of directory imports
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
+  },
+  optimizeDeps: {
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      '@supabase/supabase-js',
+      '@tanstack/react-query',
+      'date-fns',
+      'sonner'
+    ],
   },
   build: {
     // Enable production optimizations
@@ -48,6 +61,10 @@ export default defineConfig(({ mode }) => ({
         drop_debugger: true, // Remove debugger statements
         pure_funcs: ['console.log', 'console.info', 'console.debug']
       }
+    },
+    // Handle directory imports better
+    commonjsOptions: {
+      transformMixedEsModules: true,
     }
   }
 }));
