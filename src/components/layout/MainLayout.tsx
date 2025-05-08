@@ -7,6 +7,7 @@ import { MobileHeader } from './MobileHeader';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { AppSidebar } from './AppSidebar';
 import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
+import { OfflineDetection } from '@/components/ui/offline-detection';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -79,6 +80,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
           )}
         </div>
       </div>
+      <OfflineDetection />
     </TooltipProvider>
   );
 }
