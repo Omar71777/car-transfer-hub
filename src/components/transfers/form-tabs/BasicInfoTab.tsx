@@ -44,7 +44,7 @@ export const BasicInfoTab = ({
           form={form}
           clients={clients}
           onClientCreated={onClientCreated}
-          isLoading={isClientsLoading}
+          isClientsLoading={isClientsLoading}
         />
       </div>
 

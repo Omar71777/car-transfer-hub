@@ -11,14 +11,14 @@ interface PricingStepProps {
 }
 
 export function PricingStep({ formState }: PricingStepProps) {
-  const { control, register, watch, setValue } = useFormContext();
-  const serviceType = watch('serviceType');
+  const form = useFormContext();
+  const serviceType = form.watch('serviceType');
   
   return (
     <div className="space-y-6">
       <PricingFields serviceType={serviceType} />
       <div className="mt-4">
-        <PaymentStatusField />
+        <PaymentStatusField form={form} />
       </div>
     </div>
   );

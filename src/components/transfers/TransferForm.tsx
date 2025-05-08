@@ -36,7 +36,7 @@ export function TransferForm({
   
   const {
     clients,
-    loading: loadingClients,
+    loading: clientsLoading,
     fetchClients,
   } = useClients();
 
@@ -145,7 +145,7 @@ export function TransferForm({
                 serviceType={activeTab} 
                 clients={clients}
                 onClientCreated={handleClientCreated}
-                isClientsLoading={loadingClients}
+                isClientsLoading={clientsLoading}
               />
             </div>
             
