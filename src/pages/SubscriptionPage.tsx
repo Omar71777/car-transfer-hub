@@ -17,13 +17,19 @@ const SubscriptionPage = () => {
     try {
       setIsLoading(prev => ({ ...prev, [plan]: true }));
       
-      // For basic plan, we don't need to redirect to Stripe
       const response = await createCheckout(plan);
+      
+      if (!response) {
+        toast.error('Error al iniciar el proceso de suscripción');
+        return;
+      }
       
       if (response.directUpdate) {
         // For free plan, just refresh the subscription status
         await checkSubscription();
-        window.location.href = response.url;
+        if (response.url) {
+          window.location.href = response.url;
+        }
       } else if (response.url) {
         window.location.href = response.url;
       }

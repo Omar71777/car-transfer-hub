@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useCallback, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/auth';
 import { toast } from 'sonner';
-import { SubscriptionContextType, SubscriptionState } from './types';
+import { SubscriptionContextType, SubscriptionState, CheckoutResponse } from './types';
 
 export const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
@@ -58,7 +58,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [session]);
   
-  const createCheckout = useCallback(async (plan?: string): Promise<any> => {
+  const createCheckout = useCallback(async (plan?: string): Promise<CheckoutResponse | null> => {
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { plan }
