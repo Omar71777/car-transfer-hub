@@ -42,9 +42,9 @@ export const BasicInfoTab = ({
         <DateTimeFields form={form} />
         <ClientField
           form={form}
-          clients={clients as any[]} // Type cast to resolve the type error temporarily
+          clients={clients}
           onClientCreated={onClientCreated}
-          loading={isClientsLoading}
+          isLoading={isClientsLoading}
         />
       </div>
 
@@ -81,7 +81,7 @@ export const BasicInfoTab = ({
         </div>
       )}
       
-      <PaymentStatusField />
+      <PaymentStatusField form={form} />
     </div>
   );
 };

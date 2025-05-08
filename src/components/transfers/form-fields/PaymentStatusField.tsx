@@ -1,95 +1,38 @@
 
-import React, { useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PaymentMethodIcon } from '../PaymentMethodIcon';
 
-export function PaymentStatusField() {
-  const { control, watch, setValue } = useFormContext();
-  const paymentStatus = watch('paymentStatus');
-  
-  // Ensure payment method is cleared when changing to pending
-  useEffect(() => {
-    if (paymentStatus === 'pending') {
-      setValue('payment_method', null);
-    } else if (paymentStatus === 'paid' && !watch('payment_method')) {
-      // Set a default payment method when changing to paid
-      setValue('payment_method', 'cash');
-    }
-  }, [paymentStatus, setValue, watch]);
-  
-  return (
-    <>
-      <FormField
-        control={control}
-        name="paymentStatus"
-        render={({ field }) => (
-          <FormItem className="space-y-3">
-            <FormLabel>Estado de Pago *</FormLabel>
-            <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                className="flex flex-col space-y-1"
-                value={field.value}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="paid" id="paid" />
-                  <Label htmlFor="paid">Cobrado</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="pending" id="pending" />
-                  <Label htmlFor="pending">Pendiente de Pago</Label>
-                </div>
-              </RadioGroup>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {paymentStatus === 'paid' && (
-        <FormField
-          control={control}
-          name="payment_method"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Método de Pago *</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ''}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar método de pago" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="card">
-                    <div className="flex items-center gap-2">
-                      <PaymentMethodIcon method="card" className="h-4 w-4" />
-                      <span>Tarjeta</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="cash">
-                    <div className="flex items-center gap-2">
-                      <PaymentMethodIcon method="cash" className="h-4 w-4" />
-                      <span>Efectivo</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="bank_transfer">
-                    <div className="flex items-center gap-2">
-                      <PaymentMethodIcon method="bank_transfer" className="h-4 w-4" />
-                      <span>Transferencia</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
-    </>
-  );
+interface PaymentStatusFieldProps {
+  form: UseFormReturn<any>;
 }
+
+export const PaymentStatusField = ({ form }: PaymentStatusFieldProps) => {
+  return (
+    <FormField
+      control={form.control}
+      name="paymentStatus"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Estado de Pago</FormLabel>
+          <Select 
+            onValueChange={field.onChange} 
+            defaultValue={field.value || 'pending'}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar estado" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="paid">Pagado</SelectItem>
+              <SelectItem value="pending">Pendiente</SelectItem>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
