@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -482,7 +481,7 @@ const LandingPage = () => {
             <p>&copy; {new Date().getFullYear()} Ibiza Transfer Hub. Todos los derechos reservados.</p>
           </div>
         </div>
-      </section>
+      </footer>
     </div>
   );
 };
