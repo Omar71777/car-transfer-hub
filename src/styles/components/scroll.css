@@ -1,0 +1,49 @@
+
+/* Smooth scrolling for the entire site */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll padding to account for fixed header */
+html {
+  scroll-padding-top: 4rem; /* Adjust based on your header height */
+}
+
+/* Ensure proper anchor link behavior */
+a[href^="#"] {
+  scroll-margin-top: 4rem;
+}
+
+/* Improved touch scrolling on mobile */
+@media (pointer: coarse) {
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Prevent iOS bouncing/overscroll behavior */
+html, body {
+  overscroll-behavior-y: none;
+}
+
+/* Ensure links are properly clickable */
+a, button {
+  touch-action: manipulation;
+}
+
+/* Fix for dialog scrolling issues */
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* Ensure main content is scrollable */
+main, .main-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Prevent fixed elements from affecting scrolling */
+.fixed, .sticky {
+  transform: translateZ(0);
+}

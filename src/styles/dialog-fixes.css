@@ -29,3 +29,16 @@ body.dialog-open {
 .dialog-overlay {
   z-index: 40 !important;
 }
+
+/* Prevent body scrolling when dialog is open */
+body:has([role="dialog"][data-state="open"]),
+body:has([role="alertdialog"][data-state="open"]) {
+  overflow: hidden;
+}
+
+/* But ensure dialog content itself can scroll */
+[role="dialog"] .dialog-content,
+[role="alertdialog"] .dialog-content {
+  overflow-y: auto;
+  max-height: 90vh;
+}

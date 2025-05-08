@@ -5,6 +5,7 @@
 /* Then import component styles */
 @import './components/cards.css';
 @import './components/sidebar.css';
+@import './components/scroll.css';
 
 /* Then animations */
 @import './animations.css';
