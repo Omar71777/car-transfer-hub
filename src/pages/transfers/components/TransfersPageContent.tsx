@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TransfersTable } from '@/components/transfers/TransfersTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -6,6 +7,9 @@ import { ExpensesTable } from '@/components/expenses/ExpensesTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Expense } from '@/types';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransfersPageContentProps {
   transfers: Transfer[];
@@ -19,6 +23,7 @@ interface TransfersPageContentProps {
   onViewSummary: (transferId: string) => void;
   onDeleteMultiple: (ids: string[]) => void;
   onMarkAsPaid: (id: string, newStatus?: 'paid' | 'pending') => void;
+  onAddTransfer?: () => void;
   error?: string | null;
 }
 
@@ -34,8 +39,11 @@ export function TransfersPageContent({
   onViewSummary,
   onDeleteMultiple,
   onMarkAsPaid,
+  onAddTransfer,
   error = null
 }: TransfersPageContentProps) {
+  const isMobile = useIsMobile();
+  
   if (loading && !activeTab) {
     return <LoadingSpinner />;
   }
@@ -54,7 +62,7 @@ export function TransfersPageContent({
 
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <div className="flex justify-center items-center mb-4">
+      <div className="flex justify-between items-center mb-4">
         <TabsList>
           <TabsTrigger value="transfers">
             Traslados
@@ -63,6 +71,13 @@ export function TransfersPageContent({
             Gastos
           </TabsTrigger>
         </TabsList>
+        
+        {activeTab === 'transfers' && onAddTransfer && (
+          <Button onClick={onAddTransfer} className={isMobile ? "mobile-btn" : ""}>
+            <Plus className="mr-2 h-4 w-4" />
+            {isMobile ? "Nuevo" : "Nuevo Transfer"}
+          </Button>
+        )}
       </div>
       
       <TabsContent value="transfers" className="space-y-4">

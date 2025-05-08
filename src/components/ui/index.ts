@@ -40,7 +40,8 @@ export * from './switch';
 export * from './table';
 export * from './tabs';
 export * from './textarea';
-export * from './toast';
+// Export toast without re-exporting Toaster to avoid ambiguity
+export { toast, useToast } from './toast';
 export * from './toaster';
 export * from './toggle';
 export * from './toggle-group';

@@ -5,8 +5,6 @@ import { useTransfersPage } from './hooks/useTransfersPage';
 import { TransfersPageContent } from './components/TransfersPageContent';
 import { TransferDialogs } from './components/TransferDialogs';
 import { TransferSummaryDialogContainer } from './components/TransferSummaryDialogContainer';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const TransfersPage = () => {
@@ -47,17 +45,6 @@ const TransfersPage = () => {
     navigate('/transfers/new');
   };
   
-  const headerActions = (
-    <Button 
-      variant="ghost" 
-      size="icon" 
-      onClick={handleAddTransfer}
-      aria-label="Add new transfer"
-    >
-      <Plus className="h-5 w-5" />
-    </Button>
-  );
-  
   return (
     <MainLayout>
       <TransfersPageContent
@@ -72,6 +59,7 @@ const TransfersPage = () => {
         onViewSummary={handleViewSummary}
         onDeleteMultiple={handleDeleteMultipleTransfers}
         onMarkAsPaid={handleMarkAsPaid}
+        onAddTransfer={handleAddTransfer}
       />
 
       {/* Always render TransferDialogs to maintain consistent hooks */}
