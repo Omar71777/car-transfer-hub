@@ -37,7 +37,7 @@ const LandingPage = () => {
         <div className="container flex h-16 items-center justify-between py-4">
           <div className="flex items-center gap-2">
             <Briefcase className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Ibiza Transfer Hub</span>
+            <span className="text-xl font-bold">CTHub</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Características</a>
@@ -99,7 +99,7 @@ const LandingPage = () => {
                 La plataforma completa para tu <span className="text-primary">negocio de traslados</span>
               </h1>
               <p className="text-xl text-muted-foreground">
-                Optimiza tus servicios de transporte en Ibiza con nuestra solución todo en uno: gestión de traslados, facturación, cobros y mucho más.
+                Optimiza tus servicios de transporte en España con nuestra solución todo en uno: gestión de traslados, facturación, cobros y mucho más.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" asChild>
@@ -129,7 +129,7 @@ const LandingPage = () => {
               <div className="relative p-2">
                 <img 
                   src="/placeholder.svg" 
-                  alt="Ibiza Transfer Hub Dashboard" 
+                  alt="CTHub Dashboard" 
                   className="rounded-xl shadow-lg border border-primary/10"
                 />
                 <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
@@ -156,7 +156,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <SectionHeader
             title="Todo lo que necesitas para gestionar tu negocio"
-            subtitle="Herramientas diseñadas para los profesionales del transporte en Ibiza"
+            subtitle="Herramientas diseñadas para los profesionales del transporte en España"
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
@@ -201,7 +201,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <SectionHeader
             title="Cómo funciona"
-            subtitle="Comienza a utilizar Ibiza Transfer Hub en tres sencillos pasos"
+            subtitle="Comienza a utilizar CTHub en tres sencillos pasos"
           />
           
           <div className="grid md:grid-cols-3 gap-8 mt-12">
@@ -305,14 +305,14 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <SectionHeader
             title="Lo que dicen nuestros clientes"
-            subtitle="Empresas que confían en Ibiza Transfer Hub para gestionar su negocio"
+            subtitle="Empresas que confían en CTHub para gestionar su negocio"
           />
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
             <TestimonialCard
               quote="Desde que uso esta plataforma, he reducido un 40% el tiempo que dedicaba a la gestión administrativa."
               author="María López"
-              company="Ibiza VIP Transfers"
+              company="Madrid VIP Transfers"
               rating={5}
             />
             <TestimonialCard
@@ -324,7 +324,7 @@ const LandingPage = () => {
             <TestimonialCard
               quote="El soporte al cliente es excepcional, siempre respondiendo rápidamente a cualquier consulta."
               author="Ana García"
-              company="Balearic Transfers"
+              company="España Transfers"
               rating={4}
             />
           </div>
@@ -336,7 +336,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-6xl">
           <SectionHeader
             title="Preguntas frecuentes"
-            subtitle="Resolvemos tus dudas sobre Ibiza Transfer Hub"
+            subtitle="Resolvemos tus dudas sobre CTHub"
           />
           
           <div className="mt-12 grid md:grid-cols-2 gap-8">
@@ -481,9 +481,9 @@ const LandingPage = () => {
           <div className="mt-12 border-t pt-8 text-center text-muted-foreground">
             <div className="flex items-center justify-center mb-4">
               <Briefcase className="h-6 w-6 text-primary mr-2" />
-              <span className="text-xl font-bold">Ibiza Transfer Hub</span>
+              <span className="text-xl font-bold">CTHub</span>
             </div>
-            <p>&copy; {new Date().getFullYear()} Ibiza Transfer Hub. Todos los derechos reservados.</p>
+            <p>&copy; {new Date().getFullYear()} CTHub. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

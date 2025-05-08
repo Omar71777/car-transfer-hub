@@ -1,7 +1,7 @@
 
 {
-  "name": "Ibiza Transfer Hub",
-  "short_name": "Transfer Hub",
+  "name": "CTHub",
+  "short_name": "CTHub",
   "description": "Sistema de gestión de transfers y servicios de transporte",
   "start_url": "/",
   "display": "standalone",
