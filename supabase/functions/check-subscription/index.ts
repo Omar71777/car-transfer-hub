@@ -46,6 +46,28 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Check if user has a basic (free) plan directly in our database
+    const { data: subscriberData } = await supabaseClient
+      .from("subscribers")
+      .select("*")
+      .eq("email", user.email)
+      .eq("subscription_tier", "basic")
+      .eq("subscribed", true)
+      .single();
+
+    // If user has the basic plan, return that information
+    if (subscriberData) {
+      logStep("Found basic (free) plan subscription", { tier: "basic" });
+      return new Response(JSON.stringify({
+        subscribed: true,
+        subscription_tier: "basic",
+        subscription_end: subscriberData.subscription_end
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
@@ -84,14 +106,13 @@ serve(async (req) => {
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
       
       // Determine subscription tier from price ID (or product name)
-      // This is a simplified example - you'd use actual price IDs
       const priceId = subscription.items.data[0].price.id;
-      if (priceId.includes('basic')) {
-        subscriptionTier = "basic";
-      } else if (priceId.includes('premium')) {
+      // Updated price-based tier detection based on our new pricing structure
+      if (priceId.includes('premium')) {
         subscriptionTier = "premium";
       } else {
-        subscriptionTier = "standard"; // Default
+        // Default to standard for any paid subscription
+        subscriptionTier = "standard";
       }
       logStep("Determined subscription tier", { priceId, subscriptionTier });
     } else {

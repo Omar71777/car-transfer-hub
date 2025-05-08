@@ -32,6 +32,7 @@ export const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
   isLoading
 }) => {
   const isCurrentPlan = currentTier === planId;
+  const isFree = price === '€0';
 
   return (
     <Card className={`border-2 ${isCurrentPlan ? 'border-primary' : 'border-muted'} relative`}>
@@ -48,7 +49,7 @@ export const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
           <h3 className="text-lg font-bold">{title}</h3>
           <div className="mt-4 mb-4">
             <span className="text-4xl font-bold">{price}</span>
-            <span className="text-muted-foreground">/mes</span>
+            {!isFree && <span className="text-muted-foreground">/mes</span>}
           </div>
           <p className="text-muted-foreground mb-6">{description}</p>
         </div>
@@ -69,7 +70,7 @@ export const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isSubscribed ? 'Cambiar plan' : 'Seleccionar plan'}
+            {isFree ? 'Activar plan gratuito' : isSubscribed ? 'Cambiar plan' : 'Seleccionar plan'}
           </Button>
         )}
       </CardContent>

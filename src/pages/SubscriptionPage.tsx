@@ -16,9 +16,16 @@ const SubscriptionPage = () => {
   const handleSelectPlan = async (plan: string) => {
     try {
       setIsLoading(prev => ({ ...prev, [plan]: true }));
-      const checkoutUrl = await createCheckout(plan);
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
+      
+      // For basic plan, we don't need to redirect to Stripe
+      const response = await createCheckout(plan);
+      
+      if (response.directUpdate) {
+        // For free plan, just refresh the subscription status
+        await checkSubscription();
+        window.location.href = response.url;
+      } else if (response.url) {
+        window.location.href = response.url;
       }
     } catch (error) {
       console.error('Error creating checkout:', error);

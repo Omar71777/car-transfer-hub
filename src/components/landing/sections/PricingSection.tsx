@@ -12,6 +12,9 @@ export const PricingSection = () => {
   const [activeTab, setActiveTab] = useState<'monthly' | 'yearly'>('monthly');
 
   const yearlyPrice = (price: string): string => {
+    // If price is €0, yearly price is also €0
+    if (price === '€0') return '€0';
+    
     const numericPrice = parseFloat(price.replace('€', ''));
     const yearlyPrice = Math.round(numericPrice * 10);
     return `€${yearlyPrice}`;
@@ -72,7 +75,7 @@ export const PricingSection = () => {
                   asChild
                 >
                   <Link to={`/auth?tab=register&plan=${plan.id}`}>
-                    Seleccionar plan
+                    {plan.price === '€0' ? 'Registrarse gratis' : 'Seleccionar plan'}
                   </Link>
                 </Button>
               </CardContent>

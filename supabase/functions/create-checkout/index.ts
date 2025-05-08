@@ -31,11 +31,38 @@ serve(async (req) => {
     // Get request body
     const { plan = 'standard' } = await req.json();
     
+    // If plan is 'basic', update the subscriber record directly since it's free
+    if (plan === 'basic') {
+      const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+        { auth: { persistSession: false } }
+      );
+      
+      // Create or update subscriber record
+      await supabaseAdmin.from("subscribers").upsert({
+        email: user.email,
+        user_id: user.id,
+        subscribed: true,
+        subscription_tier: "basic",
+        subscription_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year in the future
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'email' });
+      
+      // Redirect to success page
+      return new Response(JSON.stringify({ 
+        url: `${req.headers.get("origin")}/subscription-success`, 
+        directUpdate: true 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+    
     // Plan configuration
     const planPriceIds = {
-      basic: 'price_basic', // Replace with actual Stripe price IDs
-      standard: 'price_standard',
-      premium: 'price_premium',
+      standard: 'price_standard', // €15/month
+      premium: 'price_premium',   // €79/month
     };
     
     // Default to standard plan if no valid plan is provided

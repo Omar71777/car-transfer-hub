@@ -14,12 +14,11 @@ export const subscriptionPlans: SubscriptionPlan[] = [
   {
     id: 'basic',
     title: 'Básico',
-    price: '€19',
+    price: '€0',
     description: 'Ideal para profesionales independientes',
     features: [
       'Hasta 50 traslados al mes',
       'Gestión de clientes',
-      'Facturación básica',
       'Soporte por email'
     ],
     isPopular: false
@@ -27,7 +26,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
   {
     id: 'standard',
     title: 'Estándar',
-    price: '€39',
+    price: '€15',
     description: 'Perfecto para empresas pequeñas',
     features: [
       'Traslados ilimitados',

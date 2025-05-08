@@ -58,14 +58,14 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, [session]);
   
-  const createCheckout = useCallback(async (plan?: string): Promise<string | null> => {
+  const createCheckout = useCallback(async (plan?: string): Promise<any> => {
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { plan }
       });
       
       if (error) throw error;
-      return data.url;
+      return data;
       
     } catch (error) {
       console.error('Error creating checkout session:', error);

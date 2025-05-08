@@ -31,6 +31,8 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({
     }
   };
 
+  const isFreeTier = subscription.tier === 'basic';
+
   return (
     <Card className="mb-8">
       <CardHeader>
@@ -55,7 +57,9 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({
           </div>
           {subscription.expiresAt && (
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">Próxima facturación</h3>
+              <h3 className="text-sm font-medium text-muted-foreground mb-1">
+                {isFreeTier ? 'Válido hasta' : 'Próxima facturación'}
+              </h3>
               <p className="font-semibold">
                 {format(new Date(subscription.expiresAt), 'dd MMMM yyyy', { locale: es })}
               </p>
@@ -65,13 +69,17 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row gap-3">
         {subscription.isSubscribed ? (
-          <Button 
-            onClick={onManageSubscription} 
-            disabled={isLoading.portal}
-          >
-            {isLoading.portal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Administrar suscripción
-          </Button>
+          isFreeTier ? (
+            <Button onClick={onViewPlans}>Ver planes premium</Button>
+          ) : (
+            <Button 
+              onClick={onManageSubscription} 
+              disabled={isLoading.portal}
+            >
+              {isLoading.portal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Administrar suscripción
+            </Button>
+          )
         ) : (
           <Button onClick={onViewPlans}>Ver planes disponibles</Button>
         )}
