@@ -1,4 +1,9 @@
 
+/* Import Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Sidebar menu state styles */
 @layer components {
   .sidebar-menu-item {

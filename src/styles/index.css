@@ -1,8 +1,10 @@
 
-/* Import all base styles first */
-@import './base.css';
+/* Import Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Then import component styles */
+/* Import component styles */
 @import './components/cards.css';
 @import './components/sidebar.css';
 @import './components/scroll.css';

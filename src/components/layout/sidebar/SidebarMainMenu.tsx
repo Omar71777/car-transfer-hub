@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Home, 
   CalendarClock, 
@@ -10,52 +11,47 @@ import {
   BadgeDollarSign,
   ChevronRight
 } from 'lucide-react';
-import { SidebarMenu, SidebarMenuItem, SidebarMenuHeader } from '@/components/ui/sidebar';
+import { SidebarMenu, SidebarMenuItem } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/auth';
+import { SidebarMenuButton } from './SidebarMenuButton';
 
 export const SidebarMainMenu = () => {
   const { isAdmin, isCompanyMember } = useAuth();
   
   return (
     <SidebarMenu>
-      <SidebarMenuHeader>Principal</SidebarMenuHeader>
+      <h3 className="text-xs uppercase font-medium mb-2 px-4 text-aqua-light">Principal</h3>
       
-      <SidebarMenuItem href="/" icon={<Home />}>
-        Inicio
+      <SidebarMenuItem>
+        <SidebarMenuButton label="Inicio" icon={Home} url="/" end={true} />
       </SidebarMenuItem>
       
-      <SidebarMenuItem href="/transfers" icon={<CalendarClock />}>
-        Transfers
-        <ChevronRight className="ml-auto h-4 w-4" />
+      <SidebarMenuItem>
+        <SidebarMenuButton label="Transfers" icon={CalendarClock} url="/transfers" />
       </SidebarMenuItem>
       
       {isCompanyMember && (
         <>
-          <SidebarMenuItem href="/vehicles" icon={<Car />}>
-            Vehículos
-            <ChevronRight className="ml-auto h-4 w-4" />
+          <SidebarMenuItem>
+            <SidebarMenuButton label="Vehículos" icon={Car} url="/vehicles" />
           </SidebarMenuItem>
           
-          <SidebarMenuItem href="/companies" icon={<Building2 />}>
-            Empresas
-            <ChevronRight className="ml-auto h-4 w-4" />
+          <SidebarMenuItem>
+            <SidebarMenuButton label="Empresas" icon={Building2} url="/companies" />
           </SidebarMenuItem>
         </>
       )}
       
-      <SidebarMenuItem href="/billing" icon={<FileSpreadsheet />}>
-        Facturación
-        <ChevronRight className="ml-auto h-4 w-4" />
+      <SidebarMenuItem>
+        <SidebarMenuButton label="Facturación" icon={FileSpreadsheet} url="/billing" />
       </SidebarMenuItem>
       
-      <SidebarMenuItem href="/clients" icon={<Users />}>
-        Clientes
-        <ChevronRight className="ml-auto h-4 w-4" />
+      <SidebarMenuItem>
+        <SidebarMenuButton label="Clientes" icon={Users} url="/clients" />
       </SidebarMenuItem>
       
-      <SidebarMenuItem href="/profits" icon={<BadgeDollarSign />}>
-        Rentabilidad
-        <ChevronRight className="ml-auto h-4 w-4" />
+      <SidebarMenuItem>
+        <SidebarMenuButton label="Rentabilidad" icon={BadgeDollarSign} url="/profits" />
       </SidebarMenuItem>
     </SidebarMenu>
   );

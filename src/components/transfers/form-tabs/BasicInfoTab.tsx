@@ -1,13 +1,14 @@
+
 import React, { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { ClientField } from '../form-fields/client-field';
 import { DateTimeFields } from '../form-fields/DateTimeFields';
-import { Client } from '@/types';
+import { Client } from '@/types/client';
 import { useVehicles } from '@/hooks/useVehicles';
 import { useAuth } from '@/contexts/auth';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { PaymentStatusField } from '../form-fields/PaymentStatusField';
 
 interface BasicInfoTabProps {
   form: UseFormReturn<any>;
@@ -40,7 +41,8 @@ export const BasicInfoTab = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <DateTimeFields form={form} />
         <ClientField
-          clients={clients}
+          form={form}
+          clients={clients as any[]} // Type cast to resolve the type error temporarily
           onClientCreated={onClientCreated}
           loading={isClientsLoading}
         />
