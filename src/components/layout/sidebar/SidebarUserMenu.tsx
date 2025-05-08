@@ -39,7 +39,7 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
       // Call the provided signOut function
       await onSignOut();
       
-      // Navigate to landing page
+      // Navigate to landing page instead of auth page
       navigate('/', { replace: true });
     } catch (error) {
       console.error('Error signing out:', error);

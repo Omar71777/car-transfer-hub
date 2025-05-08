@@ -70,10 +70,10 @@ function AppRoutes() {
     <Router>
       <SidebarProvider>
         <Routes>
-          {/* Public routes */}
-          <Route path="/" element={
-            session ? <Navigate to="/transfers" replace /> : <LandingPage />
-          } />
+          {/* Landing page route (public) */}
+          <Route path="/" element={<LandingPage />} />
+          
+          {/* Auth route */}
           <Route path="/auth" element={
             <AuthRoute><AuthPage /></AuthRoute>
           } />

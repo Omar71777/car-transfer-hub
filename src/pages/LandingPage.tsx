@@ -20,7 +20,7 @@ const LandingPage = () => {
 
   React.useEffect(() => {
     if (session) {
-      navigate('/transfers', { replace: true });
+      navigate('/dashboard', { replace: true });
     }
   }, [session, navigate]);
 
