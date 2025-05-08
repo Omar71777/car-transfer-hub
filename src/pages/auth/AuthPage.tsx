@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -129,7 +128,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-blue-50 p-4">
       <Card className="w-full max-w-md glass-card">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Ibiza Transfer Hub</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">CTHub</CardTitle>
           <CardDescription className="text-center">
             {authMode === 'login' ? 'Ingresa a tu cuenta' : 'Crea una nueva cuenta'}
             {planParam && authMode === 'register' && (

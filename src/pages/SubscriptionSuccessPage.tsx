@@ -25,7 +25,7 @@ const SubscriptionSuccessPage = () => {
         </div>
         <h1 className="text-3xl font-bold mb-4">¡Suscripción exitosa!</h1>
         <p className="text-xl text-muted-foreground mb-8">
-          Gracias por suscribirte a Ibiza Transfer Hub. Tu cuenta ha sido actualizada y ahora tienes acceso a todas las funciones de tu plan.
+          Gracias por suscribirte a CTHub. Tu cuenta ha sido actualizada y ahora tienes acceso a todas las funciones de tu plan.
         </p>
         <div className="flex flex-col gap-4">
           <Button asChild size="lg">

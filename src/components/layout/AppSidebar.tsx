@@ -29,7 +29,7 @@ export const AppSidebar = () => {
       
       <SidebarFooter className="mt-auto border-t border-white/20 py-4">
         <div className="px-4 py-2 text-xs text-white/70">
-          Ibiza Transfer Hub © {new Date().getFullYear()}
+          CTHub © {new Date().getFullYear()}
         </div>
       </SidebarFooter>
     </Sidebar>
