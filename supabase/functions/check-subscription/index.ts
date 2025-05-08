@@ -105,16 +105,9 @@ serve(async (req) => {
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
       
-      // Determine subscription tier from price ID (or product name)
-      const priceId = subscription.items.data[0].price.id;
-      // Updated price-based tier detection based on our new pricing structure
-      if (priceId.includes('premium')) {
-        subscriptionTier = "premium";
-      } else {
-        // Default to standard for any paid subscription
-        subscriptionTier = "standard";
-      }
-      logStep("Determined subscription tier", { priceId, subscriptionTier });
+      // In this simplified version, any paid subscription is the standard tier
+      subscriptionTier = "standard";
+      logStep("Determined subscription tier", { subscriptionTier });
     } else {
       logStep("No active subscription found");
     }

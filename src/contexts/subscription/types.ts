@@ -1,5 +1,5 @@
 
-export type SubscriptionTier = 'basic' | 'standard' | 'premium' | null;
+export type SubscriptionTier = 'basic' | 'standard' | null;
 
 export interface SubscriptionState {
   isLoading: boolean;

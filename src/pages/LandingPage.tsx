@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
 import { LandingHeader } from '@/components/landing/LandingHeader';
@@ -18,10 +18,9 @@ const LandingPage = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect authenticated users to the dashboard
-  useEffect(() => {
+  React.useEffect(() => {
     if (session) {
-      navigate('/');
+      navigate('/transfers', { replace: true });
     }
   }, [session, navigate]);
 

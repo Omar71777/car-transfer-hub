@@ -44,7 +44,7 @@ export const PricingSection = () => {
           </Tabs>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {subscriptionPlans.map((plan: SubscriptionPlan) => (
             <Card key={plan.id} className={`border-2 ${plan.isPopular ? 'border-primary' : 'border-muted'} relative`}>
               {plan.isPopular && (

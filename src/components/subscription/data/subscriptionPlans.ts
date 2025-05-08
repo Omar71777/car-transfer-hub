@@ -36,19 +36,5 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       'Soporte prioritario'
     ],
     isPopular: true
-  },
-  {
-    id: 'premium',
-    title: 'Premium',
-    price: '€79',
-    description: 'Para empresas con múltiples colaboradores',
-    features: [
-      'Todo lo del plan Estándar',
-      'Gestión de colaboradores ilimitados',
-      'Análisis avanzado de rentabilidad',
-      'Acceso API',
-      'Soporte 24/7'
-    ],
-    isPopular: false
   }
 ];

@@ -62,11 +62,10 @@ serve(async (req) => {
     // Plan configuration
     const planPriceIds = {
       standard: 'price_standard', // €15/month
-      premium: 'price_premium',   // €79/month
     };
     
-    // Default to standard plan if no valid plan is provided
-    const priceId = planPriceIds[plan as keyof typeof planPriceIds] || planPriceIds.standard;
+    // Use standard plan price
+    const priceId = planPriceIds.standard;
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {

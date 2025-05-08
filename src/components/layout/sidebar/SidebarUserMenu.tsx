@@ -39,12 +39,12 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
       // Call the provided signOut function
       await onSignOut();
       
-      // Force navigation to auth page in case the signOut function doesn't redirect
-      navigate('/auth');
+      // Navigate to landing page
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Error signing out:', error);
       // If there's an error, try to force a redirect anyway
-      window.location.href = '/auth';
+      window.location.href = '/';
     }
   };
 
