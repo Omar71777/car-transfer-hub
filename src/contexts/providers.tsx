@@ -3,7 +3,7 @@ import React from 'react';
 import { AuthProvider } from './auth/AuthProvider';
 import { CapitalizeProvider } from './CapitalizeContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SonnerToaster } from '@/components/ui/sonner';
+import { Toaster } from 'sonner';
 import { SubscriptionProvider } from './subscription';
 
 // Create a client
@@ -23,7 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <AuthProvider>
           <SubscriptionProvider>
             {children}
-            <SonnerToaster closeButton position="top-right" />
+            <Toaster closeButton position="top-right" />
           </SubscriptionProvider>
         </AuthProvider>
       </CapitalizeProvider>
