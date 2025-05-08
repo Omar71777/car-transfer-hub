@@ -50,69 +50,57 @@ export const useAuthForms = () => {
           data: {
             first_name: values.first_name,
             last_name: values.last_name,
-            selected_plan: planParam, // Store the selected plan from URL params
+            selected_plan: planParam,
+            user_subtype: values.user_subtype || 'standard', // Store user_subtype in metadata
           },
         },
       });
       
       if (error) throw error;
       
-      // Create profile entry
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: data.user.id,
-            email: values.email,
-            first_name: values.first_name,
-            last_name: values.last_name,
-            role: 'user', // Default role
-            user_subtype: values.user_subtype || 'standard',
-          });
+      // Create profile entry is now handled by the trigger function
+      // But we still need to handle the company creation if user is registering as company
+      if (data.user && is_company_account) {
+        // Create a company and associate it with the user
+        const companyName = `${values.first_name} ${values.last_name} Company`;
+        console.log('Creating company:', companyName);
+        
+        // Create company record
+        const { data: companyData, error: companyError } = await supabase
+          .from('companies')
+          .insert({
+            name: companyName,
+            user_id: data.user.id,
+          })
+          .select('id')
+          .single();
+        
+        if (companyError) {
+          console.error('Company creation error:', companyError);
+          toast.error('Error al crear la empresa');
+        } else if (companyData) {
+          console.log('Company created with ID:', companyData.id);
           
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-          toast.error('Error al crear el perfil');
-        } else {
-          // If user is registering as company, create company record
-          if (is_company_account) {
-            const { error: companyError } = await supabase
-              .from('companies')
-              .insert({
-                name: `${values.first_name} ${values.last_name} Company`,
-                user_id: data.user.id,
-              });
-            
-            if (companyError) {
-              console.error('Company creation error:', companyError);
-              toast.error('Error al crear la empresa');
-            } else {
-              // Get the created company ID
-              const { data: companyData, error: fetchCompanyError } = await supabase
-                .from('companies')
-                .select('id')
-                .eq('user_id', data.user.id)
-                .single();
-              
-              if (fetchCompanyError) {
-                console.error('Error fetching company:', fetchCompanyError);
-              } else if (companyData) {
-                // Update the user's profile with the company ID
-                const { error: updateProfileError } = await supabase
-                  .from('profiles')
-                  .update({ company_id: companyData.id })
-                  .eq('id', data.user.id);
-                
-                if (updateProfileError) {
-                  console.error('Error updating profile with company ID:', updateProfileError);
-                }
-              }
-            }
+          // Update the user's profile with the company ID
+          const { error: updateProfileError } = await supabase
+            .from('profiles')
+            .update({ 
+              company_id: companyData.id,
+              user_subtype: 'company_admin'
+            })
+            .eq('id', data.user.id);
+          
+          if (updateProfileError) {
+            console.error('Error updating profile with company ID:', updateProfileError);
+            toast.error('Error al asociar el perfil con la empresa');
+          } else {
+            console.log('Profile updated with company ID');
+            toast.success('Empresa creada exitosamente');
           }
-          
-          toast.success('Registro exitoso. Por favor verifica tu email.');
         }
       }
+      
+      toast.success('Registro exitoso. Por favor verifica tu email.');
     } catch (error: any) {
       console.error('Registration error:', error);
       toast.error(`Error: ${error.message}`);

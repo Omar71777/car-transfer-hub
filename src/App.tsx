@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Providers } from './contexts/providers';
@@ -42,7 +41,7 @@ const ProtectedRoute = ({ children }) => {
   }
   
   if (!session) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/auth" replace />;
   }
   
   return children;
@@ -57,7 +56,7 @@ const AuthRoute = ({ children }) => {
   }
   
   if (session) {
-    return <Navigate to="/transfers" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return children;
@@ -71,7 +70,9 @@ function AppRoutes() {
       <SidebarProvider>
         <Routes>
           {/* Landing page route (public) */}
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={
+            session ? <Navigate to="/dashboard" replace /> : <LandingPage />
+          } />
           
           {/* Auth route */}
           <Route path="/auth" element={

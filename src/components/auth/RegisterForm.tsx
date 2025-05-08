@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,6 +9,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const registerSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
@@ -29,6 +32,7 @@ interface RegisterFormProps {
 
 export const RegisterForm = ({ onSubmit, isSubmitting, selectedPlan }: RegisterFormProps) => {
   const [isCompanyAccount, setIsCompanyAccount] = useState(false);
+  const [registrationError, setRegistrationError] = useState<string | null>(null);
   
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -48,9 +52,26 @@ export const RegisterForm = ({ onSubmit, isSubmitting, selectedPlan }: RegisterF
     form.setValue('user_subtype', checked ? 'company_admin' : 'standard');
   };
 
+  const handleSubmit = async (values: RegisterFormValues) => {
+    setRegistrationError(null);
+    try {
+      await onSubmit(values);
+    } catch (error: any) {
+      console.error('Form submission error:', error);
+      setRegistrationError(error.message || 'Error al registrar usuario');
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        {registrationError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{registrationError}</AlertDescription>
+          </Alert>
+        )}
+
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
