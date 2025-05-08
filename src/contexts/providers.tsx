@@ -1,18 +1,32 @@
 
 import React from 'react';
-import { AppProviders } from '@/components/providers/AppProviders';
-import { QueryProvider } from '@/components/providers/QueryProvider';
+import { AuthProvider } from './auth/AuthProvider';
+import { CapitalizeProvider } from './CapitalizeContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SonnerToaster } from '@/components/ui/sonner';
+import { SubscriptionProvider } from './subscription';
 
-interface ProvidersProps {
-  children: React.ReactNode;
-}
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
-export function Providers({ children }: ProvidersProps) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryProvider>
-      <AppProviders>
-        {children}
-      </AppProviders>
-    </QueryProvider>
+    <QueryClientProvider client={queryClient}>
+      <CapitalizeProvider>
+        <AuthProvider>
+          <SubscriptionProvider>
+            {children}
+            <SonnerToaster closeButton position="top-right" />
+          </SubscriptionProvider>
+        </AuthProvider>
+      </CapitalizeProvider>
+    </QueryClientProvider>
   );
 }

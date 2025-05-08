@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Navigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +31,12 @@ export default function AuthPage() {
   const { signIn, session, isLoading } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const planParam = searchParams.get('plan');
+  const [authMode, setAuthMode] = useState<'login' | 'register'>(
+    tabParam === 'register' ? 'register' : 'login'
+  );
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -50,6 +55,14 @@ export default function AuthPage() {
       last_name: '',
     },
   });
+
+  // Set up plan metadata when registration form is initialized
+  useEffect(() => {
+    if (planParam) {
+      console.log('Selected plan:', planParam);
+      // Could store this in form or context to use later in the registration flow
+    }
+  }, [planParam]);
 
   async function onLoginSubmit(values: LoginFormValues) {
     setIsSubmitting(true);
@@ -73,6 +86,7 @@ export default function AuthPage() {
           data: {
             first_name: values.first_name,
             last_name: values.last_name,
+            selected_plan: planParam, // Store the selected plan from URL params
           },
         },
       });
@@ -118,6 +132,13 @@ export default function AuthPage() {
           <CardTitle className="text-2xl font-bold text-center">Ibiza Transfer Hub</CardTitle>
           <CardDescription className="text-center">
             {authMode === 'login' ? 'Ingresa a tu cuenta' : 'Crea una nueva cuenta'}
+            {planParam && authMode === 'register' && (
+              <div className="mt-2 p-2 bg-primary/10 rounded-md">
+                <p className="text-sm font-medium">
+                  Plan seleccionado: <span className="font-bold text-primary capitalize">{planParam}</span>
+                </p>
+              </div>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -21,6 +21,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { DialogProvider } from '@/components/ui/dialog-service';
 import { DrawerProvider } from '@/components/ui/drawer-service';
 import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
+import LandingPage from './pages/LandingPage';
+import SubscriptionPage from './pages/SubscriptionPage';
+import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 
 // Global component to handle pointer-events cleanup
 function GlobalEventsFix() {
@@ -63,6 +66,7 @@ function App() {
                 {isMobile && <MobileSidebar />}
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/landing" element={<LandingPage />} />
                   <Route path="/transfers" element={<TransfersPage />} />
                   <Route path="/transfers/new" element={<NewTransferPage />} />
                   <Route path="/expenses" element={<ExpensesPage />} />
@@ -73,6 +77,8 @@ function App() {
                   <Route path="/clients" element={<ClientsPage />} />
                   <Route path="/billing" element={<BillingPage />} />
                   <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/subscription" element={<SubscriptionPage />} />
+                  <Route path="/subscription-success" element={<SubscriptionSuccessPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
