@@ -35,7 +35,8 @@ export * from './separator';
 export * from './sheet';
 export * from './skeleton';
 export * from './slider';
-export * from './sonner';
+// Export Sonner's Toaster with an explicit name to avoid ambiguity
+export { Toaster as SonnerToaster } from './sonner';
 export * from './switch';
 export * from './table';
 export * from './tabs';
