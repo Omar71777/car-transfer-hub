@@ -7,6 +7,9 @@
 @import './components/sidebar.css';
 @import './components/scroll.css';
 
+/* Dialog fixes */
+@import './dialog-fixes.css';
+
 /* Then animations */
 @import './animations.css';
 

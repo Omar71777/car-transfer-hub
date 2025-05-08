@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -30,7 +31,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen overflow-y-auto">
       {/* Navigation */}
       <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-30">
         <div className="container flex h-16 items-center justify-between py-4">
@@ -44,7 +45,7 @@ const LandingPage = () => {
             <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">Cómo funciona</a>
             <a href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors">Testimonios</a>
           </nav>
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4">
             <Link to="/auth" className="text-sm font-medium hover:text-primary transition-colors">
               Iniciar Sesión
             </Link>
@@ -55,8 +56,8 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Auth Actions Float (Mobile) */}
-      <div className="md:hidden fixed bottom-6 right-6 z-40 flex flex-col gap-2">
+      {/* Mobile Nav Items (clearly separated) */}
+      <div className="md:hidden fixed top-6 right-6 z-40 flex flex-col gap-2">
         <Button size="sm" variant="outline" className="shadow-lg bg-background" asChild>
           <Link to="/auth">Iniciar Sesión</Link>
         </Button>
@@ -65,8 +66,8 @@ const LandingPage = () => {
         </Button>
       </div>
 
-      {/* Hero Navigation (Quick access links) */}
-      <div className="container mx-auto flex justify-center mt-8 mb-4 md:hidden">
+      {/* Hero Navigation (moved to top for better visibility) */}
+      <div className="container mx-auto flex justify-center mt-6 mb-2 md:hidden">
         <div className="flex flex-wrap gap-2 justify-center">
           <a href="#features" className="px-3 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">Características</a>
           <a href="#pricing" className="px-3 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">Precios</a>
@@ -74,8 +75,8 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="relative py-20 md:py-32 px-4 overflow-visible">
+      {/* Hero Section - improved spacing */}
+      <section className="relative py-20 md:py-24 px-4 mt-10 md:mt-0">
         <div className="absolute inset-0 bg-gradient-to-br from-background to-blue-50 -z-10"></div>
         <div className="absolute inset-0 opacity-10 -z-10">
           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -110,12 +111,16 @@ const LandingPage = () => {
                   <a href="#how-it-works">Ver cómo funciona</a>
                 </Button>
               </div>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <CheckCircle className="h-4 w-4 mr-2 text-primary" />
-                <span>14 días de prueba gratuita</span>
-                <span className="mx-2">•</span>
-                <CheckCircle className="h-4 w-4 mr-2 text-primary" />
-                <span>Sin tarjeta de crédito</span>
+              <div className="flex flex-wrap items-center text-sm text-muted-foreground gap-2">
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                  <span>14 días de prueba gratuita</span>
+                </div>
+                <span className="hidden sm:inline mx-2">•</span>
+                <div className="flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                  <span>Sin tarjeta de crédito</span>
+                </div>
               </div>
             </div>
             

@@ -22,10 +22,10 @@ a[href^="#"] {
   }
 }
 
-/* Prevent iOS bouncing/overscroll behavior */
-html, body {
+/* Remove the overscroll prevention - this was causing scroll issues */
+/* html, body {
   overscroll-behavior-y: none;
-}
+} */
 
 /* Ensure links are properly clickable */
 a, button {
@@ -46,4 +46,10 @@ main, .main-content {
 /* Prevent fixed elements from affecting scrolling */
 .fixed, .sticky {
   transform: translateZ(0);
+}
+
+/* Additional fixes for page scrolling */
+html, body, #root {
+  height: 100%;
+  overflow-y: auto;
 }
