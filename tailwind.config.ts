@@ -69,36 +69,36 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// New blue-centered color system
+				// New purple-centered color system
 				electric: {
-					DEFAULT: '#0066CC', // Blue
-					light: '#3399FF', // Light Blue
-					dark: '#004C99', // Dark Blue
+					DEFAULT: '#8A4FFF', // Purple
+					light: '#B28AFF', // Light Purple
+					dark: '#6A31D9', // Dark Purple
 				},
 				aqua: {
-					DEFAULT: '#00CCFF', // Cyan
-					light: '#99EEFF', // Light Cyan
-					dark: '#0099CC', // Dark Cyan
+					DEFAULT: '#AE5CFF', // Violet
+					light: '#D9ADFF', // Light Violet
+					dark: '#8A2BE2', // Deep Violet
 				},
 				vibrant: {
-					DEFAULT: '#FF6B6B', // Coral Pink (keep as accent)
-					light: '#FF9E9E', // Light Coral
-					dark: '#E63946', // Imperial Red
+					DEFAULT: '#FF6B9D', // Pink (keep as accent)
+					light: '#FF9EBE', // Light Pink
+					dark: '#E63980', // Deep Pink
 				},
 				foam: {
-					DEFAULT: '#F0F8FF', // Alice Blue
+					DEFAULT: '#F8F6FF', // Light Purple White
 					light: '#FFFFFF', // White
-					dark: '#E6F2FF', // Very Light Blue
+					dark: '#EDE9FF', // Very Light Purple
 				},
 				pine: {
-					DEFAULT: '#4CAF50', // Green
-					light: '#8BC34A', // Light Green
-					dark: '#2E7D32', // Dark Green
+					DEFAULT: '#9B4DCA', // Purple-tinted Green 
+					light: '#BC8AE6', // Light Purple-Green
+					dark: '#7A32A8', // Dark Purple-Green
 				},
 				sand: {
-					DEFAULT: '#FFDAB9', // Peach Puff
-					light: '#FFE4C4', // Bisque
-					dark: '#FFCC99', // Light Peach
+					DEFAULT: '#FFD9FA', // Light Pink Peach
+					light: '#FFE4FF', // Lighter Pink
+					dark: '#FFBFF2', // Pink Peach
 				},
 				lavender: {
 					DEFAULT: '#E6E6FA', // Lavender
@@ -106,16 +106,16 @@ export default {
 					dark: '#D8BFD8', // Thistle
 				},
 				charcoal: {
-					DEFAULT: '#36454F', // Charcoal
-					dark: '#1A1A2E', // Very Dark Blue
-					light: '#4B5D67', // Slate Gray
+					DEFAULT: '#3A2F4D', // Purple-tinted Charcoal
+					dark: '#1A172E', // Very Dark Purple
+					light: '#574D67', // Purple Slate Gray
 				},
 				soft: {
 					beige: '#F5F2ED',
-					gray: '#F1F0FB',
-					peach: '#FDE1D3',
+					gray: '#F1F0FB', // Purple-tinted Gray
+					peach: '#FDE1F3', // Purple-tinted Peach
 					pink: '#FFDEE2',
-					blue: '#D3E4FD',
+					purple: '#EBD5FF', // Light Purple
 					green: '#F2FCE2',
 				},
 			},
@@ -182,9 +182,9 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-soft': 'linear-gradient(to right, #6A5ACD, #7B68EE)',
-				'gradient-aqua': 'linear-gradient(to right, #00FFFF, #AFEEEE)',
-				'gradient-vibrant': 'linear-gradient(to right, #FF6B6B, #FF9E9E)',
-				'gradient-foam': 'linear-gradient(to right, #F0F8FF, #FFFFFF)',
+				'gradient-aqua': 'linear-gradient(to right, #AE5CFF, #D9ADFF)',
+				'gradient-vibrant': 'linear-gradient(to right, #FF6B9D, #FF9EBE)',
+				'gradient-foam': 'linear-gradient(to right, #F8F6FF, #FFFFFF)',
 			}
 		}
 	},
