@@ -1,0 +1,73 @@
+
+/* Mobile dialog styles */
+
+/* Base styles for mobile dialogs */
+@media (max-width: 768px) {
+  .mobile-dialog {
+    width: 92vw !important;
+    max-width: 92vw !important;
+    padding: 1rem !important;
+  }
+  
+  /* Improved touch targets for buttons in dialogs */
+  .mobile-dialog button,
+  [role="dialog"] button,
+  [role="alertdialog"] button {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Better spacing for dialog elements on mobile */
+  .mobile-dialog .dialog-header {
+    padding: 0.5rem 0;
+  }
+  
+  .mobile-dialog .dialog-title {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  
+  .mobile-dialog .dialog-description {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin-top: 0.25rem;
+  }
+  
+  /* Stack buttons vertically on mobile */
+  .mobile-dialog .dialog-footer {
+    display: flex;
+    flex-direction: column-reverse;
+    margin-top: 1rem;
+  }
+  
+  .mobile-dialog .dialog-footer button,
+  [role="alertdialog"] .dialog-footer button {
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Fix for iOS scrolling */
+  .mobile-dialog {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Dialog accessibility improvements */
+@media (max-width: 768px) {
+  /* Increase contrast for alert dialog text */
+  [role="alertdialog"] .text-muted-foreground {
+    opacity: 0.9;
+  }
+  
+  /* Ensure dialog overlay covers everything */
+  [role="alertdialog"] > div:first-child {
+    z-index: 49 !important;
+  }
+  
+  /* Ensure dialog content is above overlay */
+  [role="alertdialog"] > div:last-child {
+    z-index: 50 !important;
+  }
+}

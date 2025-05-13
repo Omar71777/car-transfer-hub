@@ -11,9 +11,11 @@
 
 /* Dialog fixes */
 @import './dialog-fixes.css';
+@import './mobile-dialogs.css';
 
 /* Then animations */
 @import './animations.css';
 
 /* Finally responsive styles */
 @import './responsive/index.css';
+

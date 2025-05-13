@@ -182,7 +182,7 @@ export function TransferDialogs({
 
   return (
     <>
-      {/* Delete Transfer Dialog */}
+      {/* Delete Transfer Dialog - Now with improved mobile styling */}
       <DeleteTransferDialog
         open={isDeleteDialogOpen}
         onOpenChange={onCloseDeleteDialog}

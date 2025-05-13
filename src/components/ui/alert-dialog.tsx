@@ -50,10 +50,12 @@ const AlertDialogContent = React.forwardRef<
     
     // Lock scroll when dialog is open
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('dialog-open');
     
     // Cleanup function to ensure proper state restoration
     return () => {
       document.body.style.pointerEvents = 'auto';
+      document.body.classList.remove('dialog-open');
       
       // Only restore scroll if this is the last dialog
       const hasOtherDialogs = document.querySelectorAll('[role="dialog"], [role="alertdialog"]').length > 1;
@@ -88,7 +90,7 @@ const AlertDialogContent = React.forwardRef<
         className={cn(
           "fixed left-[50%] top-[50%] z-50 grid w-full max-h-[90vh] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-card shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-xl overflow-y-auto",
           isMobile 
-            ? "max-w-[92vw] p-5" 
+            ? "max-w-[92vw] p-4" 
             : "max-w-lg p-6",
           className
         )}

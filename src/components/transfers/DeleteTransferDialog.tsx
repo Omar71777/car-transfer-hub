@@ -11,6 +11,7 @@ import {
   AlertDialogTitle 
 } from '@/components/ui/alert-dialog';
 import { Loader } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DeleteTransferDialogProps {
   open: boolean;
@@ -28,6 +29,7 @@ export function DeleteTransferDialog({
   count = 0
 }: DeleteTransferDialogProps) {
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const isMobile = useIsMobile();
 
   const handleConfirm = async () => {
     setIsDeleting(true);
@@ -58,19 +60,28 @@ export function DeleteTransferDialog({
         }
       }}
     >
-      <AlertDialogContent className="max-w-[min(450px,90vw)]">
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>
+      <AlertDialogContent 
+        className={`dialog-content max-w-[min(450px,90vw)] ${isMobile ? 'mobile-dialog' : ''}`}
+      >
+        <AlertDialogHeader className={isMobile ? 'dialog-header' : ''}>
+          <AlertDialogTitle className={isMobile ? 'text-base' : ''}>
+            {title}
+          </AlertDialogTitle>
+          <AlertDialogDescription className={isMobile ? 'text-sm' : ''}>
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
         
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+        <AlertDialogFooter className={`gap-2 ${isMobile ? 'dialog-footer flex-col' : ''}`}>
+          <AlertDialogCancel 
+            disabled={isDeleting}
+            className={isMobile ? 'w-full mt-0' : ''}
+          >
+            Cancelar
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className={`bg-destructive text-destructive-foreground hover:bg-destructive/90 ${isMobile ? 'w-full min-h-[44px]' : ''}`}
             disabled={isDeleting}
           >
             {isDeleting ? (
