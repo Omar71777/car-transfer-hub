@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -69,16 +68,16 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// New purple-centered color system
+				// New blue-centered color system
 				electric: {
-					DEFAULT: '#8A4FFF', // Purple
-					light: '#B28AFF', // Light Purple
-					dark: '#6A31D9', // Dark Purple
+					DEFAULT: '#1EAEDB', // Electric Blue
+					light: '#33C3F0', // Sky Blue
+					dark: '#0EA5E9', // Ocean Blue
 				},
 				aqua: {
-					DEFAULT: '#AE5CFF', // Violet
-					light: '#D9ADFF', // Light Violet
-					dark: '#8A2BE2', // Deep Violet
+					DEFAULT: '#33C3F0', // Sky Blue
+					light: '#7AD7F0', // Light Sky Blue
+					dark: '#1EAEDB', // Electric Blue
 				},
 				vibrant: {
 					DEFAULT: '#FF6B9D', // Pink (keep as accent)
@@ -86,19 +85,19 @@ export default {
 					dark: '#E63980', // Deep Pink
 				},
 				foam: {
-					DEFAULT: '#F8F6FF', // Light Purple White
+					DEFAULT: '#F0F9FF', // Light Blue White
 					light: '#FFFFFF', // White
-					dark: '#EDE9FF', // Very Light Purple
+					dark: '#E1F5FE', // Very Light Blue
 				},
 				pine: {
-					DEFAULT: '#9B4DCA', // Purple-tinted Green 
-					light: '#BC8AE6', // Light Purple-Green
-					dark: '#7A32A8', // Dark Purple-Green
+					DEFAULT: '#2B93B5', // Blue-Green
+					light: '#4DB6D3', // Light Blue-Green
+					dark: '#0D7594', // Dark Blue-Green
 				},
 				sand: {
-					DEFAULT: '#FFD9FA', // Light Pink Peach
-					light: '#FFE4FF', // Lighter Pink
-					dark: '#FFBFF2', // Pink Peach
+					DEFAULT: '#E1F5FE', // Light Blue
+					light: '#F0F9FF', // Lighter Blue
+					dark: '#B3E5FC', // Blue Accent
 				},
 				lavender: {
 					DEFAULT: '#E6E6FA', // Lavender
@@ -112,10 +111,10 @@ export default {
 				},
 				soft: {
 					beige: '#F5F2ED',
-					gray: '#F1F0FB', // Purple-tinted Gray
+					gray: '#F0F7FB', // Blue-tinted Gray
 					peach: '#FDE1F3', // Purple-tinted Peach
 					pink: '#FFDEE2',
-					purple: '#EBD5FF', // Light Purple
+					blue: '#D6F0FF', // Light Blue
 					green: '#F2FCE2',
 				},
 			},
@@ -181,10 +180,10 @@ export default {
 				'button': '0 2px 6px rgba(0, 0, 0, 0.04)',
 			},
 			backgroundImage: {
-				'gradient-soft': 'linear-gradient(to right, #6A5ACD, #7B68EE)',
-				'gradient-aqua': 'linear-gradient(to right, #AE5CFF, #D9ADFF)',
+				'gradient-soft': 'linear-gradient(to right, #1EAEDB, #33C3F0)',
+				'gradient-aqua': 'linear-gradient(to right, #33C3F0, #7AD7F0)',
 				'gradient-vibrant': 'linear-gradient(to right, #FF6B9D, #FF9EBE)',
-				'gradient-foam': 'linear-gradient(to right, #F8F6FF, #FFFFFF)',
+				'gradient-foam': 'linear-gradient(to right, #F0F9FF, #FFFFFF)',
 			}
 		}
 	},

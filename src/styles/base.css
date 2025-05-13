@@ -5,33 +5,33 @@
 
 @layer base {
   :root {
-    --background: 260 30% 99%; /* Light Purple-tinted Background */
-    --foreground: 260 30% 20%; /* Dark Purple-Gray for text */
+    --background: 210 50% 99%; /* Light Blue-tinted Background */
+    --foreground: 210 30% 20%; /* Dark Blue-Gray for text */
 
     --card: 0 0% 100%;
-    --card-foreground: 260 30% 20%;
+    --card-foreground: 210 30% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 260 30% 20%;
+    --popover-foreground: 210 30% 20%;
 
-    --primary: 260 80% 50%; /* Rich Purple */
-    --primary-foreground: 260 100% 99%;
+    --primary: 195 90% 50%; /* Electric Blue #1EAEDB */
+    --primary-foreground: 210 100% 99%;
 
-    --secondary: 280 75% 65%; /* Bright Violet */
-    --secondary-foreground: 260 30% 20%;
+    --secondary: 200 85% 60%; /* Sky Blue #33C3F0 */
+    --secondary-foreground: 210 30% 20%;
 
-    --muted: 260 40% 96%; /* Light Purple */
-    --muted-foreground: 260 10% 50%;
+    --muted: 210 40% 96%; /* Light Blue */
+    --muted-foreground: 210 10% 50%;
 
-    --accent: 45 100% 80%; /* Warm Gold */
-    --accent-foreground: 260 30% 20%;
+    --accent: 35 90% 65%; /* Warm Gold */
+    --accent-foreground: 210 30% 20%;
 
-    --destructive: 350 95% 65%; /* Vibrant Magenta-Red */
-    --destructive-foreground: 260 100% 99%;
+    --destructive: 350 95% 65%; /* Vibrant Red */
+    --destructive-foreground: 210 100% 99%;
 
-    --border: 260 40% 50% / 15%; /* Purple with transparency */
-    --input: 260 40% 95%; /* Light Purple */
-    --ring: 260 80% 50%; /* Vibrant Purple */
+    --border: 210 40% 50% / 15%; /* Blue with transparency */
+    --input: 210 40% 95%; /* Light Blue */
+    --ring: 195 90% 50%; /* Electric Blue */
 
     --radius: 1rem;
     
@@ -41,10 +41,10 @@
     --shadow-button: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.15);
 
-    /* Updated Sidebar states with purple colors */
-    --sidebar-background: 260 80% 50%; /* Rich Purple */
-    --sidebar-foreground: 260 100% 99%; /* White */
-    --sidebar-primary: 280 75% 65%; /* Bright Violet */
+    /* Updated Sidebar states with blue colors */
+    --sidebar-background: 195 90% 50%; /* Electric Blue */
+    --sidebar-foreground: 210 100% 99%; /* White */
+    --sidebar-primary: 200 85% 60%; /* Sky Blue */
   }
 
   /* Enhanced focus states for better accessibility */
