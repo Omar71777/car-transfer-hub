@@ -8,7 +8,7 @@
 @layer components {
   /* Base sidebar styles with frosted glass effect */
   .sidebar {
-    @apply bg-sidebar/80 backdrop-blur-lg border-r border-white/10;
+    @apply bg-white/85 backdrop-blur-lg border-r border-sidebar-border/20;
   }
   
   /* Gradient section styles */
@@ -30,91 +30,71 @@
   
   /* Profile container */
   .sidebar-profile {
-    @apply rounded-xl p-4 backdrop-blur-md bg-gradient-to-r from-sidebar-accent/30 to-sidebar-primary/10 
-    border border-white/10 transition-all duration-300 hover:border-white/20 shadow-inner;
+    @apply rounded-xl p-4 backdrop-blur-md bg-gradient-to-r from-sidebar-primary/15 to-sidebar-primary/5 
+    border border-sidebar-border transition-all duration-300 hover:border-sidebar-border/50 shadow-inner;
   }
 
-  /* Mobile sidebar specific styles - with hardcoded color fallbacks */
+  /* Mobile sidebar specific styles */
   .sidebar-mobile-container * {
-    @apply text-white;
-    color: white !important;
+    @apply text-sidebar-foreground;
   }
 
-  /* Fix for mobile dark sidebar */
+  /* Updated styles for light sidebar */
   .sidebar-menu-item {
     @apply transition-colors duration-200 rounded-lg;
   }
 
   .sidebar-menu-item:hover {
-    @apply bg-white/10 text-white;
-    color: white !important;
+    @apply bg-sidebar-hover text-sidebar-foreground;
   }
 
   .sidebar-menu-item.selected {
-    @apply bg-white/20 text-white font-medium shadow-sm border-l-2 border-white/50;
-    color: white !important;
+    @apply bg-sidebar-selected/10 text-sidebar-foreground font-medium shadow-sm border-l-2 border-sidebar-selected;
   }
   
   /* Standardized sidebar styling */
   .sidebar-header {
-    @apply border-b border-white/10 pb-2;
+    @apply border-b border-sidebar-border/30 pb-2;
   }
   
   .sidebar-menu-label {
-    @apply text-white/70 text-xs font-semibold tracking-wider uppercase;
+    @apply text-sidebar-foreground/70 text-xs font-semibold tracking-wider uppercase;
   }
   
   .sidebar-menu-button {
-    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-white
-           hover:bg-white/10 transition-all duration-200
-           focus:outline-none focus:ring-1 focus:ring-white/30;
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground
+           hover:bg-sidebar-hover transition-all duration-200
+           focus:outline-none focus:ring-1 focus:ring-sidebar-ring/30;
   }
   
   .sidebar-menu-button.active {
-    @apply bg-white/20 text-white font-medium border-l-2 border-white/50 shadow-sm;
+    @apply bg-sidebar-selected/10 text-sidebar-selected font-medium border-l-2 border-sidebar-selected shadow-sm;
   }
 
   /* Consistent styling for all sidebar buttons */
   .sidebar-icon {
-    @apply text-white/80;
+    @apply text-sidebar-foreground/80;
   }
 
   .sidebar-highlight {
-    @apply bg-white/20;
+    @apply bg-sidebar-hover;
   }
 
   .sidebar-active-indicator {
-    @apply w-1 h-8 bg-white/80 absolute left-0 rounded-r-md transition-all duration-200;
+    @apply w-1 h-8 bg-sidebar-selected absolute left-0 rounded-r-md transition-all duration-200;
   }
 
-  /* Force text color in mobile sidebar */
+  /* Remove force text color in sidebar - now using theme variables */
   [data-sidebar="sidebar"] *,
   [data-sidebar="sidebar"] .sidebar-menu-label,
   [data-sidebar="sidebar"] .sidebar-menu-button {
-    @apply text-white;
-    color: white !important;
-  }
-  
-  /* Override any color inheritance issues */
-  [data-sidebar="sidebar"] a,
-  [data-sidebar="sidebar"] span,
-  [data-sidebar="sidebar"] div,
-  [data-sidebar="sidebar"] p {
-    @apply text-white;
-    color: white !important;
-  }
-  
-  /* Force sidebar menu button text to be white */
-  .sidebar-menu-button span,
-  .sidebar-menu-button * {
-    @apply text-white;
-    color: white !important;
+    @apply text-sidebar-foreground;
   }
   
   /* Animation for hovering profile section */
   .sidebar-profile-shine {
     @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700;
-    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
     animation: shine 3s infinite;
   }
   

@@ -42,14 +42,14 @@ export function MobileSidebar() {
     >
       <SheetContent 
         side="left" 
-        className="p-0 max-w-[85%] border-r border-sidebar-border bg-sidebar text-white"
+        className="p-0 max-w-[85%] border-r border-sidebar-border bg-white/85 backdrop-blur-lg text-sidebar-foreground"
         onClick={(e) => {
           // Prevent event bubbling that might cause state conflicts
           e.stopPropagation();
         }}
       >
-        <ScrollArea className="h-full text-white">
-          <div className="sidebar-mobile-container text-white">
+        <ScrollArea className="h-full">
+          <div className="sidebar-mobile-container">
             <AppSidebar />
           </div>
         </ScrollArea>

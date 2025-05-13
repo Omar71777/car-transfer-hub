@@ -18,10 +18,10 @@ export const AppSidebar = () => {
   const isMobile = useIsMobile();
 
   return (
-    <Sidebar className="bg-sidebar/80 backdrop-blur-lg border-r border-white/10" data-mobile={isMobile}>
+    <Sidebar className="bg-white/85 backdrop-blur-lg border-r border-sidebar-border/20" data-mobile={isMobile}>
       <div className="py-6 px-3">
         <SidebarUserProfile profile={profile} />
-        <Separator className="bg-white/10 my-4" />
+        <Separator className="bg-sidebar-border/30 my-4" />
       </div>
 
       {/* Main menu section with blue gradient */}
@@ -41,8 +41,8 @@ export const AppSidebar = () => {
         </div>
       )}
       
-      <SidebarFooter className="mt-auto border-t border-white/10 py-4">
-        <div className="px-4 py-2 text-xs text-white/70">
+      <SidebarFooter className="mt-auto border-t border-sidebar-border/30 py-4">
+        <div className="px-4 py-2 text-xs text-sidebar-foreground/70">
           CTHub © {new Date().getFullYear()}
         </div>
       </SidebarFooter>

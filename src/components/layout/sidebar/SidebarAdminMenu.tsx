@@ -23,14 +23,14 @@ export const SidebarAdminMenu: React.FC = () => {
     return cn(
       "transition-colors duration-200",
       isActive(path) 
-        ? "text-white font-medium bg-white/20 shadow-sm" 
-        : "text-white/80 hover:bg-white/10 hover:text-white"
+        ? "text-sidebar-selected font-medium bg-sidebar-selected/10 shadow-sm" 
+        : "text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground"
     );
   };
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="text-white/80">ADMINISTRACIÓN</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-sidebar-foreground/70">ADMINISTRACIÓN</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem>
