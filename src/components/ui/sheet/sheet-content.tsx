@@ -94,10 +94,7 @@ const SheetContent = React.forwardRef<
   
   return (
     <SheetPortal>
-      <SheetOverlay onClick={(e) => {
-        // Prevent click propagation
-        e.stopPropagation();
-      }}/>
+      <SheetOverlay />
       <SheetPrimitive.Content
         ref={combinedRef}
         className={cn(
@@ -109,37 +106,6 @@ const SheetContent = React.forwardRef<
           // Let the custom classes from parent component override defaults
           className
         )}
-        onClick={(e) => {
-          e.stopPropagation();
-          // Ensure pointer events are enabled when clicking content
-          document.body.style.pointerEvents = 'auto';
-          
-          if (props.onClick) {
-            props.onClick(e);
-          }
-        }}
-        onOpenAutoFocus={(e) => {
-          // Handle custom focus logic
-          document.body.style.pointerEvents = 'auto';
-          
-          if (props.onOpenAutoFocus) {
-            props.onOpenAutoFocus(e);
-          }
-        }}
-        onCloseAutoFocus={(e) => {
-          document.body.style.pointerEvents = 'auto';
-          
-          if (props.onCloseAutoFocus) {
-            props.onCloseAutoFocus(e);
-          }
-        }}
-        onEscapeKeyDown={(e) => {
-          document.body.style.pointerEvents = 'auto';
-          
-          if (props.onEscapeKeyDown) {
-            props.onEscapeKeyDown(e);
-          }
-        }}
         {...props}
       >
         {children}
