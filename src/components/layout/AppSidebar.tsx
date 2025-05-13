@@ -10,13 +10,18 @@ import { SidebarUserMenu } from './sidebar/SidebarUserMenu';
 import { SidebarAdminMenu } from './sidebar/SidebarAdminMenu';
 import { SidebarFooter } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const AppSidebar = () => {
   const { profile, isAdmin, signOut } = useAuth();
-  const { openMobile, setOpenMobile } = useSidebar();
+  const { openMobile } = useSidebar();
+  const isMobile = useIsMobile();
 
   return (
-    <Sidebar className="border-r border-sidebar-border bg-sidebar">
+    <Sidebar className={cn(
+      "border-r border-sidebar-border bg-sidebar",
+      isMobile ? "text-white" : ""
+    )} data-mobile={isMobile}>
       <div className="py-6 px-3">
         <SidebarUserProfile profile={profile} />
         <Separator className="bg-sidebar-border my-4" />
@@ -28,7 +33,10 @@ export const AppSidebar = () => {
       {isAdmin && <SidebarAdminMenu />}
       
       <SidebarFooter className="mt-auto border-t border-sidebar-border py-4">
-        <div className="px-4 py-2 text-xs text-sidebar-foreground/70">
+        <div className={cn(
+          "px-4 py-2 text-xs text-sidebar-foreground/70",
+          isMobile ? "text-white" : ""
+        )}>
           CTHub © {new Date().getFullYear()}
         </div>
       </SidebarFooter>

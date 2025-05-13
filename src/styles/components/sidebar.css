@@ -6,9 +6,10 @@
 
 /* Sidebar menu state styles */
 @layer components {
-  /* Mobile sidebar specific styles */
+  /* Mobile sidebar specific styles - with hardcoded color fallbacks */
   .sidebar-mobile-container * {
-    @apply text-sidebar-foreground;
+    @apply text-white;
+    color: white !important;
   }
 
   /* Fix for mobile dark sidebar */
@@ -17,11 +18,13 @@
   }
 
   .sidebar-menu-item:hover {
-    @apply bg-sidebar-hover text-sidebar-foreground;
+    @apply bg-sidebar-hover text-white;
+    color: white !important;
   }
 
   .sidebar-menu-item.selected {
-    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+    @apply bg-sidebar-selected text-white font-medium;
+    color: white !important;
   }
   
   /* Standardized sidebar styling */
@@ -57,17 +60,26 @@
   }
 
   /* Force text color in mobile sidebar */
-  [data-sidebar="sidebar"][data-mobile="true"] *,
-  [data-sidebar="sidebar"][data-mobile="true"] .sidebar-menu-label,
-  [data-sidebar="sidebar"][data-mobile="true"] .sidebar-menu-button {
-    @apply text-sidebar-foreground;
+  [data-sidebar="sidebar"] *,
+  [data-sidebar="sidebar"] .sidebar-menu-label,
+  [data-sidebar="sidebar"] .sidebar-menu-button {
+    @apply text-white;
+    color: white !important;
   }
   
   /* Override any color inheritance issues */
-  [data-sidebar="sidebar"][data-mobile="true"] a,
-  [data-sidebar="sidebar"][data-mobile="true"] span,
-  [data-sidebar="sidebar"][data-mobile="true"] div,
-  [data-sidebar="sidebar"][data-mobile="true"] p {
-    @apply text-sidebar-foreground;
+  [data-sidebar="sidebar"] a,
+  [data-sidebar="sidebar"] span,
+  [data-sidebar="sidebar"] div,
+  [data-sidebar="sidebar"] p {
+    @apply text-white;
+    color: white !important;
+  }
+  
+  /* Force sidebar menu button text to be white */
+  .sidebar-menu-button span,
+  .sidebar-menu-button * {
+    @apply text-white;
+    color: white !important;
   }
 }
