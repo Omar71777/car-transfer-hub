@@ -16,7 +16,7 @@
   
   /* Make horizontal scroll containers more visible */
   .mobile-scroll {
-    @apply rounded-xl border border-border\/30 p-1.5 shadow-sm;
+    @apply rounded-xl border border-muted/30 p-1.5 shadow-sm;
   }
   
   /* Prevent horizontal overflow on mobile */
