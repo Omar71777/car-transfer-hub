@@ -23,7 +23,7 @@ export function MobileHeader({
   const navigate = useNavigate();
   const location = useLocation();
   const { profile } = useAuth();
-  const { openMobile, setOpenMobile } = useSidebar();
+  const { setOpenMobile } = useSidebar();
   
   const handleBack = () => {
     navigate(-1);
@@ -93,7 +93,7 @@ export function MobileHeader({
 
 // Helper function to get page title from location
 function getPageTitleFromLocation(pathname: string): string {
-  if (pathname === '/') return 'Inicio';
+  if (pathname === '/' || pathname === '/dashboard') return 'Inicio';
   if (pathname.startsWith('/transfers')) return 'Traslados';
   if (pathname.startsWith('/billing')) return 'Facturas';
   if (pathname.startsWith('/clients')) return 'Clientes';

@@ -8,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { AppSidebar } from './AppSidebar';
 import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
 import { OfflineDetection } from '@/components/ui/offline-detection';
+import { MobileSidebar } from './MobileSidebar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -53,6 +54,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
     <TooltipProvider>
       <div className="flex w-full bg-background">
         {!isMobile && <AppSidebar />}
+        {isMobile && <MobileSidebar />}
         
         <div className="flex flex-col flex-grow min-h-screen w-full relative" id="main-content">
           {isMobile && (
