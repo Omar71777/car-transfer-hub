@@ -18,25 +18,31 @@ export const AppSidebar = () => {
   const isMobile = useIsMobile();
 
   return (
-    <Sidebar className={cn(
-      "border-r border-sidebar-border bg-sidebar",
-      isMobile ? "text-white" : ""
-    )} data-mobile={isMobile}>
+    <Sidebar className="bg-sidebar/80 backdrop-blur-lg border-r border-white/10" data-mobile={isMobile}>
       <div className="py-6 px-3">
         <SidebarUserProfile profile={profile} />
-        <Separator className="bg-sidebar-border my-4" />
+        <Separator className="bg-white/10 my-4" />
       </div>
 
-      <SidebarMainMenu />
-      <SidebarUserMenu onSignOut={signOut} />
+      {/* Main menu section with blue gradient */}
+      <div className="sidebar-section primary px-2 py-3 mx-2 mb-4">
+        <SidebarMainMenu />
+      </div>
       
-      {isAdmin && <SidebarAdminMenu />}
+      {/* User menu section with green gradient */}
+      <div className="sidebar-section account px-2 py-3 mx-2 mb-4">
+        <SidebarUserMenu onSignOut={signOut} />
+      </div>
       
-      <SidebarFooter className="mt-auto border-t border-sidebar-border py-4">
-        <div className={cn(
-          "px-4 py-2 text-xs text-sidebar-foreground/70",
-          isMobile ? "text-white" : ""
-        )}>
+      {/* Admin menu with pink/purple gradient (only shown to admins) */}
+      {isAdmin && (
+        <div className="sidebar-section admin px-2 py-3 mx-2 mb-4">
+          <SidebarAdminMenu />
+        </div>
+      )}
+      
+      <SidebarFooter className="mt-auto border-t border-white/10 py-4">
+        <div className="px-4 py-2 text-xs text-white/70">
           CTHub © {new Date().getFullYear()}
         </div>
       </SidebarFooter>

@@ -19,7 +19,7 @@ export const SidebarMainMenu = () => {
   
   return (
     <SidebarMenu>
-      <h3 className="text-xs uppercase font-medium mb-2 px-4 text-sidebar-foreground/80">Principal</h3>
+      <h3 className="text-xs uppercase font-medium mb-2 px-4 text-white/80">Principal</h3>
       
       <SidebarMenuItem>
         <SidebarMenuButton label="Inicio" icon={Home} url="/" end={true} />

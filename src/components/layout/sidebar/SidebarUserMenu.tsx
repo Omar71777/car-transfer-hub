@@ -40,18 +40,18 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>MI CUENTA</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-white/80">MI CUENTA</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              className="text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground transition-colors duration-200"
+              className="text-white/80 hover:bg-white/10 hover:text-white transition-colors duration-200"
               asChild
               isActive={isActive('/profile')}
             >
               <Link to="/profile">
-                <Settings className="h-4 w-4 mr-3 text-sidebar-foreground/80" />
-                <span className="text-sidebar-foreground">Mi Perfil</span>
+                <Settings className="h-4 w-4 mr-3 text-white/80" />
+                <span className="text-white">Mi Perfil</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -59,10 +59,10 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={handleSignOut}
-              className="text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground transition-colors duration-200"
+              className="text-white/80 hover:bg-white/10 hover:text-white transition-colors duration-200"
             >
-              <LogOut className="h-4 w-4 mr-3 text-sidebar-foreground/80" />
-              <span className="text-sidebar-foreground">Cerrar Sesión</span>
+              <LogOut className="h-4 w-4 mr-3 text-white/80" />
+              <span className="text-white">Cerrar Sesión</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

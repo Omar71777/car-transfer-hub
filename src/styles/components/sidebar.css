@@ -6,6 +6,34 @@
 
 /* Sidebar menu state styles */
 @layer components {
+  /* Base sidebar styles with frosted glass effect */
+  .sidebar {
+    @apply bg-sidebar/80 backdrop-blur-lg border-r border-white/10;
+  }
+  
+  /* Gradient section styles */
+  .sidebar-section {
+    @apply rounded-xl my-2 p-3 backdrop-blur-sm transition-all;
+  }
+  
+  .sidebar-section.primary {
+    @apply bg-gradient-to-br from-electric/20 to-aqua/10 border border-electric/20;
+  }
+  
+  .sidebar-section.account {
+    @apply bg-gradient-to-br from-pine/20 to-aqua-light/10 border border-pine/20;
+  }
+  
+  .sidebar-section.admin {
+    @apply bg-gradient-to-br from-vibrant/20 to-vibrant-light/10 border border-vibrant/20;
+  }
+  
+  /* Profile container */
+  .sidebar-profile {
+    @apply rounded-xl p-4 backdrop-blur-md bg-gradient-to-r from-sidebar-accent/30 to-sidebar-primary/10 
+    border border-white/10 transition-all duration-300 hover:border-white/20 shadow-inner;
+  }
+
   /* Mobile sidebar specific styles - with hardcoded color fallbacks */
   .sidebar-mobile-container * {
     @apply text-white;
@@ -14,49 +42,49 @@
 
   /* Fix for mobile dark sidebar */
   .sidebar-menu-item {
-    @apply transition-colors duration-200;
+    @apply transition-colors duration-200 rounded-lg;
   }
 
   .sidebar-menu-item:hover {
-    @apply bg-sidebar-hover text-white;
+    @apply bg-white/10 text-white;
     color: white !important;
   }
 
   .sidebar-menu-item.selected {
-    @apply bg-sidebar-selected text-white font-medium;
+    @apply bg-white/20 text-white font-medium shadow-sm border-l-2 border-white/50;
     color: white !important;
   }
   
   /* Standardized sidebar styling */
   .sidebar-header {
-    @apply border-b border-sidebar-border pb-2;
+    @apply border-b border-white/10 pb-2;
   }
   
   .sidebar-menu-label {
-    @apply text-sidebar-foreground/70 text-xs font-semibold tracking-wider uppercase;
+    @apply text-white/70 text-xs font-semibold tracking-wider uppercase;
   }
   
   .sidebar-menu-button {
-    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground
-           hover:bg-sidebar-hover transition-all duration-200
-           focus:outline-none focus:ring-1 focus:ring-sidebar-ring;
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-white
+           hover:bg-white/10 transition-all duration-200
+           focus:outline-none focus:ring-1 focus:ring-white/30;
   }
   
   .sidebar-menu-button.active {
-    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
+    @apply bg-white/20 text-white font-medium border-l-2 border-white/50 shadow-sm;
   }
 
   /* Consistent styling for all sidebar buttons */
   .sidebar-icon {
-    @apply text-sidebar-primary;
+    @apply text-white/80;
   }
 
   .sidebar-highlight {
-    @apply bg-sidebar-accent/40;
+    @apply bg-white/20;
   }
 
   .sidebar-active-indicator {
-    @apply w-1 h-8 bg-sidebar-primary absolute left-0 rounded-r-md transition-all duration-200;
+    @apply w-1 h-8 bg-white/80 absolute left-0 rounded-r-md transition-all duration-200;
   }
 
   /* Force text color in mobile sidebar */
@@ -81,5 +109,21 @@
   .sidebar-menu-button * {
     @apply text-white;
     color: white !important;
+  }
+  
+  /* Animation for hovering profile section */
+  .sidebar-profile-shine {
+    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shine 3s infinite;
+  }
+  
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
 }
