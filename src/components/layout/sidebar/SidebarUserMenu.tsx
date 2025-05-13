@@ -23,16 +23,6 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
   // Helper to determine if a path is active
   const isActive = (path: string) => location.pathname.includes(path);
 
-  // Get class names for menu buttons based on active state
-  const getMenuButtonClass = (path: string) => {
-    return cn(
-      "transition-colors duration-200",
-      isActive(path) 
-        ? "text-sidebar-primary font-medium bg-sidebar-selected shadow-sm" 
-        : "text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground"
-    );
-  };
-
   const handleSignOut = async () => {
     try {
       console.log('Attempting to sign out...');
@@ -55,12 +45,13 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              className={getMenuButtonClass('/profile')}
+              className="text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground transition-colors duration-200"
               asChild
+              isActive={isActive('/profile')}
             >
               <Link to="/profile">
-                <Settings size={20} />
-                <span>Mi Perfil</span>
+                <Settings className="h-4 w-4 mr-3 text-sidebar-foreground/80" />
+                <span className="text-sidebar-foreground">Mi Perfil</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -70,8 +61,8 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ onSignOut }) =
               onClick={handleSignOut}
               className="text-sidebar-foreground/80 hover:bg-sidebar-hover hover:text-sidebar-foreground transition-colors duration-200"
             >
-              <LogOut size={20} />
-              <span>Cerrar Sesión</span>
+              <LogOut className="h-4 w-4 mr-3 text-sidebar-foreground/80" />
+              <span className="text-sidebar-foreground">Cerrar Sesión</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

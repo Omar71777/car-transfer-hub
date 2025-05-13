@@ -42,7 +42,7 @@ export function MobileSidebar() {
     >
       <SheetContent 
         side="left" 
-        className="p-0 max-w-[85%] border-r"
+        className="p-0 max-w-[85%] border-r bg-sidebar text-sidebar-foreground"
         onClick={(e) => {
           // Prevent event bubbling that might cause state conflicts
           e.stopPropagation();

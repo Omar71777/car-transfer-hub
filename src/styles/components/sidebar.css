@@ -15,7 +15,7 @@
   }
 
   .sidebar-menu-item.selected {
-    @apply bg-sidebar-selected text-white font-medium;
+    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
   }
   
   /* Standardized sidebar styling */
@@ -34,7 +34,7 @@
   }
   
   .sidebar-menu-button.active {
-    @apply bg-sidebar-selected text-white font-medium;
+    @apply bg-sidebar-selected text-sidebar-foreground font-medium;
   }
 
   /* Consistent styling for all sidebar buttons */
