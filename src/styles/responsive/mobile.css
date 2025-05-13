@@ -16,7 +16,7 @@
   
   /* Make horizontal scroll containers more visible */
   .mobile-scroll {
-    @apply rounded-xl border border-border/30 p-1.5 shadow-sm;
+    @apply rounded-xl border border-border\/30 p-1.5 shadow-sm;
   }
   
   /* Prevent horizontal overflow on mobile */
@@ -45,8 +45,8 @@
   
   /* Ensure text is visible in sidebar user profile */
   [role="dialog"] .sidebar-mobile-container .text-sidebar-foreground,
-  [role="dialog"] .sidebar-mobile-container .text-sidebar-foreground/70,
-  [role="dialog"] .sidebar-mobile-container .text-sidebar-foreground/90 {
+  [role="dialog"] .sidebar-mobile-container .text-sidebar-foreground\/70,
+  [role="dialog"] .sidebar-mobile-container .text-sidebar-foreground\/90 {
     @apply text-white;
     color: white !important;
   }
