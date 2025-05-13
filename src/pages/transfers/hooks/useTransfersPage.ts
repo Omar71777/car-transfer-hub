@@ -122,7 +122,8 @@ export function useTransfersPage() {
     handlePrintWithOptions: printHandlers.handlePrintWithOptions,
     handleMarkAsPaid: transferOperations.handleMarkAsPaid,
     closeDeleteDialog: dialogState.closeDeleteDialog,
-    // Expose actual delete operations for the dialog confirm buttons
+    
+    // Export actual delete operations for the dialog confirm buttons
     deleteTransfer: transferOperations.handleDeleteTransfer,
     deleteMultipleTransfers: transferOperations.handleDeleteMultipleTransfers
   };

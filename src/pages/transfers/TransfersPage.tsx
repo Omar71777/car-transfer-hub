@@ -42,7 +42,10 @@ const TransfersPage = () => {
     handleClosePrintDialog,
     handlePrintWithOptions,
     handleMarkAsPaid,
-    closeDeleteDialog
+    closeDeleteDialog,
+    // Access the actual delete operations
+    deleteTransfer,
+    deleteMultipleTransfers
   } = useTransfersPage();
   
   const handleAddTransfer = () => {
@@ -50,16 +53,16 @@ const TransfersPage = () => {
   };
 
   // Prepare confirm handlers that will be called when user confirms deletion
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (): Promise<boolean> => {
     if (transferToDelete) {
-      return handleDeleteTransfer(transferToDelete);
+      return await deleteTransfer(transferToDelete);
     }
     return false;
   };
 
-  const handleDeleteMultipleConfirm = async () => {
+  const handleDeleteMultipleConfirm = async (): Promise<boolean> => {
     if (transfersToDelete.length > 0) {
-      return handleDeleteMultipleTransfers(transfersToDelete);
+      return await deleteMultipleTransfers(transfersToDelete);
     }
     return false;
   };
