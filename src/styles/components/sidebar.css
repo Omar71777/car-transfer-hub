@@ -6,6 +6,12 @@
 
 /* Sidebar menu state styles */
 @layer components {
+  /* Mobile sidebar specific styles */
+  .sidebar-mobile-container * {
+    @apply text-sidebar-foreground;
+  }
+
+  /* Fix for mobile dark sidebar */
   .sidebar-menu-item {
     @apply transition-colors duration-200;
   }
@@ -48,5 +54,20 @@
 
   .sidebar-active-indicator {
     @apply w-1 h-8 bg-sidebar-primary absolute left-0 rounded-r-md transition-all duration-200;
+  }
+
+  /* Force text color in mobile sidebar */
+  [data-sidebar="sidebar"][data-mobile="true"] *,
+  [data-sidebar="sidebar"][data-mobile="true"] .sidebar-menu-label,
+  [data-sidebar="sidebar"][data-mobile="true"] .sidebar-menu-button {
+    @apply text-sidebar-foreground;
+  }
+  
+  /* Override any color inheritance issues */
+  [data-sidebar="sidebar"][data-mobile="true"] a,
+  [data-sidebar="sidebar"][data-mobile="true"] span,
+  [data-sidebar="sidebar"][data-mobile="true"] div,
+  [data-sidebar="sidebar"][data-mobile="true"] p {
+    @apply text-sidebar-foreground;
   }
 }

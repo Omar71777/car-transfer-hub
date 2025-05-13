@@ -40,13 +40,13 @@ export const SidebarUserProfile: React.FC<SidebarUserProfileProps> = ({
         </AvatarFallback>
       </Avatar>
       
-      <div className="flex flex-col justify-center overflow-hidden flex-1">
+      <div className="flex flex-col justify-center overflow-hidden flex-1 text-sidebar-foreground">
         <p className="text-sm font-medium truncate text-sidebar-foreground group-hover:text-sidebar-foreground transition-colors duration-300">
           {fullName()}
         </p>
         <div className="flex items-center text-xs text-sidebar-foreground/70 group-hover:text-sidebar-foreground/90 transition-colors duration-300">
-          <Mail className="h-3 w-3 mr-1 inline-block" />
-          <span className="truncate">
+          <Mail className="h-3 w-3 mr-1 inline-block text-sidebar-foreground/70" />
+          <span className="truncate text-sidebar-foreground/90">
             {profile?.email || 'usuario@ejemplo.com'}
           </span>
         </div>

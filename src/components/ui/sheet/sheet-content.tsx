@@ -86,6 +86,9 @@ const SheetContent = React.forwardRef<
     };
   }, []);
   
+  // Determine if this sheet is being used for the sidebar
+  const isSidebarSheet = className?.includes('bg-sidebar');
+  
   return (
     <SheetPortal>
       <SheetOverlay onClick={(e) => {
@@ -98,6 +101,7 @@ const SheetContent = React.forwardRef<
           sheetVariants({ side }), 
           isMobile && (side === "right" || side === "left") ? "w-[85%]" : "",
           isMobile ? "p-4" : "",
+          // Let the custom classes from parent component override defaults
           className
         )}
         onClick={(e) => {
@@ -134,7 +138,10 @@ const SheetContent = React.forwardRef<
         {...props}
       >
         {children}
-        <SheetClose className="absolute right-4 top-4 rounded-full opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary p-2">
+        <SheetClose className={cn(
+          "absolute right-4 top-4 rounded-full opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary p-2",
+          isSidebarSheet ? "text-sidebar-foreground bg-sidebar-hover" : ""
+        )}>
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </SheetClose>

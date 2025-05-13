@@ -23,6 +23,17 @@
   .overflow-x-hidden-mobile {
     @apply overflow-x-hidden;
   }
+  
+  /* Fix for mobile sidebar text colors */
+  [role="dialog"] [data-sidebar="sidebar"] {
+    @apply text-sidebar-foreground;
+  }
+  
+  [role="dialog"] [data-sidebar="sidebar"] *,
+  [role="dialog"] .sidebar-menu-button,
+  [role="dialog"] .sidebar-menu-label {
+    @apply text-sidebar-foreground !important;
+  }
 }
 
 @media (max-width: 768px) {
