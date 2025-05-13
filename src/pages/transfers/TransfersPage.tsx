@@ -23,6 +23,9 @@ const TransfersPage = () => {
     isPrintDialogOpen,
     activeTab,
     selectedTransferId,
+    isDeleteDialogOpen,
+    transferToDelete,
+    transfersToDelete,
     
     // Actions
     setIsExpenseDialogOpen,
@@ -38,11 +41,27 @@ const TransfersPage = () => {
     handleExpenseSubmit,
     handleClosePrintDialog,
     handlePrintWithOptions,
-    handleMarkAsPaid
+    handleMarkAsPaid,
+    closeDeleteDialog
   } = useTransfersPage();
   
   const handleAddTransfer = () => {
     navigate('/transfers/new');
+  };
+
+  // Prepare confirm handlers that will be called when user confirms deletion
+  const handleDeleteConfirm = async () => {
+    if (transferToDelete) {
+      return handleDeleteTransfer(transferToDelete);
+    }
+    return false;
+  };
+
+  const handleDeleteMultipleConfirm = async () => {
+    if (transfersToDelete.length > 0) {
+      return handleDeleteMultipleTransfers(transfersToDelete);
+    }
+    return false;
   };
   
   return (
@@ -69,6 +88,12 @@ const TransfersPage = () => {
         isEditDialogOpen={isEditDialogOpen}
         setIsEditDialogOpen={setIsEditDialogOpen}
         isPrintDialogOpen={isPrintDialogOpen}
+        isDeleteDialogOpen={isDeleteDialogOpen}
+        transferToDelete={transferToDelete}
+        transfersToDelete={transfersToDelete}
+        onCloseDeleteDialog={closeDeleteDialog}
+        onDeleteConfirm={handleDeleteConfirm}
+        onDeleteMultipleConfirm={handleDeleteMultipleConfirm}
         onClosePrintDialog={handleClosePrintDialog}
         onPrintWithOptions={handlePrintWithOptions}
         selectedTransferId={selectedTransferId}

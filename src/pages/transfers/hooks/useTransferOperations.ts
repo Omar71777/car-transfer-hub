@@ -1,3 +1,4 @@
+
 import { useCallback, useState } from 'react';
 import { Transfer } from '@/types';
 import { toast } from 'sonner';
@@ -48,18 +49,15 @@ export function useTransferOperations(
   
   const handleDeleteTransfer = useCallback(async (id: string) => {
     try {
-      if (window.confirm('¿Estás seguro de que quieres eliminar este transfer?')) {
-        const success = await deleteTransfer(id);
-        if (success) {
-          toast.success('Transfer eliminado correctamente');
-          await fetchTransfers();
-          return true;
-        } else {
-          toast.error('Error al eliminar el transfer');
-          return false;
-        }
+      const success = await deleteTransfer(id);
+      if (success) {
+        toast.success('Transfer eliminado correctamente');
+        await fetchTransfers();
+        return true;
+      } else {
+        toast.error('Error al eliminar el transfer');
+        return false;
       }
-      return false;
     } catch (error: any) {
       toast.error(`Error al eliminar el transfer: ${error.message}`);
       return false;
@@ -68,27 +66,24 @@ export function useTransferOperations(
   
   const handleDeleteMultipleTransfers = useCallback(async (ids: string[]) => {
     try {
-      if (window.confirm(`¿Estás seguro de que quieres eliminar ${ids.length} transfers?`)) {
-        let successCount = 0;
-        for (const id of ids) {
-          const success = await deleteTransfer(id);
-          if (success) {
-            successCount++;
-          }
+      let successCount = 0;
+      for (const id of ids) {
+        const success = await deleteTransfer(id);
+        if (success) {
+          successCount++;
         }
-        
-        if (successCount === ids.length) {
-          toast.success(`${ids.length} transfers eliminados correctamente`);
-        } else if (successCount > 0) {
-          toast.info(`${successCount} de ${ids.length} transfers eliminados correctamente`);
-        } else {
-          toast.error('No se pudo eliminar ningún transfer');
-        }
-        
-        await fetchTransfers();
-        return successCount > 0;
       }
-      return false;
+      
+      if (successCount === ids.length) {
+        toast.success(`${ids.length} transfers eliminados correctamente`);
+      } else if (successCount > 0) {
+        toast.info(`${successCount} de ${ids.length} transfers eliminados correctamente`);
+      } else {
+        toast.error('No se pudo eliminar ningún transfer');
+      }
+      
+      await fetchTransfers();
+      return successCount > 0;
     } catch (error: any) {
       toast.error(`Error al eliminar transfers: ${error.message}`);
       return false;

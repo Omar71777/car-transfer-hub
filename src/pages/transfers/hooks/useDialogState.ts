@@ -7,6 +7,9 @@ export function useDialogState() {
   const [isSummaryDialogOpen, setIsSummaryDialogOpen] = useState(false);
   const [summaryTransferId, setSummaryTransferId] = useState<string | null>(null);
   const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [transferToDelete, setTransferToDelete] = useState<string | null>(null);
+  const [transfersToDelete, setTransfersToDelete] = useState<string[]>([]);
   const dialogService = useDialog();
 
   const handleViewSummary = useCallback((transferId: string) => {
@@ -35,14 +38,45 @@ export function useDialogState() {
     setTimeout(() => setSummaryTransferId(null), 300);
   }, []);
 
+  const openDeleteDialog = useCallback((id: string) => {
+    setTransferToDelete(id);
+    setIsDeleteDialogOpen(true);
+  }, []);
+
+  const openMultipleDeleteDialog = useCallback((ids: string[]) => {
+    setTransfersToDelete(ids);
+    setIsDeleteDialogOpen(true);
+  }, []);
+
+  const closeDeleteDialog = useCallback(() => {
+    setIsDeleteDialogOpen(false);
+    // Clear ids with slight delay to allow animation
+    setTimeout(() => {
+      setTransferToDelete(null);
+      setTransfersToDelete([]);
+    }, 300);
+  }, []);
+
   return {
+    // Summary dialog
     isSummaryDialogOpen,
     setIsSummaryDialogOpen,
     summaryTransferId,
     setSummaryTransferId,
+    handleViewSummary,
+    handleCloseSummary,
+    
+    // Print dialog
     isPrintDialogOpen,
     setIsPrintDialogOpen,
-    handleViewSummary,
-    handleCloseSummary
+    
+    // Delete dialog
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    transferToDelete,
+    transfersToDelete,
+    openDeleteDialog,
+    openMultipleDeleteDialog,
+    closeDeleteDialog
   };
 }

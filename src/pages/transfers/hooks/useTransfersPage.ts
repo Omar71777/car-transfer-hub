@@ -74,6 +74,16 @@ export function useTransfersPage() {
     fetchTransfers();
   }, [fetchTransfers]);
 
+  // New handler to initiate delete operation via dialog
+  const handleDeleteTransferWithConfirm = (id: string) => {
+    dialogState.openDeleteDialog(id);
+  };
+
+  // New handler to initiate multiple delete operation via dialog
+  const handleDeleteMultipleWithConfirm = (ids: string[]) => {
+    dialogState.openMultipleDeleteDialog(ids);
+  };
+
   return {
     // State
     transfers,
@@ -87,6 +97,9 @@ export function useTransfersPage() {
     isPrintDialogOpen: printHandlers.isPrintDialogOpen,
     activeTab,
     selectedTransferId: expenseHandlers.selectedTransferId,
+    isDeleteDialogOpen: dialogState.isDeleteDialogOpen,
+    transferToDelete: dialogState.transferToDelete,
+    transfersToDelete: dialogState.transfersToDelete,
     
     // Actions
     setIsExpenseDialogOpen,
@@ -100,13 +113,17 @@ export function useTransfersPage() {
     handleViewSummary: dialogState.handleViewSummary,
     handleCloseSummary: dialogState.handleCloseSummary,
     handleEditSubmit: transferOperations.handleEditSubmit,
-    handleDeleteTransfer: transferOperations.handleDeleteTransfer,
-    handleDeleteMultipleTransfers: transferOperations.handleDeleteMultipleTransfers,
+    handleDeleteTransfer: handleDeleteTransferWithConfirm,  // Use dialog-based version
+    handleDeleteMultipleTransfers: handleDeleteMultipleWithConfirm,  // Use dialog-based version
     handleExpenseSubmit: expenseHandlers.handleExpenseSubmit,
     handlePrint: printHandlers.handlePrint,
     handleExportTransfers: printHandlers.handleExportTransfers,
     handleClosePrintDialog: printHandlers.handleClosePrintDialog,
     handlePrintWithOptions: printHandlers.handlePrintWithOptions,
-    handleMarkAsPaid: transferOperations.handleMarkAsPaid
+    handleMarkAsPaid: transferOperations.handleMarkAsPaid,
+    closeDeleteDialog: dialogState.closeDeleteDialog,
+    // Expose actual delete operations for the dialog confirm buttons
+    deleteTransfer: transferOperations.handleDeleteTransfer,
+    deleteMultipleTransfers: transferOperations.handleDeleteMultipleTransfers
   };
 }

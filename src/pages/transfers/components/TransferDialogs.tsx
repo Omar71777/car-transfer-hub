@@ -6,6 +6,7 @@ import { openTransferExpenseDialog } from '@/components/transfers/TransferExpens
 import { openTransferEditDialog } from '@/components/transfers/TransferEditDialog';
 import { openTransferPrintDialog } from '@/components/transfers/TransferPrintDialogContent';
 import { usePointerEventsFix } from '@/hooks/use-pointer-events-fix';
+import { DeleteTransferDialog } from '@/components/transfers/DeleteTransferDialog';
 
 interface TransferDialogsProps {
   isExpenseDialogOpen: boolean;
@@ -13,6 +14,12 @@ interface TransferDialogsProps {
   isEditDialogOpen: boolean;
   setIsEditDialogOpen: (open: boolean) => void;
   isPrintDialogOpen?: boolean;
+  isDeleteDialogOpen?: boolean;
+  transferToDelete?: string | null;
+  transfersToDelete?: string[];
+  onCloseDeleteDialog?: () => void;
+  onDeleteConfirm?: () => Promise<boolean>;
+  onDeleteMultipleConfirm?: () => Promise<boolean>;
   onClosePrintDialog?: () => void;
   onPrintWithOptions?: (options: any) => void;
   selectedTransferId: string | null;
@@ -28,6 +35,12 @@ export function TransferDialogs({
   isEditDialogOpen,
   setIsEditDialogOpen,
   isPrintDialogOpen = false,
+  isDeleteDialogOpen = false,
+  transferToDelete = null,
+  transfersToDelete = [],
+  onCloseDeleteDialog = () => {},
+  onDeleteConfirm = async () => false,
+  onDeleteMultipleConfirm = async () => false,
   onClosePrintDialog = () => {},
   onPrintWithOptions = () => {},
   selectedTransferId,
@@ -163,6 +176,20 @@ export function TransferDialogs({
     };
   }, []);
 
-  // No need to render any legacy components as all dialogs are now using the dialog service
-  return null;
+  // Determine if we're deleting multiple transfers or a single one
+  const isMultipleDelete = transfersToDelete.length > 0;
+  const deleteConfirmHandler = isMultipleDelete ? onDeleteMultipleConfirm : onDeleteConfirm;
+
+  return (
+    <>
+      {/* Delete Transfer Dialog */}
+      <DeleteTransferDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={onCloseDeleteDialog}
+        onConfirm={deleteConfirmHandler}
+        isMultiple={isMultipleDelete}
+        count={transfersToDelete.length}
+      />
+    </>
+  );
 }
