@@ -20,7 +20,7 @@
   
   /* Standardized sidebar styling */
   .sidebar-header {
-    @apply border-b border-sidebar-border/40 pb-2;
+    @apply border-b border-sidebar-border pb-2;
   }
   
   .sidebar-menu-label {
@@ -28,8 +28,8 @@
   }
   
   .sidebar-menu-button {
-    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground/90 
-           hover:bg-sidebar-hover hover:text-sidebar-foreground transition-all duration-200
+    @apply flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground
+           hover:bg-sidebar-hover transition-all duration-200
            focus:outline-none focus:ring-1 focus:ring-sidebar-ring;
   }
   
@@ -39,14 +39,14 @@
 
   /* Consistent styling for all sidebar buttons */
   .sidebar-icon {
-    @apply text-aqua;
+    @apply text-sidebar-primary;
   }
 
   .sidebar-highlight {
-    @apply bg-aqua-light/40;
+    @apply bg-sidebar-accent/40;
   }
 
   .sidebar-active-indicator {
-    @apply w-1 h-8 bg-aqua absolute left-0 rounded-r-md transition-all duration-200;
+    @apply w-1 h-8 bg-sidebar-primary absolute left-0 rounded-r-md transition-all duration-200;
   }
 }

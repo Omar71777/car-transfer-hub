@@ -41,10 +41,16 @@
     --shadow-button: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.15);
 
-    /* Updated Sidebar states with blue colors */
-    --sidebar-background: 195 90% 50%; /* Electric Blue */
-    --sidebar-foreground: 210 100% 99%; /* White */
-    --sidebar-primary: 200 85% 60%; /* Sky Blue */
+    /* Updated Sidebar colors for better contrast */
+    --sidebar-background: 210 30% 20%; /* Dark Blue-Gray for sidebar background */
+    --sidebar-foreground: 0 0% 100%; /* White text for sidebar */
+    --sidebar-primary: 195 90% 50%; /* Electric Blue for highlights */
+    --sidebar-hover: 210 30% 25%; /* Slightly lighter on hover */
+    --sidebar-selected: 195 90% 35%; /* Darker electric blue for selected state */
+    --sidebar-border: 0 0% 100% / 20%; /* White with transparency for borders */
+    --sidebar-ring: 195 90% 50%; /* Electric Blue for focus rings */
+    --sidebar-accent: 195 90% 40%; /* Electric Blue for accents */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text on accents */
   }
 
   /* Enhanced focus states for better accessibility */

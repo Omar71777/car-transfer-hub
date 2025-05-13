@@ -21,8 +21,8 @@ export const SidebarMenuButton = ({ label, icon: Icon, url, end = false }: Sideb
         isActive && "active"
       )}
     >
-      <Icon className="sidebar-icon h-4 w-4 mr-3" />
-      <span>{label}</span>
+      <Icon className="h-4 w-4 mr-3 text-sidebar-foreground/80" />
+      <span className="text-sidebar-foreground">{label}</span>
     </NavLink>
   );
 };

@@ -8,8 +8,7 @@ import {
   Building2,
   FileSpreadsheet, 
   Users, 
-  BadgeDollarSign,
-  ChevronRight
+  BadgeDollarSign
 } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/auth';
@@ -20,7 +19,7 @@ export const SidebarMainMenu = () => {
   
   return (
     <SidebarMenu>
-      <h3 className="text-xs uppercase font-medium mb-2 px-4 text-aqua-light">Principal</h3>
+      <h3 className="text-xs uppercase font-medium mb-2 px-4 text-sidebar-foreground/80">Principal</h3>
       
       <SidebarMenuItem>
         <SidebarMenuButton label="Inicio" icon={Home} url="/" end={true} />
