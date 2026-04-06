@@ -36,8 +36,8 @@ export function useVehicles() {
         throw error;
       }
       
-      setVehicles(data || []);
-      return data || [];
+      setVehicles((data || []) as unknown as Vehicle[]);
+      return (data || []) as unknown as Vehicle[];
     } catch (error: any) {
       console.error('Error fetching vehicles:', error);
       toast.error(`Error al cargar vehículos: ${error.message}`);
