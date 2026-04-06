@@ -163,7 +163,7 @@ export function printHtmlContent(
       
       // Setup PDF export if enabled
       if (options.showPdfExport !== false && options.fileName) {
-        const { exportToA4Pdf } = await import('../exports/pdf-export/a4PdfExporter');
+        import('../exports/pdf-export/a4PdfExporter').then(({ exportToA4Pdf: exportFn }) => {
         const pdfButton = printWindow.document.getElementById('export-pdf-btn');
         
         if (pdfButton) {
