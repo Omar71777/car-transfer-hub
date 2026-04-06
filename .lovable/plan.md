@@ -1,51 +1,106 @@
 
 
-## Plan: Create All Database Tables for New Supabase Project
+## Auditoría Completa de la Plataforma CTHub
 
-The new Supabase project has no tables. All the app's code references tables that need to be created. I'll create a single migration with all required tables, RLS policies, and triggers.
+Tras revisar el código, la base de datos, las funciones edge, y los logs, aquí están todos los problemas encontrados organizados por prioridad.
 
-### Tables to Create
+---
 
-Based on the codebase, these tables are needed:
+### CRITICOS (Bloquean funcionalidad)
 
-1. **profiles** - User profiles (linked to auth.users)
-   - id (uuid, FK to auth.users), email, first_name, last_name, role (admin/user), user_subtype, company_id, company_name, company_address, company_tax_id, company_phone, company_email, company_logo, created_at, updated_at
+**1. Registro de empresa falla por RLS**
+- El log muestra: `"new row violates row-level security policy for table companies"`
+- Causa: Al registrarse, el usuario crea la cuenta y luego intenta insertar en `companies`. Pero el token de sesión aún no está disponible inmediatamente después de `signUp`, así que `auth.uid()` no coincide con `user_id`.
+- Fix: Mover la creación de empresa a un trigger de base de datos o a una función `SECURITY DEFINER`, o esperar a que la sesión esté activa antes de crear la empresa.
 
-2. **companies** - Company records
-   - id, name, address, tax_id, phone, email, logo, user_id, created_at, updated_at
+**2. Tabla `subscribers` no existe**
+- La función edge `check-subscription` consulta una tabla `subscribers` que no fue creada en la migración.
+- Resultado: Cada vez que un usuario inicia sesión, el `SubscriptionProvider` llama a `check-subscription` y falla con error 500.
+- Fix: Crear la tabla `subscribers` o, si no se va a usar Stripe aún, desactivar el `SubscriptionProvider`.
 
-3. **clients** - Client records
-   - id, name, email, phone, address, tax_id, notes, user_id, created_at, updated_at
+**3. No hay `STRIPE_SECRET_KEY` configurada**
+- La función `check-subscription` requiere `STRIPE_SECRET_KEY` que no está en los secrets de Supabase.
+- Fix: Agregar la clave de Stripe o desactivar la funcionalidad de suscripción.
 
-4. **transfers** - Core transfer data
-   - id, date, time, service_type, origin, destination, price, hours, discount_type, discount_value, collaborator, commission, commission_type, payment_status, payment_method, billed, client_id (FK), vehicle_id, user_id, created_at, updated_at
+**4. No existe página `/reset-password`**
+- El admin puede enviar reset de contraseña pero redirige a `/auth?reset=true`, que no maneja el flujo de reset.
+- No hay componente que llame a `supabase.auth.updateUser({ password })`.
+- Fix: Crear una página `/reset-password` que procese el token de recuperación.
 
-5. **extra_charges** - Extra charges on transfers
-   - id, transfer_id (FK), name, price, created_at
+---
 
-6. **expenses** - Expenses linked to transfers
-   - id, transfer_id (FK), date, concept, amount, user_id, created_at
+### IMPORTANTES (Afectan experiencia de usuario)
 
-7. **bills** - Billing records
-   - id, client_id (FK), number, date, due_date, sub_total, tax_rate, tax_amount, tax_application, total, notes, status, user_id, created_at, updated_at
+**5. Empresa del usuario no se creó correctamente**
+- El perfil de Omar tiene `company_id: null` y `user_subtype: company_admin`, pero no hay empresas en la tabla.
+- Fix: Además de arreglar el flujo de registro, crear la empresa manualmente para el usuario existente.
 
-8. **bill_items** - Line items on bills
-   - id, bill_id (FK), transfer_id, description, quantity, unit_price, total_price, is_extra_charge, extra_charge_id, parent_item_id, created_at
+**6. Dashboard duplicado**
+- Existen `Index.tsx` y `DashboardContent.tsx` con código casi idéntico.
+- La ruta `/` redirige a `/dashboard` que usa `DashboardContent`, pero `Index.tsx` también tiene lógica de dashboard.
+- Fix: Eliminar `Index.tsx` o consolidar en un solo componente.
 
-9. **vehicles** - Vehicle records
-   - id, company_id, make, model, year, license_plate, vehicle_type, capacity, status, user_id, created_at, updated_at
+**7. Dashboard carga extra_charges con N+1 queries**
+- `useDashboardData` hace una consulta por cada transfer para obtener `extra_charges`.
+- Con 100 transfers = 101 queries.
+- Fix: Una sola consulta con `transfer_id IN (...)`.
 
-### Additional Setup
+**8. Falta foreign keys en la base de datos**
+- Ninguna tabla tiene foreign keys definidas (bill_items->bills, extra_charges->transfers, etc.).
+- Los datos pueden quedar huérfanos y no hay integridad referencial.
+- Fix: Agregar foreign keys con `ON DELETE CASCADE`.
 
-- **RLS policies** on all tables: users can only CRUD their own data
-- **Trigger**: auto-create profile on new user signup (`handle_new_user`)
-- **Enums**: user_role (admin, user), service_type, discount_type, payment_status, payment_method, bill_status, vehicle_type
+---
 
-### Technical Details
+### MEJORAS NECESARIAS
 
-- Single SQL migration with all CREATE TABLE, enum, RLS policy, and trigger statements
-- Foreign keys use `ON DELETE CASCADE` where appropriate
-- All tables have `user_id` column for RLS filtering
-- The `profiles` table uses `auth.users(id)` as FK with cascade delete
-- The types.ts file will auto-regenerate after migration
+**9. ProtectedRoute sin tipado TypeScript**
+- `ProtectedRoute` y `AuthRoute` en `App.tsx` usan `({ children })` sin tipos.
+- Fix: Agregar `React.FC<{ children: React.ReactNode }>`.
+
+**10. Perfil usa `role` directamente en la tabla profiles**
+- La documentación de seguridad dice que los roles deben estar en tabla separada. El `has_role` function consulta `profiles.role` directamente.
+- Riesgo: Un usuario podría cambiar su propio rol a 'admin' si la política UPDATE no protege el campo `role`.
+- Fix: Proteger el campo `role` en la política UPDATE o mover a tabla separada.
+
+**11. Sin storage bucket para logos de empresa**
+- El perfil tiene campo `company_logo` pero no hay bucket de storage configurado.
+- Fix: Crear bucket `logos` en Supabase Storage.
+
+**12. Edge functions usan versiones antiguas de Deno std**
+- `std@0.190.0` y `stripe@14.21.0` están desactualizados.
+- Fix: Actualizar a versiones recientes.
+
+---
+
+### PLAN DE IMPLEMENTACION
+
+Se ejecutará en este orden:
+
+1. **Crear tabla `subscribers`** con migración SQL y agregar foreign keys faltantes a todas las tablas
+2. **Arreglar flujo de registro de empresa** - usar función SECURITY DEFINER para crear empresa + actualizar perfil atomicamente
+3. **Crear empresa para usuario existente** (Omar) via INSERT
+4. **Crear página `/reset-password`** con el flujo completo
+5. **Eliminar dashboard duplicado** y optimizar queries N+1
+6. **Agregar tipado TypeScript** a ProtectedRoute/AuthRoute
+7. **Proteger campo `role`** en política UPDATE de profiles
+8. **Crear storage bucket** para logos
+
+### Detalles Tecnicos
+
+Migration SQL incluirá:
+- `CREATE TABLE subscribers` con columnas: id, email, user_id, stripe_customer_id, subscribed, subscription_tier, subscription_end, created_at, updated_at
+- `ALTER TABLE` para agregar foreign keys en bill_items, extra_charges, expenses
+- Función `create_company_for_user()` SECURITY DEFINER
+- Política UPDATE restrictiva en profiles para proteger `role`
+
+Nuevos archivos:
+- `src/pages/auth/ResetPasswordPage.tsx`
+- Ruta `/reset-password` en App.tsx
+
+Archivos a modificar:
+- `src/hooks/auth/useAuthForms.ts` (usar función DB para crear empresa)
+- `src/App.tsx` (tipos, nueva ruta, eliminar import de Index)
+- `src/hooks/useDashboardData.ts` (optimizar queries)
+- `src/pages/Index.tsx` (eliminar o redirigir)
 
