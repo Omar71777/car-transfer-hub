@@ -29,7 +29,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   const [dialogContent, setDialogContent] = useState<ReactNode | null>(null);
   const [dialogOptions, setDialogOptions] = useState<DialogOptions>({});
   const initialFocusRef = useRef<HTMLElement>(null);
-  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeCallbackRef = useRef<(() => void) | null>(null);
   const scrollPositionRef = useRef(0);
   
