@@ -56,13 +56,14 @@ export function useExpenses() {
       // Format the concept with capitalized first letter
       const formattedConcept = capitalizeFirstLetter(expenseData.concept);
       
-      const { data, error } = await supabase
-        .from('expenses')
+      const { data, error } = await (supabase
+        .from('expenses') as any)
         .insert({
           transfer_id: expenseData.transferId || null,
           date: expenseData.date,
           concept: formattedConcept,
-          amount: expenseData.amount
+          amount: expenseData.amount,
+          user_id: user.id
         })
         .select('id')
         .single();

@@ -77,7 +77,7 @@ export async function createTransfer(user: any, transferData: any) {
     // Create the transfer first
     const { data, error } = await supabase
       .from('transfers')
-      .insert(insertData)
+      .insert(insertData as any)
       .select('id')
       .single();
 

@@ -36,7 +36,7 @@ export function useAuthOperations() {
 
       delete profileWithCompanyName.companies;
       
-      setProfile(profileWithCompanyName);
+      setProfile(profileWithCompanyName as UserProfile);
       setIsAdmin(profileWithCompanyName?.role === 'admin');
       setIsDriver(profileWithCompanyName?.user_subtype === 'driver');
       setIsCompanyMember(!!profileWithCompanyName?.company_id);
@@ -132,7 +132,7 @@ export function useAuthOperations() {
       }
       
       // Update profile state
-      setProfile(prev => prev ? { ...prev, ...data } : data);
+      setProfile(prev => prev ? { ...prev, ...data } as UserProfile : data as UserProfile);
       
       // Update admin state if role changed
       if (profileData.role) {

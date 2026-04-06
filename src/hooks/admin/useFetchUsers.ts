@@ -23,7 +23,7 @@ export function useFetchUsers() {
       }
       
       console.log('Fetched users:', data);
-      setUsers(data || []);
+      setUsers((data || []) as Profile[]);
     } catch (error: any) {
       console.error('Error fetching users:', error);
       toast.error('Error al cargar los usuarios');

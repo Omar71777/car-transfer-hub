@@ -12,7 +12,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Database } from '@/integrations/supabase/types';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+type Profile = {
+  id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  role: 'admin' | 'user';
+  user_subtype: string | null;
+  company_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
 
 interface UsersListProps {
   users: Profile[];

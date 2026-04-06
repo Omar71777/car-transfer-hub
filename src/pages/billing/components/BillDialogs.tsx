@@ -55,7 +55,7 @@ export function BillDialogs({
   const isOpeningDialog = React.useRef(false);
   
   // Safety timeouts for dialog operations
-  const safetyTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const safetyTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Clean up timeouts on unmount
   React.useEffect(() => {

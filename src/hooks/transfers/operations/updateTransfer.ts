@@ -52,7 +52,7 @@ export async function updateTransfer(user: any, id: string, transferData: Partia
     
     const { error } = await supabase
       .from('transfers')
-      .update(dataForDb)
+      .update(dataForDb as any)
       .eq('id', id);
 
     if (error) {
