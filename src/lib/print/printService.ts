@@ -164,53 +164,54 @@ export function printHtmlContent(
       // Setup PDF export if enabled
       if (options.showPdfExport !== false && options.fileName) {
         import('../exports/pdf-export/a4PdfExporter').then(({ exportToA4Pdf: exportFn }) => {
-        const pdfButton = printWindow.document.getElementById('export-pdf-btn');
-        
-        if (pdfButton) {
-          pdfButton.addEventListener('click', async () => {
-            const printContent = printWindow.document.getElementById('print-content');
-            if (!printContent) return;
-            
-            // Create loading indicator
-            const loadingElement = document.createElement('div');
-            loadingElement.innerHTML = `
-              <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-                          background: rgba(255,255,255,0.9); display: flex; 
-                          justify-content: center; align-items: center; z-index: 9999">
-                <div style="text-align: center; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                  <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; 
-                              border-radius: 50%; width: 40px; height: 40px; 
-                              animation: spin 2s linear infinite; margin: 0 auto;"></div>
-                  <p style="margin-top: 10px; font-family: sans-serif;">Generando PDF...</p>
+          const pdfButton = printWindow.document.getElementById('export-pdf-btn');
+          
+          if (pdfButton) {
+            pdfButton.addEventListener('click', async () => {
+              const printContent = printWindow.document.getElementById('print-content');
+              if (!printContent) return;
+              
+              // Create loading indicator
+              const loadingElement = document.createElement('div');
+              loadingElement.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+                            background: rgba(255,255,255,0.9); display: flex; 
+                            justify-content: center; align-items: center; z-index: 9999">
+                  <div style="text-align: center; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; 
+                                border-radius: 50%; width: 40px; height: 40px; 
+                                animation: spin 2s linear infinite; margin: 0 auto;"></div>
+                    <p style="margin-top: 10px; font-family: sans-serif;">Generando PDF...</p>
+                  </div>
                 </div>
-              </div>
-              <style>
-                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-              </style>
-            `;
-            printWindow.document.body.appendChild(loadingElement);
-            
-            try {
-              await exportToA4Pdf(printContent, {
-                fileName: options.fileName,
-                loadingCallback: (isLoading) => {
-                  if (!isLoading && loadingElement.parentNode) {
-                    loadingElement.parentNode.removeChild(loadingElement);
-                  }
-                },
-                showToasts: true,
-                orientation: options.orientation || 'portrait',
-                quality: 2.5
-              });
-            } catch (error) {
-              console.error('Error exporting to PDF:', error);
-              if (loadingElement.parentNode) {
-                loadingElement.parentNode.removeChild(loadingElement);
+                <style>
+                  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+              `;
+              printWindow.document.body.appendChild(loadingElement);
+              
+              try {
+                await exportFn(printContent, {
+                  fileName: options.fileName,
+                  loadingCallback: (isLoading: boolean) => {
+                    if (!isLoading && loadingElement.parentNode) {
+                      loadingElement.parentNode.removeChild(loadingElement);
+                    }
+                  },
+                  showToasts: true,
+                  orientation: options.orientation || 'portrait',
+                  quality: 2.5
+                });
+              } catch (error) {
+                console.error('Error exporting to PDF:', error);
+                if (loadingElement.parentNode) {
+                  loadingElement.parentNode.removeChild(loadingElement);
+                }
+                printWindow.alert('Error al generar el PDF. Por favor, inténtalo de nuevo.');
               }
-              printWindow.alert('Error al generar el PDF. Por favor, inténtalo de nuevo.');
-            }
-          });
-        }
+            });
+          }
+        });
       }
       
       if (options.onSuccess) {
