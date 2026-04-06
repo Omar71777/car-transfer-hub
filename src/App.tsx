@@ -34,7 +34,7 @@ import './styles/dialog-fix.css';
 import './styles/dialog-fixes.css';
 
 // Protected route component
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { session, isLoading } = useAuth();
   
   if (isLoading) {
@@ -45,11 +45,10 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/auth" replace />;
   }
   
-  return children;
+  return <>{children}</>;
 };
 
-// Auth route component - redirects to dashboard if already authenticated
-const AuthRoute = ({ children }) => {
+const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { session, isLoading } = useAuth();
   
   if (isLoading) {
@@ -60,7 +59,7 @@ const AuthRoute = ({ children }) => {
     return <Navigate to="/dashboard" replace />;
   }
   
-  return children;
+  return <>{children}</>;
 };
 
 function AppRoutes() {
