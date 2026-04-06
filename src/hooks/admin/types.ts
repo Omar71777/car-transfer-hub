@@ -1,7 +1,21 @@
 
-import { Database } from '@/integrations/supabase/types';
-
-export type Profile = Database['public']['Tables']['profiles']['Row'];
+export type Profile = {
+  id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  role: 'admin' | 'user';
+  user_subtype: string | null;
+  company_id: string | null;
+  company_name: string | null;
+  company_address: string | null;
+  company_tax_id: string | null;
+  company_phone: string | null;
+  company_email: string | null;
+  company_logo: string | null;
+  created_at: string;
+  updated_at: string;
+};
 
 export type UserFormValues = {
   first_name?: string;
