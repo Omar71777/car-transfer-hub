@@ -58,45 +58,23 @@ export const useAuthForms = () => {
       
       if (error) throw error;
       
-      // Create profile entry is now handled by the trigger function
-      // But we still need to handle the company creation if user is registering as company
+      // Create company using SECURITY DEFINER function (bypasses RLS)
       if (data.user && is_company_account) {
-        // Create a company and associate it with the user
         const companyName = `${values.first_name} ${values.last_name} Company`;
-        console.log('Creating company:', companyName);
+        console.log('Creating company via DB function:', companyName);
         
-        // Create company record
-        const { data: companyData, error: companyError } = await supabase
-          .from('companies')
-          .insert({
-            name: companyName,
-            user_id: data.user.id,
-          })
-          .select('id')
-          .single();
+        const { data: companyResult, error: companyError } = await supabase
+          .rpc('create_company_for_user', {
+            _user_id: data.user.id,
+            _company_name: companyName
+          });
         
         if (companyError) {
           console.error('Company creation error:', companyError);
           toast.error('Error al crear la empresa');
-        } else if (companyData) {
-          console.log('Company created with ID:', companyData.id);
-          
-          // Update the user's profile with the company ID
-          const { error: updateProfileError } = await supabase
-            .from('profiles')
-            .update({ 
-              company_id: companyData.id,
-              user_subtype: 'company_admin'
-            })
-            .eq('id', data.user.id);
-          
-          if (updateProfileError) {
-            console.error('Error updating profile with company ID:', updateProfileError);
-            toast.error('Error al asociar el perfil con la empresa');
-          } else {
-            console.log('Profile updated with company ID');
-            toast.success('Empresa creada exitosamente');
-          }
+        } else {
+          console.log('Company created with ID:', companyResult);
+          toast.success('Empresa creada exitosamente');
         }
       }
       

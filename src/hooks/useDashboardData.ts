@@ -53,18 +53,22 @@ export function useDashboardData() {
           
         if (transfersError) throw transfersError;
         
-        // Fetch extra charges separately for each transfer
-        const extraChargesPromises = transfers.map(async (transfer) => {
-          const { data: extraCharges, error: extraChargesError } = await supabase
-            .from('extra_charges')
-            .select('*')
-            .eq('transfer_id', transfer.id);
-            
-          if (extraChargesError) throw extraChargesError;
-          return adaptExtraCharges(extraCharges || []);
-        });
+        // Fetch all extra charges in a single query (fixes N+1)
+        const transferIds = transfers.map(t => t.id);
+        const { data: allExtraChargesRaw, error: extraChargesError } = await supabase
+          .from('extra_charges')
+          .select('*')
+          .in('transfer_id', transferIds);
+          
+        if (extraChargesError) throw extraChargesError;
         
-        const allExtraCharges = await Promise.all(extraChargesPromises);
+        // Group extra charges by transfer_id
+        const extraChargesByTransfer = new Map<string, typeof allExtraChargesRaw>();
+        for (const ec of (allExtraChargesRaw || [])) {
+          const list = extraChargesByTransfer.get(ec.transfer_id) || [];
+          list.push(ec);
+          extraChargesByTransfer.set(ec.transfer_id, list);
+        }
         
         // Format transfers to match the MinimalTransfer interface
         const formattedTransfers = transfers.map((transfer, index) => ({
@@ -77,7 +81,7 @@ export function useDashboardData() {
           discountValue: Number(transfer.discount_value) || 0,
           origin: transfer.origin,
           destination: transfer.destination,
-          extraCharges: allExtraCharges[index] || [],
+          extraCharges: adaptExtraCharges(extraChargesByTransfer.get(transfer.id) || []),
           date: transfer.date
         }));
         

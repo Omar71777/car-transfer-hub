@@ -10,6 +10,7 @@ import LandingPage from './pages/LandingPage';
 import TransfersPage from './pages/transfers/TransfersPage';
 import NewTransferPage from './pages/transfers/NewTransferPage';
 import AuthPage from './pages/auth/AuthPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import ClientsPage from './pages/clients/ClientsPage';
 import CollaboratorsPage from './pages/collaborators/CollaboratorsPage';
@@ -33,7 +34,7 @@ import './styles/dialog-fix.css';
 import './styles/dialog-fixes.css';
 
 // Protected route component
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { session, isLoading } = useAuth();
   
   if (isLoading) {
@@ -44,11 +45,10 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/auth" replace />;
   }
   
-  return children;
+  return <>{children}</>;
 };
 
-// Auth route component - redirects to dashboard if already authenticated
-const AuthRoute = ({ children }) => {
+const AuthRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { session, isLoading } = useAuth();
   
   if (isLoading) {
@@ -59,7 +59,7 @@ const AuthRoute = ({ children }) => {
     return <Navigate to="/dashboard" replace />;
   }
   
-  return children;
+  return <>{children}</>;
 };
 
 function AppRoutes() {
@@ -78,6 +78,9 @@ function AppRoutes() {
           <Route path="/auth" element={
             <AuthRoute><AuthPage /></AuthRoute>
           } />
+          
+          {/* Reset password route (public) */}
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           
           {/* Protected routes */}
           <Route path="/dashboard" element={
