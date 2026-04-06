@@ -36,7 +36,7 @@ export function useAuthOperations() {
 
       delete profileWithCompanyName.companies;
       
-      setProfile(profileWithCompanyName);
+      setProfile(profileWithCompanyName as UserProfile);
       setIsAdmin(profileWithCompanyName?.role === 'admin');
       setIsDriver(profileWithCompanyName?.user_subtype === 'driver');
       setIsCompanyMember(!!profileWithCompanyName?.company_id);
