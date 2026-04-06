@@ -79,6 +79,9 @@ function AppRoutes() {
             <AuthRoute><AuthPage /></AuthRoute>
           } />
           
+          {/* Reset password route (public) */}
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          
           {/* Protected routes */}
           <Route path="/dashboard" element={
             <ProtectedRoute>
