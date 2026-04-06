@@ -81,7 +81,7 @@ export function useDashboardData() {
           discountValue: Number(transfer.discount_value) || 0,
           origin: transfer.origin,
           destination: transfer.destination,
-          extraCharges: allExtraCharges[index] || [],
+          extraCharges: adaptExtraCharges(extraChargesByTransfer.get(transfer.id) || []),
           date: transfer.date
         }));
         
