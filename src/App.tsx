@@ -10,6 +10,7 @@ import LandingPage from './pages/LandingPage';
 import TransfersPage from './pages/transfers/TransfersPage';
 import NewTransferPage from './pages/transfers/NewTransferPage';
 import AuthPage from './pages/auth/AuthPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import ClientsPage from './pages/clients/ClientsPage';
 import CollaboratorsPage from './pages/collaborators/CollaboratorsPage';
